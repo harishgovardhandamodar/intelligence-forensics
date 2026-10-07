@@ -237,8 +237,9 @@ def _static_version() -> str:
     return h.hexdigest()[:8]
 
 
-PAGE = PAGE.replace("/static/app.js", "/static/app.js?v=" + _static_version())
-PAGE = PAGE.replace("/static/app.css", "/static/app.css?v=" + _static_version())
+STATIC_V = _static_version()
+PAGE = PAGE.replace("/static/app.js", "/static/app.js?v=" + STATIC_V)
+PAGE = PAGE.replace("/static/app.css", "/static/app.css?v=" + STATIC_V)
 
 
 @app.get("/api/overview")
@@ -256,7 +257,8 @@ def overview():
     return {"requests": len(rows), "services": len(svcs),
             "reconstructions": len(recon), "agent_runs": len(ag.list_runs()),
             "fox": fox_ok, "model": ollama_client.MODEL,
-            "ollama": ollama_client.OLLAMA_URL, "version": APP_VERSION}
+            "ollama": ollama_client.OLLAMA_URL, "version": APP_VERSION,
+            "js": STATIC_V}
 
 
 @app.get("/api/services")

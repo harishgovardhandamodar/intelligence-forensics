@@ -15,7 +15,7 @@ async function load(){
  const sec=async(id,fn)=>{try{await fn();}catch(e){const el=document.querySelector(id);if(el)el.innerHTML=trowState(8,'failed: '+e,'warn');}};
  try{
   const o=await j('/api/overview');
-  $('hdr').textContent=`v${o.version||'?'} · fox:${o.fox} model:${o.model} reqs:${o.requests} svcs:${o.services} recon:${o.reconstructions} agent-runs:${o.agent_runs}`;
+  $('hdr').textContent=`v${o.version||'?'}+js${o.js||'?'} · fox:${o.fox} model:${o.model} reqs:${o.requests} svcs:${o.services} recon:${o.reconstructions} agent-runs:${o.agent_runs}`;
   $('stats').innerHTML=['requests|'+o.requests,'services|'+o.services,'reconstructions|'+o.reconstructions,'agentic runs|'+o.agent_runs,'fox|'+o.fox,'model|'+o.model].map(s=>{const[k,v]=s.split('|');return `<div class="card stat"><div class="v">${escH(v)}</div><div class="k">${escH(k)}</div></div>`}).join('');
  }catch(e){$('hdr').textContent='overview failed: '+e;$('stats').innerHTML=`<div class="card warn">overview failed: ${escH(e)}</div>`;}
   await sec('#t-svc tbody',async()=>{
@@ -873,15 +873,17 @@ const detailFeed=e=>({title:(e.dir||'').toUpperCase()+' · '+(e.service||'?'),su
 const detailProj=p=>({title:'project '+p.project,sub:p.total+' findings',
  rows:[['critical',p.critical],['high',p.high],['medium',p.medium],['low',p.low]],
  notes:['Rolled up from every finding whose source path starts with this top-level directory.']});
-function wireOverlay(tableSel,build){
- const host=document.querySelector(tableSel);if(!host)return;
- host.addEventListener('click',e=>{
+function rowClickHandler(build){
+ return e=>{
   if(e.target&&e.target.closest&&e.target.closest('a'))return;
   const r=e.target&&e.target.closest?e.target.closest('[data-f]'):null;
-  if(!r)return;
-  let f=null;try{f=JSON.parse(r.dataset.f);}catch(_){return;}
+  if(!r)return;let f=null;try{f=JSON.parse(r.dataset.f);}catch(_){return;}
   const d=build(f);if(d)showDetail(d.title,d.sub,d.rows,d.notes);
- });
+ };
+}
+function wireOverlay(tableSel,build){
+ const host=document.querySelector(tableSel);if(!host)return;
+ host.addEventListener('click',rowClickHandler(build));
 }
 wireOverlay('#t-find',f=>detailFindings(f));
 wireOverlay('#t-sec-secrets',f=>detailFindings(f));
@@ -894,23 +896,12 @@ wireOverlay('#t-ledger',f=>detailLedger(f));
 wireOverlay('#t-conf',f=>detailConf(f));
 wireOverlay('#t-trend',f=>detailTrend(f));
 wireOverlay('#t-feed',f=>detailFeed(f));
-const _chainHost=$('chain');if(_chainHost)_chainHost.addEventListener('click',e=>{
- if(e.target&&e.target.closest&&e.target.closest('a'))return;
- const r=e.target&&e.target.closest?e.target.closest('[data-f]'):null;
- if(!r)return;let f=null;try{f=JSON.parse(r.dataset.f);}catch(_){return;}
- const d=detailChain(f);if(d)showDetail(d.title,d.sub,d.rows,d.notes);
-});
+const _chainHost=$('chain');if(_chainHost)_chainHost.addEventListener('click',rowClickHandler(detailChain));
 const _inj=$('sec-inject'),_prm=$('sec-perm');
 const _injT=_inj&&_inj.closest?_inj.closest('table'):null;
 const _prmT=_prm&&_prm.closest?_prm.closest('table'):null;
-if(_injT)_injT.addEventListener('click',secRowClick);
-if(_prmT)_prmT.addEventListener('click',secRowClick);
-function secRowClick(e){
- if(e.target&&e.target.closest&&e.target.closest('a'))return;
- const r=e.target&&e.target.closest?e.target.closest('[data-f]'):null;
- if(!r)return;let f=null;try{f=JSON.parse(r.dataset.f);}catch(_){return;}
- const d=detailFindings(f);if(d)showDetail(d.title,d.sub,d.rows,d.notes);
-}
+if(_injT)_injT.addEventListener('click',rowClickHandler(detailFindings));
+if(_prmT)_prmT.addEventListener('click',rowClickHandler(detailFindings));
 initTheme();
 load();
 activateTab(location.hash.slice(1)||'overview',false);

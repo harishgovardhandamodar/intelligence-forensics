@@ -103,7 +103,7 @@ function loadApp() {
     + " buildIntelRows, switchRunSub, agentLogBlock,"
     + " renderRunPanes, renderRunLogs, renderRunClaims, renderRunVerdict,"
     + " switchLiveSub, filterFeed, renderFeed, renderFeedRows,"
-    + " showDetail, wireOverlay, SCORE_HELP,"
+    + " showDetail, wireOverlay, rowClickHandler, SCORE_HELP,"
     + " detailFindings, detailLedger, detailMesh, detailRisk, detailTrust,"
     + " detailRates, detailConf, detailTrend, detailChain, detailFeed,"
     + " detailProj};\n";
@@ -492,4 +492,39 @@ test("detail builders explain every score in backend terms", () => {
     medium: 0, low: 0, total: 1 }).notes[0], /top-level/);
   assert.match(t.detailLedger({ seq: 4, actor: "a", action: "x",
     artifact_sha256: "ab" }).rows[3][1], /<code>ab<\/code>/);
+});
+
+test("rowClickHandler opens overlay, guards links and bad payloads", () => {
+  const h = t.rowClickHandler((f) => ({ title: "T:" + f.k, sub: "",
+    rows: [], notes: [] }));
+  const row = { dataset: { f: '{"k":"v"}' }, closest: () => null };
+  const ev = (target, rowEl) => ({ target,
+    preventDefault() {} });
+  const fakeTarget = {
+    closest: (sel) => (sel === "a" ? null : sel === "[data-f]" ? row : null),
+  };
+  h({ target: fakeTarget });
+  assert.match(el("overlay-body").innerHTML, /T:v/);
+  // link clicks are left alone
+  el("overlay-body").innerHTML = "sentinel";
+  h({ target: { closest: (sel) => (sel === "a" ? {} : null) } });
+  assert.equal(el("overlay-body").innerHTML, "sentinel");
+  // malformed payloads never throw, never render
+  h({ target: { closest: () => ({ dataset: { f: "{nope" } }) } });
+  assert.equal(el("overlay-body").innerHTML, "sentinel");
+  h({ target: { closest: () => null } });
+  assert.equal(el("overlay-body").innerHTML, "sentinel");
+});
+
+test("SCORE_HELP documents every explained score", () => {
+  for (const k of ["critical", "high", "medium", "low"])
+    assert.ok(t.SCORE_HELP.severity[k], k);
+  for (const k of ["critical", "high", "medium", "low"])
+    assert.ok(t.SCORE_HELP.band[k], k);
+  for (const k of ["pass", "warn", "fail"])
+    assert.ok(t.SCORE_HELP.trust[k], k);
+  for (const k of ["match", "partial", "disagree"])
+    assert.ok(t.SCORE_HELP.agreement[k], k);
+  for (const k of ["queue_ms", "coverage", "confidence"])
+    assert.ok(t.SCORE_HELP[k], k);
 });
