@@ -320,7 +320,8 @@ const loadLive=async()=>{
    `out ${st.out_seen||0} seen / ${st.out_lost||0} lost`];
  if(st.persisted&&st.persisted.files)bits.push(`${st.persisted.files} log day(s) · ${Math.round((st.persisted.bytes||0)/1024)}KB on disk`);
  if(st.stale)bits.push('stale '+(st.poll_age_s||'?')+'s since poll');
- if(st.possible_loss)bits.push('⚠ page overflow, older completions missed');
+  if(st.possible_loss)bits.push('⚠ page overflow, older completions missed');
+  (st.alerts||[]).slice(-3).forEach(a=>bits.push(`⚠ ${a.kind}${a.service?' '+a.service:''}: ${a.detail}`));
  if(st.running){$('live-state').innerHTML=`<span class="${stateCls}">● ${escH(bits[0])}</span>`+bits.slice(1).map(b=>' · <span class="mut">'+escH(b)+'</span>').join('');}
  else{$('live-state').textContent='○ stopped';}
  if(!st.running){stopLiveStream();}

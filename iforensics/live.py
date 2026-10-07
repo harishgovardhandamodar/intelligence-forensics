@@ -20,6 +20,7 @@ import time
 from collections import deque, Counter
 
 from . import config, fox_client, store
+from .timeseries import _OK as _OK_STATUS
 
 MAX_EVENTS = 2000
 # ids only matter for a few polls (req_limit each); keeping every id ever seen
@@ -30,6 +31,17 @@ MAX_INFLIGHT = 2000
 # a poll is "unhealthy" when fox has not produced a result for this many
 # intervals — surfaced in status() so the UI can stop showing a frozen "live".
 STALE_INTERVALS = 3
+# anomaly alerts (P5.18): deterministic rules evaluated at the end of every
+# poll over the buffered stream. Same shape as security findings
+# ({t, kind, severity, service, detail}) so the UI renders them the same way.
+ALERT_WINDOW_S = 300.0
+ALERT_ERR_MIN_N = 3
+ALERT_ERR_MIN_RATE = 0.2
+ALERT_VOL_MIN_N = 5
+ALERT_VOL_FACTOR = 3.0
+ALERT_COOLDOWN_S = 600.0
+ALERT_WARMUP_S = 60.0
+MAX_ALERTS = 100
 
 
 class _BoundedIdSet:
@@ -224,6 +236,11 @@ class LiveTap(threading.Thread):
         self.last_newest_id = None
         self.resumed_from: dict | None = None
         self.errors: list[str] = []
+        self.alerts: deque = deque(maxlen=MAX_ALERTS)
+        self._known_services: set = set()
+        self._alert_cooldown: dict = {}
+        self._poll_out_counts: deque = deque(maxlen=20)
+        self._stale_alerted = False
         self._stop_event = threading.Event()
         self._lock = threading.Lock()
 
@@ -263,6 +280,81 @@ class LiveTap(threading.Thread):
             in_ev["resolved"] = True
             in_ev["queue_ms"] = ev["queue_ms"]
             self.queue_ms_seen += 1
+
+    def _raise_alert(self, kind: str, severity: str, service: str,
+                     detail: str, now: float | None = None) -> dict | None:
+        """Append an alert unless the same kind+service fired within cooldown."""
+        now = now if now is not None else time.time()
+        key = (kind, service or "")
+        if now - self._alert_cooldown.get(key, 0) < ALERT_COOLDOWN_S:
+            return None
+        self._alert_cooldown[key] = now
+        alert = {"t": now, "kind": kind, "severity": severity,
+                 "service": service or "", "detail": detail}
+        self.alerts.append(alert)
+        return alert
+
+    def evaluate_alerts(self, now: float | None = None,
+                        current_out: int | None = None) -> list[dict]:
+        """Deterministic anomaly rules over the buffered stream.
+
+        Pure read of the buffer plus cooldown-guarded appends — safe to call
+        from tests without fox. Returns the alerts raised by this call.
+        """
+        now = now if now is not None else time.time()
+        with self._lock:
+            evs = [e for e in self.events
+                   if e.get("dir") in ("in", "out", "sys")
+                   and now - (e.get("t") or 0) <= ALERT_WINDOW_S]
+        new: list[dict] = []
+        outs = [e for e in evs if e["dir"] == "out"]
+        # 1. error-rate spike over the window
+        errs = [e for e in outs if (e.get("status") or "").lower() not in _OK_STATUS]
+        if errs and len(errs) >= ALERT_ERR_MIN_N \
+                and len(errs) / max(1, len(outs)) >= ALERT_ERR_MIN_RATE:
+            by_svc = Counter(e["service"] for e in errs)
+            svc, n = by_svc.most_common(1)[0]
+            a = self._raise_alert("error_spike", "high", svc,
+                                  f"{n}/{len(outs)} completions errored in 5m", now)
+            if a:
+                new.append(a)
+        # 2. new service — only after warmup, so a restart does not page the world
+        if self.started_at and now - self.started_at > ALERT_WARMUP_S:
+            for e in evs:
+                s = e.get("service") or "unknown"
+                if s in ("unknown", "ollama") or s in self._known_services:
+                    continue
+                self._known_services.add(s)
+                a = self._raise_alert("new_service", "medium", s,
+                                      "first traffic seen", now)
+                if a:
+                    new.append(a)
+        else:
+            for e in evs:
+                self._known_services.add(e.get("service") or "unknown")
+        # 3. volume spike vs the median of previous polls
+        counts = list(self._poll_out_counts)
+        if current_out is not None and len(counts) >= 5:
+            med = sorted(counts)[len(counts) // 2]
+            if current_out >= ALERT_VOL_MIN_N \
+                    and current_out >= ALERT_VOL_FACTOR * max(1, med):
+                a = self._raise_alert("volume_spike", "medium", "",
+                                      f"{current_out} completions in one poll "
+                                      f"(median {med})", now)
+                if a:
+                    new.append(a)
+        # 4. stale edge — fires once per outage, resets when polls resume
+        since = (now - self.last_poll_at) if self.last_poll_at else None
+        if since is not None and since > self.interval_s * STALE_INTERVALS:
+            if not self._stale_alerted:
+                self._stale_alerted = True
+                a = self._raise_alert("stale", "high", "",
+                                      f"no poll for {round(since, 1)}s", now)
+                if a:
+                    new.append(a)
+        else:
+            self._stale_alerted = False
+        return new
 
     def snapshot(self, limit: int = 100, since_seq: int = 0) -> list[dict]:
         with self._lock:
@@ -311,6 +403,9 @@ class LiveTap(threading.Thread):
                     self.errors.append(
                         f"out: page overflow (limit={self.req_limit}) — "
                         "older completions missed")
+                    self._raise_alert("page_overflow", "high", "",
+                                      f"out page overflow (limit={self.req_limit}) — "
+                                      "older completions missed")
             # ----------------------------------------------------------------
             for r in batch[::-1]:  # oldest first
                 rid = r.get("id")
@@ -351,18 +446,25 @@ class LiveTap(threading.Thread):
                             "query_type": "", "status": "loaded", "prompt_tokens": 0,
                             "completion_tokens": 0, "duration_ms": 0, "qid": ""})
                 got["sys"] += 1
+                self._raise_alert("model_loaded", "low", "ollama", str(m))
             for m in self.loaded_models - models:
                 self._push({"t": time.time(), "dir": "sys", "service": "ollama",
                             "model": m, "original_model": "", "prompt_head": "evicted from VRAM",
                             "query_type": "", "status": "unloaded", "prompt_tokens": 0,
                             "completion_tokens": 0, "duration_ms": 0, "qid": ""})
                 got["sys"] += 1
+                self._raise_alert("model_evicted", "medium", "ollama", str(m))
             self.loaded_models = models
         except Exception as e:  # noqa: BLE001
             self.errors.append(f"ps: {type(e).__name__}")
         self.errors = self.errors[-20:]
         self.polls += 1
         self.last_poll_at = time.time()
+        try:
+            self.evaluate_alerts(current_out=got["out"])
+        except Exception:  # noqa: BLE001 — alerts must never break the tap
+            pass
+        self._poll_out_counts.append(got["out"])
         if self.log:
             self.log.write_cursor(last_poll_at=self.last_poll_at, polls=self.polls,
                                   last_newest_id=self.last_newest_id,
@@ -410,6 +512,7 @@ class LiveTap(threading.Thread):
         with self._lock:
             n = len(self.events)
             recent = list(self.events)[-500:]
+            alerts = list(self.alerts)[-10:]
         by_svc = Counter(e["service"] for e in recent)
         since = (now - self.last_poll_at) if self.last_poll_at else None
         stale_after = self.interval_s * STALE_INTERVALS
@@ -429,6 +532,7 @@ class LiveTap(threading.Thread):
                 "inflight_pending": len(self.inflight),
                 "resumed_from": self.resumed_from,
                 "persisted": self.log.stats() if self.log else None,
+                "alerts": alerts, "n_alerts": len(self.alerts),
                 "recent_errors": self.errors[-5:]}
 
 

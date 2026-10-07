@@ -163,3 +163,12 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 ### Verification
 - [x] Run the full test suite, boot the dashboard, smoke-test every API
       surface, commit each stage.
+
+### P5 — remaining gaps (2026-10-07 verification; to-do §§A–E otherwise hold)
+- [x] P5.18 Live anomaly alerts: error-rate spike, new-service, model load/evict,
+      volume spike, stale edge — evaluated in the tap, surfaced in `status()` + Live tab
+- [ ] P5.19 Topology join: service→container→peer→model graph from already-collected sources
+- [ ] P5.20 Outflow decision: pcap decode for Ollama traffic *or* scaffold re-run
+      harness with fidelity scoring (completions are NOT logged upstream)
+- [ ] P5.21 Reporter claims-vs-evidence validation; surface mermaid errors instead of swallowing them
+- [ ] P5.22 Retention/prune policy, pinned requirements, rate-limit POSTs, JS tests
