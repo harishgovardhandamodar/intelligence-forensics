@@ -140,7 +140,7 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 - [x] P0.4 Add `tests/` for `score.py` + `progression.py` + `fingerprints.py`
 
 ### P1 — live forensics depth
-- [ ] P1.5 Persist the tap to append-only `evidence/live/events-<day>.jsonl` + on-disk cursor
+- [x] P1.5 Persist the tap to append-only `evidence/live/events-<day>.jsonl` + on-disk cursor
 - [ ] P1.6 Join IN→OUT on `qid`, surface `queue_ms`, `since_id` delta endpoint + SSE
 - [ ] P1.7 `/api/stats/timeseries?bucket=1m` endpoint
 - [ ] P1.8 Unify live/history row shapes (`model`, `total_tokens`, real `requestor`)

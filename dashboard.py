@@ -10,6 +10,7 @@ import argparse
 import glob
 import json
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -279,6 +280,7 @@ const loadLive=async()=>{
   const stateCls=st.possible_loss?'warn':(st.stale?'warn':'ok');
  const bits=[`live · ${st.events_buffered} events · ${st.polls} polls · up ${st.uptime_s||0}s`,
    `out ${st.out_seen||0} seen / ${st.out_lost||0} lost`];
+ if(st.persisted&&st.persisted.files)bits.push(`${st.persisted.files} log day(s) · ${Math.round((st.persisted.bytes||0)/1024)}KB on disk`);
  if(st.stale)bits.push('stale '+(st.poll_age_s||'?')+'s since poll');
  if(st.possible_loss)bits.push('⚠ page overflow, older completions missed');
  if(st.running){$('live-state').innerHTML=`<span class="${stateCls}">● ${escH(bits[0])}</span>`+bits.slice(1).map(b=>' · <span class="mut">'+escH(b)+'</span>').join('');}
@@ -548,6 +550,17 @@ def live_feed(limit: int = 50):
     if not t:
         raise HTTPException(409, "tap not running (POST /api/live/start)")
     return {"events": t.snapshot(max(1, min(500, limit)))}
+
+
+@app.get("/api/live/persisted")
+def live_persisted(day: str | None = None, limit: int = 200,
+                   since_ts: float = 0.0):
+    """Durable tap log read from disk — works even with the tap stopped."""
+    from iforensics import live as live_mod
+    if day is not None and not re.fullmatch(r"\d{8}", day):
+        raise HTTPException(400, "day must be YYYYMMDD")
+    return {"events": live_mod.persisted_events(
+        day=day, limit=max(1, min(5000, limit)), since_ts=max(0.0, since_ts))}
 
 
 @app.get("/api/live/rates")

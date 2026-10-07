@@ -122,3 +122,21 @@ def test_stale_flag_after_missed_polls():
     t = _tap()
     t.last_poll_at = time.time() - 10 * t.interval_s * live_mod.STALE_INTERVALS
     assert t.status()["stale"] is True
+
+
+def test_poll_persists_events_and_cursor(tmp_path):
+    t = LiveTap(interval_s=60, req_limit=5, persist=True, log_dir=str(tmp_path))
+    t.started_at = time.time()
+    live_mod.fox_client.llm_requests = _FakeFox([[
+        {"id": 10, "service": "s", "prompt": "q", "created_at": time.time()},
+        {"id": 9, "service": "s", "prompt": "q", "created_at": time.time()},
+    ]])
+    live_mod.fox_client._get = lambda *a, **k: {"models": []}
+    t.poll_once()
+    on_disk = t.log.read_events()
+    assert [e["qid"] for e in on_disk] == [9, 10]
+    cur = t.log.read_cursor()
+    assert cur["last_newest_id"] == 10
+    assert t.status()["persisted"]["files"] == 1
+    # objects would fail json.dumps for the real log — none here
+    assert t.log.errors == 0

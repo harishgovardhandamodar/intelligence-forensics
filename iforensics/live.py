@@ -12,11 +12,14 @@ to expose: prompt heads (truncated/masked upstream), tokens, timings —
 which is exactly the reconstruction surface, and it works unprivileged
 from LAN, tailnet, or inside the container.
 """
+import datetime
+import json
+import os
 import threading
 import time
 from collections import deque, Counter
 
-from . import fox_client
+from . import config, fox_client
 
 MAX_EVENTS = 2000
 # ids only matter for a few polls (req_limit each); keeping every id ever seen
@@ -55,6 +58,122 @@ class _BoundedIdSet:
         return len(self._set)
 
 
+def _day(ts: float) -> str:
+    return datetime.datetime.utcfromtimestamp(ts).strftime("%Y%m%d")
+
+
+class EventLog:
+    """Append-only JSONL of tap events (one file per UTC day) + a cursor file.
+
+    The rolling deque makes the live window ephemeral; this makes it durable.
+    On restart the cursor resumes continuity, and the reporter can replay
+    exactly what the tap observed — including the overflow gaps fox's DB
+    cannot tell us about. Appends are line-flushed so a hard kill loses at
+    most the in-flight poll.
+    """
+
+    def __init__(self, base_dir: str | None = None):
+        self.dir = base_dir or os.path.join(config.EVIDENCE_DIR, "live")
+        self.cursor_path = os.path.join(self.dir, "cursor.json")
+        self._lock = threading.Lock()
+        self._fh = None
+        self._fh_day: str | None = None
+        self.appended = 0
+        self.errors = 0
+        try:
+            os.makedirs(self.dir, exist_ok=True)
+        except Exception:  # noqa: BLE001
+            pass
+
+    def _open(self, day: str):
+        if self._fh and self._fh_day == day:
+            return self._fh
+        if self._fh:
+            try:
+                self._fh.close()
+            except Exception:  # noqa: BLE001
+                pass
+        self._fh = open(os.path.join(self.dir, f"events-{day}.jsonl"),
+                        "a", encoding="utf-8")
+        self._fh_day = day
+        return self._fh
+
+    def append(self, ev: dict) -> bool:
+        try:
+            line = json.dumps(ev, ensure_ascii=False, separators=(",", ":"))
+            with self._lock:
+                fh = self._open(_day(ev.get("t") or time.time()))
+                fh.write(line + "\n")
+                fh.flush()
+                self.appended += 1
+            return True
+        except Exception:  # noqa: BLE001
+            self.errors += 1
+            return False
+
+    def write_cursor(self, **kw) -> None:
+        try:
+            tmp = self.cursor_path + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump({"updated_at": time.time(), **kw}, f)
+            os.replace(tmp, self.cursor_path)  # atomic: no torn cursor
+        except Exception:  # noqa: BLE001
+            pass
+
+    def read_cursor(self) -> dict:
+        try:
+            with open(self.cursor_path, encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:  # noqa: BLE001
+            return {}
+
+    def files(self) -> list[str]:
+        try:
+            return sorted(f for f in os.listdir(self.dir)
+                          if f.startswith("events-") and f.endswith(".jsonl"))
+        except Exception:  # noqa: BLE001
+            return []
+
+    def stats(self) -> dict:
+        files = self.files()
+        nbytes = 0
+        for f in files:
+            try:
+                nbytes += os.path.getsize(os.path.join(self.dir, f))
+            except OSError:
+                continue
+        return {"dir": self.dir, "files": len(files), "bytes": nbytes,
+                "appended": self.appended, "errors": self.errors,
+                "cursor": self.read_cursor()}
+
+    def read_events(self, day: str | None = None, limit: int = 10000,
+                    since_ts: float = 0.0) -> list[dict]:
+        names = [f"events-{day}.jsonl"] if day else self.files()
+        out: list[dict] = []
+        for name in names:
+            try:
+                with open(os.path.join(self.dir, name), encoding="utf-8") as f:
+                    for line in f:
+                        try:
+                            ev = json.loads(line)
+                        except Exception:  # noqa: BLE001
+                            continue
+                        if (ev.get("t") or 0) >= since_ts:
+                            out.append(ev)
+            except Exception:  # noqa: BLE001
+                continue
+        return out[-limit:] if not since_ts else out
+
+    def close(self) -> None:
+        with self._lock:
+            if self._fh:
+                try:
+                    self._fh.close()
+                except Exception:  # noqa: BLE001
+                    pass
+                self._fh = None
+
+
 def _row_to_event(r: dict, direction: str) -> dict:
     return {
         "t": r.get("completed_at") or r.get("created_at") or r.get("ts") or time.time(),
@@ -75,11 +194,14 @@ def _row_to_event(r: dict, direction: str) -> dict:
 class LiveTap(threading.Thread):
     daemon = True
 
-    def __init__(self, interval_s: float = 5.0, req_limit: int = 100):
+    def __init__(self, interval_s: float = 5.0, req_limit: int = 100,
+                 persist: bool = True, log_dir: str | None = None):
         super().__init__(name="live-tap")
         self.interval_s = interval_s
         self.req_limit = req_limit
         self.events: deque = deque(maxlen=MAX_EVENTS)
+        self.log = EventLog(log_dir) if persist else None
+        self.resumed_cursor: dict = {}
         self.seen_ids = _BoundedIdSet(MAX_SEEN)
         self.seen_inflight = _BoundedIdSet(MAX_INFLIGHT_SEEN)
         self.loaded_models: set = set()
@@ -93,16 +215,21 @@ class LiveTap(threading.Thread):
         self.out_lost_pages = 0    # number of overflow events
         self.out_saturated_polls = 0
         self.last_newest_id = None
+        self.resumed_from: dict | None = None
         self.errors: list[str] = []
         self._stop_event = threading.Event()
         self._lock = threading.Lock()
 
     def stop(self):
         self._stop_event.set()
+        if getattr(self, "log", None):
+            self.log.close()
 
     def _push(self, ev: dict):
         with self._lock:
             self.events.append(ev)
+        if self.log:
+            self.log.append(ev)
 
     def snapshot(self, limit: int = 100) -> list[dict]:
         with self._lock:
@@ -201,10 +328,22 @@ class LiveTap(threading.Thread):
         self.errors = self.errors[-20:]
         self.polls += 1
         self.last_poll_at = time.time()
+        if self.log:
+            self.log.write_cursor(last_poll_at=self.last_poll_at, polls=self.polls,
+                                  last_newest_id=self.last_newest_id,
+                                  events_buffered=len(self.events),
+                                  out_seen=self.out_seen, out_lost=self.out_lost,
+                                  started_at=self.started_at)
         return got
 
     def run(self):
         self.started_at = time.time()
+        # resume continuity from the durable cursor before the live baseline,
+        # so a restart does not look like an id discontinuity.
+        if self.log:
+            self.resumed_from = self.log.read_cursor() or None
+            if isinstance((self.resumed_from or {}).get("last_newest_id"), int):
+                self.last_newest_id = self.resumed_from["last_newest_id"]
         # baseline: mark current history seen without emitting
         try:
             res = fox_client.llm_requests(limit=self.req_limit)
@@ -251,6 +390,8 @@ class LiveTap(threading.Thread):
                 "out_lost_pages": self.out_lost_pages,
                 "out_saturated_polls": self.out_saturated_polls,
                 "possible_loss": self.out_lost > 0 or self.out_lost_pages > 0,
+                "resumed_from": self.resumed_from,
+                "persisted": self.log.stats() if self.log else None,
                 "recent_errors": self.errors[-5:]}
 
 
@@ -283,12 +424,13 @@ _TAP: LiveTap | None = None
 _TAP_LOCK = threading.Lock()
 
 
-def start(interval_s: float = 5.0) -> dict:
+def start(interval_s: float = 5.0, persist: bool = True,
+          log_dir: str | None = None) -> dict:
     global _TAP
     with _TAP_LOCK:
         if _TAP and _TAP.is_alive():
             return {"started": False, "reason": "already running", **_TAP.status()}
-        _TAP = LiveTap(interval_s=interval_s)
+        _TAP = LiveTap(interval_s=interval_s, persist=persist, log_dir=log_dir)
         _TAP.start()
         return {"started": True, **_TAP.status()}
 
@@ -305,6 +447,12 @@ def stop() -> dict:
 
 def tap() -> LiveTap | None:
     return _TAP if (_TAP and _TAP.is_alive()) else None
+
+
+def persisted_events(day: str | None = None, limit: int = 5000,
+                     since_ts: float = 0.0) -> list[dict]:
+    """Read the durable tap log from disk (works with the tap stopped)."""
+    return EventLog().read_events(day=day, limit=limit, since_ts=since_ts)
 
 
 def rates(window_s: float = 300) -> dict:
