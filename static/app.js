@@ -675,8 +675,8 @@ $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;con
   try{const st=await j('/api/live/status');if(!st.running)await pj('/api/live/start');}catch(e){}
   const d=await j(`/api/live/reconstruction?service=${encodeURIComponent(s)}&n=5&mode=${mode}&history=200`);
   $('live-recon-msg').textContent=`${d.steps.length} steps (${d.history_rows} history + ${d.live_rows} live), converged=${d.converged}`;
-  $('t-liveprog').querySelector('tbody').innerHTML=d.steps.map(st=>{const dl=st.delta||{};
-   return `<tr><td>${escH(st.step)}</td><td>${scoreCell(st.score.score,st.score.grade)}</td><td>${escH(st.requests)}</td><td><b>${escH(st.project||'')}</b></td><td>${dl.project_changed?'<span class="warn">flip</span>':'<span class="ok">stable</span>'}</td></tr>`;}).join('');
+   $('t-liveprog').querySelector('tbody').innerHTML=d.steps.map(st=>{const dl=st.delta||{};
+    return `<tr data-f='${escA(JSON.stringify(st))}'><td>${escH(st.step)}</td><td>${scoreCell(st.score.score,st.score.grade)}</td><td>${escH(st.requests)}</td><td><b>${escH(st.project||'')}</b></td><td>${dl.project_changed?'<span class="warn">flip</span>':'<span class="ok">stable</span>'}</td></tr>`;}).join('');
   loadLive();
  }catch(e){$('live-recon-msg').textContent='failed: '+e;}};
 setInterval(()=>{const s=$('s-live');if(s&&s.classList.contains('on')){loadLive();const a=$('chk-tsauto');if(a&&a.checked)loadTs();}},4000);
@@ -873,6 +873,19 @@ const detailFeed=e=>({title:(e.dir||'').toUpperCase()+' · '+(e.service||'?'),su
 const detailProj=p=>({title:'project '+p.project,sub:p.total+' findings',
  rows:[['critical',p.critical],['high',p.high],['medium',p.medium],['low',p.low]],
  notes:['Rolled up from every finding whose source path starts with this top-level directory.']});
+const detailProgStep=st=>{const dl=st.delta||{},sc=st.score||{},vb=st.vibe||{};
+ const factors=sc.factors?Object.entries(sc.factors).map(([k,v])=>`${k} ${v}`).join(' · '):'';
+ const vfactors=vb.factors?Object.entries(vb.factors).map(([k,v])=>`${k} ${v}`).join(' · '):'';
+ return {title:'progression step '+st.step,sub:(st.mode||'')+' · '+(st.window||''),
+ rows:[['requests',escH(st.requests)],['tokens',escH(st.tokens)],
+  ['project',`<b>${escH(st.project||'')}</b> ${dl.project_changed?'<span class="warn">label flip</span>':'<span class="ok">stable</span>'}`],
+  ['score',`${escH(sc.score??'?')} (${escH(sc.grade||'?')}) — ${escH(SCORE_HELP.grade[sc.grade]||'')}${factors?' — '+escH(factors):''}`],
+  ['vibe',`${escH(vb.vibe??'?')} ${escH(vb.label||'')} — ${escH(SCORE_HELP.vibe[vb.label]||'')}${vfactors?' — '+escH(vfactors):''}`],
+  ['pipeline',(st.pipeline||[]).map(escH).join(' → ')||'—'],
+  ['models',Object.entries(st.models||{}).map(([m,c])=>`${escH(m)} ×${escH(c)}`).join('<br>')||'—'],
+  ['templates',`${escH(st.n_templates??'?')} templates · ${escH(st.n_instructions??'?')} instructions`],
+  ['new stages',((dl.new_stages||[]).map(escH).join(', ')||'none')+` (templates Δ ${dl.template_growth??0})`]],
+ notes:['Each step re-profiles the service over more (cumulative) or shifted (window) queries; a flip means the inferred build changed.']};};
 function rowClickHandler(build){
  return e=>{
   if(e.target&&e.target.closest&&e.target.closest('a'))return;
@@ -896,6 +909,7 @@ wireOverlay('#t-ledger',f=>detailLedger(f));
 wireOverlay('#t-conf',f=>detailConf(f));
 wireOverlay('#t-trend',f=>detailTrend(f));
 wireOverlay('#t-feed',f=>detailFeed(f));
+wireOverlay('#t-liveprog',f=>detailProgStep(f));
 const _chainHost=$('chain');if(_chainHost)_chainHost.addEventListener('click',rowClickHandler(detailChain));
 const _inj=$('sec-inject'),_prm=$('sec-perm');
 const _injT=_inj&&_inj.closest?_inj.closest('table'):null;

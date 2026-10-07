@@ -106,7 +106,7 @@ function loadApp() {
     + " showDetail, wireOverlay, rowClickHandler, SCORE_HELP,"
     + " detailFindings, detailLedger, detailMesh, detailRisk, detailTrust,"
     + " detailRates, detailConf, detailTrend, detailChain, detailFeed,"
-    + " detailProj};\n";
+    + " detailProj, detailProgStep};\n";
   vm.createContext(sandbox);
   vm.runInContext(src, sandbox, { filename: "app.js" });
   return { t: sandbox.__t, el };
@@ -527,4 +527,22 @@ test("SCORE_HELP documents every explained score", () => {
     assert.ok(t.SCORE_HELP.agreement[k], k);
   for (const k of ["queue_ms", "coverage", "confidence"])
     assert.ok(t.SCORE_HELP[k], k);
+});
+
+test("detailProgStep explains score, vibe and delta", () => {
+  const d = t.detailProgStep({ step: 3, mode: "cumulative", window: "w",
+    requests: 120, tokens: 5000, project: "quai-radar",
+    pipeline: ["ingest", "extract"], models: { "qwen3.8:latest": 120 },
+    n_templates: 4, n_instructions: 2,
+    score: { score: 80.3, grade: "A", factors: { volume: 20 } },
+    vibe: { vibe: 78, label: "pure vibe", factors: { reuse: 25 } },
+    delta: { project_changed: true, new_stages: ["extract"], template_growth: 1 } });
+  assert.equal(d.title, "progression step 3");
+  const txt = JSON.stringify(d);
+  assert.match(txt, /label flip/);
+  assert.match(txt, /ingest → extract/);
+  assert.match(txt, /pure vibe/);
+  const bare = t.detailProgStep({ step: 1 });
+  assert.equal(bare.title, "progression step 1");
+  assert.match(JSON.stringify(bare), /stable/);
 });
