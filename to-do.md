@@ -182,3 +182,15 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
       (`knowledge.py`, `/api/knowledge`, Graph tab)
 - [x] P6.26 GUI modernization: light/dark theme toggle, sticky chrome, severity
       pills, timeline styles, loading shimmer, responsive breakpoints
+
+### P7 — agent swarm with auditable ledger
+- [x] P7.27 Ledger module: append-only hash-chained JSONL per run, verify,
+      tail (`ledger.py` + tamper-detection tests)
+- [ ] P7.28 Instrument the existing run: every stage emits issued/completed
+      entries with artifact hashes (no behavior change)
+- [ ] P7.29 Gatherers as tasks: fox/db/tap/mesh sources with per-source
+      timeouts and retries
+- [ ] P7.30 Worker pool + disk-backed run registry (replace `_RUNS` global);
+      crash recovery by replaying uncompleted tasks
+- [ ] P7.31 Surface: `/api/swarm/ledger` + Ledger tab, `ledger verify` CLI,
+      human-approval entries for prune/export
