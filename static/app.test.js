@@ -84,7 +84,7 @@ function loadApp() {
     + "\n;globalThis.__t = {escH, escA, fmtN, spark, trowState, safeHref,"
     + " renderMarkdown, drawTopo, drawKnowledge, renderFindings, renderChain,"
     + " loadLedger, filterLedger, drawSimCurve, loadSimUsers, loadSimReport,"
-    + " scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme};\n";
+    + " secAnalyticsHTML, scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme};\n";
   vm.createContext(sandbox);
   vm.runInContext(src, sandbox, { filename: "app.js" });
   return { t: sandbox.__t, el };
@@ -261,4 +261,42 @@ test("drawSimCurve renders one polyline per field", () => {
   assert.match(html, /<svg/);
   assert.equal((html.match(/<polyline/g) || []).length, 2);
   assert.match(html, /ssn/);
+});
+
+test("secAnalyticsHTML spotlights, bars and project breakdown", () => {
+  const r = {
+    totals: { critical: 2, high: 4, medium: 1 },
+    secrets: [
+      { kind: "aws_access_key", severity: "critical", source: "a/.env",
+        line: 1, match: "AKIA…", likely_fixture: false },
+      { kind: "email", severity: "medium", source: "b/x.py", line: 2,
+        match: "a@b", likely_fixture: true },
+    ],
+    injections: [
+      { kind: "prompt_injection:override", severity: "high", source: "c",
+        line: 1, match: "ignore" },
+    ],
+    permissions: [
+      { kind: "world_readable_secret", severity: "critical",
+        source: "a/.env", mode: "0644" },
+    ],
+    projects: [
+      { project: "a", critical: 2, high: 0, medium: 0, low: 0, total: 2 },
+      { project: "b", critical: 0, high: 1, medium: 1, low: 0, total: 2 },
+    ],
+  };
+  const html = t.secAnalyticsHTML(r);
+  assert.match(html, /world-readable secrets/);
+  assert.match(html, />1<\/div><div class="k">world-readable secrets/);
+  assert.match(html, /Top finding kinds/);
+  assert.match(html, /aws_access_key/);
+  assert.match(html, /Top projects/);
+  assert.match(html, /By severity/);
+  assert.doesNotMatch(html, /<script>/);
+});
+
+test("secAnalyticsHTML degrades without projects", () => {
+  const html = t.secAnalyticsHTML({ totals: {}, secrets: [] });
+  assert.match(html, /Spotlight/);
+  assert.doesNotMatch(html, /Top projects/);
 });

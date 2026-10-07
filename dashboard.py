@@ -124,15 +124,18 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <section id=s-security><div class=card><div class=row>
 <button class=act id=b-sec-scan>Run security scan (deterministic + LLM)</button>
 <select id=sel-secscope><option value=app>this app</option><option value=workspace>parent workspace (all subfolders)</option></select>
+<span class=mut>view</span><select id=sel-secview><option value=table>Table</option><option value=analytics>Analytics</option></select>
 <span class=mut id=sec-msg></span></div>
 <div class=mut id=sec-stored></div><div class=mut id=sec-tracked></div>
 <div class="grid stats" id=sec-stats></div>
+<div id=sec-analytics class=mut>pick Analytics view&hellip;</div>
+<div id=sec-tables>
 <h3>Findings by project</h3><table class=tbl id=t-sec-proj><thead><tr><th>project</th><th>crit</th><th>high</th><th>med</th><th>low</th><th>total</th></tr></thead><tbody></tbody></table>
 <h3>Dashboard exposure</h3><div id=sec-exp class=mut>loading&hellip;</div>
 <h3>Secret / PII survivors</h3><table class=tbl id=t-sec-secrets><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th><th>flags</th></tr></thead><tbody></tbody></table>
 <h3>Prompt-injection attempts</h3><table class=tbl><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th></tr></thead><tbody id=sec-inject></tbody></table>
 <h3>Over-permissive files</h3><table class=tbl><thead><tr><th>file</th><th>mode</th><th>sev</th></tr></thead><tbody id=sec-perm></tbody></table>
-</div>
+</div></div>
 <div class=card>
 <div class=row><h3>Trust boundaries (D4)</h3><span class=mut id=sec-trust-sum></span></div>
 <div class=mut>Assertions from design/trust-boundaries.md, re-checked against the code.</div>

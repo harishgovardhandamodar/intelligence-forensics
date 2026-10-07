@@ -469,6 +469,42 @@ function renderSecurity(resp){
  wireTable('#t-sec-secrets',null);
  const pt=$('t-sec-proj')&&$('t-sec-proj').querySelector('tbody');
  if(pt)pt.innerHTML=(r.projects||[]).slice(0,30).map(p=>`<tr><td><code>${escH(p.project)}</code></td><td class="${SEC_CLS('critical')}">${escH(p.critical)}</td><td>${escH(p.high)}</td><td>${escH(p.medium)}</td><td class=mut>${escH(p.low)}</td><td><b>${escH(p.total)}</b></td></tr>`).join('')||trowState(6,'no project breakdown');
+ secCache=r;
+ renderSecView();
+}
+const SEV_HEX={critical:'#f85149',high:'#d29922',medium:'#a371f7',low:'#8b949e'};
+function secAnalyticsHTML(r){
+ r=r||{};
+ const tot=r.totals||{};
+ const all=[...(r.secrets||[]),...(r.injections||[]),...(r.permissions||[])];
+ const byKind={};
+ all.forEach(f=>{const k=f.kind||'?';byKind[k]=(byKind[k]||0)+1;});
+ const topKinds=Object.entries(byKind).sort((a,b)=>b[1]-a[1]).slice(0,8);
+ const mxK=Math.max(1,...topKinds.map(([,v])=>v));
+ const bars=topKinds.map(([k,v])=>`<div class="row" style="margin:3px 0"><code style="min-width:190px">${escH(k)}</code><div style="flex:1;background:#00000040;border-radius:4px"><div style="width:${(100*v/mxK).toFixed(1)}%;background:#1f6feb;border-radius:4px">&nbsp;</div></div><span class="mut">${v}</span></div>`).join('')||'<span class="mut">no findings</span>';
+ const sevRows=['critical','high','medium','low'].map(k=>{const v=tot[k]||0;
+  return `<div class="row" style="margin:3px 0"><code style="min-width:70px">${k}</code><div style="flex:1;background:#00000040;border-radius:4px"><div style="width:${(100*v/Math.max(1,tot.critical||0,tot.high||0,tot.medium||0,tot.low||0)).toFixed(1)}%;background:${SEV_HEX[k]};border-radius:4px">&nbsp;</div></div><span class="mut">${v}</span></div>`;}).join('');
+ const esc1=all.filter(f=>f.kind==='world_readable_secret').length;
+ const fix=all.filter(f=>f.likely_fixture).length;
+ const files=new Set(all.map(f=>f.source)).size;
+ const projs=(r.projects||[]).slice(0,8);
+ const mxP=Math.max(1,...projs.map(p=>p.total));
+ const projRows=projs.map(p=>`<div class="row" style="margin:3px 0"><code style="min-width:190px">${escH(p.project)}</code><div style="flex:1;background:#00000040;border-radius:4px"><div style="width:${(100*p.total/mxP).toFixed(1)}%;background:#a371f7;border-radius:4px">&nbsp;</div></div><span class="mut">${p.total} (c${p.critical}/h${p.high})</span></div>`).join('');
+ return `<div class=card><h3>Spotlight</h3><div class="grid stats">`
+  +`<div class="card stat"><div class="v crit">${esc1}</div><div class="k">world-readable secrets</div></div>`
+  +`<div class="card stat"><div class="v mut">${fix}</div><div class="k">likely fixtures</div></div>`
+  +`<div class="card stat"><div class="v">${files}</div><div class="k">files with hits</div></div>`
+  +`<div class="card stat"><div class="v">${(r.injections||[]).length}</div><div class="k">injection patterns</div></div>`
+  +`</div></div><div class=card><h3>By severity</h3>${sevRows}</div>`
+  +`<div class=card><h3>Top finding kinds</h3>${bars}</div>`
+  +(projs.length?`<div class=card><h3>Top projects</h3>${projRows}</div>`:'');
+}
+let secView='table',secCache=null;
+function renderSecView(){
+ const an=$('sec-analytics'),tb=$('sec-tables');
+ const showAn=secView==='analytics';
+ if(an){an.style.display=showAn?'':'none';if(showAn)an.innerHTML=secAnalyticsHTML(secCache);}
+ if(tb)tb.style.display=showAn?'none':'';
 }
 const TRUST_CLS=s=>(s==='fail'?'warn':(s==='warn'?'':'ok'));
 function renderTrust(resp){
@@ -552,6 +588,7 @@ $('b-report').onclick=async()=>{$('runmsg').textContent='generating unified repo
 $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});if(r.detail){$('runmsg').textContent=r.detail+' — wait for a run to finish';}else{$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';}}catch(e){$('runmsg').textContent='launch failed: '+e;}};
 const _sb=$('b-sec-scan');if(_sb)_sb.onclick=secScan;
 const _ss=$('sel-secscope');if(_ss)_ss.onchange=loadSecurity;
+const _sv=$('sel-secview');if(_sv)_sv.onchange=()=>{secView=_sv.value;renderSecView();};
 const _sf=$('sel-find');if(_sf)_sf.onchange=renderFindRows;
 const _bc=$('b-chain');if(_bc)_bc.onclick=loadChain;
 const _bl=$('b-ledger');if(_bl)_bl.onclick=()=>loadLedger();
