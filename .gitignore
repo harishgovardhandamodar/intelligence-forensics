@@ -6,6 +6,8 @@ __pycache__/
 # Heavy regenerable snapshots (recreated by `investigate` / `agent-run`)
 evidence/fox_services_*.db
 evidence/api_dump_*.json
+# Raw packet captures (UNMASKED prompts — sensitive, never commit)
+evidence/pcaps/
 
 # Local env / editor
 .env

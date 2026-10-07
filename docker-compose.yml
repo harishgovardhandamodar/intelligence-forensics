@@ -34,3 +34,20 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+
+  # Optional PORT-LEVEL capture (raw packets, not just fox APIs).
+  # Off by default: start with `docker compose --profile pcap up -d pcap-tap`.
+  # Needs no host root beyond docker access. WARNING: pcaps contain RAW
+  # prompts (unmasked, unlike the fox DB) — treat ./evidence/pcaps as
+  # sensitive, never commit, never ship off-host.
+  pcap-tap:
+    profiles: [pcap]
+    image: nicolaka/netshoot:latest
+    container_name: intel-pcap-tap
+    network_mode: host
+    cap_add:
+      - NET_RAW
+    volumes:
+      - ./evidence/pcaps:/pcaps:rw
+    command: ["tcpdump", "-i", "any", "-w", "/pcaps/fox-%Y%m%d-%H%M.pcap", "-G", "600", "tcp port 8210 or tcp port 11434"]
+    restart: "no"

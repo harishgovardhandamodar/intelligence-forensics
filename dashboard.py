@@ -62,7 +62,7 @@ a{color:var(--acc)}
 </style></head><body>
 <header><h1>&#x1f575; Intelligence Forensics</h1><span class=sub id=hdr>loading&hellip;</span></header>
 <nav id=tabs>
-<button data-t=overview class=on>Overview</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=mesh>Mesh</button><button data-t=evidence>Evidence</button><button data-t=design>Design</button>
+<button data-t=overview class=on>Overview</button><button data-t=live>Live tap</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=mesh>Mesh</button><button data-t=evidence>Evidence</button><button data-t=design>Design</button>
 </nav><main>
 <section id=s-overview class=on><div class=grid id=stats></div><div class=card><h3>Latest brief</h3><pre id=brief>loading&hellip;</pre></div>
 <div class=card><h3>Run investigation</h3><div class=row>
@@ -71,6 +71,16 @@ a{color:var(--acc)}
 <label class=mut><input type=checkbox id=opt-quick checked> quick (top-3, no critic)</label>
 <span class=mut id=runmsg></span></div></div></section>
 <section id=s-services><div class=card><table id=t-svc><thead><tr><th>service</th><th>reqs</th><th>tokens</th><th>models</th><th>inferred build</th><th>score / vibe</th></tr></thead><tbody></tbody></table></div></section>
+<section id=s-live><div class=card><h3>Tap <span class=mut id=live-state style="font-weight:normal"></span></h3>
+<div class=row><button class=act id=b-live-start>Start tap</button><button class=act id=b-live-stop>Stop</button>
+<label class=mut>every <input id=inp-live-int type=number value=5 min=1 max=60 style="width:56px">s</label>
+<span class=mut>API-level sniff of fox :8210 — queue IN, completed OUT, model load SYS. Raw pcap needs the <code>pcap</code> compose profile (see README).</span></div></div>
+<div class=card><h3>Rates <span class=mut style="font-weight:normal">— live window</span></h3><table id=t-rates><thead><tr><th>service</th><th>req</th><th>tokens</th><th>req/min</th><th>tok/min</th></tr></thead><tbody><tr><td class=mut colspan=5>tap not running</td></tr></tbody></table></div>
+<div class=card><h3>Live reconstruction <span class=mut style="font-weight:normal">— progression over traffic since tap started</span></h3>
+<div class=row><select id=sel-live></select><select id=sel-lmode><option value=cumulative>cumulative</option><option value=window>window</option></select>
+<button class=act id=b-live-recon>Reconstruct live</button><span class=mut id=live-recon-msg></span></div>
+<table id=t-liveprog><thead><tr><th>step</th><th>score</th><th>queries</th><th>inferred build</th><th>Δ vs prev</th></tr></thead><tbody></tbody></table></div>
+<div class=card><h3>Feed <span class=mut style="font-weight:normal">— newest first, auto-refresh</span></h3><table id=t-feed><thead><tr><th>time</th><th>dir</th><th>service</th><th>model</th><th>detail</th></tr></thead><tbody><tr><td class=mut colspan=5>tap not running</td></tr></tbody></table></div></section>
 <section id=s-recon><div class=card><div class=row><select id=sel-recon></select><select id=sel-file></select></div><pre id=recon-view>pick a reconstruction&hellip;</pre></div>
 <div class=card><h3>Partial &amp; progressive reconstruction <span class=mut style="font-weight:normal">— same service, re-profiled as Fox queries accumulate</span></h3>
 <div class=row><select id=sel-pmode><option value=cumulative>cumulative (0..k — confidence growth)</option><option value=window>window (slice k alone — partial views)</option></select>
@@ -255,6 +265,34 @@ const showDesignDoc=async id=>{try{const d=await j('/api/design/docs/'+id);
  document.querySelectorAll('[data-doc]').forEach(x=>x.classList.toggle('on',x.dataset.doc===id));
  $('design-doc').innerHTML=renderMarkdown(d.markdown);renderMermaid($('design-doc'));
 }catch(e){$('design-doc').textContent='doc failed: '+e;}};
+const liveDir=d=>d==='in'?'<span style="color:#58a6ff">IN</span>':d==='out'?'<span class=ok>OUT</span>':'<span class=warn>SYS</span>';
+const liveTime=t=>new Date(t*1000).toTimeString().slice(0,8);
+const loadLive=async()=>{
+ let st={running:false};
+ try{st=await j('/api/live/status');}catch(e){$('live-state').textContent='status failed: '+e;return;}
+ $('live-state').textContent=st.running?`● live · ${st.events_buffered} events · ${st.polls} polls · up ${st.uptime_s||0}s`:'○ stopped';
+ if(!st.running)return;
+ try{const f=await j('/api/live/feed?limit=40');
+  $('t-feed').querySelector('tbody').innerHTML=f.events.map(e=>`<tr><td class=mut>${liveTime(e.t)}</td><td>${liveDir(e.dir)}</td><td><code>${e.service}</code></td><td class=mut>${(e.model||'').split(':')[0]}</td><td class=mut>${(e.prompt_head||'').slice(0,120)} <span class=mut>· ${e.prompt_tokens+e.completion_tokens} tok</span></td></tr>`).join('')||'<tr><td class=mut colspan=5>no events yet — waiting for traffic</td></tr>';
+ }catch(e){}
+ try{const r=await j('/api/live/rates?window_s=300');
+  $('t-rates').querySelector('tbody').innerHTML=r.services.map(s=>`<tr><td><code>${s.service}</code></td><td>${s.req}</td><td>${s.tokens}</td><td>${s.req_per_min}</td><td>${s.tok_per_min}</td></tr>`).join('')||'<tr><td class=mut colspan=5>no completed requests in window</td></tr>';
+ }catch(e){}
+ try{const sv=await j('/api/services');
+  const cur=$('sel-live').value;
+  $('sel-live').innerHTML=sv.services.map(s=>`<option>${s.service}</option>`).join('');
+  if(cur)$('sel-live').value=cur;
+ }catch(e){}
+};
+$('b-live-start').onclick=async()=>{const i=+$('inp-live-int').value||5;await (await fetch('/api/live/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({interval_s:i})})).json();loadLive();};
+$('b-live-stop').onclick=async()=>{await fetch('/api/live/stop',{method:'POST'});loadLive();};
+$('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;const mode=$('sel-lmode').value;$('live-recon-msg').textContent='reconstructing…';
+ try{const d=await j(`/api/live/reconstruction?service=${encodeURIComponent(s)}&n=5&mode=${mode}`);
+  $('live-recon-msg').textContent=`${d.steps.length} steps, converged=${d.converged}`;
+  $('t-liveprog').querySelector('tbody').innerHTML=d.steps.map(st=>{const dl=st.delta||{};
+   return `<tr><td>${st.step}</td><td>${scoreCell(st.score.score,st.score.grade)}</td><td>${st.requests}</td><td><b>${st.project||''}</b></td><td>${dl.project_changed?'<span class=warn>flip</span>':'<span class=ok>stable</span>'}</td></tr>`;}).join('');
+ }catch(e){$('live-recon-msg').textContent='need more live traffic';}};
+setInterval(()=>{const s=$('s-live');if(s&&s.classList.contains('on'))loadLive();},4000);
 $('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';const r=await j('/api/investigate');$('runmsg').textContent=r.report||JSON.stringify(r);load();};
 $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;const r=await (await fetch('/api/runs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({quick:q})})).json();$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';};
 load();
@@ -448,6 +486,61 @@ def runs_compare(limit: int = 5):
     """Confidence per service across the last N runs (cross-run trend)."""
     from iforensics import run_viz
     return run_viz.compare_runs(max(2, min(10, limit)))
+
+
+class LiveStartReq(BaseModel):
+    interval_s: float = 5.0
+
+
+@app.post("/api/live/start")
+def live_start(req: LiveStartReq):
+    """Attach the live tap to fox :8210 (queue + request deltas + model loads)."""
+    from iforensics import live as live_mod
+    return live_mod.start(max(1.0, min(60.0, req.interval_s or 5.0)))
+
+
+@app.post("/api/live/stop")
+def live_stop():
+    from iforensics import live as live_mod
+    return live_mod.stop()
+
+
+@app.get("/api/live/status")
+def live_status():
+    from iforensics import live as live_mod
+    t = live_mod.tap()
+    return t.status() if t else {"running": False}
+
+
+@app.get("/api/live/feed")
+def live_feed(limit: int = 50):
+    from iforensics import live as live_mod
+    t = live_mod.tap()
+    if not t:
+        raise HTTPException(409, "tap not running (POST /api/live/start)")
+    return {"events": t.snapshot(max(1, min(500, limit)))}
+
+
+@app.get("/api/live/rates")
+def live_rates(window_s: float = 300):
+    from iforensics import live as live_mod
+    return live_mod.rates(max(30.0, min(3600.0, window_s)))
+
+
+@app.get("/api/live/reconstruction")
+def live_reconstruction(service: str, n: int = 5, mode: str = "cumulative"):
+    """Progressive reconstruction over the LIVE window (since tap started)."""
+    from iforensics import live as live_mod
+    from iforensics import progression as prog, score as scoring
+    if mode not in ("cumulative", "window"):
+        raise HTTPException(400, "mode must be cumulative|window")
+    t = live_mod.tap()
+    if not t:
+        raise HTTPException(409, "tap not running (POST /api/live/start)")
+    rows = [r for r in t.rows() if r.get("service") == service]
+    if len(rows) < 4:
+        raise HTTPException(409, f"only {len(rows)} live rows for {service!r} — wait for traffic")
+    return scoring.attach_scores(prog.progression(service, rows, n=max(2, min(12, n)), mode=mode))
 
 
 @app.get("/api/design/docs")

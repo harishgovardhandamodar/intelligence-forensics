@@ -123,6 +123,36 @@ def cmd_dashboard(args) -> int:
     return dash_main()
 
 
+def cmd_live_tail(args) -> int:
+    import datetime
+    import time as _time
+    from iforensics import live as live_mod
+    tap = live_mod.LiveTap(interval_s=args.interval)
+    tap.start()
+    from iforensics import config as _cfg
+    print(f"[*] tap attached to {_cfg.FOX_URL} "
+          f"(interval {args.interval}s, Ctrl-C to stop)", flush=True)
+    shown = 0
+    try:
+        while True:
+            _time.sleep(1.0)
+            evs = list(tap.events)[shown:]
+            shown += len(evs)
+            for e in evs:
+                if args.service and e["service"] != args.service:
+                    continue
+                ts = datetime.datetime.fromtimestamp(e["t"]).strftime("%H:%M:%S")
+                print(f"{ts} {e['dir'].upper():3s} {e['service'][:24]:24s} "
+                      f"{(e['model'] or '')[:18]:18s} "
+                      f"{e['prompt_tokens'] + e['completion_tokens']:>5d}tok "
+                      f"{(e['prompt_head'] or '')[:100]}", flush=True)
+    except KeyboardInterrupt:
+        print("\n[*] stopped")
+    finally:
+        tap.stop()
+    return 0
+
+
 def cmd_progression(args) -> int:
     from iforensics import progression as prog, score as scoring
     db_path = _latest_db_path()
@@ -181,6 +211,11 @@ def main() -> int:
     f.add_argument("--mode", default="cumulative", choices=["cumulative", "window"])
     f.add_argument("--limit", type=int, default=5000)
     f.set_defaults(fn=cmd_progression)
+    g = sub.add_parser("live-tail",
+                       help="sniff fox :8210 live (queue IN, completed OUT, model SYS) to stdout")
+    g.add_argument("--interval", type=float, default=5.0)
+    g.add_argument("--service", default="")
+    g.set_defaults(fn=cmd_live_tail)
     args = ap.parse_args()
     return args.fn(args)
 

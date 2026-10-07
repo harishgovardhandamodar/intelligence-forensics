@@ -81,8 +81,22 @@ Mermaid v10 is vendored (`static/mermaid.min.js` → `/static/`, CDN fallback)
 with a dark theme, so diagrams render even on offline LAN/tailnet; Markdown
 gets proper joined paragraphs, lists, tables and code blocks in styled frames.
 
-## Partial & progressive reconstructions
+## Live sniffing (tap + optional pcap)
 
+- **API-level tap** (no root): `iforensics/live.py` attaches to fox `:8210`
+  and streams what goes in/out — queue first-seen (IN), completed requests by
+  id delta (OUT), Ollama VRAM load/unload (SYS) — into a rolling buffer with
+  per-service rates. Dashboard **Live tap** tab (start/stop, feed, rates,
+  live reconstruction over traffic since tap started), or terminal:
+  `python cli.py live-tail [--service X]`. Verified: a 5-probe burst scored
+  D→C live as queries arrived.
+- **Port-level pcap** (raw packets): `docker compose --profile pcap up -d
+  pcap-tap` runs a `NET_RAW` tcpdump sidecar (host net, `tcp port 8210 or
+  11434`, 10-min rotating files under `evidence/pcaps/`). Verified capturing
+  real gateway traffic. WARNING: pcaps hold RAW unmasked prompts —
+  gitignored, never commit, stop when done (`docker stop intel-pcap-tap`).
+
+## Partial & progressive reconstructions
 A full reconstruction uses every query at once. The Reconstructions tab can
 instead re-profile one service's Fox queries slice-by-slice (oldest-first,
 equal-count chunks) — no LLM needed, heuristic and instant:
