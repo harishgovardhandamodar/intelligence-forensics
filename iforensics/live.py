@@ -19,7 +19,7 @@ import threading
 import time
 from collections import deque, Counter
 
-from . import config, fox_client
+from . import config, fox_client, store
 
 MAX_EVENTS = 2000
 # ids only matter for a few polls (req_limit each); keeping every id ever seen
@@ -276,19 +276,10 @@ class LiveTap(threading.Thread):
             return self._seq
 
     def rows(self, limit: int = 5000) -> list[dict]:
-        """Buffered OUT events reshaped as infer-compatible rows (live window)."""
+        """Buffered OUT events reshaped to the canonical row shape (live window)."""
         with self._lock:
             evs = [e for e in self.events if e["dir"] == "out"]
-        rows = []
-        for e in evs[-limit:]:
-            rows.append({"id": e.get("qid"), "ts": e["t"], "service": e["service"], "model": e["model"],
-                         "prompt_tokens": e["prompt_tokens"],
-                         "completion_tokens": e["completion_tokens"],
-                         "total_tokens": e["prompt_tokens"] + e["completion_tokens"],
-                         "duration_ms": e["duration_ms"], "status": e["status"] or "complete",
-                         "prompt": e["prompt_head"], "query_type": e["query_type"],
-                         "requestor": "user", "queue_ms": e.get("queue_ms")})
-        return rows
+        return [store.normalize_row(e) for e in evs[-limit:]]
 
 
 
@@ -452,16 +443,7 @@ def history_rows(service: str, limit: int = 200) -> list[dict]:
     for r in res.get("requests") or []:
         if (r.get("service") or "") != service:
             continue
-        rows.append({"id": r.get("id"), "ts": r.get("ts", 0),
-                     "service": r.get("service"), "model": r.get("model"),
-                     "prompt_tokens": r.get("prompt_tokens", 0) or 0,
-                     "completion_tokens": r.get("completion_tokens", 0) or 0,
-                     "total_tokens": r.get("total_tokens", 0) or 0,
-                     "duration_ms": r.get("duration_ms", 0) or 0,
-                     "status": r.get("status") or "complete",
-                     "prompt": r.get("prompt") or "",
-                     "query_type": r.get("query_type") or "",
-                     "requestor": r.get("requestor") or "user"})
+        rows.append(store.normalize_row(r))
         if len(rows) >= limit:
             break
     return sorted(rows, key=lambda r: r["ts"])

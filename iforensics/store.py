@@ -48,6 +48,36 @@ def snapshot_db() -> tuple[str | None, str | None]:
     return src, dst
 
 
+def normalize_row(r: dict) -> dict:
+    """One canonical request-row shape for every source (fox API, sqlite DB,
+    tap event). infer/report/timeseries all assume these keys, so a row read
+    from the live buffer and one read from history must look identical —
+    otherwise the same service profiles differently depending on provenance.
+    """
+    pt = r.get("prompt_tokens", 0) or 0
+    ct = r.get("completion_tokens", 0) or 0
+    total = r.get("total_tokens")
+    return {
+        "id": r.get("id") or r.get("request_id") or r.get("qid") or "",
+        "ts": r.get("ts") or r.get("t") or r.get("created_at")
+              or r.get("completed_at") or 0,
+        "service": r.get("service") or "unknown",
+        "model": r.get("model") or r.get("chosen_model") or "unknown",
+        "original_model": r.get("original_model") or "",
+        "prompt": r.get("prompt") or r.get("query") or r.get("prompt_head") or "",
+        "prompt_tokens": pt,
+        "completion_tokens": ct,
+        "total_tokens": total if total is not None else (pt + ct),
+        "duration_ms": r.get("duration_ms", 0) or 0,
+        "queue_ms": r.get("queue_ms"),
+        "status": r.get("status") or "complete",
+        "query_type": r.get("query_type") or "",
+        "requestor": r.get("requestor") or r.get("user") or r.get("client") or "user",
+        "client_ip": r.get("client_ip") or "",
+        "route_reason": r.get("route_reason") or "",
+    }
+
+
 def load_requests(db_path: str, limit: int = 5000) -> list[dict]:
     con = sqlite3.connect(db_path)
     con.row_factory = sqlite3.Row
@@ -59,7 +89,7 @@ def load_requests(db_path: str, limit: int = 5000) -> list[dict]:
             " FROM llm_usage ORDER BY ts DESC LIMIT ?",
             (limit,),
         ).fetchall()
-        return [dict(r) for r in rows]
+        return [normalize_row(dict(r)) for r in rows]
     finally:
         con.close()
 
