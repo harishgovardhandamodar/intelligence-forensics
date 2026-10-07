@@ -172,3 +172,13 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
       (`fidelity.py`, endpoint, CLI); full outflow still needs fox-side completions
 - [x] P5.21 Reporter claims-vs-evidence validation + mermaid errors surfaced
 - [x] P5.22 Retention/prune policy, pinned requirements, rate-limit POSTs, JS tests
+
+### P6 — forensics UX: findings, timeline, knowledge graph, modern GUI
+- [x] P6.23 Findings hub: severity-ranked list across security/risk/trust/claims/
+      fidelity/alerts (`findings.py`, `/api/findings`, Findings tab)
+- [x] P6.24 Chain of events: chronological IN→OUT lane linked by qid
+      (`chain.py`, `/api/chain`, Timeline tab)
+- [x] P6.25 Knowledge graph: services/templates/models/findings/evidence entities
+      (`knowledge.py`, `/api/knowledge`, Graph tab)
+- [x] P6.26 GUI modernization: light/dark theme toggle, sticky chrome, severity
+      pills, timeline styles, loading shimmer, responsive breakpoints

@@ -3,7 +3,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 const TABS=[...document.querySelectorAll('#tabs button')].map(b=>b.dataset.t);
 const trowState=(cols,msg,cls='mut')=>`<tr><td class="${cls}" colspan="${cols}">${escH(msg)}</td></tr>`;
-const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();document.title='Intelligence Forensics — '+name;};
+const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();document.title='Intelligence Forensics — '+name;};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 window.addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 window.addEventListener('popstate',()=>activateTab(location.hash.slice(1),false));
@@ -147,6 +147,95 @@ const drawTopo=g=>{
  if((g.summary&&g.summary.errors||[]).length)svg+=`<div class="warn">partial: ${g.summary.errors.map(escH).join(', ')} unreachable</div>`;
  el.innerHTML=svg;
 };
+const SEV_CLS=s=>s==='critical'?'crit':s==='high'?'warn':s==='medium'?'':'mut';
+const pill=s=>`<span class="pill ${SEV_CLS(s)}">${escH(s)}</span>`;
+let findCache=null;
+function renderFindings(d){
+ findCache=d;
+ const sum=d.summary||{};
+ const s=$('find-sum');
+ if(s)s.textContent=`${sum.total||0} findings`;
+ const bars=$('find-bars');
+ if(bars){const by=sum.by_severity||{},mx=Math.max(1,...Object.values(by));
+  bars.innerHTML=['critical','high','medium','low'].map(k=>{const v=by[k]||0;
+   return `<div class="row" style="margin:3px 0"><code style="min-width:70px">${k}</code><div style="flex:1;background:#00000040;border-radius:4px"><div class="${SEV_CLS(k)}" style="width:${(100*v/mx).toFixed(1)}%;background:currentColor;border-radius:4px">&nbsp;</div></div><span class="mut">${v}</span></div>`;}).join('');}
+ renderFindRows();
+}
+function renderFindRows(){
+ const tb=$('t-find')&&$('t-find').querySelector('tbody');if(!tb)return;
+ const area=$('sel-find')&&$('sel-find').value;
+ const rows=(findCache&&findCache.findings||[]).filter(f=>!area||f.area===area).slice(0,150);
+ tb.innerHTML=rows.map(f=>`<tr><td>${pill(f.severity)}</td><td class="mut">${escH(f.area)}</td><td>${escH(f.title)}</td><td class="mut">${escH(f.detail||'')}</td></tr>`).join('')||trowState(4,'no findings — quiet mesh');
+ wireTable('#t-find',null);
+}
+async function loadFindings(){
+ const el=$('find-bars');if(el){el.className='mut loading';el.textContent='loading…';}
+ try{renderFindings(await j('/api/findings'));}catch(e){if(el){el.className='warn';el.textContent='findings failed: '+e;}}
+}
+const DIR_CLS=d=>d==='in'?'':'ok';
+function renderChain(d){
+ const sum=d.summary||{};
+ const s=$('chain-sum');
+ if(s)s.textContent=`${sum.n||0} events · ${sum.chains||0} linked chains · ${sum.orphans||0} orphan completions (${sum.live||0} live + ${sum.history||0} history)`;
+ const el=$('chain');if(!el)return;
+ el.className='';
+ el.innerHTML=(d.events||[]).slice().reverse().map(e=>{
+  const t=new Date((e.t||0)*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const q=e.queue_ms!=null?` · queue ${escH(e.queue_ms)}ms`:'';
+  const ch=e.chain?` <span class="pill">chain ${escH(e.chain)}</span>`:'';
+  return `<div class="ev"><span class="dot ${DIR_CLS(e.dir)}"></span><div><div><span class="mut">${t}</span> <b>${escH(e.dir.toUpperCase())}</b> <code>${escH(e.service)}</code> <span class="mut">${escH(e.model||'')}</span>${ch}</div><div class="mut">${escH(e.prompt_head||'')} · ${escH(e.prompt_tokens||0)}+${escH(e.completion_tokens||0)} tok${q} · ${escH(e.status||'')}</div></div></div>`;}).join('')||'<span class="mut">no events</span>';
+}
+async function loadChain(){
+ const el=$('chain');if(el){el.className='mut loading';el.textContent='loading…';}
+ try{
+  const sel=$('sel-chain');
+  if(sel&&!sel.dataset.filled){const sv=await j('/api/services');sel.innerHTML='<option value="">all</option>'+sv.services.map(x=>`<option value="${escA(x.service)}">${escH(x.service)}</option>`).join('');sel.dataset.filled='1';}
+  const svc=sel&&sel.value?`&service=${encodeURIComponent(sel.value)}`:'';
+  const n=($('sel-chain-n')&&$('sel-chain-n').value)||100;
+  renderChain(await j(`/api/chain?limit=${n}${svc}`));
+ }catch(e){if(el){el.className='warn';el.textContent='chain failed: '+e;}}
+}
+function drawKnowledge(g){
+ const el=$('kg');if(!el)return;
+ const nodes=g.nodes||[];
+ if(!nodes.length){el.className='mut';el.textContent='no knowledge data';return;}
+ el.className='';
+ const order=['service','template','model','finding','evidence'];
+ const cols=order.map(L=>nodes.filter(n=>n.layer===L).slice(0,12));
+ const BW=168,BH=40,GX=42,GY=12,pad=14;
+ const rows=Math.max(1,...cols.map(c=>c.length));
+ const W=pad*2+cols.length*BW+(cols.length-1)*GX, H=pad*2+rows*(BH+GY)+18;
+ const pos={};
+ cols.forEach((col,ci)=>col.forEach((n,ri)=>{pos[n.id]={x:pad+ci*(BW+GX),y:pad+18+ri*(BH+GY)};}));
+ const ecol=e=>e.kind==='flagged'?'#f85149':e.kind==='calls'?'#1f6feb':e.kind==='reconstructed_as'?'#3fb950':'#30363d';
+ const ncol=n=>n.layer==='finding'?((n.severity==='critical'||n.severity==='high')?'#f85149':n.severity==='medium'?'#d29922':'#8b949e'):n.layer==='template'?'#a371f7':'#58a6ff';
+ const sub=n=>n.layer==='service'?`${n.requests||0} reqs`:n.layer==='model'?'model':n.layer==='finding'?`${escH(n.severity||'')}`:(n.count?`×${n.count}`:'');
+ let svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">`;
+ order.forEach((L,ci)=>{if(!cols[ci].length)return;svg+=`<text x=${pad+ci*(BW+GX)} y=${pad+8} fill="#8b949e" font-size="10">${L}</text>`;});
+ (g.edges||[]).forEach(e=>{const a=pos[e.from],b=pos[e.to];if(!a||!b)return;
+  svg+=`<line x1=${a.x+BW} y1=${a.y+BH/2} x2=${b.x} y2=${b.y+BH/2} stroke="${ecol(e)}" stroke-width="1.2"><title>${escH(e.kind)}</title></line>`;});
+ cols.forEach(col=>col.forEach(n=>{const p=pos[n.id];const lab=n.label.length>22?n.label.slice(0,21)+'…':n.label;
+  svg+=`<g><rect x=${p.x} y=${p.y} width=${BW} height=${BH} rx=6 fill="#161b22" stroke="${ncol(n)}" stroke-width="1.5"><title>${escH(n.id)}</title></rect><text x=${p.x+8} y=${p.y+16} fill="#e6edf3" font-size="11">${escH(lab)}</text><text x=${p.x+8} y=${p.y+31} fill="#8b949e" font-size="10">${sub(n)}</text></g>`;}));
+ svg+='</svg>';
+ el.innerHTML=svg;
+ const s=$('kg-sum'),sum=g.summary||{};
+ if(s)s.textContent=`${sum.nodes||0} entities · ${sum.edges||0} links · ${sum.shared_templates||0} shared templates`;
+}
+async function loadKnowledge(){
+ const el=$('kg');if(el){el.className='mut loading';el.textContent='loading…';}
+ try{drawKnowledge(await j('/api/knowledge'));}catch(e){if(el){el.className='warn';el.textContent='graph failed: '+e;}}
+}
+function initTheme(){
+ const root=document.documentElement;
+ const apply=t=>{root.dataset.theme=t;try{localStorage.setItem('if-theme',t);}catch(_){}
+  const b=$('b-theme');if(b)b.textContent=t==='light'?'◑':'◐';};
+ let saved='dark';
+ try{saved=localStorage.getItem('if-theme')||'dark';}catch(_){}
+ apply(saved);
+ const b=$('b-theme');if(b)b.onclick=()=>apply(root.dataset.theme==='light'?'dark':'light');
+ return apply;
+}
+const toggleTheme=()=>initTheme()(document.documentElement.dataset.theme==='light'?'dark':'light');
 const loadTrend=async()=>{try{const t=await j('/api/runs-compare?limit=5');
  $('t-trend').querySelector('tbody').innerHTML=t.services.map(s=>`<tr><td><code>${escH(s)}</code></td><td>${t.cols.map(c=>{const v=c.confidence[s];return `<span title="${escA(c.run_id)}${c.quick?' (quick)':''}" style="display:inline-block;min-width:52px;margin-right:6px;padding:2px 6px;border-radius:4px;background:${v==null?'#21262d':'#1f6feb'};font-size:12px">${v==null?'—':escH(v.toFixed(2))}</span>`;}).join('')}</td></tr>`).join('');
 }catch(e){$('t-trend').querySelector('tbody').innerHTML=`<tr><td class="warn">trend failed: ${escH(e)}</td></tr>`;}};
@@ -396,5 +485,8 @@ $('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';try{cons
 $('b-report').onclick=async()=>{$('runmsg').textContent='generating unified report…';try{const r=await pj('/api/reports/run');const d=r.diff||{};$('runmsg').textContent=`report ${r.id} (db-changed=${d.db_changed??'?'}${(d.services_added||[]).length?' +'+d.services_added.join(','):''}) — see Reports below`;loadReports();}catch(e){$('runmsg').textContent='report failed: '+e;}};
 $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';}catch(e){$('runmsg').textContent='launch failed: '+e;}};
 const _sb=$('b-sec-scan');if(_sb)_sb.onclick=secScan;
+const _sf=$('sel-find');if(_sf)_sf.onchange=renderFindRows;
+const _bc=$('b-chain');if(_bc)_bc.onclick=loadChain;
+initTheme();
 load();
 activateTab(location.hash.slice(1)||'overview',false);

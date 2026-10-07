@@ -63,9 +63,9 @@ async def _post_rate_limit(request, call_next):
 PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>Intelligence Forensics</title>
 <link rel="stylesheet" href="/static/app.css"></head><body>
-<header><h1>&#x1f575; Intelligence Forensics</h1><span class=sub id=hdr>loading&hellip;</span></header>
+<header><h1>&#x1f575; Intelligence Forensics</h1><span class=sub id=hdr>loading&hellip;</span><span style="flex:1"></span><button id=b-theme title="toggle light/dark theme">◐</button></header>
 <nav id=tabs>
-<button data-t=overview class=on>Overview</button><button data-t=live>Live tap</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=mesh>Mesh</button><button data-t=evidence>Evidence</button><button data-t=security>Security</button><button data-t=design>Design</button>
+<button data-t=overview class=on>Overview</button><button data-t=findings>Findings</button><button data-t=live>Live tap</button><button data-t=timeline>Timeline</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=mesh>Mesh</button><button data-t=graph>Graph</button><button data-t=evidence>Evidence</button><button data-t=security>Security</button><button data-t=design>Design</button>
 </nav><main>
 <section id=s-overview class=on><div class=grid id=stats></div><div class=card><h3>Latest brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=brief class=md>loading&hellip;</div></div>
 <div class=card><h3>Run investigation</h3><div class=row>
@@ -75,6 +75,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <label class=mut><input type=checkbox id=opt-quick checked> quick (top-3, no critic)</label>
 <span class=mut id=runmsg></span></div>
 <div class=mut id=report-list></div></div></section>
+<section id=s-findings><div class=card><div class=row><h3>What needs attention</h3><span class=mut id=find-sum></span><span style="flex:1"></span><select id=sel-find><option value="">all areas</option><option>security</option><option>risk</option><option>trust</option><option>claims</option><option>fidelity</option><option>alert</option></select></div><div id=find-bars class=mut>loading&hellip;</div></div><div class=card><table id=t-find><thead><tr><th>sev</th><th>area</th><th>finding</th><th>detail</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-services><div class=card><div class=row><input id=filt-svc placeholder="filter services&hellip;"><button class=act data-x=t-svc data-name=services-CSV>CSV</button><button class=act data-x=t-svc data-name=services-JSON>JSON</button><span class=mut id=svc-msg></span></div><table id=t-svc><thead><tr><th>service</th><th>reqs</th><th>tokens</th><th>models</th><th>inferred build</th><th>score / vibe</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-live><div class=card><h3>Tap <span class=mut id=live-state style="font-weight:normal"></span></h3>
 <div class=row><button class=act id=b-live-start>Start tap</button><button class=act id=b-live-stop>Stop</button>
@@ -92,6 +93,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <label class=mut><input type=checkbox id=chk-tsauto checked> auto</label><span class=mut id=ts-msg></span></div>
 <div id=ts-chart class="mut loading">loading&hellip;</div><div id=ts-legend class=mut></div>
 <div id=ts-models class=mut></div><div id=ts-heatmap class=mut></div></div></section>
+<section id=s-timeline><div class=card><div class=row><h3>Chain of events</h3><span class=mut id=chain-sum></span></div><div class=row><span class=mut>service</span><select id=sel-chain><option value="">all</option></select><span class=mut>limit</span><select id=sel-chain-n><option>50</option><option selected>100</option><option>200</option></select><button class=act id=b-chain>Reload</button></div><div class=mut>IN arrivals linked to OUT completions by queue id — queue-wait visible inline.</div><div id=chain class=mut>loading&hellip;</div></div></section>
 <section id=s-recon><div class=card><div class=row><select id=sel-recon></select><select id=sel-file></select></div><pre id=recon-view>pick a reconstruction&hellip;</pre></div>
 <div class=card><h3>Partial &amp; progressive reconstruction <span class=mut style="font-weight:normal">— same service, re-profiled as Fox queries accumulate</span></h3>
 <div class=row><select id=sel-pmode><option value=cumulative>cumulative (0..k — confidence growth)</option><option value=window>window (slice k alone — partial views)</option></select>
@@ -110,6 +112,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=card><h3>Across runs <span class=mut style="font-weight:normal">— profiler confidence per service, newest first</span></h3><table id=t-trend><thead><tr><th>service</th><th>trend</th></tr></thead><tbody></tbody></table></div>
 <div class=card><h3>Brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=run-brief class=md>click a run&hellip;</div></div></section>
 <section id=s-mesh><div class=card><h3>Topology <span class=mut style="font-weight:normal">— service → container → peer → model</span></h3><div id=topo class=mut>loading&hellip;</div></div><div class=card><table id=t-mesh><thead><tr><th>node</th><th>online</th><th>hw</th><th>llm/1h</th><th>services</th></tr></thead><tbody></tbody></table></div></section>
+<section id=s-graph><div class=card><div class=row><h3>Knowledge graph</h3><span class=mut id=kg-sum></span></div><div class=mut>Services, prompt templates, models, findings and built evidence — a template node with edges into two services is cross-service leakage made visible.</div><div id=kg class=mut>loading&hellip;</div></div></section>
 <section id=s-evidence><div class=card><div class=row><input id=filt-ev placeholder="filter files&hellip;"><button class=act data-x=t-ev data-name=evidence-CSV>CSV</button><button class=act data-x=t-ev data-name=evidence-JSON>JSON</button><span class=mut id=ev-msg></span></div><table id=t-ev><thead><tr><th>file</th><th>size</th></tr></thead><tbody></tbody></table></div>
 <div class=card><h3>Preview <span class=mut id=ev-name style="font-weight:normal"></span></h3><div class=row><a id=ev-dl class=act download href="#">Download</a><span class=mut id=ev-info></span></div><pre id=ev-view>click a file&hellip;</pre></div></section>
 <section id=s-security><div class=card><div class=row>
@@ -366,6 +369,72 @@ def run_validation(run_id: str):
     if not m:
         raise HTTPException(404, "unknown run")
     return claims_mod.validate_run(m)
+
+
+@app.get("/api/findings")
+def findings_hub():
+    """One severity-ranked list across security, risk, trust, claims,
+    fidelity and live alerts (P6.23)."""
+    from iforensics import claims as claims_mod
+    from iforensics import findings as fin_mod
+    from iforensics import live as live_mod
+    rows = _service_rows()
+    tap_status = None
+    t = live_mod.tap()
+    if t:
+        try:
+            tap_status = t.status()
+        except Exception:  # noqa: BLE001
+            tap_status = None
+    validation = None
+    try:
+        runs = ag.list_runs()
+        if runs:
+            m = ag.load_run(runs[0]["run_id"])
+            if m:
+                validation = claims_mod.validate_run(m)
+    except Exception:  # noqa: BLE001
+        validation = None
+    return fin_mod.collect(rows=rows, app=app, tap_status=tap_status,
+                           run_validation=validation)
+
+
+@app.get("/api/chain")
+def chain_events(service: str | None = None, limit: int = 200,
+                 source: str = "auto"):
+    """One chronological chain: history rows + live IN/OUT/SYS, linked by qid."""
+    from iforensics import chain as chain_mod
+    from iforensics import live as live_mod
+    live_events: list[dict] = []
+    if source in ("live", "auto"):
+        t = live_mod.tap()
+        if t:
+            try:
+                live_events = t.snapshot(live_mod.MAX_EVENTS)
+            except Exception:  # noqa: BLE001
+                live_events = []
+    if not live_events and source in ("log", "auto"):
+        try:
+            live_events = live_mod.persisted_events(limit=5000)
+        except Exception:  # noqa: BLE001
+            live_events = []
+    rows = _service_rows(limit=5000)
+    return chain_mod.build_chain(rows=rows, live_events=live_events,
+                                 service=service or None,
+                                 limit=max(1, min(200, limit)))
+
+
+@app.get("/api/knowledge")
+def knowledge_graph():
+    """Entity graph: services, templates, models, findings, evidence (P6.25)."""
+    from iforensics import knowledge as kg_mod
+    from iforensics import risk as risk_mod
+    rows = _service_rows(limit=2000)
+    try:
+        risk = risk_mod.service_risk(rows)
+    except Exception:  # noqa: BLE001
+        risk = {"services": []}
+    return kg_mod.build(rows=rows, risk=risk)
 
 
 @app.get("/api/runs/{run_id}/graph")

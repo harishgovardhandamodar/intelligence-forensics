@@ -100,6 +100,26 @@ def test_fidelity_endpoint():
     assert r.status_code == 404
 
 
+def test_p6_endpoints():
+    from fastapi.testclient import TestClient
+    c = TestClient(dashboard.app)
+    f = c.get("/api/findings")
+    assert f.status_code == 200
+    body = f.json()
+    assert body["summary"]["total"] == len(body["findings"])
+    sevs = [x["severity"] for x in body["findings"]]
+    from iforensics.findings import SEV_RANK
+    assert sevs == sorted(sevs, key=lambda s: SEV_RANK[s])
+    ch = c.get("/api/chain", params={"limit": 10})
+    assert ch.status_code == 200
+    assert len(ch.json()["events"]) <= 10
+    ts = [e["t"] for e in ch.json()["events"]]
+    assert ts == sorted(ts)
+    k = c.get("/api/knowledge")
+    assert k.status_code == 200
+    assert k.json()["summary"]["nodes"] == len(k.json()["nodes"])
+
+
 def test_post_rate_limit(monkeypatch):
     from fastapi.testclient import TestClient
     monkeypatch.setattr(dashboard, "_POST_HITS", {})
