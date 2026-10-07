@@ -61,6 +61,7 @@ instructions:
    const m=await j('/api/fox/live');const peers=(m.mesh&&(m.mesh.peers||[]))||[];
    $('t-mesh').querySelector('tbody').innerHTML=peers.map(p=>{const h=p.health||{};return `<tr><td><code>${escH(p.machine||p.node_id)}</code></td><td class="${p.online?'ok':'warn'}">${escH(p.online)}</td><td>${escH((p.hardware||{}).kind||'?')}</td><td>${escH(h.llm_requests_1h??'?')}</td><td class="mut">${escH((h.services||[]).map(s=>s.name).join(', ').slice(0,120))}</td></tr>`}).join('')||'<tr><td class="mut">no peers</td></tr>';
   }catch(e){$('t-mesh').querySelector('tbody').innerHTML=`<tr><td class="warn">mesh failed: ${escH(e)}</td></tr>`;}
+  try{drawTopo(await j('/api/topology'));}catch(e){$('topo').textContent='topology failed: '+e;}
   try{
    const ev=await j('/api/evidence');
    $('t-ev').querySelector('tbody').innerHTML=ev.files.map(f=>`<tr data-name="${escA(f.name)}" data-size="${escA(f.size_mb)}"><td><code>${escH(f.name)}</code></td><td class="mut">${escH(f.size_mb)} MB</td></tr>`).join('')||trowState(2,'no evidence files');
@@ -116,6 +117,35 @@ const renderRunGraph=g=>{
  const withGaps=g.services.filter(s=>(s.critic_gaps||[]).length);
  $('run-gaps').innerHTML=withGaps.length?withGaps.map(s=>`<div style="margin:6px 0"><b>${escH(s.service)}</b>${s.critic_gaps.map(q=>`<div class="mut">• ${escH(q)}</div>`).join('')}</div>`).join(''):'<span class="mut">no critic gaps — quick mode skips the critic stage</span>';
  $('run-quotes').innerHTML=g.services.map(s=>((s.evidence_quotes||[]).length?`<div style="margin:6px 0"><b>${escH(s.service)}</b>${s.evidence_quotes.map(q=>`<div class="mut">&ldquo;${escH(q.slice(0,160))}&rdquo;</div>`).join('')}</div>`:'')).join('')||'<span class="mut">no quotes recorded</span>';
+};
+const drawTopo=g=>{
+ const el=$('topo');if(!el)return;
+ const nodes=g.nodes||[];
+ if(!nodes.length){el.className='mut';el.textContent='no topology data';return;}
+ el.className='';
+ const order=['machine','project','service','container','model'];
+ const cols=order.map(L=>nodes.filter(n=>n.layer===L).slice(0,12));
+ const shown=cols.reduce((a,c)=>a+c.length,0);
+ const hidden=nodes.length-shown;
+ const BW=168,BH=40,GX=42,GY=12,pad=14;
+ const rows=Math.max(1,...cols.map(c=>c.length));
+ const W=pad*2+cols.length*BW+(cols.length-1)*GX, H=pad*2+rows*(BH+GY)+18;
+ const pos={};
+ cols.forEach((col,ci)=>col.forEach((n,ri)=>{pos[n.id]={x:pad+ci*(BW+GX),y:pad+18+ri*(BH+GY)};}));
+ const ecol=e=>e.kind==='calls'?'#1f6feb':e.kind==='gossip'?'#a371f7':e.kind==='observed_via'?'#21262d':'#30363d';
+ const ncol=n=>n.layer==='machine'?(n.online===false?'#d29922':'#3fb950'):n.layer==='model'&&n.idle?'#8b949e':n.status&&n.status!=='running'&&n.status!=='?'?'#d29922':'#58a6ff';
+ const sub=n=>n.layer==='machine'?`${n.hw||'?'} · ${n.llm_1h??0}/h`:n.layer==='service'?'llm traffic':n.layer==='model'?(n.idle?'pool, idle':'in use'):n.status||n.image||'';
+ let svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">`;
+ order.forEach((L,ci)=>{if(!cols[ci].length)return;svg+=`<text x=${pad+ci*(BW+GX)} y=${pad+8} fill="#8b949e" font-size="10">${L}</text>`;});
+ (g.edges||[]).forEach(e=>{const a=pos[e.from],b=pos[e.to];if(!a||!b)return;
+  const lbl=e.kind==='calls'&&e.count?` ×${e.count}`:'';
+  svg+=`<line x1=${a.x+BW} y1=${a.y+BH/2} x2=${b.x} y2=${b.y+BH/2} stroke="${ecol(e)}" stroke-width="${e.kind==='calls'?2:1.2}"><title>${escH(e.kind)}${escH(lbl)}</title></line>`;});
+ cols.forEach(col=>col.forEach(n=>{const p=pos[n.id];const lab=n.label.length>22?n.label.slice(0,21)+'…':n.label;
+  svg+=`<g><rect x=${p.x} y=${p.y} width=${BW} height=${BH} rx=6 fill="#161b22" stroke="${ncol(n)}" stroke-width="1.5"><title>${escH(n.id)}</title></rect><text x=${p.x+8} y=${p.y+16} fill="#e6edf3" font-size="11">${escH(lab)}</text><text x=${p.x+8} y=${p.y+31} fill="#8b949e" font-size="10">${escH(sub(n))}</text></g>`;}));
+ svg+='</svg>';
+ if(hidden>0)svg+=`<div class="mut">+${hidden} more nodes (capped at 12 per layer)</div>`;
+ if((g.summary&&g.summary.errors||[]).length)svg+=`<div class="warn">partial: ${g.summary.errors.map(escH).join(', ')} unreachable</div>`;
+ el.innerHTML=svg;
 };
 const loadTrend=async()=>{try{const t=await j('/api/runs-compare?limit=5');
  $('t-trend').querySelector('tbody').innerHTML=t.services.map(s=>`<tr><td><code>${escH(s)}</code></td><td>${t.cols.map(c=>{const v=c.confidence[s];return `<span title="${escA(c.run_id)}${c.quick?' (quick)':''}" style="display:inline-block;min-width:52px;margin-right:6px;padding:2px 6px;border-radius:4px;background:${v==null?'#21262d':'#1f6feb'};font-size:12px">${v==null?'—':escH(v.toFixed(2))}</span>`;}).join('')}</td></tr>`).join('');

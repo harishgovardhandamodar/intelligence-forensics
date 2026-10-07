@@ -80,7 +80,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <h3>Evidence quotes <span class=mut style="font-weight:normal">— prompt lines the profiler cited</span></h3><div id=run-quotes></div></div>
 <div class=card><h3>Across runs <span class=mut style="font-weight:normal">— profiler confidence per service, newest first</span></h3><table id=t-trend><thead><tr><th>service</th><th>trend</th></tr></thead><tbody></tbody></table></div>
 <div class=card><h3>Brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=run-brief class=md>click a run&hellip;</div></div></section>
-<section id=s-mesh><div class=card><table id=t-mesh><thead><tr><th>node</th><th>online</th><th>hw</th><th>llm/1h</th><th>services</th></tr></thead><tbody></tbody></table></div></section>
+<section id=s-mesh><div class=card><h3>Topology <span class=mut style="font-weight:normal">— service → container → peer → model</span></h3><div id=topo class=mut>loading&hellip;</div></div><div class=card><table id=t-mesh><thead><tr><th>node</th><th>online</th><th>hw</th><th>llm/1h</th><th>services</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-evidence><div class=card><div class=row><input id=filt-ev placeholder="filter files&hellip;"><button class=act data-x=t-ev data-name=evidence-CSV>CSV</button><button class=act data-x=t-ev data-name=evidence-JSON>JSON</button><span class=mut id=ev-msg></span></div><table id=t-ev><thead><tr><th>file</th><th>size</th></tr></thead><tbody></tbody></table></div>
 <div class=card><h3>Preview <span class=mut id=ev-name style="font-weight:normal"></span></h3><div class=row><a id=ev-dl class=act download href="#">Download</a><span class=mut id=ev-info></span></div><pre id=ev-view>click a file&hellip;</pre></div></section>
 <section id=s-security><div class=card><div class=row>
@@ -605,6 +605,31 @@ def fox_live():
         except Exception as e:  # noqa: BLE001
             out[k] = {"_error": str(e)}
     return out
+
+
+@app.get("/api/topology")
+def topology():
+    """One service→container→peer→model graph from the collected sources.
+
+    Mesh, docker and LLM traffic are read independently upstream; this joins
+    them so the Mesh tab shows infrastructure, not just a peer list.
+    Partial sources yield a smaller graph, never a 500.
+    """
+    from iforensics import fox_client, topology as topo
+    sources: dict = {}
+    calls = {
+        "mesh_status": fox_client.mesh_status,
+        "service_model": lambda: fox_client.service_model(720),
+        "docker_projects": fox_client.docker_projects,
+        "logs_overview": fox_client.logs_overview,
+        "router_managed": fox_client.router_managed,
+    }
+    for k, fn in calls.items():
+        try:
+            sources[k] = fn()
+        except Exception as e:  # noqa: BLE001
+            sources[k] = {"_error": f"{type(e).__name__}: {e}"}
+    return topo.build(sources)
 
 
 def main() -> int:
