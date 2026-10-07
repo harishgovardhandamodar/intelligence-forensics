@@ -26,6 +26,7 @@ MAX_EVENTS = 2000
 # is an unbounded leak on a daemon that runs for weeks.
 MAX_SEEN = 20000
 MAX_INFLIGHT_SEEN = 5000
+MAX_INFLIGHT = 2000
 # a poll is "unhealthy" when fox has not produced a result for this many
 # intervals — surfaced in status() so the UI can stop showing a frozen "live".
 STALE_INTERVALS = 3
@@ -204,6 +205,12 @@ class LiveTap(threading.Thread):
         self.resumed_cursor: dict = {}
         self.seen_ids = _BoundedIdSet(MAX_SEEN)
         self.seen_inflight = _BoundedIdSet(MAX_INFLIGHT_SEEN)
+        # qid -> IN event, to join a later OUT completion back to its arrival
+        # and measure queue time (fox does not record it).
+        self.inflight: dict = {}
+        self._inflight_order: deque = deque()
+        self._seq = 0
+        self.queue_ms_seen = 0
         self.loaded_models: set = set()
         self.started_at: float | None = None
         self.last_poll_at: float | None = None
@@ -227,13 +234,46 @@ class LiveTap(threading.Thread):
 
     def _push(self, ev: dict):
         with self._lock:
+            self._seq += 1
+            ev["seq"] = self._seq
             self.events.append(ev)
         if self.log:
             self.log.append(ev)
 
-    def snapshot(self, limit: int = 100) -> list[dict]:
+    def _remember_inflight(self, ev: dict):
+        qid = ev.get("qid")
+        if not qid:
+            return
+        self.inflight[qid] = ev
+        self._inflight_order.append(qid)
+        while len(self._inflight_order) > MAX_INFLIGHT:
+            old = self._inflight_order.popleft()
+            self.inflight.pop(old, None)
+
+    def _join_out(self, ev: dict):
+        """Attach queue_ms to an OUT event when its IN arrival was seen."""
+        qid = ev.get("qid")
+        in_ev = self.inflight.pop(qid, None) if qid else None
+        if not in_ev:
+            return
+        q = (ev["t"] or 0) - (in_ev["t"] or 0)
+        if q >= 0:
+            ev["queue_ms"] = round(q * 1000.0, 1)
+            ev["queued"] = True
+            in_ev["resolved"] = True
+            in_ev["queue_ms"] = ev["queue_ms"]
+            self.queue_ms_seen += 1
+
+    def snapshot(self, limit: int = 100, since_seq: int = 0) -> list[dict]:
         with self._lock:
+            if since_seq:
+                evs = [e for e in self.events if e.get("seq", 0) > since_seq]
+                return evs[-limit:]
             return list(self.events)[-limit:][::-1]
+
+    def last_seq(self) -> int:
+        with self._lock:
+            return self._seq
 
     def rows(self, limit: int = 5000) -> list[dict]:
         """Buffered OUT events reshaped as infer-compatible rows (live window)."""
@@ -247,7 +287,7 @@ class LiveTap(threading.Thread):
                          "total_tokens": e["prompt_tokens"] + e["completion_tokens"],
                          "duration_ms": e["duration_ms"], "status": e["status"] or "complete",
                          "prompt": e["prompt_head"], "query_type": e["query_type"],
-                         "requestor": "user"})
+                         "requestor": "user", "queue_ms": e.get("queue_ms")})
         return rows
 
 
@@ -288,7 +328,9 @@ class LiveTap(threading.Thread):
                 self.seen_ids.add(rid)
                 if self.started_at and (r.get("created_at") or r.get("ts") or 0) < self.started_at - 5:
                     continue  # history predating the tap, not live traffic
-                self._push(_row_to_event(r, "out"))
+                ev = _row_to_event(r, "out")
+                self._join_out(ev)
+                self._push(ev)
                 got["out"] += 1
                 self.out_seen += 1
         except Exception as e:  # noqa: BLE001
@@ -302,7 +344,9 @@ class LiveTap(threading.Thread):
                 if not qid or qid in self.seen_inflight:
                     continue
                 self.seen_inflight.add(qid)
-                self._push(_row_to_event(r, "in"))
+                ev = _row_to_event(r, "in")
+                self._remember_inflight(ev)
+                self._push(ev)
                 got["in"] += 1
         except Exception as e:  # noqa: BLE001
             self.errors.append(f"queue: {type(e).__name__}")
@@ -390,6 +434,8 @@ class LiveTap(threading.Thread):
                 "out_lost_pages": self.out_lost_pages,
                 "out_saturated_polls": self.out_saturated_polls,
                 "possible_loss": self.out_lost > 0 or self.out_lost_pages > 0,
+                "last_seq": self._seq, "queue_joined": self.queue_ms_seen,
+                "inflight_pending": len(self.inflight),
                 "resumed_from": self.resumed_from,
                 "persisted": self.log.stats() if self.log else None,
                 "recent_errors": self.errors[-5:]}

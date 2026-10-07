@@ -141,7 +141,7 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 
 ### P1 — live forensics depth
 - [x] P1.5 Persist the tap to append-only `evidence/live/events-<day>.jsonl` + on-disk cursor
-- [ ] P1.6 Join IN→OUT on `qid`, surface `queue_ms`, `since_id` delta endpoint + SSE
+- [x] P1.6 Join IN→OUT on `qid`, surface `queue_ms`, `since_id` delta endpoint + SSE
 - [ ] P1.7 `/api/stats/timeseries?bucket=1m` endpoint
 - [ ] P1.8 Unify live/history row shapes (`model`, `total_tokens`, real `requestor`)
 

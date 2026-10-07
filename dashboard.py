@@ -12,11 +12,13 @@ import json
 import os
 import re
 import sys
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -111,7 +113,7 @@ a{color:var(--acc)}
 const $=id=>document.getElementById(id);
 const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const escA=escH;
-document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('main section').forEach(s=>s.classList.remove('on'));$('s-'+b.dataset.t).classList.add('on');if(location.hash.slice(1)!==b.dataset.t)history.replaceState(null,'','#'+b.dataset.t);});
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('main section').forEach(s=>s.classList.remove('on'));$('s-'+b.dataset.t).classList.add('on');if(location.hash.slice(1)!==b.dataset.t)history.replaceState(null,'','#'+b.dataset.t);b.dataset.t==='live'?startLiveStream():stopLiveStream();});
 const j=async u=>{const r=await fetch(u);return r.json()};
 const pj=async(u,b)=>{const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b||{})});return r.json();};
 const gcls=g=>(g==='A'||g==='B')?'ok':'warn';
@@ -274,6 +276,13 @@ const showDesignDoc=async id=>{try{const d=await j('/api/design/docs/'+id);
 }catch(e){$('design-doc').textContent='doc failed: '+e;}};
 const liveDir=d=>d==='in'?'<span style="color:#58a6ff">IN</span>':d==='out'?'<span class=ok>OUT</span>':'<span class=warn>SYS</span>';
 const liveTime=t=>new Date(t*1000).toTimeString().slice(0,8);
+const liveEmpty='<tr><td class="mut" colspan=5>no events yet — waiting for traffic</td></tr>';
+const liveRow=e=>`<tr><td class="mut">${escH(liveTime(e.t))}</td><td>${liveDir(e.dir)}</td><td><code>${escH(e.service)}</code></td><td class="mut">${escH((e.model||'').split(':')[0])}</td><td class="mut">${escH((e.prompt_head||'').slice(0,120))}${e.queue_ms!=null?` <span class="mut">· queued ${escH(Math.round(e.queue_ms))}ms</span>`:''} <span class="mut">· ${escH((e.prompt_tokens||0)+(e.completion_tokens||0))} tok</span></td></tr>`;
+let liveES=null, liveLastSeq=0;
+const liveTbody=()=>$('t-feed').querySelector('tbody');
+const renderFeed=evs=>{const tb=liveTbody();if(!evs.length)return;if(tb.querySelectorAll('tr').length===1&&tb.textContent.indexOf('no events')>=0)tb.innerHTML='';tb.insertAdjacentHTML('afterbegin',evs.map(liveRow).join(''));const rows=tb.querySelectorAll('tr');for(let i=rows.length-1;i>=120;i--)rows[i].remove();};
+function startLiveStream(){if(liveES||!window.EventSource)return;liveES=new EventSource(`/api/live/stream?since_id=${liveLastSeq}`);liveES.onmessage=ev=>{let e;try{e=JSON.parse(ev.data)}catch(_){return}if(!e.seq||e.seq<=liveLastSeq)return;liveLastSeq=e.seq;renderFeed([e]);};liveES.onerror=()=>{if(liveES){liveES.close();liveES=null;}};}
+function stopLiveStream(){if(liveES){liveES.close();liveES=null;}}
 const loadLive=async()=>{
  let st={running:false};
  try{st=await j('/api/live/status');}catch(e){$('live-state').textContent='status failed: '+e;return;}
@@ -285,9 +294,12 @@ const loadLive=async()=>{
  if(st.possible_loss)bits.push('⚠ page overflow, older completions missed');
  if(st.running){$('live-state').innerHTML=`<span class="${stateCls}">● ${escH(bits[0])}</span>`+bits.slice(1).map(b=>' · <span class="mut">'+escH(b)+'</span>').join('');}
  else{$('live-state').textContent='○ stopped';}
+ if(!st.running){stopLiveStream();}
  if(!st.running)return;
  try{const f=await j('/api/live/feed?limit=40');
-  $('t-feed').querySelector('tbody').innerHTML=f.events.map(e=>`<tr><td class="mut">${escH(liveTime(e.t))}</td><td>${liveDir(e.dir)}</td><td><code>${escH(e.service)}</code></td><td class="mut">${escH((e.model||'').split(':')[0])}</td><td class="mut">${escH((e.prompt_head||'').slice(0,120))} <span class="mut">· ${escH(e.prompt_tokens+e.completion_tokens)} tok</span></td></tr>`).join('')||'<tr><td class="mut" colspan=5>no events yet — waiting for traffic</td></tr>';
+  liveTbody().innerHTML=f.events.map(liveRow).join('')||liveEmpty;
+  liveLastSeq=f.last_seq||liveLastSeq;
+  startLiveStream();
  }catch(e){}
  try{const r=await j('/api/live/rates?window_s=300');
   $('t-rates').querySelector('tbody').innerHTML=r.services.map(s=>`<tr><td><code>${escH(s.service)}</code></td><td>${escH(s.req)}</td><td>${escH(s.tokens)}</td><td>${escH(s.req_per_min)}</td><td>${escH(s.tok_per_min)}</td></tr>`).join('')||'<tr><td class="mut" colspan=5>no completed requests in window</td></tr>';
@@ -544,12 +556,43 @@ def live_status():
 
 
 @app.get("/api/live/feed")
-def live_feed(limit: int = 50):
+def live_feed(limit: int = 50, since_id: int = 0):
+    """Recent events. With since_id>0 returns the delta (ascending) plus
+    last_seq so the client can poll incrementally without re-rendering."""
     from iforensics import live as live_mod
     t = live_mod.tap()
     if not t:
         raise HTTPException(409, "tap not running (POST /api/live/start)")
-    return {"events": t.snapshot(max(1, min(500, limit)))}
+    evs = t.snapshot(max(1, min(500, limit)), since_seq=max(0, since_id))
+    return {"events": evs, "last_seq": t.last_seq()}
+
+
+@app.get("/api/live/stream")
+def live_stream(since_id: int = 0):
+    """Server-sent events: one `data:` frame per tap event, plus heartbeats.
+
+    Cheaper than polling the whole feed: the client keeps its last seq and
+    gets only new frames between heartbeats.
+    """
+    from iforensics import live as live_mod
+
+    def gen():
+        last = max(0, since_id)
+        while True:
+            t = live_mod.tap()
+            if not t:
+                yield "event: stopped\ndata: {}\n\n"
+                return
+            for e in t.snapshot(500, since_seq=last):
+                last = max(last, e.get("seq", last))
+                yield f"data: {json.dumps(e)}\n\n"
+            yield f": hb {int(time.time())}\n\n"
+            time.sleep(1.0)
+
+    return StreamingResponse(gen(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache",
+                                      "Connection": "keep-alive",
+                                      "X-Accel-Buffering": "no"})
 
 
 @app.get("/api/live/persisted")

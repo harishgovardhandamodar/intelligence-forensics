@@ -25,7 +25,7 @@ class _FakeFox:
 
 
 def _tap(after=None, req_limit=5):
-    t = LiveTap(interval_s=60, req_limit=req_limit)
+    t = LiveTap(interval_s=60, req_limit=req_limit, persist=False)
     t.started_at = time.time()
     # keep tests hermetic: no real HTTP to fox for the SYS model-load poll
     live_mod.fox_client._get = lambda *a, **k: {"models": []}
@@ -47,7 +47,7 @@ def test_bounded_id_set_evicts_oldest():
 
 
 def test_seen_cache_stays_bounded_across_polls():
-    t = LiveTap(interval_s=60, req_limit=3)
+    t = LiveTap(interval_s=60, req_limit=3, persist=False)
     t.started_at = time.time()
     live_mod.fox_client._get = lambda *a, **k: {"models": []}
     t._fake = _FakeFox([[{"id": 10 + i, "service": "s", "prompt": "x",
@@ -122,6 +122,41 @@ def test_stale_flag_after_missed_polls():
     t = _tap()
     t.last_poll_at = time.time() - 10 * t.interval_s * live_mod.STALE_INTERVALS
     assert t.status()["stale"] is True
+
+
+def test_in_out_join_sets_queue_ms():
+    t = LiveTap(interval_s=60, req_limit=5, persist=False)
+    t.started_at = time.time()
+    now = time.time()
+    live_mod.fox_client._get = lambda *a, **k: {"models": []}
+    live_mod.fox_client.llm_requests = _FakeFox([[]])
+    live_mod.fox_client.llm_queue = lambda *a, **k: {
+        "fox_queue": {"pending": [{"id": 10, "service": "s",
+                                   "prompt": "q", "created_at": now}], "active": []}}
+    t.poll_once()
+    assert 10 in t.inflight
+    live_mod.fox_client.llm_requests = _FakeFox([
+        [{"id": 10, "service": "s", "prompt": "q", "created_at": now + 2.0}]])
+    live_mod.fox_client.llm_queue = lambda *a, **k: {
+        "fox_queue": {"pending": [], "active": []}}
+    t.poll_once()
+    out = [e for e in t.events if e["dir"] == "out"][0]
+    assert out["queued"] is True
+    assert 1900 <= out["queue_ms"] <= 2100
+    assert t.status()["queue_joined"] == 1
+    assert t.rows()[0]["queue_ms"] == out["queue_ms"]
+
+
+def test_snapshot_delta_by_seq():
+    t = LiveTap(interval_s=60, persist=False)
+    t.started_at = time.time()
+    t._push({"t": 1.0, "dir": "out", "service": "s"})
+    t._push({"t": 2.0, "dir": "out", "service": "s"})
+    first, second = [e["seq"] for e in t.events]
+    assert first < second
+    assert [e["seq"] for e in t.snapshot(since_seq=first)] == [second]
+    assert [e["seq"] for e in t.snapshot(since_seq=second)] == []
+    assert t.last_seq() == second
 
 
 def test_poll_persists_events_and_cursor(tmp_path):
