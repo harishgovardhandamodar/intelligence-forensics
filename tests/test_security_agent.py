@@ -97,6 +97,13 @@ def test_scope_allowlist_rejects_raw_paths():
     assert sa._resolve_scope("workspace").endswith("codebase")
 
 
+def test_workspace_root_env_override(monkeypatch, tmp_path):
+    monkeypatch.setenv("WORKSPACE_DIR", str(tmp_path))
+    assert sa._resolve_scope("workspace") == str(tmp_path)
+    r = sa.deterministic_report(scope="workspace")
+    assert r["root"] == str(tmp_path)
+
+
 def test_workspace_triage_flags_escalates_and_rolls_up():
     rep = {"secrets": [
         {"kind": "aws_access_key", "severity": "critical",

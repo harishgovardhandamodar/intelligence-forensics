@@ -87,13 +87,18 @@ def deterministic_report(base_dir: str | None = None, app=None,
 
 
 def _resolve_scope(scope: str, base_dir: str | None = None) -> str:
-    """Map a scope name to a scan root. Unknown scopes raise (no raw paths)."""
+    """Map a scope name to a scan root. Unknown scopes raise (no raw paths).
+
+    Workspace root is $WORKSPACE_DIR when set (the container sees the host
+    tree as a read-only mount there) otherwise the parent of this repo.
+    """
     if scope == "app":
         return base_dir or config.BASE_DIR
     if scope == "workspace":
         if base_dir is not None:
             return base_dir
-        return os.path.dirname(os.path.abspath(config.BASE_DIR))
+        return os.environ.get("WORKSPACE_DIR") or os.path.dirname(
+            os.path.abspath(config.BASE_DIR))
     raise ValueError(f"unknown scan scope: {scope!r}")
 
 

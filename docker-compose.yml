@@ -24,9 +24,13 @@ services:
       - OLLAMA_URL=http://host.docker.internal:11434
       - IF_MODEL=${IF_MODEL:-qwen3.8:27b}
       - FOX_SERVICES_DB=/fox-data/fox_services.db
+      - WORKSPACE_DIR=/workspace
     volumes:
       # Fox telemetry DB, read-only: we snapshot-copy it, never write.
       - /home/fox/codebase/fox-services/data:/fox-data:ro
+      # Host workspace, read-only: the workspace security scope scans this
+      # tree (never the container rootfs). Same ro posture as fox-data.
+      - /home/fox/codebase:/workspace:ro
       # Persist our own evidence + reconstructions on the host repo.
       - ./evidence:/app/evidence
       - ./reconstructions:/app/reconstructions
