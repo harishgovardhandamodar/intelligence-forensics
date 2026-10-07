@@ -32,7 +32,10 @@ MAX_ATTEMPTS = 5
 
 def queue_dir(base_dir: str | None = None) -> str:
     from . import config
-    base = base_dir or config.EVIDENCE_DIR
+    if base_dir is not None:
+        base = base_dir
+    else:
+        base = os.environ.get("IF_SWARM_DIR") or config.EVIDENCE_DIR
     return base if os.path.basename(base) == "swarm" else os.path.join(base, "swarm")
 
 
@@ -268,3 +271,34 @@ def recoverable_tasks(run_id: str, base_dir: str | None = None) -> list[dict]:
                 task["_state"] = state
                 out.append(task)
     return out
+
+
+def collect_results(task_ids: list[str], timeout_s: float = 900.0,
+                    poll_s: float = 2.0,
+                    base_dir: str | None = None) -> dict:
+    """Wait for dispatched tasks to land in done/failed. Never raises.
+
+    Returns {"done": {task_id: result}, "failed": {task_id: error},
+    "missing": [task_id]} — the orchestrator turns missing/failed into the
+    same per-service error entries the threaded path produces, so a dead
+    worker degrades a run exactly like a raised exception does.
+    """
+    import time as _time
+    dirs = _dirs(base_dir)
+    want = set(task_ids)
+    done: dict[str, dict] = {}
+    failed: dict[str, str] = {}
+    deadline = _time.time() + max(1.0, timeout_s)
+    while want and _time.time() < deadline:
+        for tid in sorted(want):
+            for state, store in (("done", done), ("failed", failed)):
+                path = os.path.join(dirs[state], tid + ".json")
+                task = _read(path)
+                if task is not None:
+                    store[tid] = task.get("result", {}) if state == "done" \
+                        else task.get("error", "unknown failure")
+                    want.discard(tid)
+                    break
+        if want:
+            _time.sleep(min(poll_s, max(0.1, deadline - _time.time())))
+    return {"done": done, "failed": failed, "missing": sorted(want)}

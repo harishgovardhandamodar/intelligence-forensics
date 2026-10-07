@@ -161,11 +161,88 @@ def _log(run_id: str, actor: str, action: str, task_id: str = "",
         pass
 
 
+def _swarm_profile_phase(run_id: str, run_dir: str, services: list[str],
+                         inv: dict, model: str, num_predict: int,
+                         timeout_s: float, errors: list) -> dict[str, dict]:
+    """Dispatch profiler work to container workers, collect results (P7.33).
+
+    Missing/failed tasks become the same per-service error entries the
+    threaded path produces — a dead worker degrades the run, never kills it.
+    """
+    from . import swarm as swarm_mod
+    tids: dict[str, str] = {}
+    for s in services:
+        _log(run_id, "orchestrator", "task.issued",
+             task_id=f"{run_id}-profile-{s}", detail=f"service={s}")
+        t = swarm_mod.enqueue("profile", {"service": s,
+                                          "profile": inv["services"][s],
+                                          "num_predict": num_predict},
+                              run_id=run_id)
+        tids[t["task_id"]] = s
+    res = swarm_mod.collect_results(list(tids), timeout_s=timeout_s)
+    profs: dict[str, dict] = {}
+    for tid, s in tids.items():
+        if tid in res["done"]:
+            r = res["done"][tid]
+            profs[s] = {"agent": "profiler", "service": s,
+                        "parsed": r.get("parsed") or {},
+                        "prompt_tokens": r.get("prompt_tokens", 0),
+                        "completion_tokens": r.get("completion_tokens", 0)}
+        else:
+            err = res["failed"].get(tid, "worker timeout: no result collected")
+            errors.append(f"profiler:{s}: {err}")
+            profs[s] = {"agent": "profiler", "service": s, "error": str(err)}
+        _write(run_dir, f"profiler.{s}.json", profs[s])
+        _log(run_id, f"profiler:{s}", "task.complete",
+             task_id=f"{run_id}-profile-{s}",
+             artifact=os.path.join(run_dir, f"profiler.{s}.json"))
+    return profs
+
+
+def _swarm_critic_phase(run_id: str, run_dir: str, services: list[str],
+                        inv: dict, profs: dict, model: str, timeout_s: float,
+                        errors: list) -> dict[str, dict]:
+    """Dispatch critic work to container workers (P7.33). Errors append into
+    the caller's manifest error list, mirroring the threaded path."""
+    from . import swarm as swarm_mod
+    eligible = [s for s in services if "error" not in profs.get(s, {})]
+    tids: dict[str, str] = {}
+    for s in eligible:
+        _log(run_id, "orchestrator", "task.issued",
+             task_id=f"{run_id}-critic-{s}", detail=f"service={s}")
+        t = swarm_mod.enqueue("critic", {"service": s,
+                                         "profile": inv["services"][s],
+                                         "profiler_out": profs[s]},
+                              run_id=run_id)
+        tids[t["task_id"]] = s
+    res = swarm_mod.collect_results(list(tids), timeout_s=timeout_s)
+    crits: dict[str, dict] = {}
+    for tid, s in tids.items():
+        if tid in res["done"]:
+            r = res["done"][tid]
+            crits[s] = {"agent": "critic", "service": s,
+                        "content": r.get("content_head") or r.get("content") or ""}
+            _write(run_dir, f"critic.{s}.json", crits[s])
+            _log(run_id, f"critic:{s}", "task.complete",
+                 task_id=f"{run_id}-critic-{s}",
+                 artifact=os.path.join(run_dir, f"critic.{s}.json"))
+        else:
+            err = res["failed"].get(tid, "worker timeout: no result collected")
+            errors.append(f"critic:{s}: {err}")
+    return crits
+
+
 def run_deep_investigation(rows: list[dict], model: str | None = None,
                            quick: bool = False,
                            only: list[str] | None = None,
-                           max_workers: int = 4) -> dict:
-    """Full agentic run. Returns manifest dict; artifacts land in AGENT_DIR/<run_id>/."""
+                           max_workers: int = 4, swarm: bool = False,
+                           swarm_timeout: float = 900.0) -> dict:
+    """Full agentic run. Returns manifest dict; artifacts land in AGENT_DIR/<run_id>/.
+
+    swarm=True dispatches profiler/critic work to the file queue (P7.33) for
+    container workers instead of local threads; missing/failed tasks degrade
+    into the same per-service error entries. Default path is unchanged.
+    """
     model = model or ollama_client.MODEL
     inv = infer_mod.investigate_all(rows)
     services = [s for s in inv["services"] if (not only or s in only)]
@@ -192,46 +269,54 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
 
     # 2. profilers in parallel
     profs: dict[str, dict] = {}
-    for s in services:
-        _log(run_id, "orchestrator", "task.issued",
-             task_id=f"{run_id}-profile-{s}", detail=f"service={s}")
-    with ThreadPoolExecutor(max_workers=max_workers) as ex:
-        futs = {ex.submit(profiler, s, inv["services"][s], model, np): s
-                for s in services}
-        for fut in as_completed(futs):
-            s = futs[fut]
-            try:
-                profs[s] = fut.result()
-            except Exception as e:  # noqa: BLE001
-                manifest["errors"].append(f"profiler:{s}: {type(e).__name__}: {e}")
-                profs[s] = {"agent": "profiler", "service": s, "error": str(e)}
-            _write(run_dir, f"profiler.{s}.json", profs[s])
-            _log(run_id, f"profiler:{s}", "task.complete",
-                 task_id=f"{run_id}-profile-{s}",
-                 artifact=os.path.join(run_dir, f"profiler.{s}.json"))
+    if swarm:
+        profs = _swarm_profile_phase(run_id, run_dir, services, inv, model, np,
+                                     swarm_timeout, manifest["errors"])
+    else:
+        for s in services:
+            _log(run_id, "orchestrator", "task.issued",
+                 task_id=f"{run_id}-profile-{s}", detail=f"service={s}")
+        with ThreadPoolExecutor(max_workers=max_workers) as ex:
+            futs = {ex.submit(profiler, s, inv["services"][s], model, np): s
+                    for s in services}
+            for fut in as_completed(futs):
+                s = futs[fut]
+                try:
+                    profs[s] = fut.result()
+                except Exception as e:  # noqa: BLE001
+                    manifest["errors"].append(f"profiler:{s}: {type(e).__name__}: {e}")
+                    profs[s] = {"agent": "profiler", "service": s, "error": str(e)}
+                _write(run_dir, f"profiler.{s}.json", profs[s])
+                _log(run_id, f"profiler:{s}", "task.complete",
+                     task_id=f"{run_id}-profile-{s}",
+                     artifact=os.path.join(run_dir, f"profiler.{s}.json"))
     manifest["agents"]["profilers"] = profs
 
     # 3. critics (skipped in quick mode)
     crits: dict[str, dict] = {}
     if not quick:
-        for s in services:
-            if "error" not in profs.get(s, {}):
-                _log(run_id, "orchestrator", "task.issued",
-                     task_id=f"{run_id}-critic-{s}", detail=f"service={s}")
-        with ThreadPoolExecutor(max_workers=max_workers) as ex:
-            futs = {ex.submit(critic, s, inv["services"][s], profs[s], model, 256): s
-                    for s in services if "error" not in profs[s]}
-            for fut in as_completed(futs):
-                s = futs[fut]
-                try:
-                    crits[s] = fut.result()
-                except Exception as e:  # noqa: BLE001
-                    manifest["errors"].append(f"critic:{s}: {type(e).__name__}: {e}")
-                else:
-                    _write(run_dir, f"critic.{s}.json", crits[s])
-                    _log(run_id, f"critic:{s}", "task.complete",
-                         task_id=f"{run_id}-critic-{s}",
-                         artifact=os.path.join(run_dir, f"critic.{s}.json"))
+        if swarm:
+            crits = _swarm_critic_phase(run_id, run_dir, services, inv, profs,
+                                        model, swarm_timeout, manifest["errors"])
+        else:
+            for s in services:
+                if "error" not in profs.get(s, {}):
+                    _log(run_id, "orchestrator", "task.issued",
+                         task_id=f"{run_id}-critic-{s}", detail=f"service={s}")
+            with ThreadPoolExecutor(max_workers=max_workers) as ex:
+                futs = {ex.submit(critic, s, inv["services"][s], profs[s], model, 256): s
+                        for s in services if "error" not in profs[s]}
+                for fut in as_completed(futs):
+                    s = futs[fut]
+                    try:
+                        crits[s] = fut.result()
+                    except Exception as e:  # noqa: BLE001
+                        manifest["errors"].append(f"critic:{s}: {type(e).__name__}: {e}")
+                    else:
+                        _write(run_dir, f"critic.{s}.json", crits[s])
+                        _log(run_id, f"critic:{s}", "task.complete",
+                             task_id=f"{run_id}-critic-{s}",
+                             artifact=os.path.join(run_dir, f"critic.{s}.json"))
     manifest["agents"]["critics"] = crits
 
     # 4. deterministic security scan (no LLM) — folded into the brief
@@ -333,7 +418,8 @@ def load_run(run_id: str) -> dict | None:
 
 
 def launch_background(rows_fn, model: str, quick: bool,
-                      only: list[str] | None) -> str:
+                      only: list[str] | None, swarm: bool = False,
+                      swarm_timeout: float = 900.0) -> str:
     from . import swarm as swarm_mod
     run_key = f"pending-{time.strftime('%Y%m%d_%H%M%S')}"
     swarm_mod.register_run(run_key, {"status": "running",
@@ -342,7 +428,8 @@ def launch_background(rows_fn, model: str, quick: bool,
     def _work():
         try:
             res = run_deep_investigation(rows_fn(), model=model,
-                                         quick=quick, only=only)
+                                         quick=quick, only=only, swarm=swarm,
+                                         swarm_timeout=swarm_timeout)
             swarm_mod.update_run(run_key, {"status": "done", **res})
         except Exception as e:  # noqa: BLE001
             swarm_mod.update_run(run_key, {"status": "error", "error": str(e)})

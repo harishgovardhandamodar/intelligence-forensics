@@ -165,8 +165,10 @@ function renderFindRows(){
  const tb=$('t-find')&&$('t-find').querySelector('tbody');if(!tb)return;
  const area=$('sel-find')&&$('sel-find').value;
  const rows=(findCache&&findCache.findings||[]).filter(f=>!area||f.area===area).slice(0,150);
- tb.innerHTML=rows.map(f=>`<tr><td>${pill(f.severity)}</td><td class="mut">${escH(f.area)}</td><td>${escH(f.title)}</td><td class="mut">${escH(f.detail||'')}</td></tr>`).join('')||trowState(4,'no findings — quiet mesh');
+ tb.innerHTML=rows.map(f=>{const lk=f.ref&&f.ref.startsWith('ledger:')?` <a href="#ledger" data-ledger-run="${escA(f.ref.slice(7))}">ledger</a>`:'';
+  return `<tr><td>${pill(f.severity)}</td><td class="mut">${escH(f.area)}</td><td>${escH(f.title)}${lk}</td><td class="mut">${escH(f.detail||'')}</td></tr>`;}).join('')||trowState(4,'no findings — quiet mesh');
  wireTable('#t-find',null);
+ tb.querySelectorAll('[data-ledger-run]').forEach(a=>a.onclick=e=>{e.preventDefault();activateTab('ledger');loadLedger(a.dataset.ledgerRun);});
 }
 async function loadFindings(){
  const el=$('find-bars');if(el){el.className='mut loading';el.textContent='loading…';}
@@ -225,12 +227,15 @@ async function loadKnowledge(){
  const el=$('kg');if(el){el.className='mut loading';el.textContent='loading…';}
  try{drawKnowledge(await j('/api/knowledge'));}catch(e){if(el){el.className='warn';el.textContent='graph failed: '+e;}}
 }
-async function loadLedger(){
+async function loadLedger(preset){
  const tb=$('t-ledger')&&$('t-ledger').querySelector('tbody');
  const v=$('ledger-verdict');
  try{
   const sel=$('sel-ledger');
   if(sel&&!sel.dataset.filled){const r=await j('/api/swarm/runs');sel.innerHTML=(r.runs||[]).map(x=>`<option value="${escA(x.run_id)}">${escH(x.run_id)}</option>`).join('')||'<option value="">no runs</option>';sel.dataset.filled='1';}
+  if(preset&&sel){const has=[...(sel.options||[])].some(o=>o.value===preset);
+   if(!has){const o=document.createElement('option');o.value=o.textContent=preset;if(sel.prepend)sel.prepend(o);else sel.appendChild(o);}
+   sel.value=preset;}
   const rid=sel&&sel.value;
   if(!rid){if(tb)tb.innerHTML=trowState(5,'no ledger runs yet');return;}
   const [d,ver]=await Promise.all([j('/api/swarm/ledger?run_id='+encodeURIComponent(rid)),j('/api/swarm/verify?run_id='+encodeURIComponent(rid))]);

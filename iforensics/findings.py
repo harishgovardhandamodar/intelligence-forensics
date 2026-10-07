@@ -75,13 +75,15 @@ def collect(rows: list[dict] | None = None, app=None,
         pass
 
     if run_validation:
+        rid = run_validation.get("run_id") or ""
+        ref = f"ledger:{rid}" if rid else "agents"
         for svc, s in (run_validation.get("services") or {}).items():
             if not s.get("proven"):
                 out.append(_item("high", "claims",
                                  f"{svc}: brief claims unproven",
-                                 "; ".join(s.get("issues") or []), ref="agents"))
+                                 "; ".join(s.get("issues") or []), ref=ref))
         for issue in run_validation.get("brief_issues") or []:
-            out.append(_item("medium", "claims", issue, ref="agents"))
+            out.append(_item("medium", "claims", issue, ref=ref))
 
     try:
         from . import fidelity as fid_mod

@@ -184,3 +184,21 @@ def test_prune_apply_needs_approve_flag(tmp_path, monkeypatch):
     assert calls == ["db"]
     assert led.find_approval("ops", "ticket-42",
                              base_dir=str(tmp_path / "ledger")) is not None
+
+
+def test_collect_results_groups_done_failed_missing(tmp_path):
+    base = str(tmp_path)
+    t1 = swarm.enqueue("profile", {}, run_id="r1", base_dir=base)
+    t2 = swarm.enqueue("profile", {}, run_id="r1", base_dir=base)
+    t3 = swarm.enqueue("profile", {}, run_id="r1", base_dir=base)
+    c1 = swarm.claim("w", base_dir=base)
+    swarm.complete(c1["task_id"], {"parsed": {"project": "p"}}, base_dir=base)
+    c2 = swarm.claim("w", base_dir=base)
+    swarm.fail(c2["task_id"], "worker blew up", base_dir=base, requeue=False)
+    out = swarm.collect_results([t1["task_id"], t2["task_id"], t3["task_id"],
+                                 "t-missing"], timeout_s=0.05, poll_s=0.05,
+                                base_dir=base)
+    assert len(out["done"]) == 1 and len(out["failed"]) == 1
+    assert out["missing"] == sorted([t3["task_id"], "t-missing"])
+    assert next(iter(out["done"].values())) == {"parsed": {"project": "p"}}
+    assert next(iter(out["failed"].values())) == "worker blew up"

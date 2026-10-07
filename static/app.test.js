@@ -19,8 +19,10 @@ function makeEl(byId, id) {
     addEventListener() {},
     removeEventListener() {},
     appendChild() {},
+    prepend() {},
     remove() {},
     click() {},
+    options: [],
     querySelector: (sel) => {
       if (!kids.has(sel)) kids.set(sel, makeEl(byId, `${id} ${sel}`));
       return kids.get(sel);
@@ -81,7 +83,7 @@ function loadApp() {
   const src = fs.readFileSync(path.join(__dirname, "app.js"), "utf8")
     + "\n;globalThis.__t = {escH, escA, fmtN, spark, trowState, safeHref,"
     + " renderMarkdown, drawTopo, drawKnowledge, renderFindings, renderChain,"
-    + " scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme};\n";
+    + " loadLedger, scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme};\n";
   vm.createContext(sandbox);
   vm.runInContext(src, sandbox, { filename: "app.js" });
   return { t: sandbox.__t, el };
@@ -214,4 +216,23 @@ test("drawKnowledge renders entity layers", () => {
   const html = el("kg").innerHTML;
   assert.match(html, /<svg/);
   assert.match(html, /finding/);
+});
+
+test("findings ledger refs link to the ledger", () => {
+  t.renderFindings({
+    findings: [
+      { severity: "high", area: "claims", title: "s: brief claims unproven",
+        detail: "", ref: "ledger:r1" },
+      { severity: "low", area: "trust", title: "t", detail: "", ref: "security" },
+    ],
+    summary: { total: 2, by_severity: { high: 1, low: 1 } },
+  });
+  const rows = el("t-find").querySelector("tbody").innerHTML;
+  assert.match(rows, /data-ledger-run="r1"/);
+  assert.match(rows, />ledger<\/a>/);
+});
+
+test("loadLedger preselects a deep-linked run", async () => {
+  await t.loadLedger("r9");
+  assert.equal(el("sel-ledger").value, "r9");
 });

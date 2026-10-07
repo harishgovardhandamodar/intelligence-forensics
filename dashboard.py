@@ -347,6 +347,7 @@ class RunReq(BaseModel):
     quick: bool = True
     model: str | None = None
     only: list[str] | None = None
+    swarm: bool = False
 
 
 @app.get("/api/runs")
@@ -653,8 +654,9 @@ def design_doc(doc_id: str):
 def runs_create(req: RunReq):
     model = req.model or ollama_client.MODEL
     key = ag.launch_background(_service_rows, model=model,
-                               quick=req.quick, only=req.only)
-    return {"launched": key, "model": model, "quick": req.quick}
+                               quick=req.quick, only=req.only, swarm=req.swarm)
+    return {"launched": key, "model": model, "quick": req.quick,
+            "swarm": req.swarm}
 
 
 @app.get("/api/runs-pending/{key}")

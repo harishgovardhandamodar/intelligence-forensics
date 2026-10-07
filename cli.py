@@ -108,7 +108,8 @@ def cmd_agent_run(args) -> int:
         return 2
     rows = store.load_requests(db_path, limit=args.limit)
     only = args.only.split(",") if args.only else None
-    res = ag.run_deep_investigation(rows, model=model, quick=args.quick, only=only)
+    res = ag.run_deep_investigation(rows, model=model, quick=args.quick,
+                                    only=only, swarm=args.swarm)
     print(f"[+] run {res['run_id']} in {res['elapsed_s']}s -> {res['run_dir']}")
     for s in res.get("services", []):
         parsed = ((res.get("agents", {}).get("profilers", {}).get(s) or {}).get("parsed") or {})
@@ -470,6 +471,8 @@ def main() -> int:
                    help="ollama model (default $IF_MODEL or qwen3.8:27b)")
     d.add_argument("--only", default="")
     d.add_argument("--limit", type=int, default=5000)
+    d.add_argument("--swarm", action="store_true", default=False,
+                   help="dispatch profiler/critic work to swarm queue (P7.33)")
     d.set_defaults(fn=cmd_agent_run)
     e = sub.add_parser("dashboard", help="serve the investigation dashboard")
     e.add_argument("--port", type=int, default=int(os.environ.get("IF_PORT", "8211")))

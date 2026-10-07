@@ -198,5 +198,10 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
       passthrough (2x RTX 5080 on axiom); file task queue under
       evidence/swarm; role-scoped mounts (gatherers get fox-data:ro,
       profilers get evidence only); fcntl-locked ledger appends
+- [x] P7.33 Orchestrator dispatches profile/critic tasks to the swarm queue
+      end-to-end (`swarm=True` mode: enqueue, container workers execute,
+      orchestrator collects with timeout and carries on)
+- [x] P7.34 Findings→ledger deep links (claims findings cite the run;
+      Ledger tab preselects run/task from findings clicks)
 - [ ] P7.31 Surface: `/api/swarm/ledger` + Ledger tab, `ledger verify` CLI,
       human-approval entries for prune/export

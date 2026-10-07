@@ -35,6 +35,19 @@ def test_findings_ranks_and_summarises():
                for f in out["findings"])
 
 
+def test_findings_claims_cite_ledger_run():
+    val = {"run_id": "r-xyz",
+           "services": {"s": {"proven": False, "issues": ["no usable profiler result"]}},
+           "brief_issues": ["reporter produced no text"]}
+    out = fin.collect(rows=[], run_validation=val)
+    claims = [f for f in out["findings"] if f["area"] == "claims"]
+    assert len(claims) == 2
+    assert all(f["ref"] == "ledger:r-xyz" for f in claims)
+    out2 = fin.collect(rows=[], run_validation={**val, "run_id": ""})
+    assert all(f["ref"] == "agents" for f in out2["findings"]
+               if f["area"] == "claims")
+
+
 def test_findings_survives_empty_and_failing_sources(monkeypatch):
     from iforensics import trust as trust_mod
 
