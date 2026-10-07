@@ -36,5 +36,6 @@ def test_live_and_timeseries_paths_registered():
     paths = {r.path for r in dashboard.app.routes}
     for p in ("/api/live/feed", "/api/live/status", "/api/live/rates",
               "/api/live/stream", "/api/live/persisted",
+              "/api/stats/timeseries",
               "/api/overview", "/api/services", "/api/evidence"):
         assert p in paths, p

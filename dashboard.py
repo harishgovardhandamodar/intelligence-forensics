@@ -612,6 +612,40 @@ def live_rates(window_s: float = 300):
     return live_mod.rates(max(30.0, min(3600.0, window_s)))
 
 
+@app.get("/api/stats/timeseries")
+def stats_timeseries(bucket: str = "1m", window: str = "1h",
+                     service: str | None = None, source: str = "auto"):
+    """Bucketed traffic (req/tokens/errors) from the live tap or the log.
+
+    source=auto prefers the live buffer, falling back to the durable log when
+    the tap is stopped, so the chart is populated either way.
+    """
+    from iforensics import live as live_mod, timeseries as ts
+    try:
+        bucket_s = ts.parse_duration(bucket)
+        window_s = ts.parse_duration(window)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    if not (1 <= bucket_s <= 86400) or not (bucket_s <= window_s <= 7 * 86400):
+        raise HTTPException(400, "need 1s<=bucket<=24h and bucket<=window<=7d")
+    now = time.time()
+    services = {service} if service else None
+    events: list[dict] = []
+    used = source
+    if source in ("live", "auto"):
+        t = live_mod.tap()
+        if t:
+            events = t.snapshot(live_mod.MAX_EVENTS)
+            used = "live"
+    if not events and source in ("log", "auto"):
+        events = live_mod.persisted_events(limit=50000, since_ts=now - window_s)
+        used = "log"
+    out = ts.bucketize(events, bucket_s=bucket_s, window_s=window_s,
+                       now=now, services=services)
+    out["source"] = used
+    return out
+
+
 @app.get("/api/live/reconstruction")
 def live_reconstruction(service: str, n: int = 5, mode: str = "cumulative",
                         history: int = 200):
