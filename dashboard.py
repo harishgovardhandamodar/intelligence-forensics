@@ -112,6 +112,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('main section').forEach(s=>s.classList.remove('on'));$('s-'+b.dataset.t).classList.add('on');if(location.hash.slice(1)!==b.dataset.t)history.replaceState(null,'','#'+b.dataset.t);});
 const j=async u=>{const r=await fetch(u);return r.json()};
+const pj=async(u,b)=>{const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b||{})});return r.json();};
 const gcls=g=>(g==='A'||g==='B')?'ok':'warn';
 const scoreCell=(v,g)=>`<b class="${gcls(g)}">${escH(v)}</b> <span class="mut">${escH(g)}</span>`;
 async function load(){
@@ -289,11 +290,11 @@ const loadLive=async()=>{
   if(cur)$('sel-live').value=cur;
  }catch(e){}
 };
-$('b-live-start').onclick=async()=>{const i=+$('inp-live-int').value||5;await (await fetch('/api/live/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({interval_s:i})})).json();loadLive();};
-$('b-live-stop').onclick=async()=>{await fetch('/api/live/stop',{method:'POST'});loadLive();};
+$('b-live-start').onclick=async()=>{const i=+$('inp-live-int').value||5;try{await pj('/api/live/start',{interval_s:i});}catch(e){}loadLive();};
+$('b-live-stop').onclick=async()=>{try{await pj('/api/live/stop');}catch(e){}loadLive();};
 $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;const mode=$('sel-lmode').value;$('live-recon-msg').textContent='reconstructing…';
  try{
-  try{const st=await j('/api/live/status');if(!st.running)await (await fetch('/api/live/start',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).json();}catch(e){}
+  try{const st=await j('/api/live/status');if(!st.running)await pj('/api/live/start');}catch(e){}
   const d=await j(`/api/live/reconstruction?service=${encodeURIComponent(s)}&n=5&mode=${mode}&history=200`);
   $('live-recon-msg').textContent=`${d.steps.length} steps (${d.history_rows} history + ${d.live_rows} live), converged=${d.converged}`;
   $('t-liveprog').querySelector('tbody').innerHTML=d.steps.map(st=>{const dl=st.delta||{};
@@ -301,8 +302,8 @@ $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;con
   loadLive();
  }catch(e){$('live-recon-msg').textContent='failed: '+e;}};
 setInterval(()=>{const s=$('s-live');if(s&&s.classList.contains('on'))loadLive();},4000);
-$('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';const r=await j('/api/investigate');$('runmsg').textContent=r.report||JSON.stringify(r);load();};
-$('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;const r=await (await fetch('/api/runs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({quick:q})})).json();$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';};
+$('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';try{const r=await pj('/api/investigate');$('runmsg').textContent=r.report||JSON.stringify(r);load();}catch(e){$('runmsg').textContent='failed: '+e;}};
+$('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';}catch(e){$('runmsg').textContent='launch failed: '+e;}};
 load();
 </script></body></html>
 """
@@ -320,6 +321,17 @@ def _service_rows(limit: int = 5000) -> list[dict]:
     if not db or not os.path.exists(db):
         return []
     return store.load_requests(db, limit=limit)
+
+
+def _within(path: str, root: str) -> bool:
+    """True only if *path* is root itself or strictly inside it.
+
+    A plain startswith(root) is a prefix check, not a containment check:
+    /recon/quai-radar2 passes for root /recon/quai-radar. Compare against
+    root + os.sep so sibling directories with a shared prefix are refused.
+    """
+    root = os.path.realpath(root)
+    return path == root or path.startswith(root + os.sep)
 
 
 @app.get("/health")
@@ -378,7 +390,7 @@ def investigation():
     return {"readme": open(md_path).read() if os.path.exists(md_path) else ""}
 
 
-@app.get("/api/investigate")
+@app.post("/api/investigate")
 def investigate():
     from iforensics import report as report_mod
     from iforensics import fox_client
@@ -416,8 +428,8 @@ def reconstructions():
 
 @app.get("/api/reconstructions/{svc}")
 def reconstruction(svc: str):
-    base = os.path.join(config.RECON_DIR, svc)
-    if not os.path.isdir(base):
+    base = os.path.realpath(os.path.join(config.RECON_DIR, svc))
+    if not _within(base, config.RECON_DIR) or not os.path.isdir(base):
         raise HTTPException(404, "unknown service")
     files = {}
     for root, _, fns in os.walk(base):
@@ -436,7 +448,7 @@ def reconstruction(svc: str):
 def reconstruction_file(svc: str, path: str):
     base = os.path.realpath(os.path.join(config.RECON_DIR, svc))
     target = os.path.realpath(os.path.join(base, path))
-    if not target.startswith(base) or not os.path.isfile(target):
+    if not _within(target, config.RECON_DIR) or not os.path.isfile(target):
         raise HTTPException(404, "bad path")
     with open(target) as f:
         return {"content": f.read()[:30000]}
