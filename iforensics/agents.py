@@ -17,6 +17,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from . import config, ollama_client
 from . import infer as infer_mod
+from . import security as security_mod
 
 AGENT_DIR = os.path.join(config.EVIDENCE_DIR, "agentic")
 
@@ -75,29 +76,38 @@ def scout(investigation: dict, model: str, num_predict: int) -> dict:
                     f"models={list(p.get('models', {}))}, guess={p.get('project')}")
     out = ollama_client.ask_json(
         SCOUT_SYSTEM,
-        "Rank these observed services for deep forensic investigation.\n"
-        + "\n".join(rows),
+        "Rank these observed services for deep forensic investigation.",
+        untrusted="\n".join(rows), untrusted_label="telemetry",
         model=model, num_predict=max(num_predict, 512))
     return {"agent": "scout", **out}
 
 
 def profiler(service: str, profile: dict, model: str, num_predict: int) -> dict:
+    compact = _compact_profile(service, profile)
     out = ollama_client.ask_json(
         PROFILER_SYSTEM,
-        "Profile this service. Keys: project, what_building (2 sentences), "
-        "pipeline (list of stage names), inputs, outputs, confidence (0-1), "
-        "evidence_quotes (list, max 4 short).\n\n" + _compact_profile(service, profile),
+        "Profile the service described in the untrusted data. Keys: project, "
+        "what_building (2 sentences), pipeline (list of stage names), inputs, "
+        "outputs, confidence (0-1), evidence_quotes (list, max 4 short).",
+        untrusted=compact, untrusted_label=f"service={service}",
         model=model, num_predict=max(num_predict, 768))
-    return {"agent": "profiler", "service": service, **out}
+    risk = security_mod.injection_risk(compact)
+    res = {"agent": "profiler", "service": service, "injection_risk": risk}
+    if risk:
+        res["injection_findings"] = security_mod.scan_injection(compact, service)
+    return {**res, **out}
 
 
 def critic(service: str, profile: dict, profiler_out: dict,
            model: str, num_predict: int) -> dict:
     out = ollama_client.ask(
         CRITIC_SYSTEM,
-        f"Service {service}. Heuristic plan: {profile.get('pipeline_summary')} "
-        f"pipe={' -> '.join(profile.get('pipeline', []))}.\n"
-        f"Profiler said: {json.dumps(profiler_out.get('parsed', {}))[:1500]}",
+        f"Critique the reconstruction of service {service}.",
+        untrusted=(
+            f"heuristic plan: {profile.get('pipeline_summary')} "
+            f"pipe={' -> '.join(profile.get('pipeline', []))}\n"
+            f"profiler said: {json.dumps(profiler_out.get('parsed', {}))[:1500]}"),
+        untrusted_label=f"service={service}",
         model=model, num_predict=num_predict)
     return {"agent": "critic", "service": service, **out}
 
@@ -118,7 +128,8 @@ def reporter(profiler_outs: list[dict], heuristic: dict | None = None,
             digest.append(f"- {svc} (heuristic: {h.get('project')}; "
                           f"llm-raw: {raw})")
     out = ollama_client.ask(
-        REPORTER_SYSTEM, "Write the brief.\n" + "\n".join(digest),
+        REPORTER_SYSTEM, "Write the brief.",
+        untrusted="\n".join(digest), untrusted_label="service-profiles",
         model=model, num_predict=num_predict + 256)
     return {"agent": "reporter", **out}
 

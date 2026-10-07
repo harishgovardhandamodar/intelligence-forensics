@@ -32,6 +32,23 @@ _SECRET_PATTERNS = [
 ]
 _ENTROPY_TOKEN = re.compile(r"[A-Za-z0-9+/=_\-]{32,}")
 _ENTROPY_MIN = 3.6
+
+# Prompt-injection / jailbreak phrasing, checked against untrusted prompt text
+# before it is fed to the reconstruction LLM (D1).
+_INJECTION_PATTERNS = [
+    ("override_instructions", "high", re.compile(
+        r"(?i)\b(?:ignore|disregard|forget|override)\b[^.\n]{0,24}\b(?:previous|prior|above|earlier|all|any)\b[^.\n]{0,16}\b(?:instruction|prompt|rule|direction)s?\b")),
+    ("new_instructions", "high", re.compile(
+        r"(?i)\b(?:new|updated|revised|real)\b\s+(?:instruction|system prompt|rules)s?\b")),
+    ("reveal_prompt", "high", re.compile(
+        r"(?i)\b(?:reveal|print|show|repeat|leak|output)\b[^.\n]{0,24}\b(?:system prompt|your (?:instructions|prompt|rules)|the prompt)\b")),
+    ("role_hijack", "medium", re.compile(
+        r"(?i)\b(?:you are now|from now on|act as|pretend to be|behave as)\b")),
+    ("chat_role_marker", "medium", re.compile(
+        r"(?i)(?:<\|(?:im_start|im_end|system|assistant|user)\|>|\[/?(?:INST|SYS)\]|<\|system\|>|^\s*#{2,}\s*(?:system|assistant)\b)")),
+    ("jailbreak", "high", re.compile(
+        r"(?i)\b(?:jailbreak|do anything now|DAN mode|developer mode enabled)\b")),
+]
 _HAS_LOWER = re.compile(r"[a-z]")
 _HAS_UPPER = re.compile(r"[A-Z]")
 _HAS_DIGIT = re.compile(r"\d")
@@ -93,7 +110,32 @@ def scan_text(text: str, source: str = "") -> list[dict]:
                     continue
                 seen.add(key)
                 out.append(_finding("high_entropy", "high", source, i, tok))
+        for kind, sev, rx in _INJECTION_PATTERNS:
+            m = rx.search(line)
+            if m:
+                key = (kind, m.group(0), i)
+                if key in seen:
+                    continue
+                seen.add(key)
+                out.append(_finding("prompt_injection:" + kind, sev, source, i, m.group(0)))
     return out
+
+
+def scan_injection(text: str, source: str = "") -> list[dict]:
+    """Detect prompt-injection / role-hijack phrasing in untrusted text (D1)."""
+    out: list[dict] = []
+    for i, line in enumerate(str(text).splitlines(), 1):
+        for kind, sev, rx in _INJECTION_PATTERNS:
+            m = rx.search(line)
+            if m:
+                out.append(_finding("prompt_injection:" + kind, sev, source, i, m.group(0)))
+    return out
+
+
+def injection_risk(text: str) -> int:
+    """0=clean, else max severity rank (1 medium, 2 high) — for a quick flag."""
+    rank = {"low": 1, "medium": 1, "high": 2, "critical": 3}
+    return max((rank.get(f["severity"], 0) for f in scan_injection(text)), default=0)
 
 
 def scan_path(path: str, source: str | None = None) -> list[dict]:
@@ -201,12 +243,17 @@ def summarize(findings: list[dict]) -> dict:
 
 def run(root: str, subpaths: list[str] | None = None, app=None) -> dict:
     """Full deterministic scan. `root` is the repo/evidence base dir."""
-    secrets = scan_tree(root, subpaths=subpaths)
+    findings = scan_tree(root, subpaths=subpaths)
+    secrets = [f for f in findings if not f["kind"].startswith("prompt_injection:")]
+    injections = [f for f in findings if f["kind"].startswith("prompt_injection:")]
     perms = permission_findings(root, subpaths=subpaths)
     tracked = git_tracked_under(root, "evidence")
     exposure = audit_exposure(app) if app is not None else []
-    all_findings = secrets + perms + exposure
+    total = secrets + injections + perms + exposure
+    counts = {s: sum(1 for f in total if f["severity"] == s) for s in SEVERITIES}
     return {"generated_at": time.time(), "root": root,
-            "secrets": secrets, "permissions": perms,
+            "secrets": secrets, "injections": injections,
+            "permissions": perms, "exposure": exposure,
             "tracked_evidence": {"count": len(tracked), "sample": tracked[:20]},
-            "exposure": exposure, "summary": summarize(all_findings)}
+            "summary": summarize(total),
+            "totals": {k: v for k, v in counts.items() if v}}
