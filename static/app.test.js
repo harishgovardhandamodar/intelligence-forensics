@@ -79,6 +79,8 @@ function loadApp() {
     removeEventListener: () => {},
     setInterval: () => 0,
     clearInterval: () => {},
+    setTimeout: () => 0,
+    clearTimeout: () => {},
     URL,
     Blob,
   };
@@ -88,7 +90,8 @@ function loadApp() {
     + " renderMarkdown, drawTopo, drawKnowledge, renderFindings, renderChain,"
     + " loadLedger, filterLedger, drawSimCurve, loadSimUsers, loadSimReport,"
     + " runSim, loadSimScenarios, secAnalyticsHTML,"
-    + " scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme};\n";
+    + " scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme,"
+    + " showNotif, svcDetailHTML, openSvcOverlay, closeOverlay};\n";
   vm.createContext(sandbox);
   vm.runInContext(src, sandbox, { filename: "app.js" });
   return { t: sandbox.__t, el };
@@ -315,4 +318,35 @@ test("runSim renders per-scenario summaries", async () => {
 test("loadSimScenarios renders diagram blocks", async () => {
   await t.loadSimScenarios();
   assert.match(el("sim-scenarios").innerHTML, /no scenarios/);
+});
+
+test("showNotif sets message and kind, re-shows on repeat", () => {
+  t.showNotif("scan complete", "ok");
+  const n = el("notif");
+  assert.equal(n.textContent, "scan complete");
+  assert.match(n.className, /show/);
+  assert.match(n.className, /ok/);
+  t.showNotif("other", "warn");
+  assert.equal(el("notif").textContent, "other");
+  assert.match(el("notif").className, /warn/);
+});
+
+test("svcDetailHTML renders profile and escapes content", () => {
+  const h = t.svcDetailHTML({
+    service: "quai-radar<script>", requests: 1151, total_tokens: 1797921,
+    models: { "qwen3.8:latest": 1145 }, project: "KG extractor",
+    pipeline: ["ingest", "extract"], pipeline_summary: "news <brief>",
+    score: 80.3, grade: "A", vibe: 78, vibe_label: "pure vibe",
+  });
+  assert.match(h, /KG extractor/);
+  assert.match(h, /ingest → extract/);
+  assert.doesNotMatch(h, /<script>/);
+  assert.match(t.svcDetailHTML(null), /unknown service/);
+  assert.match(t.svcDetailHTML({ service: "x" }), /—/);
+});
+
+test("overlay opens on service and closes on backdrop/Esc", () => {
+  t.openSvcOverlay("nope");
+  assert.match(el("overlay-body").innerHTML, /unknown service/);
+  t.closeOverlay();
 });

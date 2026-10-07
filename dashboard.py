@@ -70,17 +70,25 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <title>Intelligence Forensics</title>
 <link rel="stylesheet" href="/static/app.css"></head><body>
 <header><h1>&#x1f575; Intelligence Forensics</h1><span class=sub id=hdr>loading&hellip;</span><span style="flex:1"></span><button id=b-theme title="toggle light/dark theme">◐</button></header>
-<nav id=tabs>
-<button data-t=overview class=on>Overview</button><button data-t=findings>Findings</button><button data-t=live>Live tap</button><button data-t=timeline>Timeline</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=ledger>Ledger</button><button data-t=mesh>Mesh</button><button data-t=graph>Graph</button><button data-t=evidence>Evidence</button><button data-t=security>Security</button><button data-t=design>Design</button><button data-t=sim>Sim</button>
-</nav><main>
+<div class=layout>
+<aside id=sidebar><nav id=tabs>
+<div class=grp>Investigate</div>
+<button data-t=overview class=on>Overview</button><button data-t=findings>Findings</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button>
+<div class=grp>Observe</div>
+<button data-t=live>Live tap</button><button data-t=timeline>Timeline</button><button data-t=mesh>Mesh</button><button data-t=graph>Graph</button>
+<div class=grp>Evidence</div>
+<button data-t=evidence>Evidence</button><button data-t=ledger>Ledger</button>
+<div class=grp>Assure</div>
+<button data-t=security>Security</button><button data-t=design>Design</button><button data-t=sim>Sim</button>
+</nav></aside><main>
 <section id=s-overview class=on><div class=grid id=stats></div><div class=card><h3>Latest brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=brief class=md>loading&hellip;</div></div>
-<div class=card><h3>Run investigation</h3><div class=row>
+<details class="card coll" open><summary><h3>Run investigation</h3><span class=chev>›</span></summary><div class=coll-body><div class=row>
 <button class=act id=b-inv>Re-run heuristic investigation</button>
 <button class=act id=b-agent>Launch agentic run (Qwen 3.8-27B)</button>
 <button class=act id=b-report>Generate unified report</button>
 <label class=mut><input type=checkbox id=opt-quick checked> quick (top-3, no critic)</label>
 <span class=mut id=runmsg></span></div>
-<div class=mut id=report-list></div></div></section>
+<div class=mut id=report-list></div></div></details></section>
 <section id=s-findings><div class=card><div class=row><h3>What needs attention</h3><span class=mut id=find-sum></span><span style="flex:1"></span><select id=sel-find><option value="">all areas</option><option>security</option><option>risk</option><option>trust</option><option>claims</option><option>fidelity</option><option>alert</option></select></div><div id=find-bars class=mut>loading&hellip;</div></div><div class=card><table id=t-find><thead><tr><th>sev</th><th>area</th><th>finding</th><th>detail</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-services><div class=card><div class=row><input id=filt-svc placeholder="filter services&hellip;"><button class=act data-x=t-svc data-name=services-CSV>CSV</button><button class=act data-x=t-svc data-name=services-JSON>JSON</button><span class=mut id=svc-msg></span></div><table id=t-svc><thead><tr><th>service</th><th>reqs</th><th>tokens</th><th>models</th><th>inferred build</th><th>score / vibe</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-live><div class=card><h3>Tap <span class=mut id=live-state style="font-weight:normal"></span></h3>
@@ -93,12 +101,12 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <button class=act id=b-live-recon>Reconstruct live</button><span class=mut id=live-recon-msg></span></div>
 <table id=t-liveprog><thead><tr><th>step</th><th>score</th><th>queries</th><th>inferred build</th><th>Δ vs prev</th></tr></thead><tbody></tbody></table></div>
 <div class=card><h3>Feed <span class=mut style="font-weight:normal">— newest first, auto-refresh</span></h3><table id=t-feed><thead><tr><th>time</th><th>dir</th><th>service</th><th>model</th><th>detail</th></tr></thead><tbody><tr><td class=mut colspan=5>tap not running</td></tr></tbody></table></div>
-<div class=card><h3>Traffic <span class=mut style="font-weight:normal">— requests &amp; tokens per bucket</span></h3>
+<details class="card coll" open><summary><h3>Traffic <span class=mut style="font-weight:normal">— requests &amp; tokens per bucket</span></h3><span class=chev>›</span></summary><div class=coll-body>
 <div class=row><span class=mut>bucket</span><select id=sel-tsbucket><option value=1m>1m</option><option value=5m selected>5m</option><option value=15m>15m</option><option value=1h>1h</option></select>
 <span class=mut>window</span><select id=sel-tswindow><option value=15m>15m</option><option value=1h selected>1h</option><option value=6h>6h</option><option value=24h>24h</option></select>
 <label class=mut><input type=checkbox id=chk-tsauto checked> auto</label><span class=mut id=ts-msg></span></div>
 <div id=ts-chart class="mut loading">loading&hellip;</div><div id=ts-legend class=mut></div>
-<div id=ts-models class=mut></div><div id=ts-heatmap class=mut></div></div></section>
+<div id=ts-models class=mut></div><div id=ts-heatmap class=mut></div></div></details></section>
 <section id=s-timeline><div class=card><div class=row><h3>Chain of events</h3><span class=mut id=chain-sum></span></div><div class=row><span class=mut>service</span><select id=sel-chain><option value="">all</option></select><span class=mut>limit</span><select id=sel-chain-n><option>50</option><option selected>100</option><option>200</option></select><button class=act id=b-chain>Reload</button></div><div class=mut>IN arrivals linked to OUT completions by queue id — queue-wait visible inline.</div><div id=chain class=mut>loading&hellip;</div></div></section>
 <section id=s-recon><div class=card><div class=row><select id=sel-recon></select><select id=sel-file></select></div><pre id=recon-view>pick a reconstruction&hellip;</pre></div>
 <div class=card><h3>Partial &amp; progressive reconstruction <span class=mut style="font-weight:normal">— same service, re-profiled as Fox queries accumulate</span></h3>
@@ -137,23 +145,24 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <h3>Prompt-injection attempts</h3><table class=tbl><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th></tr></thead><tbody id=sec-inject></tbody></table>
 <h3>Over-permissive files</h3><table class=tbl><thead><tr><th>file</th><th>mode</th><th>sev</th></tr></thead><tbody id=sec-perm></tbody></table>
 </div></div>
-<div class=card>
-<div class=row><h3>Trust boundaries (D4)</h3><span class=mut id=sec-trust-sum></span></div>
+<details class="card coll" open><summary><div class=row><h3>Trust boundaries (D4)</h3><span class=mut id=sec-trust-sum></span><span class=chev>›</span></div></summary><div class=coll-body>
 <div class=mut>Assertions from design/trust-boundaries.md, re-checked against the code.</div>
 <table class=tbl id=t-sec-trust><thead><tr><th>rule</th><th>status</th><th>sev</th><th>detail</th></tr></thead><tbody></tbody></table>
-</div>
-<div class=card>
-<div class=row><h3>Inflow risk by service (D5)</h3><span class=mut id=sec-risk-sum></span></div>
+</div></details>
+<details class="card coll" open><summary><div class=row><h3>Inflow risk by service (D5)</h3><span class=mut id=sec-risk-sum></span><span class=chev>›</span></div></summary><div class=coll-body>
 <div class=mut>Ranked from secrets/injection attempts, volume outliers and cross-service prompt reuse.</div>
 <table class=tbl id=t-sec-risk><thead><tr><th>service</th><th>band</th><th>score</th><th>PII</th><th>inj</th><th>vol z</th><th>reuse</th></tr></thead><tbody></tbody></table>
-</div></section>
+</div></details></section>
 <section id=s-design><div class=row><div class=card style="min-width:230px"><h3>Documents</h3><div id=design-rail class=mut>loading&hellip;</div></div>
 <div class=card style="flex:1"><h3 id=design-title>Design &amp; architecture</h3><div class=mut id=design-meta></div><div id=design-doc class=mut>pick a document&hellip;</div></div></div></section>
 <section id=s-sim><div class=card><div class=row><h3>Embedding-reconstruction sim</h3><span class=mut id=sim-sum></span><span style="flex:1"></span><button class=act id=b-sim-demo>Load demo data</button><button class=act id=b-sim-reset>Reset</button></div><div class=mut>Progressive masked disclosure → cosine clustering → position-wise assembly. Run <code>python sim/run.py --all</code> for the full client, or inspect results here.</div><div class=row><span class=mut>DLP</span><select id=sel-sim-dlp><option value=off>off</option><option value=audit>audit</option><option value=redact>redact</option><option value=block>block</option></select><span class=mut id=sim-dlp-sum></span></div><div class=row><span class=mut>user</span><select id=sel-sim></select><button class=act id=b-sim-report>Report</button></div><div id=sim-curve class=mut>pick a user&hellip;</div><div id=sim-fields class=mut></div><div id=sim-est class=mut></div></div>
 <div class=card><div class=row><h3>Run scenarios</h3><span class=mut id=sim-runmsg></span></div><div class=row><select id=sel-sim-sc><option value=all>all scenarios</option><option value=chatbot_health>chatbot_health</option><option value=chatbot_financial>chatbot_financial</option><option value=coding_api_keys>coding_api_keys</option><option value=coding_secrets>coding_secrets</option></select><select id=sel-sim-style><option value=regular>regular</option><option value=one-off>one-off</option><option value=vibe>vibe</option></select><button class=act id=b-sim-run>Run</button></div><div id=sim-runout class=mut></div></div>
 <div class=card><h3>Scenarios</h3><div class=mut>What each experiment leaks, step by step.</div><div id=sim-scenarios class=mut>loading&hellip;</div></div></section>
 </main>
+</div>
 <div id=tip class=tip></div>
+<div id=notif class=notif role=status></div>
+<div id=overlay><div id=overlay-body></div></div>
 <script src="/static/app.js" defer></script></body></html>
 """
 

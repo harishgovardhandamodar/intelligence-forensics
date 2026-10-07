@@ -18,9 +18,10 @@ async function load(){
   $('hdr').textContent=`v${o.version||'?'} · fox:${o.fox} model:${o.model} reqs:${o.requests} svcs:${o.services} recon:${o.reconstructions} agent-runs:${o.agent_runs}`;
   $('stats').innerHTML=['requests|'+o.requests,'services|'+o.services,'reconstructions|'+o.reconstructions,'agentic runs|'+o.agent_runs,'fox|'+o.fox,'model|'+o.model].map(s=>{const[k,v]=s.split('|');return `<div class="card stat"><div class="v">${escH(v)}</div><div class="k">${escH(k)}</div></div>`}).join('');
  }catch(e){$('hdr').textContent='overview failed: '+e;$('stats').innerHTML=`<div class="card warn">overview failed: ${escH(e)}</div>`;}
- await sec('#t-svc tbody',async()=>{
-  const sv=await j('/api/services');
-  $('t-svc').querySelector('tbody').innerHTML=sv.services.map(s=>`<tr><td><code>${escH(s.service)}</code></td><td>${escH(s.requests)}</td><td>${escH(s.total_tokens)}</td><td class="mut">${Object.entries(s.models).map(([m,c])=>escH(m).split(':')[0]+'&times;'+escH(c)).join('<br>')}</td><td><b>${escH(s.project||'')}</b><br><span class="mut">${escH((s.pipeline_summary||'').slice(0,140))}</span></td><td>${scoreCell(s.score,s.grade)}<br><span class="mut" title="vibe index: thin prompt-wrapper vs engineered system">&#x26a1;${escH(s.vibe)} ${escH(s.vibe_label)}</span></td></tr>`).join('');wireTable('#t-svc','#filt-svc');});
+  await sec('#t-svc tbody',async()=>{
+   const sv=await j('/api/services');
+   svcCache=sv.services||[];
+   $('t-svc').querySelector('tbody').innerHTML=sv.services.map(s=>`<tr data-svc="${escA(s.service)}"><td><code>${escH(s.service)}</code></td><td>${escH(s.requests)}</td><td>${escH(s.total_tokens)}</td><td class="mut">${Object.entries(s.models).map(([m,c])=>escH(m).split(':')[0]+'&times;'+escH(c)).join('<br>')}</td><td><b>${escH(s.project||'')}</b><br><span class="mut">${escH((s.pipeline_summary||'').slice(0,140))}</span></td><td>${scoreCell(s.score,s.grade)}<br><span class="mut" title="vibe index: thin prompt-wrapper vs engineered system">&#x26a1;${escH(s.vibe)} ${escH(s.vibe_label)}</span></td></tr>`).join('');wireTable('#t-svc','#filt-svc');});
  const rc=await j('/api/reconstructions');
  $('sel-recon').innerHTML=rc.map(r=>`<option value="${escA(r.service)}">${escH(r.service)}</option>`).join('');
  const showRecon=async()=>{const s=$('sel-recon').value;if(!s)return;const d=await j('/api/reconstructions/'+encodeURIComponent(s));const files=Object.keys(d.files);$('sel-file').innerHTML=files.map(f=>`<option value="${escA(f)}">${escH(f)}</option>`).join('');$('recon-view').textContent=d.files[files[0]]||'';};
@@ -542,7 +543,7 @@ function loadSecurity(){
 function secScan(){
  $('sec-msg').textContent='scanning (deterministic + LLM)…';
  const scope=($('sel-secscope')&&$('sel-secscope').value)||'app';
- pj('/api/security/scan',{scope}).then(()=>loadSecurity()).catch(e=>{$('sec-msg').textContent='scan failed: '+e;});
+ pj('/api/security/scan',{scope}).then(()=>{loadSecurity();showNotif('security scan complete','ok');}).catch(e=>{$('sec-msg').textContent='scan failed: '+e;showNotif('security scan failed','err');});
 }
 const loadLive=async()=>{
  let st={running:false};
@@ -590,9 +591,9 @@ const loadReports=async()=>{
   rl.innerHTML=(d.reports||[]).slice(0,5).map(r=>`<div><b>${escH(r.id)}</b> · risk ${escH(r.risk||'?')} · ${escH(r.n_findings??'?')} findings · ${escH(r.n_services??'?')} svcs · <a href="/api/evidence/file?name=${encodeURIComponent('reports/'+r.id+'/report.html')}&download=1">html</a> · <a href="/api/evidence/file?name=${encodeURIComponent('reports/'+r.id+'/report.md')}">md</a></div>`).join('')||'<span class=mut>no reports yet</span>';
  }catch(e){const rl=$('report-list');if(rl)rl.textContent='reports failed: '+e;}
 };
-$('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';try{const r=await pj('/api/investigate');$('runmsg').textContent=r.report||JSON.stringify(r);load();}catch(e){$('runmsg').textContent='failed: '+e;}};
-$('b-report').onclick=async()=>{$('runmsg').textContent='generating unified report…';try{const r=await pj('/api/reports/run');const d=r.diff||{};$('runmsg').textContent=`report ${r.id} (db-changed=${d.db_changed??'?'}${(d.services_added||[]).length?' +'+d.services_added.join(','):''}) — see Reports below`;loadReports();}catch(e){$('runmsg').textContent='report failed: '+e;}};
-$('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});if(r.detail){$('runmsg').textContent=r.detail+' — wait for a run to finish';}else{$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';}}catch(e){$('runmsg').textContent='launch failed: '+e;}};
+$('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';try{const r=await pj('/api/investigate');$('runmsg').textContent=r.report||JSON.stringify(r);showNotif('heuristic investigation complete','ok');load();}catch(e){$('runmsg').textContent='failed: '+e;showNotif('investigation failed','err');}};
+$('b-report').onclick=async()=>{$('runmsg').textContent='generating unified report…';try{const r=await pj('/api/reports/run');const d=r.diff||{};$('runmsg').textContent=`report ${r.id} (db-changed=${d.db_changed??'?'}${(d.services_added||[]).length?' +'+d.services_added.join(','):''}) — see Reports below`;showNotif('unified report '+r.id,'ok');loadReports();}catch(e){$('runmsg').textContent='report failed: '+e;showNotif('report failed','err');}};
+$('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});if(r.detail){$('runmsg').textContent=r.detail+' — wait for a run to finish';showNotif(r.detail,'warn');}else{$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';showNotif('agentic run launched','ok');}}catch(e){$('runmsg').textContent='launch failed: '+e;showNotif('launch failed','err');}};
 const _sb=$('b-sec-scan');if(_sb)_sb.onclick=secScan;
 const _ss=$('sel-secscope');if(_ss)_ss.onchange=loadSecurity;
 const _sv=$('sel-secview');if(_sv)_sv.onchange=()=>{secView=_sv.value;renderSecView();};
@@ -615,9 +616,10 @@ async function runSim(){
   const rows=Object.entries(d.results||{}).map(([k,v])=>v.error?`<div>${escH(k)}: <span class="warn">${escH(v.error)}</span></div>`:`<div>${escH(k)}: <b>${escH(v.report.recovered)}/${escH(v.report.n_fields)} recovered</b> <span class="mut">mean ${escH(v.report.mean_accuracy)} · ${escH(v.n_turns)} turns</span></div>`).join('');
   if(o)o.innerHTML=rows||'<span class="mut">nothing ran</span>';
   if(m)m.textContent='done';
+  showNotif('simulation batch complete','ok');
   const sel=$('sel-sim');if(sel)sel.dataset.filled='';
   loadSimUsers();
- }catch(e){if(m)m.textContent='run failed: '+e;}
+ }catch(e){if(m)m.textContent='run failed: '+e;showNotif('simulation failed','err');}
 }
 async function loadSimScenarios(){
  const el=$('sim-scenarios');if(!el)return;
@@ -627,6 +629,39 @@ async function loadSimScenarios(){
  }catch(e){el.textContent='scenarios failed: '+e;}
 }
 const _sd2=$('sel-sim-dlp');if(_sd2)_sd2.onchange=async()=>{try{await pj('/api/sim/dlp',{mode:_sd2.value});loadSimUsers();}catch(e){const s=$('sim-sum');if(s)s.textContent='dlp failed: '+e;}};
+/* ---- AKM shell: toasts, service overlay (append-only; all data paths intact) ---- */
+let svcCache=[];
+let notifTimer=0;
+function showNotif(msg,kind){
+ const n=$('notif');if(!n)return;
+ n.textContent=msg;n.className='notif show '+(kind||'');
+ clearTimeout(notifTimer);notifTimer=setTimeout(()=>{n.className='notif';},4200);
+}
+function svcDetailHTML(s){
+ if(!s)return '<span class="mut">unknown service</span>';
+ const models=Object.entries(s.models||{}).map(([m,c])=>`<div class="row" style="margin:2px 0"><code style="min-width:170px">${escH(m)}</code><span class="mut">×${escH(c)}</span></div>`).join('')||'<span class="mut">—</span>';
+ const pipe=(s.pipeline||[]).map(escH).join(' → ')||'<span class="mut">—</span>';
+ return `<h2><code>${escH(s.service)}</code></h2>`
+  +`<div class="mut">${escH(s.project||'')}</div>`
+  +`<div class="kpis">`
+  +`<div class="stat"><div class="v">${escH(s.requests??'?')}</div><div class="k">requests</div></div>`
+  +`<div class="stat"><div class="v">${escH(s.total_tokens??'?')}</div><div class="k">tokens</div></div>`
+  +`<div class="stat"><div class="v">${escH((s.score&&s.score.score)??s.score??'?')}</div><div class="k">score ${escH(s.grade||'')}</div></div>`
+  +`</div><h3>Models</h3>${models}<h3>Pipeline</h3><div>${pipe}</div>`
+  +(s.pipeline_summary?`<h3>Summary</h3><div class="mut">${escH(s.pipeline_summary)}</div>`:'')
+  +(s.vibe?`<div class="mut" style="margin-top:6px">vibe: ${escH(s.vibe)} ${escH(s.vibe_label||'')}</div>`:'');
+}
+function openSvcOverlay(name){
+ const s=(svcCache||[]).find(x=>x.service===name);
+ const ov=$('overlay'),bd=$('overlay-body');if(!ov||!bd)return;
+ bd.innerHTML=svcDetailHTML(s||null);
+ ov.classList.add('show');
+}
+function closeOverlay(){const ov=$('overlay');if(ov)ov.classList.remove('show');}
+const _ov=$('overlay');if(_ov)_ov.addEventListener('click',e=>{if(e.target===_ov)closeOverlay();});
+window.addEventListener('keydown',e=>{if(e.key==='Escape')closeOverlay();});
+function openSvcOverlayByEvent(e){const r=e.target&&e.target.closest?e.target.closest('[data-svc]'):null;if(r)openSvcOverlay(r.dataset.svc);}
+const _svcT=$('t-svc');if(_svcT)_svcT.addEventListener('click',openSvcOverlayByEvent);
 initTheme();
 load();
 activateTab(location.hash.slice(1)||'overview',false);
