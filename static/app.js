@@ -62,7 +62,8 @@ instructions:
   try{const b=(await j('/api/runs')).filter(r=>r.status!=='running');let md;if(b.length){const d=await j('/api/runs/'+b[0].run_id);md=d.brief||'';}else{const inv=await j('/api/investigation');md=inv.readme||'no brief yet — launch an agentic run';}$('brief').innerHTML=renderMarkdown(md.slice(0,6000));renderMermaid($('brief'));}catch(e){$('brief').innerHTML=`<span class="warn">brief unavailable: ${escH(e)}</span>`;}
   try{
    const m=await j('/api/fox/live');const peers=(m.mesh&&(m.mesh.peers||[]))||[];
-   $('t-mesh').querySelector('tbody').innerHTML=peers.map(p=>{const h=p.health||{};return `<tr><td><code>${escH(p.machine||p.node_id)}</code></td><td class="${p.online?'ok':'warn'}">${escH(p.online)}</td><td>${escH((p.hardware||{}).kind||'?')}</td><td>${escH(h.llm_requests_1h??'?')}</td><td class="mut">${escH((h.services||[]).map(s=>s.name).join(', ').slice(0,120))}</td></tr>`}).join('')||'<tr><td class="mut">no peers</td></tr>';
+   meshCache=peers;
+   $('t-mesh').querySelector('tbody').innerHTML=peers.map(p=>{const h=p.health||{};return `<tr data-f='${escA(JSON.stringify(p))}'><td><code>${escH(p.machine||p.node_id)}</code></td><td class="${p.online?'ok':'warn'}">${escH(p.online)}</td><td>${escH((p.hardware||{}).kind||'?')}</td><td>${escH(h.llm_requests_1h??'?')}</td><td class="mut">${escH((h.services||[]).map(s=>s.name).join(', ').slice(0,120))}</td></tr>`}).join('')||'<tr><td class="mut">no peers</td></tr>';
   }catch(e){$('t-mesh').querySelector('tbody').innerHTML=`<tr><td class="warn">mesh failed: ${escH(e)}</td></tr>`;}
   try{drawTopo(await j('/api/topology'));}catch(e){$('topo').textContent='topology failed: '+e;}
   try{
@@ -155,6 +156,7 @@ const switchRunSub=v=>{
  ['intel','logs','findings','scores','verdict'].forEach(k=>{const p=$('rp-'+k);if(p)p.style.display=k===v?'':'none';});
 };
 const renderRunGraph=g=>{
+ graphCache=g;
  $('rg-title').textContent=`${g.run_id} · ${g.model}${g.quick?' · quick':''} · ${g.elapsed_s}s · ${g.totals.agents_ok} ok/${g.totals.agents_error} err · ${g.totals.prompt_tokens+g.totals.completion_tokens} tok · $0.00 local`;
  const layers=['scout','profiler','critic','reporter'].filter(L=>g.nodes.some(n=>n.layer===L));
  const BW=180,BH=44,GX=46,GY=14,pad=16;
@@ -176,7 +178,7 @@ const renderRunGraph=g=>{
  const badge=a=>a==='match'?'<span class=ok>match</span>':a==='partial'?'<span class=warn>partial</span>':a==='disagree'?'<span style="color:#f85149">disagree</span>':'<span class=mut>?</span>';
  $('t-conf').querySelector('tbody').innerHTML=g.services.map(s=>{const c=s.confidence;
   const bar=c==null?'<span class="mut">—</span>':`<div style="background:#00000040;border-radius:4px;min-width:110px"><div style="width:${(c*100).toFixed(0)}%;background:#3fb950;border-radius:4px">&nbsp;</div></div> ${escH(c.toFixed(2))}`;
-  return `<tr><td><code>${escH(s.service)}</code></td><td>${bar}</td><td class="mut">${escH(s.heuristic_project||'')}</td><td>${escH(s.llm_project||'')}<br><span class="mut">${escH((s.what_building||'').slice(0,130))}</span></td><td>${badge(s.agreement)}</td></tr>`;}).join('');
+  return `<tr data-f='${escA(JSON.stringify(s))}'><td><code>${escH(s.service)}</code></td><td>${bar}</td><td class="mut">${escH(s.heuristic_project||'')}</td><td>${escH(s.llm_project||'')}<br><span class="mut">${escH((s.what_building||'').slice(0,130))}</span></td><td>${badge(s.agreement)}</td></tr>`;}).join('');
  const withGaps=g.services.filter(s=>(s.critic_gaps||[]).length);
  $('run-gaps').innerHTML=withGaps.length?withGaps.map(s=>`<div style="margin:6px 0"><b>${escH(s.service)}</b>${s.critic_gaps.map(q=>`<div class="mut">• ${escH(q)}</div>`).join('')}</div>`).join(''):'<span class="mut">no critic gaps — quick mode skips the critic stage</span>';
  $('run-quotes').innerHTML=g.services.map(s=>((s.evidence_quotes||[]).length?`<div style="margin:6px 0"><b>${escH(s.service)}</b>${s.evidence_quotes.map(q=>`<div class="mut">&ldquo;${escH(q.slice(0,160))}&rdquo;</div>`).join('')}</div>`:'')).join('')||'<span class="mut">no quotes recorded</span>';
@@ -228,8 +230,8 @@ function renderFindRows(){
  const tb=$('t-find')&&$('t-find').querySelector('tbody');if(!tb)return;
  const area=$('sel-find')&&$('sel-find').value;
  const rows=(findCache&&findCache.findings||[]).filter(f=>!area||f.area===area).slice(0,150);
- tb.innerHTML=rows.map(f=>{const lk=f.ref&&f.ref.startsWith('ledger:')?` <a href="#ledger" data-ledger-run="${escA(f.ref.slice(7))}">ledger</a>`:'';
-  return `<tr><td>${pill(f.severity)}</td><td class="mut">${escH(f.area)}</td><td>${escH(f.title)}${lk}</td><td class="mut">${escH(f.detail||'')}</td></tr>`;}).join('')||trowState(4,'no findings — quiet mesh');
+  tb.innerHTML=rows.map(f=>{const lk=f.ref&&f.ref.startsWith('ledger:')?` <a href="#ledger" data-ledger-run="${escA(f.ref.slice(7))}">ledger</a>`:'';
+   return `<tr data-f='${escA(JSON.stringify(f))}'><td>${pill(f.severity)}</td><td class="mut">${escH(f.area)}</td><td>${escH(f.title)}${lk}</td><td class="mut">${escH(f.detail||'')}</td></tr>`;}).join('')||trowState(4,'no findings — quiet mesh');
  wireTable('#t-find',null);
  tb.querySelectorAll('[data-ledger-run]').forEach(a=>a.onclick=e=>{e.preventDefault();activateTab('ledger');loadLedger(a.dataset.ledgerRun);});
 }
@@ -239,6 +241,7 @@ async function loadFindings(){
 }
 const DIR_CLS=d=>d==='in'?'':'ok';
 function renderChain(d){
+ chainCache=(d.events||[]);
  const sum=d.summary||{};
  const s=$('chain-sum');
  if(s)s.textContent=`${sum.n||0} events · ${sum.chains||0} linked chains · ${sum.orphans||0} orphan completions (${sum.live||0} live + ${sum.history||0} history)`;
@@ -248,7 +251,7 @@ function renderChain(d){
   const t=new Date((e.t||0)*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   const q=e.queue_ms!=null?` · queue ${escH(e.queue_ms)}ms`:'';
   const ch=e.chain?` <span class="pill">chain ${escH(e.chain)}</span>`:'';
-  return `<div class="ev"><span class="dot ${DIR_CLS(e.dir)}"></span><div><div><span class="mut">${t}</span> <b>${escH(e.dir.toUpperCase())}</b> <code>${escH(e.service)}</code> <span class="mut">${escH(e.model||'')}</span>${ch}</div><div class="mut">${escH(e.prompt_head||'')} · ${escH(e.prompt_tokens||0)}+${escH(e.completion_tokens||0)} tok${q} · ${escH(e.status||'')}</div></div></div>`;}).join('')||'<span class="mut">no events</span>';
+  return `<div class="ev" data-f='${escA(JSON.stringify({t:e.t,dir:e.dir,service:e.service,model:e.model,prompt_head:e.prompt_head,prompt_tokens:e.prompt_tokens,completion_tokens:e.completion_tokens,duration_ms:e.duration_ms,queue_ms:e.queue_ms,status:e.status,chain:e.chain,seq:e.seq}))}'><span class="dot ${DIR_CLS(e.dir)}"></span><div><div><span class="mut">${t}</span> <b>${escH(e.dir.toUpperCase())}</b> <code>${escH(e.service)}</code> <span class="mut">${escH(e.model||'')}</span>${ch}</div><div class="mut">${escH(e.prompt_head||'')} · ${escH(e.prompt_tokens||0)}+${escH(e.completion_tokens||0)} tok${q} · ${escH(e.status||'')}</div></div></div>`;}).join('')||'<span class="mut">no events</span>';
 }
 async function loadChain(){
  const el=$('chain');if(el){el.className='mut loading';el.textContent='loading…';}
@@ -296,7 +299,7 @@ function renderLedgerRows(){
  const tb=$('t-ledger')&&$('t-ledger').querySelector('tbody');if(!tb)return;
  const q=$('filt-ledger')&&$('filt-ledger').value;
  const rows=filterLedger(ledgerCache,q).slice(-200);
- tb.innerHTML=rows.map(e=>`<tr><td class="mut">${escH(e.seq)}</td><td><code>${escH(e.actor)}</code></td><td>${escH(e.action)}</td><td class="mut">${escH(e.task_id||'—')}</td><td class="mut"><code>${escH((e.artifact_sha256||'').slice(0,12))}</code></td></tr>`).join('')||trowState(5,'no matching entries');
+ tb.innerHTML=rows.map(e=>`<tr data-f='${escA(JSON.stringify(e))}'><td class="mut">${escH(e.seq)}</td><td><code>${escH(e.actor)}</code></td><td>${escH(e.action)}</td><td class="mut">${escH(e.task_id||'—')}</td><td class="mut"><code>${escH((e.artifact_sha256||'').slice(0,12))}</code></td></tr>`).join('')||trowState(5,'no matching entries');
 }
 async function loadLedger(preset){
  const tb=$('t-ledger')&&$('t-ledger').querySelector('tbody');
@@ -367,7 +370,8 @@ function initTheme(){
 }
 const toggleTheme=()=>initTheme()(document.documentElement.dataset.theme==='light'?'dark':'light');
 const loadTrend=async()=>{try{const t=await j('/api/runs-compare?limit=5');
- $('t-trend').querySelector('tbody').innerHTML=t.services.map(s=>`<tr><td><code>${escH(s)}</code></td><td>${t.cols.map(c=>{const v=c.confidence[s];return `<span title="${escA(c.run_id)}${c.quick?' (quick)':''}" style="display:inline-block;min-width:52px;margin-right:6px;padding:2px 6px;border-radius:4px;background:${v==null?'#21262d':'#1f6feb'};font-size:12px">${v==null?'—':escH(v.toFixed(2))}</span>`;}).join('')}</td></tr>`).join('');
+ trendCache=t;
+ $('t-trend').querySelector('tbody').innerHTML=t.services.map(s=>`<tr data-f='${escA(JSON.stringify({service:s,cols:t.cols.map(c=>({run_id:c.run_id,quick:!!c.quick,confidence:c.confidence[s]??null}))}))}'><td><code>${escH(s)}</code></td><td>${t.cols.map(c=>{const v=c.confidence[s];return `<span title="${escA(c.run_id)}${c.quick?' (quick)':''}" style="display:inline-block;min-width:52px;margin-right:6px;padding:2px 6px;border-radius:4px;background:${v==null?'#21262d':'#1f6feb'};font-size:12px">${v==null?'—':escH(v.toFixed(2))}</span>`;}).join('')}</td></tr>`).join('');
 }catch(e){$('t-trend').querySelector('tbody').innerHTML=`<tr><td class="warn">trend failed: ${escH(e)}</td></tr>`;}};
 const safeHref=u=>/^(https?:|mailto:|#|\/)/i.test(String(u).trim())?String(u).trim():'#';
 const inlineMd=s=>escH(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\[([^\]]+)\]\(([^)]+)\)/g,(m,txt,href)=>`<a href="${escA(safeHref(href))}">${txt}</a>`);
@@ -452,7 +456,7 @@ const showDesignDoc=async id=>{try{const d=await j('/api/design/docs/'+id);
 const liveDir=d=>d==='in'?'<span style="color:#58a6ff">IN</span>':d==='out'?'<span class=ok>OUT</span>':'<span class=warn>SYS</span>';
 const liveTime=t=>new Date(t*1000).toTimeString().slice(0,8);
 const liveEmpty='<tr><td class="mut" colspan=5>no events yet — waiting for traffic</td></tr>';
-const liveRow=e=>`<tr><td class="mut">${escH(liveTime(e.t))}</td><td>${liveDir(e.dir)}</td><td><code>${escH(e.service)}</code></td><td class="mut">${escH((e.model||'').split(':')[0])}</td><td class="mut">${escH((e.prompt_head||'').slice(0,120))}${e.queue_ms!=null?` <span class="mut">· queued ${escH(Math.round(e.queue_ms))}ms</span>`:''} <span class="mut">· ${escH((e.prompt_tokens||0)+(e.completion_tokens||0))} tok</span></td></tr>`;
+const liveRow=e=>`<tr data-f='${escA(JSON.stringify({t:e.t,dir:e.dir,service:e.service,model:e.model,prompt_head:e.prompt_head,prompt_tokens:e.prompt_tokens,completion_tokens:e.completion_tokens,duration_ms:e.duration_ms,queue_ms:e.queue_ms,status:e.status,seq:e.seq,query_type:e.query_type}))}'><td class="mut">${escH(liveTime(e.t))}</td><td>${liveDir(e.dir)}</td><td><code>${escH(e.service)}</code></td><td class="mut">${escH((e.model||'').split(':')[0])}</td><td class="mut">${escH((e.prompt_head||'').slice(0,120))}${e.queue_ms!=null?` <span class="mut">· queued ${escH(Math.round(e.queue_ms))}ms</span>`:''} <span class="mut">· ${escH((e.prompt_tokens||0)+(e.completion_tokens||0))} tok</span></td></tr>`;
 let feedCache=[];
 const feedDirFilter=()=>($('sel-feed-dir')&&$('sel-feed-dir').value)||'';
 const filterFeed=(evs,q)=>{const f=(q||'').toLowerCase().trim();if(!f)return evs;return evs.filter(e=>(e.dir||'').toLowerCase()===f);};
@@ -549,15 +553,15 @@ function renderSecurity(resp){
  const tot=r.totals||{};
  $('sec-stats').innerHTML=['critical','high','medium','low'].map(k=>`<div class="card stat"><div class="v ${SEC_CLS(k)}">${tot[k]||0}</div><div class="k">${k}</div></div>`).join('');
  const flag=f=>[(f.likely_fixture?'fixture?':null),(f.kind==='world_readable_secret'?'exposed!':null)].filter(Boolean).join(' ');
- $('t-sec-secrets').querySelector('tbody').innerHTML=(r.secrets||[]).slice(0,200).map(f=>`<tr><td>${escH(f.kind)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.severity)}</td><td class=mut>${escH(f.source)}:${escH(f.line)}</td><td><code>${escH(f.match)}</code></td><td class=mut>${escH(flag(f))}</td></tr>`).join('')||trowState(5,'no secret/PII survivors','ok');
- $('sec-inject').innerHTML=(r.injections||[]).slice(0,200).map(f=>`<tr><td>${escH(f.kind)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.severity)}</td><td class=mut>${escH(f.source)}:${escH(f.line)}</td><td><code>${escH(f.snippet||f.match)}</code></td></tr>`).join('')||trowState(4,'no injection patterns','ok');
- $('sec-perm').innerHTML=(r.permissions||[]).slice(0,200).map(f=>`<tr><td>${escH(f.source)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.mode)}</td><td>${escH(f.severity)}</td></tr>`).join('')||trowState(3,'no permission issues');
+ $('t-sec-secrets').querySelector('tbody').innerHTML=(r.secrets||[]).slice(0,200).map(f=>`<tr data-f='${escA(JSON.stringify(f))}'><td>${escH(f.kind)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.severity)}</td><td class=mut>${escH(f.source)}:${escH(f.line)}</td><td><code>${escH(f.match)}</code></td><td class=mut>${escH(flag(f))}</td></tr>`).join('')||trowState(5,'no secret/PII survivors','ok');
+ $('sec-inject').innerHTML=(r.injections||[]).slice(0,200).map(f=>`<tr data-f='${escA(JSON.stringify(f))}'><td>${escH(f.kind)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.severity)}</td><td class=mut>${escH(f.source)}:${escH(f.line)}</td><td><code>${escH(f.snippet||f.match)}</code></td></tr>`).join('')||trowState(4,'no injection patterns','ok');
+ $('sec-perm').innerHTML=(r.permissions||[]).slice(0,200).map(f=>`<tr data-f='${escA(JSON.stringify(f))}'><td>${escH(f.source)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.mode)}</td><td>${escH(f.severity)}</td></tr>`).join('')||trowState(3,'no permission issues');
  const tr=r.tracked_evidence||{};
  $('sec-tracked').textContent=(st&&st.assessment&&st.assessment.risk_rating)?`LLM assessment: ${st.assessment.risk_rating}`:'';
  $('sec-stored').innerHTML=st?`<div class=mut>last scan ${new Date((st.generated_at||0)*1000).toLocaleString()} — ${escH((st.assessment||{}).summary||'(no LLM summary)')}</div>`:'<span class=mut>no stored security.json yet</span>';
  wireTable('#t-sec-secrets',null);
  const pt=$('t-sec-proj')&&$('t-sec-proj').querySelector('tbody');
- if(pt)pt.innerHTML=(r.projects||[]).slice(0,30).map(p=>`<tr><td><code>${escH(p.project)}</code></td><td class="${SEC_CLS('critical')}">${escH(p.critical)}</td><td>${escH(p.high)}</td><td>${escH(p.medium)}</td><td class=mut>${escH(p.low)}</td><td><b>${escH(p.total)}</b></td></tr>`).join('')||trowState(6,'no project breakdown');
+ if(pt)pt.innerHTML=(r.projects||[]).slice(0,30).map(p=>`<tr data-f='${escA(JSON.stringify(p))}'><td><code>${escH(p.project)}</code></td><td class="${SEC_CLS('critical')}">${escH(p.critical)}</td><td>${escH(p.high)}</td><td>${escH(p.medium)}</td><td class=mut>${escH(p.low)}</td><td><b>${escH(p.total)}</b></td></tr>`).join('')||trowState(6,'no project breakdown');
  secCache=r;
  renderSecView();
 }
@@ -597,21 +601,23 @@ function renderSecView(){
 }
 const TRUST_CLS=s=>(s==='fail'?'warn':(s==='warn'?'':'ok'));
 function renderTrust(resp){
+ trustCache=resp;
  const rules=resp.rules||[],sum=resp.summary||{};
  const s=$('sec-trust-sum');
  if(s)s.textContent=`${sum.pass||0} pass · ${sum.warn||0} warn · ${sum.fail||0} fail`;
  const tb=$('t-sec-trust')&&$('t-sec-trust').querySelector('tbody');
  if(!tb)return;
- tb.innerHTML=rules.map(r=>`<tr><td><b>${escH(r.rule)}</b></td><td class="${TRUST_CLS(r.status)}">${escH(r.status)}</td><td class=mut>${escH(r.severity)}</td><td>${escH(r.detail)}</td></tr>`).join('')||trowState(4,'no assertions');
+ tb.innerHTML=rules.map(r=>`<tr data-f='${escA(JSON.stringify(r))}'><td><b>${escH(r.rule)}</b></td><td class="${TRUST_CLS(r.status)}">${escH(r.status)}</td><td class=mut>${escH(r.severity)}</td><td>${escH(r.detail)}</td></tr>`).join('')||trowState(4,'no assertions');
  wireTable('#t-sec-trust',null);
 }
 function renderRisk(resp){
+ riskCache=resp;
  const rows=resp.services||[],sum=resp.summary||{};
  const s=$('sec-risk-sum');
  if(s)s.textContent=`${sum.n_services||0} services · worst ${escH(sum.worst||'low')}`;
  const tb=$('t-sec-risk')&&$('t-sec-risk').querySelector('tbody');
  if(!tb)return;
- tb.innerHTML=rows.map(r=>{const g=r.signals||{};return `<tr><td>${escH(r.service)}</td><td class="${SEC_CLS(r.band)}">${escH(r.band)}</td><td>${r.score}</td><td class=mut>${r.n}</td><td>${g.pii||0}</td><td>${g.injection||0}</td><td>${g.cross_service_reuse||0}</td></tr>`;}).join('')||trowState(7,'no requests yet');
+ tb.innerHTML=rows.map(r=>{const g=r.signals||{};return `<tr data-f='${escA(JSON.stringify({service:r.service,band:r.band,score:r.score,n:r.n,signals:g}))}'><td>${escH(r.service)}</td><td class="${SEC_CLS(r.band)}">${escH(r.band)}</td><td>${r.score}</td><td class=mut>${r.n}</td><td>${g.pii||0}</td><td>${g.injection||0}</td><td>${g.cross_service_reuse||0}</td></tr>`;}).join('')||trowState(7,'no requests yet');
  wireTable('#t-sec-risk',null);
 }
 function loadSecurity(){
@@ -650,8 +656,9 @@ const loadLive=async()=>{
    liveLastSeq=f.last_seq||liveLastSeq;
    startLiveStream();
   }catch(e){}
- try{const r=await j('/api/live/rates?window_s=300');
-  $('t-rates').querySelector('tbody').innerHTML=r.services.map(s=>`<tr><td><code>${escH(s.service)}</code></td><td>${escH(s.req)}</td><td>${escH(s.tokens)}</td><td>${escH(s.req_per_min)}</td><td>${escH(s.tok_per_min)}</td></tr>`).join('')||'<tr><td class="mut" colspan=5>no completed requests in window</td></tr>';
+  try{const r=await j('/api/live/rates?window_s=300');
+  ratesCache=r.services||[];
+  $('t-rates').querySelector('tbody').innerHTML=r.services.map(s=>`<tr data-f='${escA(JSON.stringify(s))}'><td><code>${escH(s.service)}</code></td><td>${escH(s.req)}</td><td>${escH(s.tokens)}</td><td>${escH(s.req_per_min)}</td><td>${escH(s.tok_per_min)}</td></tr>`).join('')||'<tr><td class="mut" colspan=5>no completed requests in window</td></tr>';
  }catch(e){}
  try{const sv=await j('/api/services');
   const cur=$('sel-live').value;
@@ -772,6 +779,138 @@ const _ov=$('overlay');if(_ov)_ov.addEventListener('click',e=>{if(e.target===_ov
 window.addEventListener('keydown',e=>{if(e.key==='Escape')closeOverlay();});
 function openSvcOverlayByEvent(e){const r=e.target&&e.target.closest?e.target.closest('[data-svc]'):null;if(r)openSvcOverlay(r.dataset.svc);}
 const _svcT=$('t-svc');if(_svcT)_svcT.addEventListener('click',openSvcOverlayByEvent);
+/* ---- universal row overlays: every table explains itself (AKM overlay pattern) ---- */
+let meshCache=[],riskCache=null,trustCache=null,chainCache=[],ratesCache=[],trendCache=null,graphCache=null;
+const SCORE_HELP={
+ severity:{critical:'live credential or key material — rotate and revoke now',
+  high:'sensitive data or broad exposure — fix this week',
+  medium:'hardening gap — schedule it',low:'informational, no action needed'},
+ band:{critical:'score ≥ 75 — highest inflow risk',high:'score 50–75 — elevated',
+  medium:'score 25–50 — moderate',low:'score below 25 — quiet'},
+ trust:{pass:'assertion holds on current code/config',
+  warn:'holds with a caveat — read the detail',fail:'boundary violated — fix now'},
+ agreement:{match:'heuristic and LLM labels agree',partial:'labels overlap partly',
+  disagree:'labels contradict — one of them is wrong',unknown:'not enough signal either way'},
+ grade:{A:'score ≥ 80 — strong reconstruction evidence',B:'score 65–80 — solid',
+  C:'score 50–65 — thin',D:'below 50 — weak evidence'},
+ vibe:{'pure vibe':'one model, copy-pasted prompts, no visible engineering',
+  'hybrid':'mix of prompt reuse and structure','engineered system':'many templates, multi-model, staged pipeline'},
+ queue_ms:'measured queue wait: OUT completion time minus its IN arrival (fox records no queue time, the tap joins the two events)',
+ coverage:'fraction of secret slots filled by at least one fragment (1.0 = fully reassembled)',
+ pii:'prompts matching secret/PII patterns that should have been masked upstream',
+ injection:'prompts matching override/reveal/role-hijack phrasing',
+ vol_z:'max prompt-token z-score vs the whole corpus — spikes mean anomalous volume',
+ reuse:'prompts also seen (exact or near-dup) from another service — a leaked template',
+ confidence:'LLM self-reported 0–1, not a measurement — weigh against agreement',
+};
+const sevPill=s=>`<span class="pill ${s==='critical'?'crit':s==='high'?'warn':s==='medium'?'':'mut'}">${escH(s||'?')}</span>`;
+function showDetail(title,sub,rows,notes){
+ const bd=$('overlay-body'),ov=$('overlay');if(!bd||!ov)return;
+ bd.innerHTML=`<h2>${escH(title)}</h2>`+(sub?`<div class="mut">${escH(sub)}</div>`:'')
+  +`<table><tbody>${(rows||[]).map(([k,v])=>`<tr><td class="mut" style="white-space:nowrap">${escH(k)}</td><td>${v}</td></tr>`).join('')}</tbody></table>`
+  +((notes||[]).filter(Boolean).map(n=>`<div class="ev-block"><div>${escH(n)}</div></div>`).join(''));
+ ov.classList.add('show');
+}
+const detailFindings=f=>{const where=f.where||(((f.source||'')+(f.line?':'+f.line:''))||'—');
+ const evidence=f.match||f.snippet||((f.area==='risk'||f.area==='claims'||f.area==='fidelity'||f.area==='alert')?(f.detail||'—'):'—');
+ const rows=[['severity',sevPill(f.severity)+' '+escH(SCORE_HELP.severity[f.severity]||'')],
+  ['where',escH(where)],['evidence',`<code>${escH(evidence)}</code>`]];
+ if(f.remediation)rows.push(['remediation',escH(f.remediation)]);
+ if(f.status||f.likely_fixture)rows.push(['status',escH(f.status||'open')+(f.likely_fixture?' · likely fixture (test/docs path)':'')]);
+ return {title:(f.kind||'finding'),sub:((f.area||'')+' finding'),
+  rows,notes:[f.area==='risk'?'Risk bands score inflow danger: '+Object.entries({critical:75,high:50,medium:25}).map(([k,v])=>k+' ≥ '+v).join(', '):'']};};
+const detailLedger=e=>({title:'ledger #'+(e.seq??'?'),sub:(e.actor||'')+' · '+(e.action||''),
+ rows:[['actor',`<code>${escH(e.actor||'')}</code>`],['action',escH(e.action||'')],
+  ['task',`<code>${escH(e.task_id||'—')}</code>`],
+  ['artifact sha',`<code>${escH(e.artifact_sha256||'—')}</code>`],
+  ['detail',escH(e.detail||'—')]],
+ notes:['Each entry hashes the previous one: editing, deleting or reordering any entry breaks verification at exactly that sequence.']});
+const detailMesh=p=>{const h=p.health||{};
+ return {title:(p.machine||p.node_id||'peer'),sub:'mesh peer'+(p.online?'':' (offline)'),
+ rows:[['online',String(!!p.online)],['hardware',escH((p.hardware||{}).kind||'?')],
+  ['llm req/1h',escH(h.llm_requests_1h??'?')],
+  ['services',(h.services||[]).map(s=>`<div>${escH(s.name)} <span class="mut">${escH(s.status||'')} · ${escH(s.running??'?')}/${escH(s.total??'?')} up</span></div>`).join('')||'<span class="mut">none reported</span>']],
+ notes:['Peers arrive via fox gossip reads only — this app never probes or executes on them (trust boundary T2).']};};
+const detailRisk=r=>{const g=r.signals||{};
+ return {title:'risk: '+(r.service||'?'),sub:'inflow risk '+r.score+' / 100',
+ rows:[['band',sevPill(r.band)+' '+escH(SCORE_HELP.band[r.band]||'')],['score',escH(r.score)],
+  ['prompts',escH(r.n)],['PII hits',`${escH(g.pii||0)} — ${SCORE_HELP.pii}`],
+  ['injections',`${escH(g.injection||0)} — ${SCORE_HELP.injection}`],
+  ['volume z',`${escH(g.volume_z??0)} — ${SCORE_HELP.vol_z}`],
+  ['cross-service reuse',`${escH(g.cross_service_reuse||0)} — ${SCORE_HELP.reuse}`]],notes:[]};};
+const detailTrust=r=>({title:'boundary '+r.rule,sub:'status: '+r.status,
+ rows:[['status',escH(r.status)+' — '+escH(SCORE_HELP.trust[r.status]||'')],
+  ['severity',escH(r.severity||'')],['detail',escH(r.detail||'')],
+  ['evidence',(r.evidence||[]).map(e=>`<div><code>${escH(e)}</code></div>`).join('')||'—']],notes:[]});
+const detailRates=s=>({title:'rates: '+(s.service||'?'),sub:'live window rates',
+ rows:[['requests',escH(s.req)],['tokens',escH(s.tokens)],
+  ['req/min',escH(s.req_per_min)+' — requests ÷ window minutes'],
+  ['tok/min',escH(s.tok_per_min)+' — tokens ÷ window minutes']],
+ notes:['Computed over the rolling live window from completed (OUT) events only.']});
+const detailConf=s=>({title:'scores: '+(s.service||'?'),sub:'profiler confidence vs heuristic',
+ rows:[['confidence',`${escH(s.confidence==null?'—':s.confidence)} — ${escH(SCORE_HELP.confidence)}`],
+  ['agreement',`${escH(s.agreement||'?')} — ${escH(SCORE_HELP.agreement[s.agreement]||'')}`],
+  ['heuristic',escH(s.heuristic_project||'—')],['LLM',escH(s.llm_project||'—')],
+  ['what building',escH((s.what_building||'').slice(0,300))],
+  ['critic gaps',((s.critic_gaps||[]).join('; ')||'none').slice(0,400)],
+  ['evidence quotes',String((s.evidence_quotes||[]).length)+' cited prompt lines']],
+ notes:[]});
+const detailTrend=d=>({title:'trend: '+(d.service||'?'),sub:'profiler confidence per run, newest first',
+ rows:[['runs',(d.cols||[]).map(c=>`<div><code>${escH(c.run_id)}</code>${c.quick?' (quick)':''}: <b>${c.confidence==null?'—':escH(c.confidence.toFixed(2))}</b></div>`).join('')||'—']],
+ notes:['Each cell is one run LLM self-reported confidence for this service.']});
+const detailChain=e=>({title:(e.dir||'').toUpperCase()+' · '+(e.service||'?'),sub:new Date((e.t||0)*1000).toLocaleString(),
+ rows:[['model',escH(e.model||'?')],['prompt',escH(e.prompt_head||'—')],
+  ['tokens',`${escH(e.prompt_tokens||0)} + ${escH(e.completion_tokens||0)}`],
+  ['queue wait',e.queue_ms!=null?escH(e.queue_ms)+'ms — '+SCORE_HELP.queue_ms:'— (no IN arrival seen)'],
+  ['status',escH(e.status||'—')],['chain',e.chain?('linked IN→OUT #'+e.chain):'orphan (no qid link)']],
+ notes:[]});
+const detailFeed=e=>({title:(e.dir||'').toUpperCase()+' · '+(e.service||'?'),sub:new Date((e.t||0)*1000).toLocaleString(),
+ rows:[['model',escH(e.model||'?')],['type',escH(e.query_type||'—')],
+  ['prompt',escH(e.prompt_head||'—')],
+  ['tokens',`${escH(e.prompt_tokens||0)} + ${escH(e.completion_tokens||0)}`],
+  ['queue wait',e.queue_ms!=null?escH(e.queue_ms)+'ms — '+SCORE_HELP.queue_ms:'—'],
+  ['status',escH(e.status||'—')],['seq',escH(e.seq??'—')]],notes:[]});
+const detailProj=p=>({title:'project '+p.project,sub:p.total+' findings',
+ rows:[['critical',p.critical],['high',p.high],['medium',p.medium],['low',p.low]],
+ notes:['Rolled up from every finding whose source path starts with this top-level directory.']});
+function wireOverlay(tableSel,build){
+ const host=document.querySelector(tableSel);if(!host)return;
+ host.addEventListener('click',e=>{
+  if(e.target&&e.target.closest&&e.target.closest('a'))return;
+  const r=e.target&&e.target.closest?e.target.closest('[data-f]'):null;
+  if(!r)return;
+  let f=null;try{f=JSON.parse(r.dataset.f);}catch(_){return;}
+  const d=build(f);if(d)showDetail(d.title,d.sub,d.rows,d.notes);
+ });
+}
+wireOverlay('#t-find',f=>detailFindings(f));
+wireOverlay('#t-sec-secrets',f=>detailFindings(f));
+wireOverlay('#t-sec-proj',f=>detailProj(f));
+wireOverlay('#t-sec-trust',f=>detailTrust(f));
+wireOverlay('#t-sec-risk',f=>detailRisk(f));
+wireOverlay('#t-mesh',f=>detailMesh(f));
+wireOverlay('#t-rates',f=>detailRates(f));
+wireOverlay('#t-ledger',f=>detailLedger(f));
+wireOverlay('#t-conf',f=>detailConf(f));
+wireOverlay('#t-trend',f=>detailTrend(f));
+wireOverlay('#t-feed',f=>detailFeed(f));
+const _chainHost=$('chain');if(_chainHost)_chainHost.addEventListener('click',e=>{
+ if(e.target&&e.target.closest&&e.target.closest('a'))return;
+ const r=e.target&&e.target.closest?e.target.closest('[data-f]'):null;
+ if(!r)return;let f=null;try{f=JSON.parse(r.dataset.f);}catch(_){return;}
+ const d=detailChain(f);if(d)showDetail(d.title,d.sub,d.rows,d.notes);
+});
+const _inj=$('sec-inject'),_prm=$('sec-perm');
+const _injT=_inj&&_inj.closest?_inj.closest('table'):null;
+const _prmT=_prm&&_prm.closest?_prm.closest('table'):null;
+if(_injT)_injT.addEventListener('click',secRowClick);
+if(_prmT)_prmT.addEventListener('click',secRowClick);
+function secRowClick(e){
+ if(e.target&&e.target.closest&&e.target.closest('a'))return;
+ const r=e.target&&e.target.closest?e.target.closest('[data-f]'):null;
+ if(!r)return;let f=null;try{f=JSON.parse(r.dataset.f);}catch(_){return;}
+ const d=detailFindings(f);if(d)showDetail(d.title,d.sub,d.rows,d.notes);
+}
 initTheme();
 load();
 activateTab(location.hash.slice(1)||'overview',false);

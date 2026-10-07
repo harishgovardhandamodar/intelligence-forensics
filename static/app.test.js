@@ -102,7 +102,11 @@ function loadApp() {
     + " showNotif, svcDetailHTML, openSvcOverlay, closeOverlay,"
     + " buildIntelRows, switchRunSub, agentLogBlock,"
     + " renderRunPanes, renderRunLogs, renderRunClaims, renderRunVerdict,"
-    + " switchLiveSub, filterFeed, renderFeed, renderFeedRows};\n";
+    + " switchLiveSub, filterFeed, renderFeed, renderFeedRows,"
+    + " showDetail, wireOverlay, SCORE_HELP,"
+    + " detailFindings, detailLedger, detailMesh, detailRisk, detailTrust,"
+    + " detailRates, detailConf, detailTrend, detailChain, detailFeed,"
+    + " detailProj};\n";
   vm.createContext(sandbox);
   vm.runInContext(src, sandbox, { filename: "app.js" });
   return { t: sandbox.__t, el };
@@ -449,8 +453,43 @@ test("renderFeed dedupes by seq and renders newest first", () => {
   t.renderFeed([mk(2, "out"), mk(1, "in")]);
   t.renderFeed([mk(2, "out"), mk(3, "sys")]);
   const html = el("t-feed").querySelector("tbody").innerHTML;
-  const outs = (html.match(/<tr>/g) || []).length;
+  const outs = (html.match(/<tr[\s>]/g) || []).length;
   assert.equal(outs, 3);
   assert.ok(html.indexOf("SYS") !== -1 || html.indexOf("sys") !== -1);
   assert.match(el("feed-count").textContent, /3 buffered/);
+});
+
+test("showDetail renders title, rows, notes escaped", () => {
+  // row values are trusted HTML (builders escape before composing);
+  // title, subtitle and notes are escaped by showDetail itself
+  t.showDetail("t<script>", "sub", [["k", "<b>raw</b>"]], ["note <i>x</i>"]);
+  const h = el("overlay-body").innerHTML;
+  assert.match(h, /<h2>t&lt;script&gt;<\/h2>/);
+  assert.match(h, /<b>raw<\/b>/);
+  assert.match(h, /note &lt;i&gt;x&lt;\/i&gt;/);
+  assert.match(h, /note/);
+});
+
+test("detail builders explain every score in backend terms", () => {
+  const f = t.detailFindings({ kind: "aws_access_key", severity: "critical",
+    source: "x", line: 1, match: "AKIA", remediation: "rotate", status: "open" });
+  assert.match(JSON.stringify(f), /rotate/);
+  const hub = t.detailFindings({ severity: "high", area: "risk",
+    title: "svc inflow risk", detail: "PII 2 · injections 0", ref: "security" });
+  assert.match(hub.rows[2][1], /PII 2/);
+  assert.equal(hub.rows.filter(r=>r[0]==='remediation').length, 0);
+  assert.equal(t.detailRisk({ service: "s", band: "high", score: 60, n: 9,
+    signals: { pii: 1 } }).title, "risk: s");
+  assert.match(t.detailTrust({ rule: "T1", status: "fail", severity: "high",
+    detail: "d", evidence: ["a:b"] }).rows[0][1], /violated/);
+  assert.match(t.detailConf({ service: "s", confidence: null,
+    agreement: "disagree" }).rows[1][1], /contradict/);
+  const m = t.detailMesh({ machine: "n1", online: false, hardware: { kind: "cpu" },
+    health: { llm_requests_1h: 3, services: [{ name: "a", status: "running", running: 1, total: 1 }] } });
+  assert.match(m.sub, /offline/);
+  assert.match(t.detailChain({ dir: "out", service: "s", queue_ms: 12, chain: 3 }).rows[3][1], /12ms/);
+  assert.match(t.detailProj({ project: "p", critical: 1, high: 0,
+    medium: 0, low: 0, total: 1 }).notes[0], /top-level/);
+  assert.match(t.detailLedger({ seq: 4, actor: "a", action: "x",
+    artifact_sha256: "ab" }).rows[3][1], /<code>ab<\/code>/);
 });
