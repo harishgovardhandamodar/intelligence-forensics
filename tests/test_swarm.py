@@ -90,3 +90,97 @@ def test_ledger_concurrent_appends_stay_ordered(tmp_path):
     out = led.verify("r1", base_dir=base)
     assert out == {"run_id": "r1", "ok": True, "checked": n * workers,
                    "failed_at": None, "reason": ""}
+
+
+def test_registry_roundtrip_and_unknown(monkeypatch, tmp_path):
+    from iforensics import config
+    monkeypatch.setattr(config, "EVIDENCE_DIR", str(tmp_path))
+    assert swarm.get_run("nope") == {"status": "unknown"}
+    e = swarm.register_run("k1", {"status": "running"})
+    assert e["status"] == "running" and e["started"]
+    e2 = swarm.update_run("k1", {"status": "done", "run_id": "r1"})
+    assert e2["status"] == "done" and e2["run_id"] == "r1"
+    assert swarm.get_run("k1")["status"] == "done"
+    # survives a fresh read (disk-backed, not a global)
+    assert swarm.get_run("k1")["run_id"] == "r1"
+
+
+def test_recoverable_tasks_lists_leftovers(tmp_path):
+    base = str(tmp_path)
+    swarm.enqueue("profile", {}, run_id="other", base_dir=base)
+    swarm.claim("x", base_dir=base)  # park the unrelated task out of the way
+    t1 = swarm.enqueue("profile", {}, run_id="r1", base_dir=base)
+    t2 = swarm.enqueue("profile", {}, run_id="r1", base_dir=base)
+    claimed = swarm.claim("dead", base_dir=base)  # must be an r1 task now
+    assert claimed["run_id"] == "r1"
+    left = swarm.recoverable_tasks("r1", base_dir=base)
+    by_id = {t["task_id"]: t["_state"] for t in left}
+    assert set(by_id) == {t1["task_id"], t2["task_id"]}
+    assert by_id[claimed["task_id"]] == "claimed"
+    assert swarm.recoverable_tasks("other", base_dir=base)[0]["_state"] == "claimed"
+
+
+def test_launch_background_uses_registry(monkeypatch, tmp_path):
+    import time as _time
+    from iforensics import agents as ag
+    from iforensics import config
+    monkeypatch.setattr(config, "EVIDENCE_DIR", str(tmp_path))
+    monkeypatch.setattr(ag, "run_deep_investigation",
+                        lambda rows, **kw: {"run_id": "r-mock", "ok": True})
+    key = ag.launch_background(lambda: [], model="m", quick=True, only=None)
+    for _ in range(100):
+        st = ag.background_status(key)
+        if st.get("status") in ("done", "error"):
+            break
+        _time.sleep(0.05)
+    assert st["status"] == "done" and st["run_id"] == "r-mock"
+    assert ag.background_status("missing") == {"status": "unknown"}
+
+
+def test_approval_roundtrip_and_miss(tmp_path):
+    base = str(tmp_path)
+    assert led.find_approval("r1", "prune-old", base_dir=base) is None
+    e = led.approve("r1", "prune-old", "op", detail="cleanup", base_dir=base)
+    assert e["actor"] == "human:op" and e["action"] == "human.approve"
+    found = led.find_approval("r1", "prune-old", base_dir=base)
+    assert found and found["hash"] == e["hash"]
+    assert led.find_approval("r1", "other-subject", base_dir=base) is None
+    assert led.verify("r1", base_dir=base)["ok"] is True
+
+
+def test_worker_prune_requires_approval(tmp_path, monkeypatch):
+    import cli
+    from iforensics import retention as ret_mod
+    monkeypatch.setenv("IF_LEDGER_DIR", str(tmp_path / "ledger"))
+    monkeypatch.setattr(ret_mod, "prune_snapshots", lambda **kw: ["a.db"])
+    monkeypatch.setattr(ret_mod, "prune_reports",
+                        lambda **kw: {"removed": [], "kept": 0})
+    monkeypatch.setattr(ret_mod, "prune_live_logs", lambda **kw: [])
+    import pytest
+    with pytest.raises(PermissionError):
+        cli._swarm_execute("prune", {"approval": "cleanup-q3"}, "m",
+                           task_id="t-1", run_id="r1")
+    led.approve("r1", "cleanup-q3", "op", base_dir=str(tmp_path / "ledger"))
+    out = cli._swarm_execute("prune", {"approval": "cleanup-q3"}, "m",
+                             task_id="t-1", run_id="r1")
+    assert out["approval"] == "cleanup-q3"
+    assert out["snapshots"] == ["a.db"]
+
+
+def test_prune_apply_needs_approve_flag(tmp_path, monkeypatch):
+    import argparse
+    import cli
+    from iforensics import retention as ret_mod
+    monkeypatch.setenv("IF_LEDGER_DIR", str(tmp_path / "ledger"))
+    calls = []
+    monkeypatch.setattr(ret_mod, "prune_snapshots",
+                        lambda **kw: calls.append("db") or [])
+    args = argparse.Namespace(keep_db=5, keep_reports=10, keep_days=30,
+                              apply=True, approve="")
+    assert cli.cmd_prune(args) == 2
+    assert calls == []  # refused before touching anything
+    args.approve = "ticket-42"
+    assert cli.cmd_prune(args) == 0
+    assert calls == ["db"]
+    assert led.find_approval("ops", "ticket-42",
+                             base_dir=str(tmp_path / "ledger")) is not None

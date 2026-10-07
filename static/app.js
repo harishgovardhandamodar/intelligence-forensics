@@ -3,7 +3,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 const TABS=[...document.querySelectorAll('#tabs button')].map(b=>b.dataset.t);
 const trowState=(cols,msg,cls='mut')=>`<tr><td class="${cls}" colspan="${cols}">${escH(msg)}</td></tr>`;
-const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();document.title='Intelligence Forensics — '+name;};
+const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();document.title='Intelligence Forensics — '+name;};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 window.addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 window.addEventListener('popstate',()=>activateTab(location.hash.slice(1),false));
@@ -224,6 +224,23 @@ function drawKnowledge(g){
 async function loadKnowledge(){
  const el=$('kg');if(el){el.className='mut loading';el.textContent='loading…';}
  try{drawKnowledge(await j('/api/knowledge'));}catch(e){if(el){el.className='warn';el.textContent='graph failed: '+e;}}
+}
+async function loadLedger(){
+ const tb=$('t-ledger')&&$('t-ledger').querySelector('tbody');
+ const v=$('ledger-verdict');
+ try{
+  const sel=$('sel-ledger');
+  if(sel&&!sel.dataset.filled){const r=await j('/api/swarm/runs');sel.innerHTML=(r.runs||[]).map(x=>`<option value="${escA(x.run_id)}">${escH(x.run_id)}</option>`).join('')||'<option value="">no runs</option>';sel.dataset.filled='1';}
+  const rid=sel&&sel.value;
+  if(!rid){if(tb)tb.innerHTML=trowState(5,'no ledger runs yet');return;}
+  const [d,ver]=await Promise.all([j('/api/swarm/ledger?run_id='+encodeURIComponent(rid)),j('/api/swarm/verify?run_id='+encodeURIComponent(rid))]);
+  if(v){v.textContent=ver.ok?`chain OK — ${ver.checked} entries`:`BROKEN at seq ${ver.failed_at} (${ver.reason})`;v.className=ver.ok?'ok':'warn';}
+  if(tb)tb.innerHTML=(d.entries||[]).slice(-200).map(e=>`<tr><td class="mut">${escH(e.seq)}</td><td><code>${escH(e.actor)}</code></td><td>${escH(e.action)}</td><td class="mut">${escH(e.task_id||'—')}</td><td class="mut"><code>${escH((e.artifact_sha256||'').slice(0,12))}</code></td></tr>`).join('')||trowState(5,'empty ledger');
+ }catch(e){if(v){v.textContent='ledger failed: '+e;v.className='warn';}}
+ try{const q=await j('/api/swarm/queue');const qs=$('queue-sum');if(qs)qs.textContent=`${q.pending||0} pending · ${q.claimed||0} claimed · ${q.done||0} done · ${q.failed||0} failed`;
+  const qt=$('t-queue')&&$('t-queue').querySelector('tbody');
+  if(qt)qt.innerHTML=['pending','claimed','done','failed'].map(k=>`<tr><td>${k}</td><td>${q[k]||0}</td></tr>`).join('');
+ }catch(e){}
 }
 function initTheme(){
  const root=document.documentElement;
@@ -487,6 +504,7 @@ $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$(
 const _sb=$('b-sec-scan');if(_sb)_sb.onclick=secScan;
 const _sf=$('sel-find');if(_sf)_sf.onchange=renderFindRows;
 const _bc=$('b-chain');if(_bc)_bc.onclick=loadChain;
+const _bl=$('b-ledger');if(_bl)_bl.onclick=loadLedger;
 initTheme();
 load();
 activateTab(location.hash.slice(1)||'overview',false);

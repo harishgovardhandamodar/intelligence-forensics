@@ -131,3 +131,24 @@ def test_post_rate_limit(monkeypatch):
     assert r.status_code == 429
     assert r.json()["detail"].startswith("rate limited")
     assert c.get("/api/live/status").status_code == 200  # GETs unaffected
+
+
+def test_swarm_endpoints(monkeypatch, tmp_path):
+    from fastapi.testclient import TestClient
+    from iforensics import ledger as ledger_mod
+    monkeypatch.setenv("IF_LEDGER_DIR", str(tmp_path))
+    ledger_mod.append("r1", "orchestrator", "run.start")
+    c = TestClient(dashboard.app)
+    runs = c.get("/api/swarm/runs")
+    assert runs.status_code == 200
+    assert [r["run_id"] for r in runs.json()["runs"]] == ["r1"]
+    lg = c.get("/api/swarm/ledger", params={"run_id": "r1"})
+    assert lg.status_code == 200
+    assert lg.json()["entries"][0]["action"] == "run.start"
+    assert c.get("/api/swarm/ledger", params={"run_id": "nope"}).status_code == 404
+    ver = c.get("/api/swarm/verify", params={"run_id": "r1"})
+    assert ver.json() == {"run_id": "r1", "ok": True, "checked": 1,
+                          "failed_at": None, "reason": ""}
+    q = c.get("/api/swarm/queue")
+    assert q.status_code == 200
+    assert set(q.json()) == {"pending", "claimed", "done", "failed"}

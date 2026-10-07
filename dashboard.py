@@ -65,7 +65,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <link rel="stylesheet" href="/static/app.css"></head><body>
 <header><h1>&#x1f575; Intelligence Forensics</h1><span class=sub id=hdr>loading&hellip;</span><span style="flex:1"></span><button id=b-theme title="toggle light/dark theme">◐</button></header>
 <nav id=tabs>
-<button data-t=overview class=on>Overview</button><button data-t=findings>Findings</button><button data-t=live>Live tap</button><button data-t=timeline>Timeline</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=mesh>Mesh</button><button data-t=graph>Graph</button><button data-t=evidence>Evidence</button><button data-t=security>Security</button><button data-t=design>Design</button>
+<button data-t=overview class=on>Overview</button><button data-t=findings>Findings</button><button data-t=live>Live tap</button><button data-t=timeline>Timeline</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=ledger>Ledger</button><button data-t=mesh>Mesh</button><button data-t=graph>Graph</button><button data-t=evidence>Evidence</button><button data-t=security>Security</button><button data-t=design>Design</button>
 </nav><main>
 <section id=s-overview class=on><div class=grid id=stats></div><div class=card><h3>Latest brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=brief class=md>loading&hellip;</div></div>
 <div class=card><h3>Run investigation</h3><div class=row>
@@ -111,6 +111,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <h3>Evidence quotes <span class=mut style="font-weight:normal">— prompt lines the profiler cited</span></h3><div id=run-quotes></div></div>
 <div class=card><h3>Across runs <span class=mut style="font-weight:normal">— profiler confidence per service, newest first</span></h3><table id=t-trend><thead><tr><th>service</th><th>trend</th></tr></thead><tbody></tbody></table></div>
 <div class=card><h3>Brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=run-brief class=md>click a run&hellip;</div></div></section>
+<section id=s-ledger><div class=card><div class=row><h3>Action ledger</h3><span class=mut id=ledger-verdict></span></div><div class=row><span class=mut>run</span><select id=sel-ledger></select><button class=act id=b-ledger>Reload</button><span class=mut>every action, hash-chained — tampering breaks verification at the exact entry</span></div><table id=t-ledger><thead><tr><th>seq</th><th>actor</th><th>action</th><th>task</th><th>artifact sha</th></tr></thead><tbody></tbody></table></div><div class=card><div class=row><h3>Task queue</h3><span class=mut id=queue-sum></span></div><table id=t-queue><thead><tr><th>state</th><th>depth</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-mesh><div class=card><h3>Topology <span class=mut style="font-weight:normal">— service → container → peer → model</span></h3><div id=topo class=mut>loading&hellip;</div></div><div class=card><table id=t-mesh><thead><tr><th>node</th><th>online</th><th>hw</th><th>llm/1h</th><th>services</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-graph><div class=card><div class=row><h3>Knowledge graph</h3><span class=mut id=kg-sum></span></div><div class=mut>Services, prompt templates, models, findings and built evidence — a template node with edges into two services is cross-service leakage made visible.</div><div id=kg class=mut>loading&hellip;</div></div></section>
 <section id=s-evidence><div class=card><div class=row><input id=filt-ev placeholder="filter files&hellip;"><button class=act data-x=t-ev data-name=evidence-CSV>CSV</button><button class=act data-x=t-ev data-name=evidence-JSON>JSON</button><span class=mut id=ev-msg></span></div><table id=t-ev><thead><tr><th>file</th><th>size</th></tr></thead><tbody></tbody></table></div>
@@ -369,6 +370,37 @@ def run_validation(run_id: str):
     if not m:
         raise HTTPException(404, "unknown run")
     return claims_mod.validate_run(m)
+
+
+@app.get("/api/swarm/runs")
+def swarm_runs():
+    """Ledger index: every run with an action chain (P7.31)."""
+    from iforensics import ledger as ledger_mod
+    return {"runs": ledger_mod.runs()}
+
+
+@app.get("/api/swarm/ledger")
+def swarm_ledger(run_id: str, limit: int = 500):
+    """Action entries for a run, newest last (P7.31)."""
+    from iforensics import ledger as ledger_mod
+    entries = ledger_mod.read(run_id)
+    if not entries:
+        raise HTTPException(404, "no ledger for run")
+    return {"run_id": run_id, "entries": entries[-max(1, min(2000, limit)):]}
+
+
+@app.get("/api/swarm/verify")
+def swarm_verify(run_id: str):
+    """Recompute a run's hash chain (P7.31)."""
+    from iforensics import ledger as ledger_mod
+    return ledger_mod.verify(run_id)
+
+
+@app.get("/api/swarm/queue")
+def swarm_queue():
+    """Task queue depths per state (P7.31)."""
+    from iforensics import swarm as swarm_mod
+    return swarm_mod.status()
 
 
 @app.get("/api/findings")

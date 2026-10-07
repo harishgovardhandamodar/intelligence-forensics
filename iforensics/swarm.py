@@ -21,6 +21,11 @@ import os
 import random
 import time
 
+try:
+    import fcntl  # noqa — POSIX advisory locks for container workers
+except ImportError:  # pragma: no cover — non-POSIX fallback
+    fcntl = None  # type: ignore
+
 STALE_S = 600
 MAX_ATTEMPTS = 5
 
@@ -173,4 +178,93 @@ def status(base_dir: str | None = None) -> dict:
             out[state] = len([f for f in os.listdir(d) if f.endswith(".json")])
         except OSError:
             out[state] = 0
+    return out
+
+
+# ------------------------------------------------------------------ registry
+# Disk-backed run registry (P7.30): replaces the in-process _RUNS global so a
+# dashboard restart no longer loses background runs, and container workers
+# see the same state. One JSON doc; fcntl-guarded like the ledger.
+
+def _registry_path() -> str:
+    from . import config
+    return os.path.join(config.EVIDENCE_DIR, "agentic", "registry.json")
+
+
+def _locked_registry():
+    path = _registry_path()
+    if not os.path.exists(path):
+        return {}
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "a+", encoding="utf-8") as f:
+        if fcntl is not None:
+            try:
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+            except OSError:
+                pass
+        try:
+            f.seek(0)
+            raw = f.read()
+            return json.loads(raw) if raw.strip() else {}
+        except ValueError:
+            return {}
+        finally:
+            if fcntl is not None:
+                try:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                except OSError:
+                    pass
+
+
+def _write_registry(reg: dict) -> None:
+    path = _registry_path()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tmp = path + f".tmp-{os.getpid()}"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(reg, f, indent=1, default=str)
+    os.rename(tmp, path)
+
+
+def register_run(run_key: str, info: dict | None = None) -> dict:
+    """Record a background run (merge over any existing entry)."""
+    reg = _locked_registry()
+    entry = {"status": "running", "started": time.time(), **(info or {})}
+    reg[run_key] = {**reg.get(run_key, {}), **entry, "updated": time.time()}
+    _write_registry(reg)
+    return reg[run_key]
+
+
+def update_run(run_key: str, info: dict) -> dict:
+    """Merge new fields into a run entry (status transitions live here)."""
+    reg = _locked_registry()
+    reg[run_key] = {**reg.get(run_key, {}), **info, "updated": time.time()}
+    _write_registry(reg)
+    return reg[run_key]
+
+
+def get_run(run_key: str) -> dict:
+    """One run entry; unknown keys report as unknown (dashboard contract)."""
+    return dict(_locked_registry().get(run_key, {"status": "unknown"}))
+
+
+def recoverable_tasks(run_id: str, base_dir: str | None = None) -> list[dict]:
+    """Pending + claimed queue tasks for a run: what a crash left behind.
+
+    Claimed tasks belong to a presumably dead worker; the caller can requeue
+    them (via fail(requeue=True)) or leave them for stale recovery.
+    """
+    dirs = _dirs(base_dir)
+    out = []
+    for state in ("pending", "claimed"):
+        try:
+            names = sorted(os.listdir(dirs[state]))
+        except OSError:
+            continue
+        for name in names:
+            if not name.endswith(".json"):
+                continue
+            task = _read(os.path.join(dirs[state], name)) or {}
+            if task.get("run_id") == run_id:
+                task["_state"] = state
+                out.append(task)
     return out

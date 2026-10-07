@@ -39,7 +39,10 @@ _lock = threading.Lock()
 
 
 def ledger_dir(base_dir: str | None = None) -> str:
-    base = base_dir or config.EVIDENCE_DIR
+    if base_dir is not None:
+        base = base_dir
+    else:
+        base = os.environ.get("IF_LEDGER_DIR") or config.EVIDENCE_DIR
     return base if os.path.basename(base) == LEDGER_DIRNAME else os.path.join(base, LEDGER_DIRNAME)
 
 
@@ -146,6 +149,37 @@ def _touch_index(run_id: str, path: str, base_dir: str | None = None) -> None:
 def read(run_id: str, base_dir: str | None = None) -> list[dict]:
     """All entries for a run, in chain order."""
     return _read_all(_path(run_id, base_dir))
+
+
+def runs(base_dir: str | None = None) -> list[dict]:
+    """Ledger index: every run with an entry chain, newest touch first."""
+    idx_path = os.path.join(ledger_dir(base_dir), INDEX)
+    try:
+        with open(idx_path, encoding="utf-8") as f:
+            index = json.load(f)
+    except (OSError, ValueError):
+        return []
+    if not isinstance(index, dict):
+        return []
+    return sorted(({"run_id": k, **v} for k, v in index.items()),
+                  key=lambda e: e.get("updated_at", 0), reverse=True)
+
+
+def approve(run_id: str, subject: str, by: str, detail: str = "",
+            base_dir: str | None = None) -> dict:
+    """Record a human approval (P7.31). Destructive worker tasks cite the
+    subject; execution is refused without a matching entry."""
+    return append(run_id, f"human:{by}", "human.approve", task_id=subject,
+                  detail=detail or subject, base_dir=base_dir)
+
+
+def find_approval(run_id: str, subject: str,
+                  base_dir: str | None = None) -> dict | None:
+    """The human.approve entry for a subject, or None (refuse)."""
+    for e in read(run_id, base_dir):
+        if e.get("action") == "human.approve" and e.get("task_id") == subject:
+            return e
+    return None
 
 
 def verify(run_id: str, base_dir: str | None = None) -> dict:

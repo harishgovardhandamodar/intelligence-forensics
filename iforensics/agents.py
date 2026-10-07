@@ -150,6 +150,17 @@ def _write(run_dir: str, name: str, payload: dict) -> None:
         json.dump(payload, f, indent=1, default=str)
 
 
+def _log(run_id: str, actor: str, action: str, task_id: str = "",
+         artifact: str = "", detail: str = "") -> None:
+    """Ledger event that must never break the run (P7.28)."""
+    try:
+        from . import ledger as ledger_mod
+        ledger_mod.append(run_id, actor, action, task_id=task_id,
+                          artifact=artifact, detail=detail)
+    except Exception:  # noqa: BLE001
+        pass
+
+
 def run_deep_investigation(rows: list[dict], model: str | None = None,
                            quick: bool = False,
                            only: list[str] | None = None,
@@ -168,6 +179,7 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
     manifest: dict = {"run_id": run_id, "model": model, "quick": quick,
                       "services": services, "agents": {}, "errors": []}
     t0 = time.time()
+    _log(run_id, "orchestrator", "run.start", detail=f"model={model} quick={quick}")
 
     # 1. scout (heuristic shortlist + LLM rank)
     try:
@@ -175,9 +187,14 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
     except Exception as e:  # noqa: BLE001 — one agent must not kill the run
         manifest["errors"].append(f"scout: {type(e).__name__}: {e}")
     _write(run_dir, "scout.json", manifest["agents"].get("scout", {}))
+    _log(run_id, "scout", "task.complete", task_id=f"{run_id}-scout",
+         artifact=os.path.join(run_dir, "scout.json"))
 
     # 2. profilers in parallel
     profs: dict[str, dict] = {}
+    for s in services:
+        _log(run_id, "orchestrator", "task.issued",
+             task_id=f"{run_id}-profile-{s}", detail=f"service={s}")
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
         futs = {ex.submit(profiler, s, inv["services"][s], model, np): s
                 for s in services}
@@ -189,11 +206,18 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
                 manifest["errors"].append(f"profiler:{s}: {type(e).__name__}: {e}")
                 profs[s] = {"agent": "profiler", "service": s, "error": str(e)}
             _write(run_dir, f"profiler.{s}.json", profs[s])
+            _log(run_id, f"profiler:{s}", "task.complete",
+                 task_id=f"{run_id}-profile-{s}",
+                 artifact=os.path.join(run_dir, f"profiler.{s}.json"))
     manifest["agents"]["profilers"] = profs
 
     # 3. critics (skipped in quick mode)
     crits: dict[str, dict] = {}
     if not quick:
+        for s in services:
+            if "error" not in profs.get(s, {}):
+                _log(run_id, "orchestrator", "task.issued",
+                     task_id=f"{run_id}-critic-{s}", detail=f"service={s}")
         with ThreadPoolExecutor(max_workers=max_workers) as ex:
             futs = {ex.submit(critic, s, inv["services"][s], profs[s], model, 256): s
                     for s in services if "error" not in profs[s]}
@@ -205,6 +229,9 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
                     manifest["errors"].append(f"critic:{s}: {type(e).__name__}: {e}")
                 else:
                     _write(run_dir, f"critic.{s}.json", crits[s])
+                    _log(run_id, f"critic:{s}", "task.complete",
+                         task_id=f"{run_id}-critic-{s}",
+                         artifact=os.path.join(run_dir, f"critic.{s}.json"))
     manifest["agents"]["critics"] = crits
 
     # 4. deterministic security scan (no LLM) — folded into the brief
@@ -215,6 +242,8 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
                                 "totals": sec_report.get("totals"),
                                 "n_findings": sec_report.get("n_findings")}
         _write(run_dir, "security.json", sec_report)
+        _log(run_id, "sentinel", "task.complete", task_id=f"{run_id}-security",
+             artifact=os.path.join(run_dir, "security.json"))
     except Exception as e:  # noqa: BLE001
         manifest["errors"].append(f"security: {type(e).__name__}: {e}")
 
@@ -230,6 +259,8 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
     except Exception as e:  # noqa: BLE001
         manifest["errors"].append(f"reporter: {type(e).__name__}: {e}")
     _write(run_dir, "reporter.json", manifest["agents"].get("reporter", {}))
+    _log(run_id, "reporter", "task.complete", task_id=f"{run_id}-reporter",
+         artifact=os.path.join(run_dir, "reporter.json"))
 
     manifest["elapsed_s"] = round(time.time() - t0, 1)
     manifest["heuristic_investigation"] = {
@@ -249,6 +280,8 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
         for s in services
     }
     _write(run_dir, "manifest.json", manifest)
+    _log(run_id, "orchestrator", "run.complete",
+         detail=f"errors={len(manifest['errors'])} elapsed_s={manifest['elapsed_s']}")
 
     # human-readable brief
     brief = ["# Agentic forensic brief", f"run: {run_id} model: {model}",
@@ -294,31 +327,30 @@ def load_run(run_id: str) -> dict | None:
     return manifest
 
 
-# background-run registry so the dashboard can fire-and-forget
-_RUNS: dict[str, dict] = {}
-_LOCK = threading.Lock()
+# background-run registry so the dashboard can fire-and-forget.
+# Disk-backed (swarm.register_run) — a restart no longer loses runs, and
+# container workers observe the same state. No in-process _RUNS global.
 
 
 def launch_background(rows_fn, model: str, quick: bool,
                       only: list[str] | None) -> str:
+    from . import swarm as swarm_mod
     run_key = f"pending-{time.strftime('%Y%m%d_%H%M%S')}"
-    with _LOCK:
-        _RUNS[run_key] = {"status": "running", "started": time.time()}
+    swarm_mod.register_run(run_key, {"status": "running",
+                                     "started": time.time()})
 
     def _work():
         try:
             res = run_deep_investigation(rows_fn(), model=model,
                                          quick=quick, only=only)
-            with _LOCK:
-                _RUNS[run_key] = {"status": "done", **res}
+            swarm_mod.update_run(run_key, {"status": "done", **res})
         except Exception as e:  # noqa: BLE001
-            with _LOCK:
-                _RUNS[run_key] = {"status": "error", "error": str(e)}
+            swarm_mod.update_run(run_key, {"status": "error", "error": str(e)})
 
     threading.Thread(target=_work, daemon=True).start()
     return run_key
 
 
 def background_status(key: str) -> dict:
-    with _LOCK:
-        return dict(_RUNS.get(key, {"status": "unknown"}))
+    from . import swarm as swarm_mod
+    return swarm_mod.get_run(key)

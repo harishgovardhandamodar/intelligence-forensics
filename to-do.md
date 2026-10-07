@@ -186,12 +186,14 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 ### P7 — agent swarm with auditable ledger
 - [x] P7.27 Ledger module: append-only hash-chained JSONL per run, verify,
       tail (`ledger.py` + tamper-detection tests)
-- [ ] P7.28 Instrument the existing run: every stage emits issued/completed
+- [x] P7.28 Instrument the existing run: every stage emits issued/completed
       entries with artifact hashes (no behavior change)
-- [ ] P7.29 Gatherers as tasks: fox/db/tap/mesh sources with per-source
+- [x] P7.29 Gatherers as tasks: fox/db/tap/mesh sources with per-source
       timeouts and retries
-- [ ] P7.30 Worker pool + disk-backed run registry (replace `_RUNS` global);
+- [x] P7.30 Worker pool + disk-backed run registry (replace `_RUNS` global);
       crash recovery by replaying uncompleted tasks
+- [x] P7.31 Surface: `/api/swarm/ledger` + Ledger tab, `ledger verify` CLI,
+      human-approval entries for prune/export
 - [x] P7.32 Agent isolation: one container per swarm role with NVIDIA GPU
       passthrough (2x RTX 5080 on axiom); file task queue under
       evidence/swarm; role-scoped mounts (gatherers get fox-data:ro,

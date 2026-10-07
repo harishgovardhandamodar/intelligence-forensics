@@ -204,8 +204,22 @@ def cmd_fidelity(args) -> int:
 
 
 def cmd_prune(args) -> int:
-    """Drop old evidence per the retention policy (P5.22). Dry run by default."""
+    """Drop old evidence per the retention policy (P5.22). Dry run by default;
+    --apply additionally requires --approve so the deletion is on the ledger."""
     from iforensics import retention as ret_mod
+    if args.apply and not args.approve:
+        print("[!] refusing: --apply deletes evidence and needs "
+              "--approve '<reason>' (recorded on the ops ledger)", file=sys.stderr)
+        return 2
+    if args.apply:
+        import socket as _socket
+        from iforensics import ledger as ledger_mod
+        by = os.environ.get("USER") or _socket.gethostname()
+        ledger_mod.approve("ops", args.approve, by,
+                           detail=f"prune apply keep_db={args.keep_db} "
+                                  f"keep_reports={args.keep_reports} "
+                                  f"keep_days={args.keep_days}")
+        print(f"[*] approval recorded on ops ledger: {args.approve!r}")
     total = 0
     db = ret_mod.prune_snapshots(keep=args.keep_db, dry_run=not args.apply)
     print(f"db snapshots: {len(db)} {'would remove' if not args.apply else 'removed'} "
@@ -273,11 +287,13 @@ ROLE_KINDS = {
     "critic": ["critic"],
     "gather": ["gather"],
     "security": ["security"],
+    "ops": ["prune"],
     "any": None,
 }
 
 
-def _swarm_execute(kind: str, payload: dict, model: str):
+def _swarm_execute(kind: str, payload: dict, model: str, task_id: str = "adhoc",
+                   run_id: str = ""):
     """Run one claimed task in-process. Returns a JSON-serializable result."""
     if kind == "profile":
         from iforensics import agents as ag
@@ -295,24 +311,37 @@ def _swarm_execute(kind: str, payload: dict, model: str):
                 "content_head": (out.get("content") or "")[:2000],
                 "ms": out.get("ms", 0)}
     if kind == "gather":
-        source = payload.get("source", "llm_requests")
-        fn = {"llm_requests": fox_client.llm_requests,
-              "llm_queue": fox_client.llm_queue,
-              "mesh_status": fox_client.mesh_status,
-              "mesh_peers": fox_client.mesh_peers,
-              "docker_projects": fox_client.docker_projects,
-              "service_model": fox_client.service_model}.get(source)
-        if fn is None:
-            raise ValueError(f"unknown gather source: {source!r}")
-        data = fn(**(payload.get("params") or {}))
-        n = len(data.get("requests") or data.get("matrix") or data.get("peers")
-                or data.get("projects") or [])
-        return {"source": source, "n": n}
+        import tempfile
+        from iforensics import gather as gather_mod
+        env = gather_mod.gather_one(
+            payload.get("source", "llm_requests"),
+            params=payload.get("params"),
+            timeout_s=float(payload.get("timeout_s", 60.0)),
+            artifact_dir=os.path.join(config.EVIDENCE_DIR, "swarm", "results"),
+            task_id=payload.get("task_id", task_id))
+        return {"source": env["source"], "ok": env["ok"],
+                "artifact": env.get("artifact"),
+                "error": env.get("error"), "elapsed_s": env.get("elapsed_s")}
     if kind == "security":
         from iforensics import security_agent
         rep = security_agent.deterministic_report()
         return {"risk_rating": rep.get("risk_rating"),
                 "n_findings": rep.get("n_findings"), "totals": rep.get("totals")}
+    if kind == "prune":
+        from iforensics import ledger as ledger_mod
+        from iforensics import retention as ret_mod
+        subject = payload.get("approval", "")
+        if not subject or not ledger_mod.find_approval(run_id, subject):
+            raise PermissionError(
+                f"prune requires a ledger human.approve for {subject!r} "
+                f"(cli.py ledger approve --run {run_id})")
+        return {"approval": subject,
+                "snapshots": ret_mod.prune_snapshots(
+                    keep=int(payload.get("keep_db", 5))),
+                "reports": ret_mod.prune_reports(
+                    keep=int(payload.get("keep_reports", 10))),
+                "logs": ret_mod.prune_live_logs(
+                    keep_days=int(payload.get("keep_days", 30)))}
     raise ValueError(f"unknown task kind: {kind!r}")
 
 
@@ -362,7 +391,9 @@ def cmd_swarm_worker(args) -> int:
                 with _fut.ThreadPoolExecutor(max_workers=1) as ex:
                     result = ex.submit(_swarm_execute, task.get("kind"),
                                        task.get("payload") or {},
-                                       model).result(timeout=args.timeout)
+                                       model, tid,
+                                       task.get("run_id") or "").result(
+                                           timeout=args.timeout)
                 swarm_mod.complete(tid, result)
                 done += 1
                 ok = True
@@ -380,6 +411,37 @@ def cmd_swarm_worker(args) -> int:
                 pass
     except KeyboardInterrupt:
         print(f"\n[*] stopped (done={done} failed={failed})")
+    return 0
+
+
+def cmd_ledger(args) -> int:
+    """Inspect and extend the action ledger (P7.31)."""
+    from iforensics import ledger as ledger_mod
+    if args.op == "verify":
+        if not args.run:
+            print("[!] --run required", file=sys.stderr)
+            return 2
+        out = ledger_mod.verify(args.run)
+        print(json.dumps(out, indent=1))
+        return 0 if out["ok"] else 1
+    if args.op == "tail":
+        if not args.run:
+            print("[!] --run required", file=sys.stderr)
+            return 2
+        for e in ledger_mod.read(args.run)[-max(1, args.n):]:
+            print(f"{e['seq']:>4} {e['actor'][:24]:24s} {e['action'][:16]:16s} "
+                  f"{e.get('task_id') or '-'}")
+        return 0
+    if args.op == "approve":
+        if not (args.run and args.subject and args.by):
+            print("[!] --run, --subject and --by required", file=sys.stderr)
+            return 2
+        e = ledger_mod.approve(args.run, args.subject, args.by,
+                               detail=args.reason)
+        print(f"[+] approval seq={e['seq']} hash={e['hash'][:16]}…")
+        return 0
+    for r in ledger_mod.runs():  # runs
+        print(f"{r['run_id']} updated={r.get('updated_at')}")
     return 0
 
 
@@ -435,6 +497,8 @@ def main() -> int:
     p.add_argument("--keep-days", type=int, default=30)
     p.add_argument("--apply", action="store_true",
                    help="delete; without it, dry run only")
+    p.add_argument("--approve", default="",
+                   help="required with --apply: reason recorded on the ops ledger")
     p.set_defaults(fn=cmd_prune)
     w = sub.add_parser("swarm-worker",
                        help="claim and execute swarm tasks until idle (P7.32)")
@@ -449,6 +513,14 @@ def main() -> int:
     w.add_argument("--idle-s", type=float, default=0.0,
                    help="exit after N idle seconds; 0 = run forever")
     w.set_defaults(fn=cmd_swarm_worker)
+    l = sub.add_parser("ledger", help="auditable action ledger (P7.27/P7.31)")
+    l.add_argument("op", choices=["verify", "tail", "approve", "runs"])
+    l.add_argument("--run", default="")
+    l.add_argument("--subject", default="")
+    l.add_argument("--by", default="")
+    l.add_argument("--reason", default="")
+    l.add_argument("--n", type=int, default=20)
+    l.set_defaults(fn=cmd_ledger)
     g = sub.add_parser("live-tail",
                        help="sniff fox :8210 live (queue IN, completed OUT, model SYS) to stdout")
     g.add_argument("--interval", type=float, default=5.0)
