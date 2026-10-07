@@ -454,7 +454,10 @@ def reconstruction(svc: str):
 def reconstruction_file(svc: str, path: str):
     base = os.path.realpath(os.path.join(config.RECON_DIR, svc))
     target = os.path.realpath(os.path.join(base, path))
-    if not _within(target, config.RECON_DIR) or not os.path.isfile(target):
+    # containment must be against *this service's* dir, not the RECON_DIR
+    # root: checking the root alone lets a ..-path walk into a sibling
+    # service's files (e.g. quai-radarX).
+    if not _within(target, base) or not os.path.isfile(target):
         raise HTTPException(404, "bad path")
     with open(target) as f:
         return {"content": f.read()[:30000]}

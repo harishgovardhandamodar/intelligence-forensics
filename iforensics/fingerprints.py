@@ -8,17 +8,17 @@ from collections import Counter
 
 _WS = re.compile(r"\s+")
 _SLOT_PATTERNS = [
-    (re.compile(r"TITLE:\s*.*", re.S), "TITLE: {{title}}"),
-    (re.compile(r"CONTENT:\s*.*", re.S), "CONTENT: {{content}}"),
-    (re.compile(r"Brief:\s*.*", re.S), "Brief: {{brief}}"),
-    (re.compile(r"Product:\s*.*", re.S), "Product: {{product}}"),
-    (re.compile(r"Model:\s*.*", re.S), "Model: {{model_desc}}"),
-    (re.compile(r"Title:\s*.*", re.S), "Title: {{paper_title}}"),
-    (re.compile(r"Paper:\s*.*", re.S), "Paper: {{paper}}"),
-    (re.compile(r"Subject:\s*.*", re.S), "Subject: {{subject}}"),
-    (re.compile(r"Skill:\s*.*", re.S), "Skill: {{skill}}"),
-    (re.compile(r"Task:\s*.*", re.S), "Task: {{task}}"),
-    (re.compile(r"Context:\s*.*", re.S), "Context: {{context}}"),
+    (re.compile(r"TITLE:\s*[^\n]*"), "TITLE: {{title}}"),
+    (re.compile(r"CONTENT:\s*[^\n]*"), "CONTENT: {{content}}"),
+    (re.compile(r"Brief:\s*[^\n]*"), "Brief: {{brief}}"),
+    (re.compile(r"Product:\s*[^\n]*"), "Product: {{product}}"),
+    (re.compile(r"Model:\s*[^\n]*"), "Model: {{model_desc}}"),
+    (re.compile(r"Title:\s*[^\n]*"), "Title: {{paper_title}}"),
+    (re.compile(r"Paper:\s*[^\n]*"), "Paper: {{paper}}"),
+    (re.compile(r"Subject:\s*[^\n]*"), "Subject: {{subject}}"),
+    (re.compile(r"Skill:\s*[^\n]*"), "Skill: {{skill}}"),
+    (re.compile(r"Task:\s*[^\n]*"), "Task: {{task}}"),
+    (re.compile(r"Context:\s*[^\n]*"), "Context: {{context}}"),
 ]
 
 

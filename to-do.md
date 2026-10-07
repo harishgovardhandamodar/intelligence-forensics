@@ -134,10 +134,10 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 ## Priorities
 
 ### P0 — correctness & safety (small, first)
-- [ ] P0.1 Escape all `innerHTML` interpolation (shared `escH` + `t()` helper)
-- [ ] P0.2 Fix `startswith` → `base + os.sep`; make `/api/investigate` a POST
-- [ ] P0.3 Report `dropped` counter; prune `seen_ids`; lock `status()` read
-- [ ] P0.4 Add `tests/` for `score.py` + `progression.py` + `fingerprints.py`
+- [x] P0.1 Escape all `innerHTML` interpolation (shared `escH` + `t()` helper)
+- [x] P0.2 Fix `startswith` → `base + os.sep`; make `/api/investigate` a POST
+- [x] P0.3 Report `dropped` counter; prune `seen_ids`; lock `status()` read
+- [x] P0.4 Add `tests/` for `score.py` + `progression.py` + `fingerprints.py`
 
 ### P1 — live forensics depth
 - [ ] P1.5 Persist the tap to append-only `evidence/live/events-<day>.jsonl` + on-disk cursor

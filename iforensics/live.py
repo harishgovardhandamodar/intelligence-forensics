@@ -140,16 +140,15 @@ class LiveTap(threading.Thread):
             # --- loss detection -------------------------------------------
             # fox returns newest-first, capped at req_limit. If that page
             # fills up and the id we last saw is no longer in it, every
-            # completion between the previous newest and this page's oldest
-            # was never returned: it never reached the buffer, and nothing
-            # else would ever have noticed.
+            # completion that rolled off the page between polls was never
+            # fetched — nothing else would ever have noticed. Estimate the
+            # roll-off as (id gap since last poll) - (new ids we did catch).
             if len(batch) >= self.req_limit:
                 self.out_saturated_polls += 1
                 if prev_newest is not None and prev_newest not in idset:
-                    oldest = ids[-1] if ids else None
-                    if isinstance(prev_newest, int) and isinstance(oldest, int) \
-                            and oldest < prev_newest:
-                        self.out_lost += max(0, prev_newest - oldest)
+                    newest = ids[0] if ids else None
+                    if isinstance(prev_newest, int) and isinstance(newest, int):
+                        self.out_lost += max(0, newest - prev_newest - len(batch))
                     self.out_lost_pages += 1
                     self.errors.append(
                         f"out: page overflow (limit={self.req_limit}) — "
