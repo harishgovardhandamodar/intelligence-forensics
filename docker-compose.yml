@@ -35,6 +35,54 @@ services:
       timeout: 5s
       retries: 3
 
+  # Agent-swarm workers (P7.32): one container per role, NVIDIA passthrough.
+  # Start with: SWARM_ROLE=profiler docker compose --profile swarm up -d
+  # Scale with:  docker compose --profile swarm up -d --scale swarm-worker=2
+  # Roles: profiler | critic | gather | security | any ($SWARM_ROLE).
+  # Gatherers read fox telemetry (fox-data:ro); all other roles are confined
+  # to ./evidence (they only ever see what gatherers collected). GPU count 1
+  # per worker spreads replicas across both RTX 5080s; pin with device_ids.
+  swarm-worker:
+    profiles: [swarm]
+    build: .
+    environment:
+      - FOX_URL=http://host.docker.internal:8210
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - IF_MODEL=${IF_MODEL:-qwen3.8:27b}
+      - SWARM_ROLE=${SWARM_ROLE:-profiler}
+    volumes:
+      - ./evidence:/app/evidence
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["python", "cli.py", "swarm-worker"]
+    restart: unless-stopped
+
+  # Gatherer role: same worker, plus the read-only fox DB (P7.32).
+  # Start with: SWARM_ROLE=gather docker compose --profile swarm up -d swarm-gather
+  swarm-gather:
+    profiles: [swarm]
+    build: .
+    environment:
+      - FOX_URL=http://host.docker.internal:8210
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - IF_MODEL=${IF_MODEL:-qwen3.8:27b}
+      - SWARM_ROLE=gather
+      - FOX_SERVICES_DB=/fox-data/fox_services.db
+    volumes:
+      - /home/fox/codebase/fox-services/data:/fox-data:ro
+      - ./evidence:/app/evidence
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: ["python", "cli.py", "swarm-worker", "--role", "gather"]
+    restart: unless-stopped
+
   # Optional PORT-LEVEL capture (raw packets, not just fox APIs).
   # Off by default: start with `docker compose --profile pcap up -d pcap-tap`.
   # Needs no host root beyond docker access. WARNING: pcaps contain RAW

@@ -7,6 +7,7 @@ Usage:
   python cli.py fingerprint --service quai-radar [--limit 500]
   python cli.py agent-run [--quick] [--model qwen3.8:27b] [--only quai-radar] [--limit 5000]
   python cli.py report [--limit 5000] [--every 3600]
+  python cli.py swarm-worker [--role profiler] [--gpu 0] [--idle-s 300]
   python cli.py dashboard [--port 8211]
 """
 import argparse
@@ -267,6 +268,121 @@ def cmd_report(args) -> int:
     return 0
 
 
+ROLE_KINDS = {
+    "profiler": ["profile"],
+    "critic": ["critic"],
+    "gather": ["gather"],
+    "security": ["security"],
+    "any": None,
+}
+
+
+def _swarm_execute(kind: str, payload: dict, model: str):
+    """Run one claimed task in-process. Returns a JSON-serializable result."""
+    if kind == "profile":
+        from iforensics import agents as ag
+        svc = payload["service"]
+        prof = ag.profiler(svc, payload["profile"], model,
+                           int(payload.get("num_predict", 512)))
+        return {"service": svc, "parsed": prof.get("parsed") or {},
+                "prompt_tokens": prof.get("prompt_tokens", 0),
+                "completion_tokens": prof.get("completion_tokens", 0)}
+    if kind == "critic":
+        from iforensics import agents as ag
+        out = ag.critic(payload["service"], payload.get("profile", {}),
+                        payload.get("profiler_out", {}), model, 256)
+        return {"service": payload.get("service"),
+                "content_head": (out.get("content") or "")[:2000],
+                "ms": out.get("ms", 0)}
+    if kind == "gather":
+        source = payload.get("source", "llm_requests")
+        fn = {"llm_requests": fox_client.llm_requests,
+              "llm_queue": fox_client.llm_queue,
+              "mesh_status": fox_client.mesh_status,
+              "mesh_peers": fox_client.mesh_peers,
+              "docker_projects": fox_client.docker_projects,
+              "service_model": fox_client.service_model}.get(source)
+        if fn is None:
+            raise ValueError(f"unknown gather source: {source!r}")
+        data = fn(**(payload.get("params") or {}))
+        n = len(data.get("requests") or data.get("matrix") or data.get("peers")
+                or data.get("projects") or [])
+        return {"source": source, "n": n}
+    if kind == "security":
+        from iforensics import security_agent
+        rep = security_agent.deterministic_report()
+        return {"risk_rating": rep.get("risk_rating"),
+                "n_findings": rep.get("n_findings"), "totals": rep.get("totals")}
+    raise ValueError(f"unknown task kind: {kind!r}")
+
+
+def cmd_swarm_worker(args) -> int:
+    """Claim and execute swarm tasks until idle timeout (P7.32).
+
+    Designed for one container per role with NVIDIA passthrough
+    (compose `swarm` profile); runs fine on bare metal too.
+    """
+    import concurrent.futures as _fut
+    import socket as _socket
+    import time as _time
+    from iforensics import ledger as ledger_mod
+    from iforensics import swarm as swarm_mod
+    from iforensics import ollama_client
+
+    if args.gpu and "CUDA_VISIBLE_DEVICES" not in os.environ \
+            and "NVIDIA_VISIBLE_DEVICES" not in os.environ:
+        os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+    worker = f"{args.role}:{_socket.gethostname()}:{os.getpid()}"
+    model = args.model or ollama_client.MODEL
+    kinds = ROLE_KINDS.get(args.role, None)
+    idle_since = _time.time()
+    done = failed = 0
+    print(f"[*] swarm worker {worker} kinds={kinds or 'any'} model={model}",
+          flush=True)
+    try:
+        while True:
+            task = swarm_mod.claim(worker, kinds=kinds)
+            if task is None:
+                if args.idle_s and _time.time() - idle_since > args.idle_s:
+                    print(f"[*] idle {args.idle_s}s — exiting "
+                          f"(done={done} failed={failed})")
+                    return 0
+                _time.sleep(min(5.0, max(1.0, args.poll_s)))
+                continue
+            idle_since = _time.time()
+            tid = task["task_id"]
+            print(f"[*] claimed {tid} ({task.get('kind')})", flush=True)
+            try:
+                ledger_mod.append(task.get("run_id") or "adhoc", worker,
+                                  "task.claimed", task_id=tid)
+            except Exception:  # noqa: BLE001 — ledger must not stop work
+                pass
+            ok = False
+            try:
+                with _fut.ThreadPoolExecutor(max_workers=1) as ex:
+                    result = ex.submit(_swarm_execute, task.get("kind"),
+                                       task.get("payload") or {},
+                                       model).result(timeout=args.timeout)
+                swarm_mod.complete(tid, result)
+                done += 1
+                ok = True
+                print(f"[+] {tid} done", flush=True)
+            except Exception as e:  # noqa: BLE001
+                swarm_mod.fail(tid, f"{type(e).__name__}: {e}")
+                failed += 1
+                print(f"[!] {tid} failed: {e}", flush=True)
+            try:
+                ledger_mod.append(task.get("run_id") or "adhoc", worker,
+                                  "task.complete" if ok else "task.failed",
+                                  task_id=tid,
+                                  detail=f"done={done} failed={failed}")
+            except Exception:  # noqa: BLE001
+                pass
+    except KeyboardInterrupt:
+        print(f"\n[*] stopped (done={done} failed={failed})")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(prog="iforensics")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -320,6 +436,19 @@ def main() -> int:
     p.add_argument("--apply", action="store_true",
                    help="delete; without it, dry run only")
     p.set_defaults(fn=cmd_prune)
+    w = sub.add_parser("swarm-worker",
+                       help="claim and execute swarm tasks until idle (P7.32)")
+    w.add_argument("--role", default=os.environ.get("SWARM_ROLE", "any"),
+                   choices=sorted(ROLE_KINDS),
+                   help="task kinds to claim (default $SWARM_ROLE or any)")
+    w.add_argument("--gpu", default=os.environ.get("GPU_ID", ""),
+                   help="CUDA device id to expose (default $GPU_ID or inherit)")
+    w.add_argument("--model", default="")
+    w.add_argument("--timeout", type=float, default=600.0)
+    w.add_argument("--poll-s", type=float, default=2.0)
+    w.add_argument("--idle-s", type=float, default=0.0,
+                   help="exit after N idle seconds; 0 = run forever")
+    w.set_defaults(fn=cmd_swarm_worker)
     g = sub.add_parser("live-tail",
                        help="sniff fox :8210 live (queue IN, completed OUT, model SYS) to stdout")
     g.add_argument("--interval", type=float, default=5.0)

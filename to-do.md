@@ -192,5 +192,9 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
       timeouts and retries
 - [ ] P7.30 Worker pool + disk-backed run registry (replace `_RUNS` global);
       crash recovery by replaying uncompleted tasks
+- [x] P7.32 Agent isolation: one container per swarm role with NVIDIA GPU
+      passthrough (2x RTX 5080 on axiom); file task queue under
+      evidence/swarm; role-scoped mounts (gatherers get fox-data:ro,
+      profilers get evidence only); fcntl-locked ledger appends
 - [ ] P7.31 Surface: `/api/swarm/ledger` + Ledger tab, `ledger verify` CLI,
       human-approval entries for prune/export

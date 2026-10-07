@@ -25,6 +25,11 @@ import os
 import threading
 import time
 
+try:
+    import fcntl  # noqa — POSIX advisory locks for container workers
+except ImportError:  # pragma: no cover — non-POSIX fallback
+    fcntl = None  # type: ignore
+
 from . import config
 
 LEDGER_DIRNAME = "ledger"
@@ -83,23 +88,40 @@ def append(run_id: str, actor: str, action: str, task_id: str = "",
     with _lock:
         path = _path(run_id, base_dir)
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        prev = _read_all(path)
-        entry = {
-            "seq": len(prev) + 1,
-            "ts": time.time(),
-            "run_id": run_id,
-            "actor": actor,
-            "action": action,
-            "task_id": task_id,
-            "inputs_hash": inputs_hash,
-            "artifact": artifact,
-            "artifact_sha256": artifact_sha256,
-            "detail": detail,
-            "prev_hash": prev[-1]["hash"] if prev else f"genesis:{run_id}",
-        }
-        entry["hash"] = _entry_hash(entry)
-        with open(path, "a", encoding="utf-8") as f:
-            f.write(json.dumps(entry, sort_keys=True, default=str) + "\n")
+        with open(path, "a+", encoding="utf-8") as f:
+            # fcntl so container workers (separate processes sharing the
+            # evidence volume) serialize read-modify-write on the chain.
+            if fcntl is not None:
+                try:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                except OSError:
+                    pass
+            try:
+                f.seek(0)
+                prev = [json.loads(l) for l in f if l.strip()]
+                entry = {
+                    "seq": len(prev) + 1,
+                    "ts": time.time(),
+                    "run_id": run_id,
+                    "actor": actor,
+                    "action": action,
+                    "task_id": task_id,
+                    "inputs_hash": inputs_hash,
+                    "artifact": artifact,
+                    "artifact_sha256": artifact_sha256,
+                    "detail": detail,
+                    "prev_hash": prev[-1]["hash"] if prev else f"genesis:{run_id}",
+                }
+                entry["hash"] = _entry_hash(entry)
+                f.seek(0, os.SEEK_END)
+                f.write(json.dumps(entry, sort_keys=True, default=str) + "\n")
+                f.flush()
+            finally:
+                if fcntl is not None:
+                    try:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                    except OSError:
+                        pass
         _touch_index(run_id, path, base_dir)
         return entry
 
