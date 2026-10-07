@@ -10,7 +10,7 @@ Related: [privacy.md](privacy.md) · [interaction.md](interaction.md)
 
 ```mermaid
 erDiagram
-    FOX_LLM_USAGE ||--o{ EVIDENCE_DB : "copied read-only";
+    FOX_LLM_USAGE ||--o{ EVIDENCE_DB : "copied read-only"
     FOX_LLM_USAGE {
         int id PK
         float ts
@@ -26,7 +26,7 @@ erDiagram
         string file
         string stamp
     }
-    EVIDENCE_DB ||--|| INVESTIGATION : "profiles all rows";
+    EVIDENCE_DB ||--|| INVESTIGATION : "profiles all rows"
     INVESTIGATION {
         string service PK
         string project
@@ -34,7 +34,7 @@ erDiagram
         float score
         float vibe
     }
-    INVESTIGATION ||--o{ PROGRESSION_STEP : "slices";
+    INVESTIGATION ||--o{ PROGRESSION_STEP : "slices"
     PROGRESSION_STEP {
         int step
         int requests
@@ -43,14 +43,14 @@ erDiagram
         json delta
         bool converged
     }
-    INVESTIGATION ||--o{ AGENT_RUN : "deep dives";
+    INVESTIGATION ||--o{ AGENT_RUN : "deep dives"
     AGENT_RUN {
         string run_id PK
         string model
         bool quick
         float elapsed_s
     }
-    AGENT_RUN ||--o{ AGENT_OUTPUT : "scout/profiler/critic/reporter";
+    AGENT_RUN ||--o{ AGENT_OUTPUT : "scout/profiler/critic/reporter"
     AGENT_OUTPUT {
         string agent
         string service
@@ -58,7 +58,7 @@ erDiagram
         json parsed
         int tokens
     }
-    INVESTIGATION ||--o{ SCAFFOLD : "one per service";
+    INVESTIGATION ||--o{ SCAFFOLD : "one per service"
     SCAFFOLD {
         string service PK
         string inferred_pipeline_py
