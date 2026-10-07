@@ -108,24 +108,26 @@ a{color:var(--acc)}
 </main>
 <script>
 const $=id=>document.getElementById(id);
-document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('main section').forEach(s=>s.classList.remove('on'));$('s-'+b.dataset.t).classList.add('on');});
+const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const escA=escH;
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('main section').forEach(s=>s.classList.remove('on'));$('s-'+b.dataset.t).classList.add('on');if(location.hash.slice(1)!==b.dataset.t)history.replaceState(null,'','#'+b.dataset.t);});
 const j=async u=>{const r=await fetch(u);return r.json()};
 const gcls=g=>(g==='A'||g==='B')?'ok':'warn';
-const scoreCell=(v,g)=>`<b class=${gcls(g)}>${v}</b> <span class=mut>${g}</span>`;
+const scoreCell=(v,g)=>`<b class="${gcls(g)}">${escH(v)}</b> <span class="mut">${escH(g)}</span>`;
 async function load(){
- const sec=async(id,fn)=>{try{await fn();}catch(e){const el=document.querySelector(id);if(el)el.innerHTML=`<tr><td class=warn>failed: ${e}</td></tr>`;}};
+ const sec=async(id,fn)=>{try{await fn();}catch(e){const el=document.querySelector(id);if(el)el.innerHTML=`<tr><td class="warn">failed: ${escH(e)}</td></tr>`;}};
  try{
   const o=await j('/api/overview');
   $('hdr').textContent=`v${o.version||'?'} · fox:${o.fox} model:${o.model} reqs:${o.requests} svcs:${o.services} recon:${o.reconstructions} agent-runs:${o.agent_runs}`;
-  $('stats').innerHTML=['requests|'+o.requests,'services|'+o.services,'reconstructions|'+o.reconstructions,'agentic runs|'+o.agent_runs,'fox|'+o.fox,'model|'+o.model].map(s=>{const[k,v]=s.split('|');return `<div class=card stat><div class=v>${v}</div><div class=k>${k}</div></div>`}).join('');
- }catch(e){$('hdr').textContent='overview failed: '+e;$('stats').innerHTML=`<div class="card warn">overview failed: ${e}</div>`;}
+  $('stats').innerHTML=['requests|'+o.requests,'services|'+o.services,'reconstructions|'+o.reconstructions,'agentic runs|'+o.agent_runs,'fox|'+o.fox,'model|'+o.model].map(s=>{const[k,v]=s.split('|');return `<div class="card stat"><div class="v">${escH(v)}</div><div class="k">${escH(k)}</div></div>`}).join('');
+ }catch(e){$('hdr').textContent='overview failed: '+e;$('stats').innerHTML=`<div class="card warn">overview failed: ${escH(e)}</div>`;}
  await sec('#t-svc tbody',async()=>{
   const sv=await j('/api/services');
-  $('t-svc').querySelector('tbody').innerHTML=sv.services.map(s=>`<tr><td><code>${s.service}</code></td><td>${s.requests}</td><td>${s.total_tokens}</td><td class=mut>${Object.entries(s.models).map(([m,c])=>m.split(':')[0]+'&times;'+c).join('<br>')}</td><td><b>${s.project||''}</b><br><span class=mut>${(s.pipeline_summary||'').slice(0,140)}</span></td><td>${scoreCell(s.score,s.grade)}<br><span class=mut title="vibe index: thin prompt-wrapper vs engineered system">⚡${s.vibe} ${s.vibe_label}</span></td></tr>`).join('');});
+  $('t-svc').querySelector('tbody').innerHTML=sv.services.map(s=>`<tr><td><code>${escH(s.service)}</code></td><td>${escH(s.requests)}</td><td>${escH(s.total_tokens)}</td><td class="mut">${Object.entries(s.models).map(([m,c])=>escH(m).split(':')[0]+'&times;'+escH(c)).join('<br>')}</td><td><b>${escH(s.project||'')}</b><br><span class="mut">${escH((s.pipeline_summary||'').slice(0,140))}</span></td><td>${scoreCell(s.score,s.grade)}<br><span class="mut" title="vibe index: thin prompt-wrapper vs engineered system">&#x26a1;${escH(s.vibe)} ${escH(s.vibe_label)}</span></td></tr>`).join('');});
  const rc=await j('/api/reconstructions');
- $('sel-recon').innerHTML=rc.map(r=>`<option>${r.service}</option>`).join('');
- const showRecon=async()=>{const s=$('sel-recon').value;if(!s)return;const d=await j('/api/reconstructions/'+s);const files=Object.keys(d.files);$('sel-file').innerHTML=files.map(f=>`<option>${f}</option>`).join('');$('recon-view').textContent=d.files[files[0]]||'';};
- $('sel-recon').onchange=showRecon;$('sel-file').onchange=async()=>{const s=$('sel-recon').value,f=$('sel-file').value;const d=await j(`/api/reconstructions/${s}/file?path=${encodeURIComponent(f)}`);$('recon-view').textContent=d.content||JSON.stringify(d);};
+ $('sel-recon').innerHTML=rc.map(r=>`<option value="${escA(r.service)}">${escH(r.service)}</option>`).join('');
+ const showRecon=async()=>{const s=$('sel-recon').value;if(!s)return;const d=await j('/api/reconstructions/'+encodeURIComponent(s));const files=Object.keys(d.files);$('sel-file').innerHTML=files.map(f=>`<option value="${escA(f)}">${escH(f)}</option>`).join('');$('recon-view').textContent=d.files[files[0]]||'';};
+ $('sel-recon').onchange=showRecon;$('sel-file').onchange=async()=>{const s=$('sel-recon').value,f=$('sel-file').value;const d=await j(`/api/reconstructions/${encodeURIComponent(s)}/file?path=${encodeURIComponent(f)}`);$('recon-view').textContent=d.content||JSON.stringify(d);};
  if(rc.length)showRecon();
  let progCache=null;
  const showProg=async()=>{const s=$('sel-recon').value;if(!s)return;const mode=$('sel-pmode').value,n=$('inp-pn').value||5;$('prog-msg').textContent='profiling…';
@@ -141,19 +143,19 @@ async function load(){
   window._showProgStep=showStep;
   }catch(e){$('prog-msg').textContent='failed: '+e;}};
  $('b-prog').onclick=showProg;$('sel-recon').addEventListener('change',()=>{progCache=null;$('prog-msg').textContent='';});
-  const runs=await j('/api/runs').catch(e=>{document.querySelector('#t-runs tbody').innerHTML=`<tr><td class=warn>failed: ${e}</td></tr>`;return [];});
-  $('t-runs').querySelector('tbody').innerHTML=runs.map(r=>`<tr><td><a href=# data-run="${r.run_id}">${r.run_id}</a></td><td class=mut>${r.model||''}</td><td class=mut>${(r.services||[]).join(', ').slice(0,80)}</td><td>${r.elapsed_s??'?'}s</td><td>${r.errors??0}</td></tr>`).join('')||'<tr><td class=mut>no runs yet</td></tr>';
+  const runs=await j('/api/runs').catch(e=>{document.querySelector('#t-runs tbody').innerHTML=`<tr><td class="warn">failed: ${escH(e)}</td></tr>`;return [];});
+  $('t-runs').querySelector('tbody').innerHTML=runs.map(r=>`<tr><td><a href="#" data-run="${escA(r.run_id)}">${escH(r.run_id)}</a></td><td class="mut">${escH(r.model||'')}</td><td class="mut">${escH((r.services||[]).join(', ').slice(0,80))}</td><td>${escH(r.elapsed_s??'?')}s</td><td>${escH(r.errors??0)}</td></tr>`).join('')||'<tr><td class="mut">no runs yet</td></tr>';
   document.querySelectorAll('[data-run]').forEach(a=>a.onclick=e=>{e.preventDefault();showRun(a.dataset.run);});
   loadTrend();
   try{const b=await j('/api/runs');if(b.length){const d=await j('/api/runs/'+b[0].run_id);$('brief').textContent=(d.brief||'').slice(0,3000);}else{const inv=await j('/api/investigation');$('brief').textContent=(inv.readme||'no brief yet — launch an agentic run').slice(0,3000);}}catch(e){$('brief').textContent='unavailable';}
   try{
    const m=await j('/api/fox/live');const peers=(m.mesh&&(m.mesh.peers||[]))||[];
-   $('t-mesh').querySelector('tbody').innerHTML=peers.map(p=>{const h=p.health||{};return `<tr><td><code>${p.machine||p.node_id}</code></td><td class=${p.online?'ok':'warn'}>${p.online}</td><td>${(p.hardware||{}).kind||'?'}</td><td>${h.llm_requests_1h??'?'}</td><td class=mut>${(h.services||[]).map(s=>s.name).join(', ').slice(0,120)}</td></tr>`}).join('')||'<tr><td class=mut>no peers</td></tr>';
-  }catch(e){$('t-mesh').querySelector('tbody').innerHTML=`<tr><td class=warn>mesh failed: ${e}</td></tr>`;}
+   $('t-mesh').querySelector('tbody').innerHTML=peers.map(p=>{const h=p.health||{};return `<tr><td><code>${escH(p.machine||p.node_id)}</code></td><td class="${p.online?'ok':'warn'}">${escH(p.online)}</td><td>${escH((p.hardware||{}).kind||'?')}</td><td>${escH(h.llm_requests_1h??'?')}</td><td class="mut">${escH((h.services||[]).map(s=>s.name).join(', ').slice(0,120))}</td></tr>`}).join('')||'<tr><td class="mut">no peers</td></tr>';
+  }catch(e){$('t-mesh').querySelector('tbody').innerHTML=`<tr><td class="warn">mesh failed: ${escH(e)}</td></tr>`;}
   try{
    const ev=await j('/api/evidence');
-   $('t-ev').querySelector('tbody').innerHTML=ev.files.map(f=>`<tr><td><code>${f.name}</code></td><td class=mut>${f.size_mb} MB</td></tr>`).join('');
-  }catch(e){$('t-ev').querySelector('tbody').innerHTML=`<tr><td class=warn>evidence failed: ${e}</td></tr>`;}
+   $('t-ev').querySelector('tbody').innerHTML=ev.files.map(f=>`<tr><td><code>${escH(f.name)}</code></td><td class="mut">${escH(f.size_mb)} MB</td></tr>`).join('');
+  }catch(e){$('t-ev').querySelector('tbody').innerHTML=`<tr><td class="warn">evidence failed: ${escH(e)}</td></tr>`;}
   loadDesignRail();
  }
 const drawProgChart=steps=>{
@@ -164,11 +166,11 @@ const drawProgChart=steps=>{
  let g='';[0,25,50,75,100].forEach(v=>{g+=`<line x1=${pL} y1=${Ys(v)} x2=${W-8} y2=${Ys(v)} stroke="#30363d" stroke-width="1"/><text x=4 y=${Ys(v)+4} fill="#8b949e" font-size="10">${v}</text>`;});
  let bars='',labels='';
  steps.forEach((st,i)=>{const bw=Math.max(8,Math.min(40,(W-pL)/steps.length*0.45));
-  bars+=`<rect x=${(X(i)-bw/2).toFixed(1)} y=${Yq(st.requests).toFixed(1)} width=${bw.toFixed(1)} height=${(H-pB-Yq(st.requests)).toFixed(1)} fill="#1f6feb" opacity="0.45"><title>${st.requests} queries</title></rect>`;
-  labels+=`<text x=${X(i)} y=${H-10} fill="#8b949e" font-size="10" text-anchor="middle">${st.step}</text>`;
+  bars+=`<rect x=${(X(i)-bw/2).toFixed(1)} y=${Yq(st.requests).toFixed(1)} width=${bw.toFixed(1)} height=${(H-pB-Yq(st.requests)).toFixed(1)} fill="#1f6feb" opacity="0.45"><title>${escH(st.requests)} queries</title></rect>`;
+  labels+=`<text x=${X(i)} y=${H-10} fill="#8b949e" font-size="10" text-anchor="middle">${escH(st.step)}</text>`;
   if(st.delta&&st.delta.project_changed)labels+=`<text x=${X(i)} y=${H-pB+2} fill="#d29922" font-size="11" text-anchor="middle">◆</text>`;});
  const pts=steps.map((st,i)=>`${X(i).toFixed(1)},${Ys(st.score.score).toFixed(1)}`).join(' ');
- const dots=steps.map((st,i)=>`<circle cx=${X(i).toFixed(1)} cy=${Ys(st.score.score).toFixed(1)} r="6" fill="${gcol(st.score.grade)}" data-cstep=${i} style="cursor:pointer"><title>step ${st.step}: ${st.score.score} (${st.score.grade}) · ⚡${st.vibe.vibe} ${st.vibe.label}</title></circle>`).join('');
+ const dots=steps.map((st,i)=>`<circle cx=${X(i).toFixed(1)} cy=${Ys(st.score.score).toFixed(1)} r="6" fill="${gcol(st.score.grade)}" data-cstep="${i}" style="cursor:pointer"><title>step ${escH(st.step)}: ${escH(st.score.score)} (${escH(st.score.grade)}) · ${escH(st.vibe.vibe)} ${escH(st.vibe.label)}</title></circle>`).join('');
  $('prog-chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:720px">${g}${bars}<polyline points="${pts}" fill="none" stroke="#58a6ff" stroke-width="2"/>${dots}${labels}</svg>`;
  document.querySelectorAll('[data-cstep]').forEach(c=>c.onclick=()=>window._showProgStep&&window._showProgStep(+c.dataset.cstep));
 };
@@ -190,36 +192,36 @@ const renderRunGraph=g=>{
  g.edges.forEach(e=>{const a=pos[e.from],b=pos[e.to];if(!a||!b)return;
   svg+=`<line x1=${a.x+BW} y1=${a.y+BH/2} x2=${b.x} y2=${b.y+BH/2} stroke="#30363d" stroke-width="1.5"/>`;});
  cols.forEach(col=>col.forEach(n=>{const p=pos[n.id];
-  svg+=`<g><rect x=${p.x} y=${p.y} width=${BW} height=${BH} rx=6 fill="#161b22" stroke="${ecol(n.status)}" stroke-width="1.5"><title>${n.id} · ${n.ms}ms</title></rect><text x=${p.x+8} y=${p.y+17} fill="#e6edf3" font-size="11">${n.label}</text><text x=${p.x+8} y=${p.y+33} fill="#8b949e" font-size="10">${n.sub}</text></g>`;}));
+  svg+=`<g><rect x=${p.x} y=${p.y} width=${BW} height=${BH} rx=6 fill="#161b22" stroke="${ecol(n.status)}" stroke-width="1.5"><title>${escH(n.id)} · ${escH(n.ms)}ms</title></rect><text x=${p.x+8} y=${p.y+17} fill="#e6edf3" font-size="11">${escH(n.label)}</text><text x=${p.x+8} y=${p.y+33} fill="#8b949e" font-size="10">${escH(n.sub)}</text></g>`;}));
  $('run-dag').innerHTML=svg+'</svg>';
  const mx=Math.max(...g.nodes.map(n=>n.prompt_tokens+n.completion_tokens),1);
  $('run-cost').innerHTML=g.nodes.slice().sort((a,b)=>(b.prompt_tokens+b.completion_tokens)-(a.prompt_tokens+a.completion_tokens)).map(n=>{const t=n.prompt_tokens+n.completion_tokens;
-  return `<div class=row style="margin:3px 0"><code style="min-width:200px">${n.id}</code><div style="flex:1;background:#00000040;border-radius:4px"><div style="width:${(100*t/mx).toFixed(1)}%;background:#1f6feb;border-radius:4px">&nbsp;</div></div><span class=mut>${t} tok · ${(n.ms/1000).toFixed(1)}s</span></div>`;}).join('');
+  return `<div class="row" style="margin:3px 0"><code style="min-width:200px">${escH(n.id)}</code><div style="flex:1;background:#00000040;border-radius:4px"><div style="width:${(100*t/mx).toFixed(1)}%;background:#1f6feb;border-radius:4px">&nbsp;</div></div><span class="mut">${escH(t)} tok · ${escH((n.ms/1000).toFixed(1))}s</span></div>`;}).join('');
  const badge=a=>a==='match'?'<span class=ok>match</span>':a==='partial'?'<span class=warn>partial</span>':a==='disagree'?'<span style="color:#f85149">disagree</span>':'<span class=mut>?</span>';
  $('t-conf').querySelector('tbody').innerHTML=g.services.map(s=>{const c=s.confidence;
-  const bar=c==null?'<span class=mut>—</span>':`<div style="background:#00000040;border-radius:4px;min-width:110px"><div style="width:${(c*100).toFixed(0)}%;background:#3fb950;border-radius:4px">&nbsp;</div></div> ${c.toFixed(2)}`;
-  return `<tr><td><code>${s.service}</code></td><td>${bar}</td><td class=mut>${s.heuristic_project||''}</td><td>${s.llm_project||''}<br><span class=mut>${(s.what_building||'').slice(0,130)}</span></td><td>${badge(s.agreement)}</td></tr>`;}).join('');
+  const bar=c==null?'<span class="mut">—</span>':`<div style="background:#00000040;border-radius:4px;min-width:110px"><div style="width:${(c*100).toFixed(0)}%;background:#3fb950;border-radius:4px">&nbsp;</div></div> ${escH(c.toFixed(2))}`;
+  return `<tr><td><code>${escH(s.service)}</code></td><td>${bar}</td><td class="mut">${escH(s.heuristic_project||'')}</td><td>${escH(s.llm_project||'')}<br><span class="mut">${escH((s.what_building||'').slice(0,130))}</span></td><td>${badge(s.agreement)}</td></tr>`;}).join('');
  const withGaps=g.services.filter(s=>(s.critic_gaps||[]).length);
- $('run-gaps').innerHTML=withGaps.length?withGaps.map(s=>`<div style="margin:6px 0"><b>${s.service}</b>${s.critic_gaps.map(q=>`<div class=mut>• ${q}</div>`).join('')}</div>`).join(''):'<span class=mut>no critic gaps — quick mode skips the critic stage</span>';
- $('run-quotes').innerHTML=g.services.map(s=>((s.evidence_quotes||[]).length?`<div style="margin:6px 0"><b>${s.service}</b>${s.evidence_quotes.map(q=>`<div class=mut>&ldquo;${q.slice(0,160)}&rdquo;</div>`).join('')}</div>`:'')).join('')||'<span class=mut>no quotes recorded</span>';
+ $('run-gaps').innerHTML=withGaps.length?withGaps.map(s=>`<div style="margin:6px 0"><b>${escH(s.service)}</b>${s.critic_gaps.map(q=>`<div class="mut">• ${escH(q)}</div>`).join('')}</div>`).join(''):'<span class="mut">no critic gaps — quick mode skips the critic stage</span>';
+ $('run-quotes').innerHTML=g.services.map(s=>((s.evidence_quotes||[]).length?`<div style="margin:6px 0"><b>${escH(s.service)}</b>${s.evidence_quotes.map(q=>`<div class="mut">&ldquo;${escH(q.slice(0,160))}&rdquo;</div>`).join('')}</div>`:'')).join('')||'<span class="mut">no quotes recorded</span>';
 };
 const loadTrend=async()=>{try{const t=await j('/api/runs-compare?limit=5');
- $('t-trend').querySelector('tbody').innerHTML=t.services.map(s=>`<tr><td><code>${s}</code></td><td>${t.cols.map(c=>{const v=c.confidence[s];return `<span title="${c.run_id}${c.quick?' (quick)':''}" style="display:inline-block;min-width:52px;margin-right:6px;padding:2px 6px;border-radius:4px;background:${v==null?'#21262d':'#1f6feb'};font-size:12px">${v==null?'—':v.toFixed(2)}</span>`;}).join('')}</td></tr>`).join('');
-}catch(e){$('t-trend').querySelector('tbody').innerHTML=`<tr><td class=warn>trend failed: ${e}</td></tr>`;}};
-const escH=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const inlineMd=s=>escH(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2">$1</a>');
+ $('t-trend').querySelector('tbody').innerHTML=t.services.map(s=>`<tr><td><code>${escH(s)}</code></td><td>${t.cols.map(c=>{const v=c.confidence[s];return `<span title="${escA(c.run_id)}${c.quick?' (quick)':''}" style="display:inline-block;min-width:52px;margin-right:6px;padding:2px 6px;border-radius:4px;background:${v==null?'#21262d':'#1f6feb'};font-size:12px">${v==null?'—':escH(v.toFixed(2))}</span>`;}).join('')}</td></tr>`).join('');
+}catch(e){$('t-trend').querySelector('tbody').innerHTML=`<tr><td class="warn">trend failed: ${escH(e)}</td></tr>`;}};
+const safeHref=u=>/^(https?:|mailto:|#|\\/)/i.test(String(u).trim())?String(u).trim():'#';
+const inlineMd=s=>escH(s).replace(/\\*\\*(.+?)\\*\\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g,(m,txt,href)=>`<a href="${escA(safeHref(href))}">${txt}</a>`);
 const renderMarkdown=md=>{
  const lines=String(md).split('\\n');
  let html='',fence=false,lang='',buf=[],table=[],para=[],inList=null;
  const flushPara=()=>{if(para.length){html+=`<p>${inlineMd(para.join(' '))}</p>`;para=[];}};
  const closeList=()=>{if(inList){html+=inList==='ul'?'</ul>':'</ol>';inList=null;}};
- const cells=r=>r.trim().replace(/^\||\|$/g,'').split('|').map(c=>inlineMd(c.trim()));
+ const cells=r=>r.trim().replace(/^\\||\\|$/g,'').split('|').map(c=>inlineMd(c.trim()));
  const flushTable=()=>{if(!table.length)return '';
-  const rows=table.filter(r=>!/^\|?[\s:|\-]+\|?\s*$/.test(r));table=[];
+  const rows=table.filter(r=>!/^\\|?[\\s:|\\-]+\\|?\\s*$/.test(r));table=[];
   if(!rows.length)return '';
   return `<table><thead><tr>${cells(rows[0]).map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.slice(1).map(r=>`<tr>${cells(r).map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;};
  for(const line of lines){
-  const m=line.match(/^\s*```(\w*)\s*$/);
+  const m=line.match(/^\\s*```(\\w*)\\s*$/);
   if(m){if(!fence){fence=true;lang=(m[1]||'').toLowerCase();buf=[];}
    else{const src=buf.join('\\n');fence=false;
     html+=lang==='mermaid'?`<div class=diagram-wrap><pre class=mermaid>${escH(src)}</pre></div>`:`<div class=code-wrap>${lang?`<div class=code-lang>${escH(lang)}</div>`:''}<pre>${escH(src)}</pre></div>`;}
@@ -227,15 +229,15 @@ const renderMarkdown=md=>{
   if(fence){buf.push(line);continue;}
   const t=line.trim();
   if(t===''){flushPara();closeList();html+=flushTable();continue;}
-  if(/^\|.*\|\s*$/.test(line)){flushPara();closeList();table.push(line);continue;}
+  if(/^\\|.*\\|\\s*$/.test(line)){flushPara();closeList();table.push(line);continue;}
   html+=flushTable();
-  const hm=line.match(/^(#{1,4})\s+(.*)/);
+  const hm=line.match(/^(#{1,4})\\s+(.*)/);
   if(hm){flushPara();closeList();html+=`<h${hm[1].length+1}>${inlineMd(hm[2])}</h${hm[1].length+1}>`;continue;}
-  if(/^---+\s*$/.test(t)||/^\*\*\*+\s*$/.test(t)){flushPara();closeList();html+='<hr>';continue;}
-  if(/^>\s?/.test(line)){flushPara();closeList();html+=`<blockquote>${inlineMd(line.replace(/^>\s?/,''))}</blockquote>`;continue;}
-  let lm=line.match(/^\s*[-*]\s+(.*)/);
+  if(/^---+\\s*$/.test(t)||/^\\*\\*\\*+\\s*$/.test(t)){flushPara();closeList();html+='<hr>';continue;}
+  if(/^>\\s?/.test(line)){flushPara();closeList();html+=`<blockquote>${inlineMd(line.replace(/^>\\s?/,''))}</blockquote>`;continue;}
+  let lm=line.match(/^\\s*[-*]\\s+(.*)/);
   if(lm){flushPara();if(inList!=='ul'){closeList();html+='<ul>';inList='ul';}html+=`<li>${inlineMd(lm[1])}</li>`;continue;}
-  lm=line.match(/^\s*\d+[.)]\s+(.*)/);
+  lm=line.match(/^\\s*\\d+[.)]\\s+(.*)/);
   if(lm){flushPara();if(inList!=='ol'){closeList();html+='<ol>';inList='ol';}html+=`<li>${inlineMd(lm[1])}</li>`;continue;}
   closeList();para.push(t);
  }
@@ -258,7 +260,7 @@ const renderMermaid=async root=>{
 };
 const loadDesignRail=async()=>{try{const idx=await j('/api/design/docs');
  const groups={};idx.docs.forEach(d=>{(groups[d.group]=groups[d.group]||[]).push(d);});
- $('design-rail').innerHTML=Object.entries(groups).map(([g,ds])=>`<div class=mut style="margin:6px 0 2px">${g}</div>${ds.map(d=>`<div><a href=# data-doc="${d.id}">${d.title}</a> <span class=mut>${d.available?d.diagrams+' diagrams':'—'}</span></div>`).join('')}`).join('');
+ $('design-rail').innerHTML=Object.entries(groups).map(([g,ds])=>`<div class="mut" style="margin:6px 0 2px">${escH(g)}</div>${ds.map(d=>`<div><a href="#" data-doc="${escA(d.id)}">${escH(d.title)}</a> <span class="mut">${d.available?escH(d.diagrams)+' diagrams':'—'}</span></div>`).join('')}`).join('');
  document.querySelectorAll('[data-doc]').forEach(a=>a.onclick=e=>{e.preventDefault();showDesignDoc(a.dataset.doc);});
  const first=(idx.docs||[]).find(d=>d.available);
  if(first)showDesignDoc(first.id);
@@ -276,14 +278,14 @@ const loadLive=async()=>{
  $('live-state').textContent=st.running?`● live · ${st.events_buffered} events · ${st.polls} polls · up ${st.uptime_s||0}s`:'○ stopped';
  if(!st.running)return;
  try{const f=await j('/api/live/feed?limit=40');
-  $('t-feed').querySelector('tbody').innerHTML=f.events.map(e=>`<tr><td class=mut>${liveTime(e.t)}</td><td>${liveDir(e.dir)}</td><td><code>${e.service}</code></td><td class=mut>${(e.model||'').split(':')[0]}</td><td class=mut>${(e.prompt_head||'').slice(0,120)} <span class=mut>· ${e.prompt_tokens+e.completion_tokens} tok</span></td></tr>`).join('')||'<tr><td class=mut colspan=5>no events yet — waiting for traffic</td></tr>';
+  $('t-feed').querySelector('tbody').innerHTML=f.events.map(e=>`<tr><td class="mut">${escH(liveTime(e.t))}</td><td>${liveDir(e.dir)}</td><td><code>${escH(e.service)}</code></td><td class="mut">${escH((e.model||'').split(':')[0])}</td><td class="mut">${escH((e.prompt_head||'').slice(0,120))} <span class="mut">· ${escH(e.prompt_tokens+e.completion_tokens)} tok</span></td></tr>`).join('')||'<tr><td class="mut" colspan=5>no events yet — waiting for traffic</td></tr>';
  }catch(e){}
  try{const r=await j('/api/live/rates?window_s=300');
-  $('t-rates').querySelector('tbody').innerHTML=r.services.map(s=>`<tr><td><code>${s.service}</code></td><td>${s.req}</td><td>${s.tokens}</td><td>${s.req_per_min}</td><td>${s.tok_per_min}</td></tr>`).join('')||'<tr><td class=mut colspan=5>no completed requests in window</td></tr>';
+  $('t-rates').querySelector('tbody').innerHTML=r.services.map(s=>`<tr><td><code>${escH(s.service)}</code></td><td>${escH(s.req)}</td><td>${escH(s.tokens)}</td><td>${escH(s.req_per_min)}</td><td>${escH(s.tok_per_min)}</td></tr>`).join('')||'<tr><td class="mut" colspan=5>no completed requests in window</td></tr>';
  }catch(e){}
  try{const sv=await j('/api/services');
   const cur=$('sel-live').value;
-  $('sel-live').innerHTML=sv.services.map(s=>`<option>${s.service}</option>`).join('');
+  $('sel-live').innerHTML=sv.services.map(s=>`<option value="${escA(s.service)}">${escH(s.service)}</option>`).join('');
   if(cur)$('sel-live').value=cur;
  }catch(e){}
 };
@@ -295,7 +297,7 @@ $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;con
   const d=await j(`/api/live/reconstruction?service=${encodeURIComponent(s)}&n=5&mode=${mode}&history=200`);
   $('live-recon-msg').textContent=`${d.steps.length} steps (${d.history_rows} history + ${d.live_rows} live), converged=${d.converged}`;
   $('t-liveprog').querySelector('tbody').innerHTML=d.steps.map(st=>{const dl=st.delta||{};
-   return `<tr><td>${st.step}</td><td>${scoreCell(st.score.score,st.score.grade)}</td><td>${st.requests}</td><td><b>${st.project||''}</b></td><td>${dl.project_changed?'<span class=warn>flip</span>':'<span class=ok>stable</span>'}</td></tr>`;}).join('');
+   return `<tr><td>${escH(st.step)}</td><td>${scoreCell(st.score.score,st.score.grade)}</td><td>${escH(st.requests)}</td><td><b>${escH(st.project||'')}</b></td><td>${dl.project_changed?'<span class="warn">flip</span>':'<span class="ok">stable</span>'}</td></tr>`;}).join('');
   loadLive();
  }catch(e){$('live-recon-msg').textContent='failed: '+e;}};
 setInterval(()=>{const s=$('s-live');if(s&&s.classList.contains('on'))loadLive();},4000);
