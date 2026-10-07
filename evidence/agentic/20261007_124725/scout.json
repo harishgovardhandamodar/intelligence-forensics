@@ -1,0 +1,48 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.1M toks) and complex multi-model orchestration (Qwen, Nomic, Gemma) indicating high-value agentic logic or potential prompt injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage; high token-per-request ratio suggests heavy context processing or extraction tasks.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) but uses a mix of embedding and generation models; potential for data leakage via summarization of sensitive research papers.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model identifier, which is a direct anomaly and potential security blind spot or misconfiguration.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) and low token count; likely benign educational use case with minimal forensic value.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely a health check or connectivity test, no forensic signal.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard infrastructure warmup, no forensic signal.\"\n    }\n  ]\n}",
+ "prompt_tokens": 456,
+ "completion_tokens": 423,
+ "ms": 8857.2,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "Highest volume (1.2k reqs, 2.1M toks) and complex multi-model orchestration (Qwen, Nomic, Gemma) indicating high-value agentic logic or potential prompt injection surface."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage; high token-per-request ratio suggests heavy context processing or extraction tasks."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Moderate volume (277 reqs) but uses a mix of embedding and generation models; potential for data leakage via summarization of sensitive research papers."
+   },
+   {
+    "rank": 4,
+    "service": "gateway-unknown",
+    "reason": "Low volume but includes an 'unknown' model identifier, which is a direct anomaly and potential security blind spot or misconfiguration."
+   },
+   {
+    "rank": 5,
+    "service": "kid-learning-lab",
+    "reason": "Low volume (37 reqs) and low token count; likely benign educational use case with minimal forensic value."
+   },
+   {
+    "rank": 6,
+    "service": "probe",
+    "reason": "Single request, zero tokens; likely a health check or connectivity test, no forensic signal."
+   },
+   {
+    "rank": 7,
+    "service": "warmup",
+    "reason": "Single request, zero tokens; standard infrastructure warmup, no forensic signal."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.1M toks) and complex multi-model orchestration (Qwen, Nomic, Gemma) indicating high-value agentic logic or potential prompt injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage; high token-per-request ratio suggests heavy context processing or extraction tasks.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) but uses a mix of embedding and generation models; potential for data leakage via summarization of sensitive research papers.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model identifier, which is a direct anomaly and potential security blind spot or misconfiguration.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) and low token count; likely benign educational use case with minimal forensic value.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely a health check or connectivity test, no forensic signal.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard infrastructure warmup, no forensic signal.\"\n    }\n  ]\n}"
+}

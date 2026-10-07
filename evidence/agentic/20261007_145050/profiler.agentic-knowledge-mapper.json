@@ -1,0 +1,41 @@
+{
+ "agent": "profiler",
+ "service": "agentic-knowledge-mapper",
+ "content": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping engine for multi-agent LLM systems. It generates structured risk registers and exposure tiers by analyzing product briefs and model architectures.\",\n  \"pipeline\": [\n    \"ingest_brief\",\n    \"map_architecture\",\n    \"score_risk_tiers\",\n    \"map_cve_attacks\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"product_brief\",\n    \"model_description\",\n    \"architecture_variant\",\n    \"empirical_results\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier\",\n    \"misuse_potential\",\n    \"residual_risk\",\n    \"knowledge_graph\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Risks and failure modes of multi-agent debate systems\",\n    \"exposure tier\",\n    \"misuse potential\",\n    \"residual risk\"\n  ]\n}",
+ "prompt_tokens": 634,
+ "completion_tokens": 240,
+ "ms": 8546.4,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "agentic-knowledge-mapper",
+  "what_building": "A risk assessment and knowledge mapping engine for multi-agent LLM systems. It generates structured risk registers and exposure tiers by analyzing product briefs and model architectures.",
+  "pipeline": [
+   "ingest_brief",
+   "map_architecture",
+   "score_risk_tiers",
+   "map_cve_attacks",
+   "emit_register"
+  ],
+  "inputs": [
+   "product_brief",
+   "model_description",
+   "architecture_variant",
+   "empirical_results"
+  ],
+  "outputs": [
+   "risk_register",
+   "exposure_tier",
+   "misuse_potential",
+   "residual_risk",
+   "knowledge_graph"
+  ],
+  "confidence": 0.85,
+  "evidence_quotes": [
+   "Risks and failure modes of multi-agent debate systems",
+   "exposure tier",
+   "misuse potential",
+   "residual risk"
+  ]
+ },
+ "raw": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping engine for multi-agent LLM systems. It generates structured risk registers and exposure tiers by analyzing product briefs and model architectures.\",\n  \"pipeline\": [\n    \"ingest_brief\",\n    \"map_architecture\",\n    \"score_risk_tiers\",\n    \"map_cve_attacks\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"product_brief\",\n    \"model_description\",\n    \"architecture_variant\",\n    \"empirical_results\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier\",\n    \"misuse_potential\",\n    \"residual_risk\",\n    \"knowledge_graph\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Risks and failure modes of multi-agent debate systems\",\n    \"exposure tier\",\n    \"misuse potential\",\n    \"residual risk\"\n  ]\n}"
+}

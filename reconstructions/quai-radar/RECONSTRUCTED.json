@@ -1,0 +1,59 @@
+{
+ "service": "quai-radar",
+ "reconstructed_from": {
+  "requests": 1145,
+  "models": {
+   "qwen3.8:latest": 1145
+  },
+  "query_types": {
+   "(none)": 821,
+   "chart/price": 322,
+   "research": 2
+  }
+ },
+ "inferred_project": "blockchain-news knowledge-graph extractor",
+ "pipeline_summary": "ingests news items (title+content) -> LLM extracts structured KG facts -> writes graph nodes/edges",
+ "pipeline_stages": [
+  "ingest_feed",
+  "build_kg_prompt(title, content)",
+  "llm.extract(model)",
+  "parse_facts",
+  "upsert_graph"
+ ],
+ "io_schema": {
+  "inputs": [
+   "brief",
+   "digest",
+   "implications for quai",
+   "knowledge graph",
+   "schema",
+   "structured facts",
+   "tutor",
+   "what to watch"
+  ],
+  "prompt_slots": [
+   "template_1",
+   "template_2",
+   "template_3",
+   "template_4",
+   "template_5",
+   "template_6"
+  ]
+ },
+ "instructions_recovered": [
+  "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts.",
+  "TITLE: \u2018Old money\u2019 has stronger Bitcoin \u2018diamond hands,\u2019 says BingX",
+  "TITLE: Wall Street wealth creation model is unsustainable for most",
+  "TITLE: Trump-backed WLFI plans USD1 payments for online businesses",
+  "TITLE: Crypto card access doesn\u2019t match global demand, Tangem says",
+  "TITLE: Finland orders halt to work on two Google data centres",
+  "TITLE: Asos confirms hackers sent 'unauthorised' notification to ap",
+  "TITLE: Braid-creator Jonathan Blow on making the 'biggest puzzle ga",
+  "TITLE: Rainmakers: The drones used to seed clouds",
+  "TITLE: Technical AMA with Dr. K!"
+ ],
+ "caveats": [
+  "Prompts in fox DB are truncated to ~500-2000 chars and PII-masked; templates are heads, not full sources.",
+  "Completion text is NOT logged \u2014 outputs must be re-derived by re-running."
+ ]
+}

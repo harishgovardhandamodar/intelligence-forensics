@@ -1,0 +1,39 @@
+{
+ "agent": "profiler",
+ "service": "kid-learning-lab",
+ "content": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"An adaptive AI tutor service designed to teach specific skills to children using a Socratic method. It generates pedagogical prompts that guide learners through definitions, clues, and challenges without providing direct answers.\",\n  \"pipeline\": [\n    \"learner_state_ingest\",\n    \"pedagogical_prompt_generation\",\n    \"llm_inference\",\n    \"response_validation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"learner_state\",\n    \"query_type\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"check_question\",\n    \"clue\",\n    \"challenge_suggestion\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\",\n    \"Task: Suggest one next challenge that is slightly harder and explain why in one sentence.\"\n  ]\n}",
+ "prompt_tokens": 494,
+ "completion_tokens": 300,
+ "ms": 3432.2,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "kid-learning-lab",
+  "what_building": "An adaptive AI tutor service designed to teach specific skills to children using a Socratic method. It generates pedagogical prompts that guide learners through definitions, clues, and challenges without providing direct answers.",
+  "pipeline": [
+   "learner_state_ingest",
+   "pedagogical_prompt_generation",
+   "llm_inference",
+   "response_validation"
+  ],
+  "inputs": [
+   "subject",
+   "skill",
+   "learner_state",
+   "query_type"
+  ],
+  "outputs": [
+   "tutor_turn",
+   "check_question",
+   "clue",
+   "challenge_suggestion"
+  ],
+  "confidence": 0.92,
+  "evidence_quotes": [
+   "Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.",
+   "Task: Give a short clue, never the answer. Ask one guiding question.",
+   "Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.",
+   "Task: Suggest one next challenge that is slightly harder and explain why in one sentence."
+  ]
+ },
+ "raw": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"An adaptive AI tutor service designed to teach specific skills to children using a Socratic method. It generates pedagogical prompts that guide learners through definitions, clues, and challenges without providing direct answers.\",\n  \"pipeline\": [\n    \"learner_state_ingest\",\n    \"pedagogical_prompt_generation\",\n    \"llm_inference\",\n    \"response_validation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"learner_state\",\n    \"query_type\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"check_question\",\n    \"clue\",\n    \"challenge_suggestion\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\",\n    \"Task: Suggest one next challenge that is slightly harder and explain why in one sentence.\"\n  ]\n}"
+}

@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Heavy regenerable snapshots (recreated by `investigate` / `agent-run`)
+evidence/fox_services_*.db
+evidence/api_dump_*.json
+
+# Local env / editor
+.env
+.venv/
+.vscode/
+*.swp

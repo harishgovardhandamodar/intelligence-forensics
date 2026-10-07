@@ -1,0 +1,39 @@
+{
+ "agent": "profiler",
+ "service": "hive-research-gpu",
+ "content": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.\",\n  \"pipeline\": [\n    \"ingest_paper_metadata\",\n    \"embed_context\",\n    \"section_summarization\",\n    \"gap_identification_query_gen\",\n    \"synthesis_answer\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"paper_content\",\n    \"numbered_context_excerpts\",\n    \"research_question\"\n  ],\n  \"outputs\": [\n    \"research_briefing\",\n    \"json_search_queries\",\n    \"cited_claims\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Title: {{paper_title}}\",\n    \"Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5].\",\n    \"List up to 3 specific information gaps as refined arXiv-style search queries. Return JSON: {\\\"queries\\\": [\\\"...\\\"]}\",\n    \"Write a thorough research briefing on: Summarize the state of multi-agent debat\"\n  ]\n}",
+ "prompt_tokens": 609,
+ "completion_tokens": 293,
+ "ms": 6556.2,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "hive-research-gpu",
+  "what_building": "A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.",
+  "pipeline": [
+   "ingest_paper_metadata",
+   "embed_context",
+   "section_summarization",
+   "gap_identification_query_gen",
+   "synthesis_answer"
+  ],
+  "inputs": [
+   "paper_title",
+   "paper_content",
+   "numbered_context_excerpts",
+   "research_question"
+  ],
+  "outputs": [
+   "research_briefing",
+   "json_search_queries",
+   "cited_claims"
+  ],
+  "confidence": 0.92,
+  "evidence_quotes": [
+   "Title: {{paper_title}}",
+   "Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5].",
+   "List up to 3 specific information gaps as refined arXiv-style search queries. Return JSON: {\"queries\": [\"...\"]}",
+   "Write a thorough research briefing on: Summarize the state of multi-agent debat"
+  ]
+ },
+ "raw": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.\",\n  \"pipeline\": [\n    \"ingest_paper_metadata\",\n    \"embed_context\",\n    \"section_summarization\",\n    \"gap_identification_query_gen\",\n    \"synthesis_answer\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"paper_content\",\n    \"numbered_context_excerpts\",\n    \"research_question\"\n  ],\n  \"outputs\": [\n    \"research_briefing\",\n    \"json_search_queries\",\n    \"cited_claims\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Title: {{paper_title}}\",\n    \"Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5].\",\n    \"List up to 3 specific information gaps as refined arXiv-style search queries. Return JSON: {\\\"queries\\\": [\\\"...\\\"]}\",\n    \"Write a thorough research briefing on: Summarize the state of multi-agent debat\"\n  ]\n}"
+}

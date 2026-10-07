@@ -1,0 +1,40 @@
+{
+ "agent": "profiler",
+ "service": "agentic-knowledge-mapper",
+ "content": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping engine for multi-agent LLM systems that evaluates safety, robustness, and operational vulnerabilities. It generates structured risk registers by analyzing product briefs, model architectures, and potential attack vectors like prompt injection and sycophancy.\",\n  \"pipeline\": [\n    \"ingest_product_brief\",\n    \"analyze_model_architecture\",\n    \"map_failure_modes\",\n    \"score_risk_tiers\",\n    \"emit_risk_register\"\n  ],\n  \"inputs\": [\n    \"product_description\",\n    \"model_description\",\n    \"risk_brief\",\n    \"memorization_query\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier_score\",\n    \"failure_mode_map\",\n    \"residual_risk_assessment\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Product: multi-agent debate systems (safety, robustness, and operational risks)\",\n    \"Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"Question: what level of memorization by these network is plausible\"\n  ]\n}",
+ "prompt_tokens": 634,
+ "completion_tokens": 318,
+ "ms": 16132.7,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "agentic-knowledge-mapper",
+  "what_building": "A risk assessment and knowledge mapping engine for multi-agent LLM systems that evaluates safety, robustness, and operational vulnerabilities. It generates structured risk registers by analyzing product briefs, model architectures, and potential attack vectors like prompt injection and sycophancy.",
+  "pipeline": [
+   "ingest_product_brief",
+   "analyze_model_architecture",
+   "map_failure_modes",
+   "score_risk_tiers",
+   "emit_risk_register"
+  ],
+  "inputs": [
+   "product_description",
+   "model_description",
+   "risk_brief",
+   "memorization_query"
+  ],
+  "outputs": [
+   "risk_register",
+   "exposure_tier_score",
+   "failure_mode_map",
+   "residual_risk_assessment"
+  ],
+  "confidence": 0.85,
+  "evidence_quotes": [
+   "Product: multi-agent debate systems (safety, robustness, and operational risks)",
+   "Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents",
+   "schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']",
+   "Question: what level of memorization by these network is plausible"
+  ]
+ },
+ "raw": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping engine for multi-agent LLM systems that evaluates safety, robustness, and operational vulnerabilities. It generates structured risk registers by analyzing product briefs, model architectures, and potential attack vectors like prompt injection and sycophancy.\",\n  \"pipeline\": [\n    \"ingest_product_brief\",\n    \"analyze_model_architecture\",\n    \"map_failure_modes\",\n    \"score_risk_tiers\",\n    \"emit_risk_register\"\n  ],\n  \"inputs\": [\n    \"product_description\",\n    \"model_description\",\n    \"risk_brief\",\n    \"memorization_query\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier_score\",\n    \"failure_mode_map\",\n    \"residual_risk_assessment\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Product: multi-agent debate systems (safety, robustness, and operational risks)\",\n    \"Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"Question: what level of memorization by these network is plausible\"\n  ]\n}"
+}

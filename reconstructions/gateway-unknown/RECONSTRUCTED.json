@@ -1,0 +1,38 @@
+{
+ "service": "gateway-unknown",
+ "reconstructed_from": {
+  "requests": 21,
+  "models": {
+   "nomic-embed-text:latest": 10,
+   "qwen3.8:latest": 5,
+   "unknown": 2,
+   "llama3.2:3b": 2,
+   "qwen3.8:27b": 1,
+   "gemma4:31b": 1
+  },
+  "query_types": {
+   "(none)": 11,
+   "chat": 10
+  }
+ },
+ "inferred_project": "gateway-unknown workload (unclassified)",
+ "pipeline_summary": "prompts -> LLM -> unknown sink (needs more samples)",
+ "pipeline_stages": [
+  "capture_prompt",
+  "llm.call(model)",
+  "unknown_sink"
+ ],
+ "io_schema": {
+  "inputs": [],
+  "prompt_slots": [
+   "template_1",
+   "template_2",
+   "template_3"
+  ]
+ },
+ "instructions_recovered": [],
+ "caveats": [
+  "Prompts in fox DB are truncated to ~500-2000 chars and PII-masked; templates are heads, not full sources.",
+  "Completion text is NOT logged \u2014 outputs must be re-derived by re-running."
+ ]
+}

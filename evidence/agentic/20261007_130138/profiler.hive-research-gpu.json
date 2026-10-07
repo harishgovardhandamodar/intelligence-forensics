@@ -1,0 +1,40 @@
+{
+ "agent": "profiler",
+ "service": "hive-research-gpu",
+ "content": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.\",\n  \"pipeline\": [\n    \"ingest_paper_metadata\",\n    \"extract_sections_and_figures\",\n    \"generate_section_summaries\",\n    \"synthesize_research_briefing\",\n    \"identify_information_gaps\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"paper_content (abstract, experiments, figures)\",\n    \"research_question\",\n    \"numbered_context_excerpts\"\n  ],\n  \"outputs\": [\n    \"research_briefing\",\n    \"section_summaries\",\n    \"knowledge_graph_nodes\",\n    \"json_search_queries\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Title: From Model-Based Screening to Data-Driven Surrogates\",\n    \"Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number\",\n    \"List up to 3 specific information gaps as refined arXiv-style search queries\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph']\"\n  ]\n}",
+ "prompt_tokens": 609,
+ "completion_tokens": 300,
+ "ms": 9784.1,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "hive-research-gpu",
+  "what_building": "A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.",
+  "pipeline": [
+   "ingest_paper_metadata",
+   "extract_sections_and_figures",
+   "generate_section_summaries",
+   "synthesize_research_briefing",
+   "identify_information_gaps"
+  ],
+  "inputs": [
+   "paper_title",
+   "paper_content (abstract, experiments, figures)",
+   "research_question",
+   "numbered_context_excerpts"
+  ],
+  "outputs": [
+   "research_briefing",
+   "section_summaries",
+   "knowledge_graph_nodes",
+   "json_search_queries"
+  ],
+  "confidence": 0.92,
+  "evidence_quotes": [
+   "Title: From Model-Based Screening to Data-Driven Surrogates",
+   "Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number",
+   "List up to 3 specific information gaps as refined arXiv-style search queries",
+   "schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph']"
+  ]
+ },
+ "raw": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.\",\n  \"pipeline\": [\n    \"ingest_paper_metadata\",\n    \"extract_sections_and_figures\",\n    \"generate_section_summaries\",\n    \"synthesize_research_briefing\",\n    \"identify_information_gaps\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"paper_content (abstract, experiments, figures)\",\n    \"research_question\",\n    \"numbered_context_excerpts\"\n  ],\n  \"outputs\": [\n    \"research_briefing\",\n    \"section_summaries\",\n    \"knowledge_graph_nodes\",\n    \"json_search_queries\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Title: From Model-Based Screening to Data-Driven Surrogates\",\n    \"Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number\",\n    \"List up to 3 specific information gaps as refined arXiv-style search queries\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph']\"\n  ]\n}"
+}

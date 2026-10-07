@@ -1,0 +1,23 @@
+# Agentic forensic brief
+run: 20261007_145050 model: qwen3.8:27b
+elapsed: 56.0s quick=False
+
+# Executive Brief: Mesh Service Forensics
+
+## 1. Node Capabilities
+*   **hive-research-gpu**: High-fidelity academic synthesis engine. Ingests raw literature to generate structured knowledge graphs and gap analyses, specifically targeting multi-agent systems and RL domains.
+*   **quai-radar**: Domain-specific intelligence dashboard. Aggregates blockchain news and live market data to extract structured facts and generate token-specific (QUAI/QI) research briefs.
+*   **agentic-knowledge-mapper**: Risk assessment engine. Maps LLM architectures to generate exposure tiers, misuse potentials, and structured risk registers for multi-agent systems.
+*   **kid-learning-lab**: Adaptive pedagogical tutor. Uses embedding models for state tracking and LLMs to generate personalized, multi-modal teaching responses for children.
+*   **gateway-unknown / probe / warmup**: Infrastructure layer. Lightweight proxies and health-check endpoints validating model availability (e.g., `gemma4:31b`, `nomic-embed-text`) and routing basic prompts.
+
+## 2. Shared Topics & Intersections
+*   **Knowledge Graphing**: `hive-research-gpu`, `quai-radar`, and `agentic-knowledge-mapper` all explicitly output structured knowledge graphs or fact extractions.
+*   **Multi-Agent Systems**: `hive-research-gpu` (research focus) and `agentic-knowledge-mapper` (risk focus) share a direct domain overlap in analyzing multi-agent architectures.
+*   **LLM Orchestration**: All active services rely on a shared backend of local/remote models (Qwen, Gemma, Nomic) routed through the gateway/probe infrastructure.
+
+## 3. Primary Reconstruction Target
+**Target: `agentic-knowledge-mapper`**
+
+**Rationale:**
+While `hive-research-gpu` and `quai-radar` are domain-specific, `agentic-knowledge-mapper` provides the **meta-layer** for the entire mesh. It defines the risk profiles and exposure tiers for the multi-agent systems that `hive-research-gpu` is studying. Reconstructing this service yields the highest strategic value by revealing how the mesh evaluates and categorizes the safety and failure modes of its own core research subjects. It bridges the gap between raw research (`hive`) and operational risk, making it the critical control point for understanding the mesh’s self-awareness and safety constraints.

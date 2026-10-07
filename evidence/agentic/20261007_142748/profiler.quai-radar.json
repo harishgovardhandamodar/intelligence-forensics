@@ -1,0 +1,37 @@
+{
+ "agent": "profiler",
+ "service": "quai-radar",
+ "content": "{\n  \"project\": \"Quai-RADAR\",\n  \"what_building\": \"An intelligence dashboard for the Quai Network that monitors market data, SOAP dynamics, and external blockchain news. It uses LLMs to extract structured knowledge graph facts from news and generate daily research briefs with implications for QUAI/QI.\",\n  \"pipeline\": [\n    \"ingest_news_feed\",\n    \"extract_kg_facts\",\n    \"generate_daily_brief\",\n    \"ground_with_live_market_data\"\n  ],\n  \"inputs\": [\n    \"News item title\",\n    \"News item content\",\n    \"Live market prices (QUAI, QI, WQI)\",\n    \"SOAP mining dynamics (31d)\"\n  ],\n  \"outputs\": [\n    \"Structured knowledge graph facts\",\n    \"Daily research brief (What's new, Implications for QUAI/QI)\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.\",\n    \"PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard):\",\n    \"You are Fox writing the daily research brief for the Quai Network intelligence dashboard.\",\n    \"LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807\"\n  ]\n}",
+ "prompt_tokens": 920,
+ "completion_tokens": 341,
+ "ms": 9900.7,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "Quai-RADAR",
+  "what_building": "An intelligence dashboard for the Quai Network that monitors market data, SOAP dynamics, and external blockchain news. It uses LLMs to extract structured knowledge graph facts from news and generate daily research briefs with implications for QUAI/QI.",
+  "pipeline": [
+   "ingest_news_feed",
+   "extract_kg_facts",
+   "generate_daily_brief",
+   "ground_with_live_market_data"
+  ],
+  "inputs": [
+   "News item title",
+   "News item content",
+   "Live market prices (QUAI, QI, WQI)",
+   "SOAP mining dynamics (31d)"
+  ],
+  "outputs": [
+   "Structured knowledge graph facts",
+   "Daily research brief (What's new, Implications for QUAI/QI)"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.",
+   "PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard):",
+   "You are Fox writing the daily research brief for the Quai Network intelligence dashboard.",
+   "LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807"
+  ]
+ },
+ "raw": "{\n  \"project\": \"Quai-RADAR\",\n  \"what_building\": \"An intelligence dashboard for the Quai Network that monitors market data, SOAP dynamics, and external blockchain news. It uses LLMs to extract structured knowledge graph facts from news and generate daily research briefs with implications for QUAI/QI.\",\n  \"pipeline\": [\n    \"ingest_news_feed\",\n    \"extract_kg_facts\",\n    \"generate_daily_brief\",\n    \"ground_with_live_market_data\"\n  ],\n  \"inputs\": [\n    \"News item title\",\n    \"News item content\",\n    \"Live market prices (QUAI, QI, WQI)\",\n    \"SOAP mining dynamics (31d)\"\n  ],\n  \"outputs\": [\n    \"Structured knowledge graph facts\",\n    \"Daily research brief (What's new, Implications for QUAI/QI)\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.\",\n    \"PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard):\",\n    \"You are Fox writing the daily research brief for the Quai Network intelligence dashboard.\",\n    \"LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807\"\n  ]\n}"
+}

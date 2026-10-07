@@ -1,0 +1,11 @@
+First write 'Reasoning:' followed by short numbered reasoning steps. Then write 'Answer:' with the final response.
+Context: {{context}}
+
+--- EXAMPLE HEAD ---
+First write 'Reasoning:' followed by short numbered reasoning steps. Then write 'Answer:' with the final response.
+Context:
+[1] (knowledge graph) Multi-Agent — A paper tagged with 'Multi-Agent'.
+
+[2] (knowledge graph) State Patching — Overwriting intermediate activation states in a corrupted model run with corresponding states from a clean run to measure causal relevance.
+
+[3] (knowledge graph) Feature Extraction Methods — Techniques for preprocessing and representing images, videos, and text, i

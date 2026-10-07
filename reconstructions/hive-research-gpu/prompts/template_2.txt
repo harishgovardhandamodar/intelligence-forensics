@@ -1,0 +1,13 @@
+Paper: {{paper}}
+
+--- EXAMPLE HEAD ---
+Paper: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models
+
+## abstract
+From Model-Based Screening to Data-Driven
+Surrogates: A Multi-Stage Workflow for
+Exploring Stochastic Agent-Based Models
+Paul Saves1[0000−0001−5889−2302], Matthieu Mastio1[0009−0002−3486−3739], Nicolas
+Verstaevel1[0000−0002−7879−6681], and Benoit Gaudou1[0000−0002−9005−3004]
+IRIT, Université Toulouse Capitole, Toulouse, France. {first.last}@irit.fr
+Abstract

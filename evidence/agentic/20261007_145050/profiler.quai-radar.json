@@ -1,0 +1,38 @@
+{
+ "agent": "profiler",
+ "service": "quai-radar",
+ "content": "{\n  \"project\": \"Quai-RADAR\",\n  \"what_building\": \"An intelligence dashboard for the Quai Network that aggregates blockchain news and market data. It uses LLMs to extract structured knowledge graph facts and generate daily research briefs with specific implications for QUAI/QI tokens.\",\n  \"pipeline\": [\n    \"ingest_news_feed\",\n    \"extract_kg_facts\",\n    \"fetch_live_market_data\",\n    \"generate_research_brief\"\n  ],\n  \"inputs\": [\n    \"news_title\",\n    \"news_content\",\n    \"live_market_prices\",\n    \"soap_dynamics_stats\"\n  ],\n  \"outputs\": [\n    \"structured_knowledge_graph_facts\",\n    \"daily_research_brief\",\n    \"implications_for_quai\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Extract structured facts about the item below for a knowledge graph\",\n    \"PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard)\",\n    \"write the daily research brief for the Quai Network intelligence dashboard\",\n    \"Implications for QUAI/QI\"\n  ]\n}",
+ "prompt_tokens": 920,
+ "completion_tokens": 269,
+ "ms": 6160.2,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "Quai-RADAR",
+  "what_building": "An intelligence dashboard for the Quai Network that aggregates blockchain news and market data. It uses LLMs to extract structured knowledge graph facts and generate daily research briefs with specific implications for QUAI/QI tokens.",
+  "pipeline": [
+   "ingest_news_feed",
+   "extract_kg_facts",
+   "fetch_live_market_data",
+   "generate_research_brief"
+  ],
+  "inputs": [
+   "news_title",
+   "news_content",
+   "live_market_prices",
+   "soap_dynamics_stats"
+  ],
+  "outputs": [
+   "structured_knowledge_graph_facts",
+   "daily_research_brief",
+   "implications_for_quai"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "Extract structured facts about the item below for a knowledge graph",
+   "PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard)",
+   "write the daily research brief for the Quai Network intelligence dashboard",
+   "Implications for QUAI/QI"
+  ]
+ },
+ "raw": "{\n  \"project\": \"Quai-RADAR\",\n  \"what_building\": \"An intelligence dashboard for the Quai Network that aggregates blockchain news and market data. It uses LLMs to extract structured knowledge graph facts and generate daily research briefs with specific implications for QUAI/QI tokens.\",\n  \"pipeline\": [\n    \"ingest_news_feed\",\n    \"extract_kg_facts\",\n    \"fetch_live_market_data\",\n    \"generate_research_brief\"\n  ],\n  \"inputs\": [\n    \"news_title\",\n    \"news_content\",\n    \"live_market_prices\",\n    \"soap_dynamics_stats\"\n  ],\n  \"outputs\": [\n    \"structured_knowledge_graph_facts\",\n    \"daily_research_brief\",\n    \"implications_for_quai\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Extract structured facts about the item below for a knowledge graph\",\n    \"PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard)\",\n    \"write the daily research brief for the Quai Network intelligence dashboard\",\n    \"Implications for QUAI/QI\"\n  ]\n}"
+}

@@ -1,0 +1,4 @@
+Say hi in five words.
+
+--- EXAMPLE HEAD ---
+Say hi in five words.

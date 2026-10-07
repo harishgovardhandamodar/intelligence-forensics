@@ -1,0 +1,6 @@
+Review the following answer to the task: "Any regulatory news that impacts Quai mining?".
+Check for: (1) did you actually answer the question, (2) any claim not supported by the gathered tool results/context — mark those as unknowns instead of asserting them, (3) missing key dimensions, (4) the conf
+
+--- EXAMPLE HEAD ---
+Review the following answer to the task: "Any regulatory news that impacts Quai mining?".
+Check for: (1) did you actually answer the question, (2) any claim not supported by the gathered tool results/context — mark those as unknowns instead of asserting them, (3) missing key dimensions, (4) the conf

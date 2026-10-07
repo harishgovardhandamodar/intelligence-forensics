@@ -1,0 +1,4 @@
+Reply with the single word: ready
+
+--- EXAMPLE HEAD ---
+Reply with the single word: ready

@@ -1,0 +1,11 @@
+You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back — produce the actual facts.
+
+TITLE: {{title}}
+
+--- EXAMPLE HEAD ---
+You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back — produce the actual facts.
+
+TITLE: ‘Old money’ has stronger Bitcoin ‘diamond hands,’ says BingX
+
+CONTENT:
+<

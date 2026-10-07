@@ -1,0 +1,11 @@
+{
+ "agent": "profiler",
+ "service": "hive-research-gpu",
+ "content": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"This service is an automated research assistant that synthesizes state-of-the-art summaries from academic papers, specifically focusing on multi-agent systems and reinforcement learning. It utilizes a multi-stage pipeline to extract specific sections, generate section-wise summaries, and identify information gaps to refine its understanding.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\",\n    \"gap_identification\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"paper_content\",\n    \"numbered_context_excerpts\",\n    \"research_question\"\n  ],\n  \"outputs\": [\n    \"research_briefing\",\n    \"section_summaries\",\n    \"json_gap_queries\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Summarize the state of multi-agent debat\",\n    \"Answer using ONLY the numbered context excerpts provided\",\n    \"List up to 3 specific information gaps as refined arXiv-style search queries\",\n    \"Title",
+ "prompt_tokens": 609,
+ "completion_tokens": 256,
+ "ms": 5708.6,
+ "model": "qwen3.8:27b",
+ "parsed": {},
+ "raw": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"This service is an automated research assistant that synthesizes state-of-the-art summaries from academic papers, specifically focusing on multi-agent systems and reinforcement learning. It utilizes a multi-stage pipeline to extract specific sections, generate section-wise summaries, and identify information gaps to refine its understanding.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\",\n    \"gap_identification\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"paper_content\",\n    \"numbered_context_excerpts\",\n    \"research_question\"\n  ],\n  \"outputs\": [\n    \"research_briefing\",\n    \"section_summaries\",\n    \"json_gap_queries\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Summarize the state of multi-agent debat\",\n    \"Answer using ONLY the numbered context excerpts provided\",\n    \"List up to 3 specific information gaps as refined arXiv-style search queries\",\n    \"Title"
+}

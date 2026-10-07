@@ -1,0 +1,32 @@
+{
+ "agent": "profiler",
+ "service": "warmup",
+ "content": "{\n  \"project\": \"warmup\",\n  \"what_building\": \"This service is a lightweight health check or connection warm-up endpoint. It uses a minimal LLM call to verify model availability and latency without processing complex user data.\",\n  \"pipeline\": [\n    \"receive_request\",\n    \"llm_inference\",\n    \"return_response\"\n  ],\n  \"inputs\": [\n    \"implicit system prompt or hardcoded instruction\"\n  ],\n  \"outputs\": [\n    \"string: 'warm'\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Reply with exactly: warm\",\n    \"models: {'nomic-embed-text:latest': 1}\",\n    \"requests: 1 tokens: 0\",\n    \"query_types: {'(none)': 1}\"\n  ]\n}",
+ "prompt_tokens": 242,
+ "completion_tokens": 190,
+ "ms": 10824.9,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "warmup",
+  "what_building": "This service is a lightweight health check or connection warm-up endpoint. It uses a minimal LLM call to verify model availability and latency without processing complex user data.",
+  "pipeline": [
+   "receive_request",
+   "llm_inference",
+   "return_response"
+  ],
+  "inputs": [
+   "implicit system prompt or hardcoded instruction"
+  ],
+  "outputs": [
+   "string: 'warm'"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "Reply with exactly: warm",
+   "models: {'nomic-embed-text:latest': 1}",
+   "requests: 1 tokens: 0",
+   "query_types: {'(none)': 1}"
+  ]
+ },
+ "raw": "{\n  \"project\": \"warmup\",\n  \"what_building\": \"This service is a lightweight health check or connection warm-up endpoint. It uses a minimal LLM call to verify model availability and latency without processing complex user data.\",\n  \"pipeline\": [\n    \"receive_request\",\n    \"llm_inference\",\n    \"return_response\"\n  ],\n  \"inputs\": [\n    \"implicit system prompt or hardcoded instruction\"\n  ],\n  \"outputs\": [\n    \"string: 'warm'\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Reply with exactly: warm\",\n    \"models: {'nomic-embed-text:latest': 1}\",\n    \"requests: 1 tokens: 0\",\n    \"query_types: {'(none)': 1}\"\n  ]\n}"
+}

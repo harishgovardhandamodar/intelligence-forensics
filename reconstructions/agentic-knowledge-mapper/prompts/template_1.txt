@@ -1,0 +1,12 @@
+Model: {{model_desc}}
+
+--- EXAMPLE HEAD ---
+Model: Tabular Foundation Models
+Use: what adversarial scenarios could an attacker engineer with this model for credit scoring of tabular records
+Profile: foundation model over tabular records no conversational surface
+Interface: non_conversational
+Data: tabular records
+Focus: tabular, models, adversarial
+Attacker capabilities:
+- C01: batch scoring oracle (dim capability_abuse, strength 4) — tabular scoring interface accepts arbitrary row batches
+- C02: membership oracle (dim data_recon, strengt

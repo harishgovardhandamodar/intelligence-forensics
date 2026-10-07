@@ -1,0 +1,40 @@
+{
+ "agent": "profiler",
+ "service": "agentic-knowledge-mapper",
+ "content": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping service for multi-agent LLM systems. It generates structured risk registers and exposure tiers based on product and model descriptors.\",\n  \"pipeline\": [\n    \"ingest_brief\",\n    \"map_product_risk\",\n    \"map_model_risk\",\n    \"synthesize_knowledge_graph\",\n    \"emit_risk_register\"\n  ],\n  \"inputs\": [\n    \"product_description\",\n    \"model_description\",\n    \"risk_brief\",\n    \"specific_security_questions\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tiers\",\n    \"knowledge_graph\",\n    \"residual_risk_assessment\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Product: multi-agent debate systems (safety, robustness, and operational risks)\",\n    \"Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"query_types: {'context-heavy': 302, 'research': 217, 'chat': 214, 'chart/price': 210, 'trade': 142, 'supply': 82, 'mining': 37, 'qa': 2, '(none)': 1}\"\n  ]\n}",
+ "prompt_tokens": 634,
+ "completion_tokens": 352,
+ "ms": 3504.3,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "agentic-knowledge-mapper",
+  "what_building": "A risk assessment and knowledge mapping service for multi-agent LLM systems. It generates structured risk registers and exposure tiers based on product and model descriptors.",
+  "pipeline": [
+   "ingest_brief",
+   "map_product_risk",
+   "map_model_risk",
+   "synthesize_knowledge_graph",
+   "emit_risk_register"
+  ],
+  "inputs": [
+   "product_description",
+   "model_description",
+   "risk_brief",
+   "specific_security_questions"
+  ],
+  "outputs": [
+   "risk_register",
+   "exposure_tiers",
+   "knowledge_graph",
+   "residual_risk_assessment"
+  ],
+  "confidence": 0.85,
+  "evidence_quotes": [
+   "Product: multi-agent debate systems (safety, robustness, and operational risks)",
+   "Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents",
+   "schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']",
+   "query_types: {'context-heavy': 302, 'research': 217, 'chat': 214, 'chart/price': 210, 'trade': 142, 'supply': 82, 'mining': 37, 'qa': 2, '(none)': 1}"
+  ]
+ },
+ "raw": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping service for multi-agent LLM systems. It generates structured risk registers and exposure tiers based on product and model descriptors.\",\n  \"pipeline\": [\n    \"ingest_brief\",\n    \"map_product_risk\",\n    \"map_model_risk\",\n    \"synthesize_knowledge_graph\",\n    \"emit_risk_register\"\n  ],\n  \"inputs\": [\n    \"product_description\",\n    \"model_description\",\n    \"risk_brief\",\n    \"specific_security_questions\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tiers\",\n    \"knowledge_graph\",\n    \"residual_risk_assessment\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Product: multi-agent debate systems (safety, robustness, and operational risks)\",\n    \"Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"query_types: {'context-heavy': 302, 'research': 217, 'chat': 214, 'chart/price': 210, 'trade': 142, 'supply': 82, 'mining': 37, 'qa': 2, '(none)': 1}\"\n  ]\n}"
+}

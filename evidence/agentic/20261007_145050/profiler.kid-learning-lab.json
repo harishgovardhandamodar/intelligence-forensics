@@ -1,0 +1,41 @@
+{
+ "agent": "profiler",
+ "service": "kid-learning-lab",
+ "content": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"A personalized AI tutor service for children that adapts its teaching style based on the learner's current state and specific skill. It uses a multi-modal approach, combining embedding models for state tracking or retrieval with a large language model for generating pedagogical responses.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"skill_context_retrieval\",\n    \"pedagogical_prompt_generation\",\n    \"llm_response_synthesis\",\n    \"next_step_recommendation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"learner_state\",\n    \"current_question_or_topic\"\n  ],\n  \"outputs\": [\n    \"tutor_explanation\",\n    \"guiding_question\",\n    \"hint_or_clue\",\n    \"challenge_suggestion\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\",\n    \"models: {'nomic-embed-text:latest': 32, 'gemma4:31b': 5}\"\n  ]\n}",
+ "prompt_tokens": 494,
+ "completion_tokens": 345,
+ "ms": 12226.9,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "kid-learning-lab",
+  "what_building": "A personalized AI tutor service for children that adapts its teaching style based on the learner's current state and specific skill. It uses a multi-modal approach, combining embedding models for state tracking or retrieval with a large language model for generating pedagogical responses.",
+  "pipeline": [
+   "learner_state_ingestion",
+   "skill_context_retrieval",
+   "pedagogical_prompt_generation",
+   "llm_response_synthesis",
+   "next_step_recommendation"
+  ],
+  "inputs": [
+   "subject",
+   "skill",
+   "learner_state",
+   "current_question_or_topic"
+  ],
+  "outputs": [
+   "tutor_explanation",
+   "guiding_question",
+   "hint_or_clue",
+   "challenge_suggestion",
+   "reflection_prompt"
+  ],
+  "confidence": 0.85,
+  "evidence_quotes": [
+   "Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.",
+   "Task: Give a short clue, never the answer. Ask one guiding question.",
+   "Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.",
+   "models: {'nomic-embed-text:latest': 32, 'gemma4:31b': 5}"
+  ]
+ },
+ "raw": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"A personalized AI tutor service for children that adapts its teaching style based on the learner's current state and specific skill. It uses a multi-modal approach, combining embedding models for state tracking or retrieval with a large language model for generating pedagogical responses.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"skill_context_retrieval\",\n    \"pedagogical_prompt_generation\",\n    \"llm_response_synthesis\",\n    \"next_step_recommendation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"learner_state\",\n    \"current_question_or_topic\"\n  ],\n  \"outputs\": [\n    \"tutor_explanation\",\n    \"guiding_question\",\n    \"hint_or_clue\",\n    \"challenge_suggestion\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\",\n    \"models: {'nomic-embed-text:latest': 32, 'gemma4:31b': 5}\"\n  ]\n}"
+}

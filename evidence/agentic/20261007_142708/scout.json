@@ -1,0 +1,10 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.1M toks) with multi-model orchestration (Qwen, Gemma, Embeddings) suggests complex agentic loops or potential prompt injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) focused on a single model (Qwen) for extraction; high token-per-request ratio indicates heavy context processing or potential data exfiltration via large prompts.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed small/large models (Llama 3B, Qwen 27B) and embeddings; potential for model confusion or unauthorized use of GPU resources for summarization.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",",
+ "prompt_tokens": 456,
+ "completion_tokens": 256,
+ "ms": 3116.1,
+ "model": "qwen3.8:27b",
+ "parsed": {},
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.1M toks) with multi-model orchestration (Qwen, Gemma, Embeddings) suggests complex agentic loops or potential prompt injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) focused on a single model (Qwen) for extraction; high token-per-request ratio indicates heavy context processing or potential data exfiltration via large prompts.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed small/large models (Llama 3B, Qwen 27B) and embeddings; potential for model confusion or unauthorized use of GPU resources for summarization.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\","
+}

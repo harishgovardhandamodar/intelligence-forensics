@@ -1,0 +1,8 @@
+Break this research question into up to 5 focused sub-questions that together cover it. Return JSON: {"sub_questions": ["..."]}
+
+Question: Summarize the state of multi-agent debate methods
+
+--- EXAMPLE HEAD ---
+Break this research question into up to 5 focused sub-questions that together cover it. Return JSON: {"sub_questions": ["..."]}
+
+Question: Summarize the state of multi-agent debate methods

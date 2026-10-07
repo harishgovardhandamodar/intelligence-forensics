@@ -1,0 +1,11 @@
+{
+ "agent": "profiler",
+ "service": "agentic-knowledge-mapper",
+ "content": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping engine for multi-agent debate systems. It generates structured risk registers by analyzing product briefs and model architectures for safety, robustness, and operational vulnerabilities.\",\n  \"pipeline\": [\n    \"ingest_brief\",\n    \"map_architecture\",\n    \"score_risk_tiers\",\n    \"map_cve_attacks\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"product_brief\",\n    \"model_description\",\n    \"architecture_variants\",\n    \"empirical_results\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier_score\",\n    \"cve_mapping\",\n    \"residual_risk_assessment\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Product: multi-agent debate systems (safety, robustness, and operational risks)\",\n    \"Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents\",\n    \"schema hints: ['brief', 'exposure",
+ "prompt_tokens": 634,
+ "completion_tokens": 256,
+ "ms": 8713.8,
+ "model": "qwen3.8:27b",
+ "parsed": {},
+ "raw": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping engine for multi-agent debate systems. It generates structured risk registers by analyzing product briefs and model architectures for safety, robustness, and operational vulnerabilities.\",\n  \"pipeline\": [\n    \"ingest_brief\",\n    \"map_architecture\",\n    \"score_risk_tiers\",\n    \"map_cve_attacks\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"product_brief\",\n    \"model_description\",\n    \"architecture_variants\",\n    \"empirical_results\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier_score\",\n    \"cve_mapping\",\n    \"residual_risk_assessment\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Product: multi-agent debate systems (safety, robustness, and operational risks)\",\n    \"Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents\",\n    \"schema hints: ['brief', 'exposure"
+}

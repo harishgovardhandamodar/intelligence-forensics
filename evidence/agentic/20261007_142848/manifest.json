@@ -1,0 +1,116 @@
+{
+ "run_id": "20261007_142848",
+ "model": "qwen3.8:27b",
+ "quick": true,
+ "services": [
+  "kid-learning-lab"
+ ],
+ "agents": {
+  "scout": {
+   "agent": "scout",
+   "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.1M toks) with multi-model orchestration (Qwen, Gemma, Nomic) suggests complex agentic logic or potential prompt injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) concentrated on a single model (Qwen) indicates heavy extraction load; check for data exfiltration or sensitive PII in blockchain news context.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed models (Llama, Qwen, Nomic) for research summarization; lower risk but worth checking for academic IP leakage.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes 'unknown' model tag and diverse model usage; potential misconfiguration or shadow workload.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume, low tokens; likely benign educational use, low forensic priority.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely health check or test, negligible risk.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; infrastructure warmup, no forensic value.\"\n    }\n  ]\n}",
+   "prompt_tokens": 456,
+   "completion_tokens": 413,
+   "ms": 4646.8,
+   "model": "qwen3.8:27b",
+   "parsed": {
+    "rankings": [
+     {
+      "rank": 1,
+      "service": "agentic-knowledge-mapper",
+      "reason": "High volume (1.2k reqs, 2.1M toks) with multi-model orchestration (Qwen, Gemma, Nomic) suggests complex agentic logic or potential prompt injection surface."
+     },
+     {
+      "rank": 2,
+      "service": "quai-radar",
+      "reason": "High volume (1.1k reqs, 1.8M toks) concentrated on a single model (Qwen) indicates heavy extraction load; check for data exfiltration or sensitive PII in blockchain news context."
+     },
+     {
+      "rank": 3,
+      "service": "hive-research-gpu",
+      "reason": "Moderate volume with mixed models (Llama, Qwen, Nomic) for research summarization; lower risk but worth checking for academic IP leakage."
+     },
+     {
+      "rank": 4,
+      "service": "gateway-unknown",
+      "reason": "Low volume but includes 'unknown' model tag and diverse model usage; potential misconfiguration or shadow workload."
+     },
+     {
+      "rank": 5,
+      "service": "kid-learning-lab",
+      "reason": "Low volume, low tokens; likely benign educational use, low forensic priority."
+     },
+     {
+      "rank": 6,
+      "service": "probe",
+      "reason": "Single request, zero tokens; likely health check or test, negligible risk."
+     },
+     {
+      "rank": 7,
+      "service": "warmup",
+      "reason": "Single request, zero tokens; infrastructure warmup, no forensic value."
+     }
+    ]
+   },
+   "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.1M toks) with multi-model orchestration (Qwen, Gemma, Nomic) suggests complex agentic logic or potential prompt injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) concentrated on a single model (Qwen) indicates heavy extraction load; check for data exfiltration or sensitive PII in blockchain news context.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed models (Llama, Qwen, Nomic) for research summarization; lower risk but worth checking for academic IP leakage.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes 'unknown' model tag and diverse model usage; potential misconfiguration or shadow workload.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume, low tokens; likely benign educational use, low forensic priority.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely health check or test, negligible risk.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; infrastructure warmup, no forensic value.\"\n    }\n  ]\n}"
+  },
+  "profilers": {
+   "kid-learning-lab": {
+    "agent": "profiler",
+    "service": "kid-learning-lab",
+    "content": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"An adaptive AI tutor service designed to teach specific skills to children using a Socratic method. It generates pedagogical prompts that guide learners through definitions, clues, and challenges without providing direct answers.\",\n  \"pipeline\": [\n    \"learner_state_ingest\",\n    \"pedagogical_prompt_generation\",\n    \"llm_inference\",\n    \"response_validation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"learner_state\",\n    \"query_type\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"check_question\",\n    \"clue\",\n    \"challenge_suggestion\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\",\n    \"Task: Suggest one next challenge that is slightly harder and explain why in one sentence.\"\n  ]\n}",
+    "prompt_tokens": 494,
+    "completion_tokens": 300,
+    "ms": 3432.2,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "kid-learning-lab",
+     "what_building": "An adaptive AI tutor service designed to teach specific skills to children using a Socratic method. It generates pedagogical prompts that guide learners through definitions, clues, and challenges without providing direct answers.",
+     "pipeline": [
+      "learner_state_ingest",
+      "pedagogical_prompt_generation",
+      "llm_inference",
+      "response_validation"
+     ],
+     "inputs": [
+      "subject",
+      "skill",
+      "learner_state",
+      "query_type"
+     ],
+     "outputs": [
+      "tutor_turn",
+      "check_question",
+      "clue",
+      "challenge_suggestion"
+     ],
+     "confidence": 0.92,
+     "evidence_quotes": [
+      "Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.",
+      "Task: Give a short clue, never the answer. Ask one guiding question.",
+      "Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.",
+      "Task: Suggest one next challenge that is slightly harder and explain why in one sentence."
+     ]
+    },
+    "raw": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"An adaptive AI tutor service designed to teach specific skills to children using a Socratic method. It generates pedagogical prompts that guide learners through definitions, clues, and challenges without providing direct answers.\",\n  \"pipeline\": [\n    \"learner_state_ingest\",\n    \"pedagogical_prompt_generation\",\n    \"llm_inference\",\n    \"response_validation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"learner_state\",\n    \"query_type\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"check_question\",\n    \"clue\",\n    \"challenge_suggestion\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\",\n    \"Task: Suggest one next challenge that is slightly harder and explain why in one sentence.\"\n  ]\n}"
+   }
+  },
+  "critics": {},
+  "reporter": {
+   "agent": "reporter",
+   "content": "# Executive Brief: Mesh Intelligence & Reconstruction Targets\n\n## 1. Node Profile: `kid-learning-lab`\n**Core Function:** Adaptive AI Tutor (Socratic Method)\n**Objective:** Facilitate skill acquisition for children by guiding learners through definitions, clues, and challenges without providing direct answers.\n**Pipeline:** `learner_state_ingest` \u2192 `pedagogical_prompt_generation` \u2192 `llm_inference` \u2192 `response_validation`\n**I/O:**\n*   **Inputs:** Subject, skill, learner state, query type.\n*   **Outputs:** Tutor turn, check question, clue, challenge suggestion.\n**Confidence:** 0.92 (High)\n**Evidence:** \"Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check...\"\n\n## 2. Cross-Service Shared Topics\n*   **Pedagogical Logic:** The mesh centers on structured learning pathways, specifically the transition from definition to application.\n*   **State-Driven Inference:** Reliance on `learner_state` to modulate AI responses, indicating a shared architecture for context-aware personalization.\n*   **Validation Loops:** Presence of `response_validation` suggests a shared quality-control mechanism to ensure safety and accuracy in educational outputs.\n\n## 3. Strategic Assessment\nThe `kid-learning-lab` node represents a high-confidence, mature component of the mesh. Its focus on **Socratic scaffolding** (clues/challenges over direct answers) distinguishes it from generic LLM wrappers. The pipeline\u2019s explicit separation of prompt generation and validation indicates a robust design intended to minimize hallucination and maintain pedagogical integrity.\n\n## 4. Primary Reconstruction Target\n**Target:** `pedagogical_prompt_generation`\n**Rationale:** This is the highest-value component for reconstruction. It encapsulates the core intellectual property: the logic that transforms raw `learner_state` and `skill` inputs into structured Socratic prompts (clues, challenges). Reconstructing this module allows for the replication of the adaptive teaching strategy, which is the differentiator of the service. The surrounding inference and validation steps are standard LLM operations, whereas the prompt generation logic is the unique asset.",
+   "prompt_tokens": 235,
+   "completion_tokens": 464,
+   "ms": 6051.2,
+   "model": "qwen3.8:27b"
+  }
+ },
+ "errors": [],
+ "elapsed_s": 14.1,
+ "heuristic_investigation": {
+  "kid-learning-lab": {
+   "project": "tutor / learning-lab skill coach",
+   "requests": 37
+  }
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "agent": "profiler",
+ "service": "probe",
+ "content": "{\n  \"project\": \"probe\",\n  \"what_building\": \"This service appears to be a lightweight routing or health-check endpoint. It likely validates connectivity or model availability by forcing a specific, deterministic output.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"format_response\"\n  ],\n  \"inputs\": [\n    \"static_instruction_string\"\n  ],\n  \"outputs\": [\n    \"fixed_string_response\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Reply with exactly: routed\",\n    \"models: {'gemma4:31b': 1}\",\n    \"query_types: {'(none)': 1}\",\n    \"requests: 1\"\n  ]\n}",
+ "prompt_tokens": 240,
+ "completion_tokens": 177,
+ "ms": 10802.3,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "probe",
+  "what_building": "This service appears to be a lightweight routing or health-check endpoint. It likely validates connectivity or model availability by forcing a specific, deterministic output.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call(model)",
+   "format_response"
+  ],
+  "inputs": [
+   "static_instruction_string"
+  ],
+  "outputs": [
+   "fixed_string_response"
+  ],
+  "confidence": 0.85,
+  "evidence_quotes": [
+   "Reply with exactly: routed",
+   "models: {'gemma4:31b': 1}",
+   "query_types: {'(none)': 1}",
+   "requests: 1"
+  ]
+ },
+ "raw": "{\n  \"project\": \"probe\",\n  \"what_building\": \"This service appears to be a lightweight routing or health-check endpoint. It likely validates connectivity or model availability by forcing a specific, deterministic output.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"format_response\"\n  ],\n  \"inputs\": [\n    \"static_instruction_string\"\n  ],\n  \"outputs\": [\n    \"fixed_string_response\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Reply with exactly: routed\",\n    \"models: {'gemma4:31b': 1}\",\n    \"query_types: {'(none)': 1}\",\n    \"requests: 1\"\n  ]\n}"
+}

@@ -1,0 +1,48 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.1M toks) with multi-model orchestration (Qwen, Nomic, Gemma) suggests complex agentic workflows or potential prompt injection/leakage surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) concentrated on a single model (Qwen) indicates heavy extraction load; check for data exfiltration or unauthorized PII processing in news feeds.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed models (Embedding + Llama + Qwen) typical of RAG pipelines; verify embedding vector leakage or unauthorized paper access.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes 'unknown' model and diverse model list; potential misconfiguration, shadow IT, or unauthorized model routing.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume, low risk profile; standard educational workload.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely health check or test artifact.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; infrastructure warmup, no forensic value.\"\n    }\n  ]\n}",
+ "prompt_tokens": 456,
+ "completion_tokens": 415,
+ "ms": 4543.4,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "High volume (1.2k reqs, 2.1M toks) with multi-model orchestration (Qwen, Nomic, Gemma) suggests complex agentic workflows or potential prompt injection/leakage surface."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "High volume (1.1k reqs, 1.8M toks) concentrated on a single model (Qwen) indicates heavy extraction load; check for data exfiltration or unauthorized PII processing in news feeds."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Moderate volume with mixed models (Embedding + Llama + Qwen) typical of RAG pipelines; verify embedding vector leakage or unauthorized paper access."
+   },
+   {
+    "rank": 4,
+    "service": "gateway-unknown",
+    "reason": "Low volume but includes 'unknown' model and diverse model list; potential misconfiguration, shadow IT, or unauthorized model routing."
+   },
+   {
+    "rank": 5,
+    "service": "kid-learning-lab",
+    "reason": "Low volume, low risk profile; standard educational workload."
+   },
+   {
+    "rank": 6,
+    "service": "probe",
+    "reason": "Single request, zero tokens; likely health check or test artifact."
+   },
+   {
+    "rank": 7,
+    "service": "warmup",
+    "reason": "Single request, zero tokens; infrastructure warmup, no forensic value."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.1M toks) with multi-model orchestration (Qwen, Nomic, Gemma) suggests complex agentic workflows or potential prompt injection/leakage surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) concentrated on a single model (Qwen) indicates heavy extraction load; check for data exfiltration or unauthorized PII processing in news feeds.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed models (Embedding + Llama + Qwen) typical of RAG pipelines; verify embedding vector leakage or unauthorized paper access.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes 'unknown' model and diverse model list; potential misconfiguration, shadow IT, or unauthorized model routing.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume, low risk profile; standard educational workload.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely health check or test artifact.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; infrastructure warmup, no forensic value.\"\n    }\n  ]\n}"
+}

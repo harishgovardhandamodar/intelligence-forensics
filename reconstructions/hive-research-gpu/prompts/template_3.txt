@@ -1,0 +1,17 @@
+Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5]. If the context is insufficient, say exactly what is missing instead of guessing.
+
+Write a thorough research briefing on: Summarize the state of multi-agent debate methods
+Structure: Key findings / Method landscape / Open problems / What your library does not yet cover. Cite as [n].
+
+Context: {{context}}
+
+--- EXAMPLE HEAD ---
+Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5]. If the context is insufficient, say exactly what is missing instead of guessing.
+
+Write a thorough research briefing on: Summarize the state of multi-agent debate methods
+Structure: Key findings / Method landscape / Open problems / What your library does not yet cover. Cite as [n].
+
+Context:
+[1] (graph_fact: graph) Multi-Agent — A paper tagged with 'Multi-Agent'.
+
+[2] (graph_fac

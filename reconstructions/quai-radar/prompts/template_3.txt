@@ -1,0 +1,12 @@
+You are Fox writing the daily research brief for the Quai Network intelligence dashboard. Based ONLY on the digest below (what's new in the research landscape, news, market and the swarm-protocol regime/gates), write a concise brief with:
+## What's new
+## Implications for QUAI/QI
+## What to watch
+Be
+
+--- EXAMPLE HEAD ---
+You are Fox writing the daily research brief for the Quai Network intelligence dashboard. Based ONLY on the digest below (what's new in the research landscape, news, market and the swarm-protocol regime/gates), write a concise brief with:
+## What's new
+## Implications for QUAI/QI
+## What to watch
+Be

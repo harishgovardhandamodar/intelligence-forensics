@@ -1,0 +1,9 @@
+{
+ "agent": "critic",
+ "service": "hive-research-gpu",
+ "content": "*   **Missing Figure Processing Evidence**: The heuristic plan explicitly includes `summarize_figures`, but the profiler\u2019s pipeline (`ingest_paper_metadata` -> ... -> `synthesis_generation`) and evidence quotes contain **zero** references to image data, OCR, or visual analysis.\n    *   *Gap*: Logs cannot prove if figures were actually extracted, parsed, or contributed to the output.\n    *   *Next Observation*: Check for `image_url` or `figure_caption` fields in the input payload logs, or inspect the `summarize_figures` function call stack for non-empty arguments.\n\n*   **Knowledge Graph Structure Undefined**: The profiler lists `knowledge_graphs` as an output, but the evidence quotes only show JSON for `queries` and text for summaries. There is no schema definition for nodes/edges.\n    *   *Gap*: Logs cannot prove the format or validity of the generated knowledge graph (e.g., is it JSON-LD, Neo4j Cypher, or a simple list?).\n    *   *Next Observation*: Retrieve a sample raw output payload from the `synthesis_generation` stage and validate it against a known graph schema or check for `node`/`edge` keys.\n\n*",
+ "prompt_tokens": 375,
+ "completion_tokens": 256,
+ "ms": 14704.1,
+ "model": "qwen3.8:27b"
+}

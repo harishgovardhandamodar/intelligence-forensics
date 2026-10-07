@@ -1,0 +1,41 @@
+{
+ "agent": "profiler",
+ "service": "hive-research-gpu",
+ "content": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.\",\n  \"pipeline\": [\n    \"ingest_paper_metadata\",\n    \"embed_context\",\n    \"section_summarization\",\n    \"gap_identification\",\n    \"synthesis_generation\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"paper_full_text\",\n    \"numbered_context_excerpts\",\n    \"partial_research_drafts\"\n  ],\n  \"outputs\": [\n    \"research_briefings\",\n    \"section_summaries\",\n    \"knowledge_graphs\",\n    \"arxiv_style_search_queries\",\n    \"cited_claims\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Title: {{paper_title}}\",\n    \"Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5].\",\n    \"List up to 3 specific information gaps as refined arXiv-style search queries. Return JSON: {\\\"queries\\\": [\\\"...\\\"]}\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\"\n  ]\n}",
+ "prompt_tokens": 609,
+ "completion_tokens": 320,
+ "ms": 3498.3,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "hive-research-gpu",
+  "what_building": "A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.",
+  "pipeline": [
+   "ingest_paper_metadata",
+   "embed_context",
+   "section_summarization",
+   "gap_identification",
+   "synthesis_generation"
+  ],
+  "inputs": [
+   "paper_title",
+   "paper_full_text",
+   "numbered_context_excerpts",
+   "partial_research_drafts"
+  ],
+  "outputs": [
+   "research_briefings",
+   "section_summaries",
+   "knowledge_graphs",
+   "arxiv_style_search_queries",
+   "cited_claims"
+  ],
+  "confidence": 0.92,
+  "evidence_quotes": [
+   "Title: {{paper_title}}",
+   "Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5].",
+   "List up to 3 specific information gaps as refined arXiv-style search queries. Return JSON: {\"queries\": [\"...\"]}",
+   "schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']"
+  ]
+ },
+ "raw": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.\",\n  \"pipeline\": [\n    \"ingest_paper_metadata\",\n    \"embed_context\",\n    \"section_summarization\",\n    \"gap_identification\",\n    \"synthesis_generation\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"paper_full_text\",\n    \"numbered_context_excerpts\",\n    \"partial_research_drafts\"\n  ],\n  \"outputs\": [\n    \"research_briefings\",\n    \"section_summaries\",\n    \"knowledge_graphs\",\n    \"arxiv_style_search_queries\",\n    \"cited_claims\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Title: {{paper_title}}\",\n    \"Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5].\",\n    \"List up to 3 specific information gaps as refined arXiv-style search queries. Return JSON: {\\\"queries\\\": [\\\"...\\\"]}\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\"\n  ]\n}"
+}

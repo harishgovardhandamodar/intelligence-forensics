@@ -1,0 +1,40 @@
+{
+ "agent": "profiler",
+ "service": "agentic-knowledge-mapper",
+ "content": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping engine for multi-agent LLM debate systems. It generates structured risk registers by analyzing product briefs, model architectures, and potential failure modes like sycophancy or prompt injection.\",\n  \"pipeline\": [\n    \"ingest_brief\",\n    \"map_architecture\",\n    \"score_risk_tiers\",\n    \"map_cve_attacks\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"product_brief\",\n    \"model_description\",\n    \"risk_question\",\n    \"cve_context\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier_score\",\n    \"failure_mode_map\",\n    \"residual_risk_assessment\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Product: multi-agent debate systems (safety, robustness, and operational risks)\",\n    \"Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\"\n  ]\n}",
+ "prompt_tokens": 634,
+ "completion_tokens": 330,
+ "ms": 3602.8,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "agentic-knowledge-mapper",
+  "what_building": "A risk assessment and knowledge mapping engine for multi-agent LLM debate systems. It generates structured risk registers by analyzing product briefs, model architectures, and potential failure modes like sycophancy or prompt injection.",
+  "pipeline": [
+   "ingest_brief",
+   "map_architecture",
+   "score_risk_tiers",
+   "map_cve_attacks",
+   "emit_register"
+  ],
+  "inputs": [
+   "product_brief",
+   "model_description",
+   "risk_question",
+   "cve_context"
+  ],
+  "outputs": [
+   "risk_register",
+   "exposure_tier_score",
+   "failure_mode_map",
+   "residual_risk_assessment"
+  ],
+  "confidence": 0.85,
+  "evidence_quotes": [
+   "Product: multi-agent debate systems (safety, robustness, and operational risks)",
+   "Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents",
+   "schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']",
+   "heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register"
+  ]
+ },
+ "raw": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping engine for multi-agent LLM debate systems. It generates structured risk registers by analyzing product briefs, model architectures, and potential failure modes like sycophancy or prompt injection.\",\n  \"pipeline\": [\n    \"ingest_brief\",\n    \"map_architecture\",\n    \"score_risk_tiers\",\n    \"map_cve_attacks\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"product_brief\",\n    \"model_description\",\n    \"risk_question\",\n    \"cve_context\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier_score\",\n    \"failure_mode_map\",\n    \"residual_risk_assessment\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Product: multi-agent debate systems (safety, robustness, and operational risks)\",\n    \"Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\"\n  ]\n}"
+}

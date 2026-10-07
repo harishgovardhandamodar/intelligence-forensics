@@ -1,0 +1,204 @@
+{
+ "run_id": "20261007_124725",
+ "model": "qwen3.8:27b",
+ "quick": true,
+ "services": [
+  "agentic-knowledge-mapper",
+  "quai-radar",
+  "hive-research-gpu"
+ ],
+ "agents": {
+  "scout": {
+   "agent": "scout",
+   "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.1M toks) and complex multi-model orchestration (Qwen, Nomic, Gemma) indicating high-value agentic logic or potential prompt injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage; high token-per-request ratio suggests heavy context processing or extraction tasks.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) but uses a mix of embedding and generation models; potential for data leakage via summarization of sensitive research papers.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model identifier, which is a direct anomaly and potential security blind spot or misconfiguration.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) and low token count; likely benign educational use case with minimal forensic value.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely a health check or connectivity test, no forensic signal.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard infrastructure warmup, no forensic signal.\"\n    }\n  ]\n}",
+   "prompt_tokens": 456,
+   "completion_tokens": 423,
+   "ms": 8857.2,
+   "model": "qwen3.8:27b",
+   "parsed": {
+    "rankings": [
+     {
+      "rank": 1,
+      "service": "agentic-knowledge-mapper",
+      "reason": "Highest volume (1.2k reqs, 2.1M toks) and complex multi-model orchestration (Qwen, Nomic, Gemma) indicating high-value agentic logic or potential prompt injection surface."
+     },
+     {
+      "rank": 2,
+      "service": "quai-radar",
+      "reason": "Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage; high token-per-request ratio suggests heavy context processing or extraction tasks."
+     },
+     {
+      "rank": 3,
+      "service": "hive-research-gpu",
+      "reason": "Moderate volume (277 reqs) but uses a mix of embedding and generation models; potential for data leakage via summarization of sensitive research papers."
+     },
+     {
+      "rank": 4,
+      "service": "gateway-unknown",
+      "reason": "Low volume but includes an 'unknown' model identifier, which is a direct anomaly and potential security blind spot or misconfiguration."
+     },
+     {
+      "rank": 5,
+      "service": "kid-learning-lab",
+      "reason": "Low volume (37 reqs) and low token count; likely benign educational use case with minimal forensic value."
+     },
+     {
+      "rank": 6,
+      "service": "probe",
+      "reason": "Single request, zero tokens; likely a health check or connectivity test, no forensic signal."
+     },
+     {
+      "rank": 7,
+      "service": "warmup",
+      "reason": "Single request, zero tokens; standard infrastructure warmup, no forensic signal."
+     }
+    ]
+   },
+   "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.1M toks) and complex multi-model orchestration (Qwen, Nomic, Gemma) indicating high-value agentic logic or potential prompt injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage; high token-per-request ratio suggests heavy context processing or extraction tasks.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) but uses a mix of embedding and generation models; potential for data leakage via summarization of sensitive research papers.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model identifier, which is a direct anomaly and potential security blind spot or misconfiguration.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) and low token count; likely benign educational use case with minimal forensic value.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely a health check or connectivity test, no forensic signal.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard infrastructure warmup, no forensic signal.\"\n    }\n  ]\n}"
+  },
+  "profilers": {
+   "agentic-knowledge-mapper": {
+    "agent": "profiler",
+    "service": "agentic-knowledge-mapper",
+    "content": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping service that evaluates the safety, robustness, and operational risks of multi-agent debate systems. It generates structured risk registers by analyzing product briefs, model architectures, and potential failure modes like sycophancy or prompt injection.\",\n  \"pipeline\": [\n    \"ingest_brief\",\n    \"map_architecture\",\n    \"enumerate_risks\",\n    \"score_exposure\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"product_description\",\n    \"model_description\",\n    \"risk_brief\",\n    \"memorization_query\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier\",\n    \"knowledge_graph\",\n    \"failure_mode_analysis\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Product: multi-agent debate systems (safety, robustness, and operational risks)\",\n    \"Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"Question: what level of memorization by these network is plausible\"\n  ]\n}",
+    "prompt_tokens": 634,
+    "completion_tokens": 307,
+    "ms": 3533.4,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "agentic-knowledge-mapper",
+     "what_building": "A risk assessment and knowledge mapping service that evaluates the safety, robustness, and operational risks of multi-agent debate systems. It generates structured risk registers by analyzing product briefs, model architectures, and potential failure modes like sycophancy or prompt injection.",
+     "pipeline": [
+      "ingest_brief",
+      "map_architecture",
+      "enumerate_risks",
+      "score_exposure",
+      "emit_register"
+     ],
+     "inputs": [
+      "product_description",
+      "model_description",
+      "risk_brief",
+      "memorization_query"
+     ],
+     "outputs": [
+      "risk_register",
+      "exposure_tier",
+      "knowledge_graph",
+      "failure_mode_analysis"
+     ],
+     "confidence": 0.85,
+     "evidence_quotes": [
+      "Product: multi-agent debate systems (safety, robustness, and operational risks)",
+      "Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents",
+      "schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']",
+      "Question: what level of memorization by these network is plausible"
+     ]
+    },
+    "raw": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment and knowledge mapping service that evaluates the safety, robustness, and operational risks of multi-agent debate systems. It generates structured risk registers by analyzing product briefs, model architectures, and potential failure modes like sycophancy or prompt injection.\",\n  \"pipeline\": [\n    \"ingest_brief\",\n    \"map_architecture\",\n    \"enumerate_risks\",\n    \"score_exposure\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"product_description\",\n    \"model_description\",\n    \"risk_brief\",\n    \"memorization_query\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier\",\n    \"knowledge_graph\",\n    \"failure_mode_analysis\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"Product: multi-agent debate systems (safety, robustness, and operational risks)\",\n    \"Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"Question: what level of memorization by these network is plausible\"\n  ]\n}"
+   },
+   "hive-research-gpu": {
+    "agent": "profiler",
+    "service": "hive-research-gpu",
+    "content": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.\",\n  \"pipeline\": [\n    \"ingest_paper_metadata\",\n    \"embed_context\",\n    \"section_summarization\",\n    \"gap_identification\",\n    \"synthesis_generation\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"paper_full_text\",\n    \"numbered_context_excerpts\",\n    \"draft_research_answer\"\n  ],\n  \"outputs\": [\n    \"research_briefing\",\n    \"json_search_queries\",\n    \"cited_claims\",\n    \"knowledge_graph_nodes\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Title: {{paper_title}}\",\n    \"Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5].\",\n    \"List up to 3 specific information gaps as refined arXiv-style search queries. Return JSON: {\\\"queries\\\": [\\\"...\\\"]}\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\"\n  ]\n}",
+    "prompt_tokens": 609,
+    "completion_tokens": 310,
+    "ms": 6916.6,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "hive-research-gpu",
+     "what_building": "A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.",
+     "pipeline": [
+      "ingest_paper_metadata",
+      "embed_context",
+      "section_summarization",
+      "gap_identification",
+      "synthesis_generation"
+     ],
+     "inputs": [
+      "paper_title",
+      "paper_full_text",
+      "numbered_context_excerpts",
+      "draft_research_answer"
+     ],
+     "outputs": [
+      "research_briefing",
+      "json_search_queries",
+      "cited_claims",
+      "knowledge_graph_nodes"
+     ],
+     "confidence": 0.92,
+     "evidence_quotes": [
+      "Title: {{paper_title}}",
+      "Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5].",
+      "List up to 3 specific information gaps as refined arXiv-style search queries. Return JSON: {\"queries\": [\"...\"]}",
+      "schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']"
+     ]
+    },
+    "raw": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A GPU-accelerated research assistant that synthesizes academic literature into structured summaries and knowledge graphs. It specifically focuses on complex domains like multi-agent systems and reinforcement learning by processing paper sections and figures.\",\n  \"pipeline\": [\n    \"ingest_paper_metadata\",\n    \"embed_context\",\n    \"section_summarization\",\n    \"gap_identification\",\n    \"synthesis_generation\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"paper_full_text\",\n    \"numbered_context_excerpts\",\n    \"draft_research_answer\"\n  ],\n  \"outputs\": [\n    \"research_briefing\",\n    \"json_search_queries\",\n    \"cited_claims\",\n    \"knowledge_graph_nodes\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Title: {{paper_title}}\",\n    \"Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5].\",\n    \"List up to 3 specific information gaps as refined arXiv-style search queries. Return JSON: {\\\"queries\\\": [\\\"...\\\"]}\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\"\n  ]\n}"
+   },
+   "quai-radar": {
+    "agent": "profiler",
+    "service": "quai-radar",
+    "content": "{\n  \"project\": \"Quai-RADAR\",\n  \"what_building\": \"An intelligence dashboard for the Quai Network that monitors market data, protocol dynamics (SOAP), and external blockchain news. It uses LLMs to extract structured knowledge from news feeds and generate daily research briefs with implications for QUAI/QI assets.\",\n  \"pipeline\": [\n    \"ingest_news_feed\",\n    \"extract_kg_facts\",\n    \"fetch_live_market_data\",\n    \"generate_research_brief\"\n  ],\n  \"inputs\": [\n    \"news_title\",\n    \"news_content\",\n    \"live_market_prices\",\n    \"soap_dynamics_stats\"\n  ],\n  \"outputs\": [\n    \"structured_knowledge_graph_facts\",\n    \"daily_research_brief\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.\",\n    \"PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard):\",\n    \"You are Fox writing the daily research brief for the Quai Network intelligence dashboard.\",\n    \"LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807\"\n  ]\n}",
+    "prompt_tokens": 920,
+    "completion_tokens": 320,
+    "ms": 10494.6,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "Quai-RADAR",
+     "what_building": "An intelligence dashboard for the Quai Network that monitors market data, protocol dynamics (SOAP), and external blockchain news. It uses LLMs to extract structured knowledge from news feeds and generate daily research briefs with implications for QUAI/QI assets.",
+     "pipeline": [
+      "ingest_news_feed",
+      "extract_kg_facts",
+      "fetch_live_market_data",
+      "generate_research_brief"
+     ],
+     "inputs": [
+      "news_title",
+      "news_content",
+      "live_market_prices",
+      "soap_dynamics_stats"
+     ],
+     "outputs": [
+      "structured_knowledge_graph_facts",
+      "daily_research_brief"
+     ],
+     "confidence": 0.95,
+     "evidence_quotes": [
+      "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.",
+      "PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard):",
+      "You are Fox writing the daily research brief for the Quai Network intelligence dashboard.",
+      "LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807"
+     ]
+    },
+    "raw": "{\n  \"project\": \"Quai-RADAR\",\n  \"what_building\": \"An intelligence dashboard for the Quai Network that monitors market data, protocol dynamics (SOAP), and external blockchain news. It uses LLMs to extract structured knowledge from news feeds and generate daily research briefs with implications for QUAI/QI assets.\",\n  \"pipeline\": [\n    \"ingest_news_feed\",\n    \"extract_kg_facts\",\n    \"fetch_live_market_data\",\n    \"generate_research_brief\"\n  ],\n  \"inputs\": [\n    \"news_title\",\n    \"news_content\",\n    \"live_market_prices\",\n    \"soap_dynamics_stats\"\n  ],\n  \"outputs\": [\n    \"structured_knowledge_graph_facts\",\n    \"daily_research_brief\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.\",\n    \"PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard):\",\n    \"You are Fox writing the daily research brief for the Quai Network intelligence dashboard.\",\n    \"LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807\"\n  ]\n}"
+   }
+  },
+  "critics": {},
+  "reporter": {
+   "agent": "reporter",
+   "content": "# Executive Brief: Mesh Intelligence & Reconstruction Targets\n\n**Date:** Current Cycle\n**Subject:** Cross-Service Forensic Analysis & Strategic Alignment\n\n## 1. Node Capabilities & Build Status\n*   **agentic-knowledge-mapper (Conf: 0.85):** Constructs a **risk assessment engine** for multi-agent systems. It ingests product briefs and model architectures to generate structured risk registers, specifically targeting failure modes like sycophancy and prompt injection. *Status: Operational, focused on safety/robustness scoring.*\n*   **hive-research-gpu (Conf: 0.92):** Deploys a **GPU-accelerated literature synthesizer**. It processes academic papers (RL, multi-agent systems) to produce structured summaries, gap analyses, and knowledge graph nodes. *Status: High-fidelity, optimized for complex domain synthesis.*\n*   **quai-radar (Conf: 0.95):** Operates an **intelligence dashboard** for the Quai Network. It fuses live market data, protocol dynamics (SOAP), and external news into daily research briefs and structured KG facts. *Status: Live monitoring, high confidence in fact extraction.*\n\n## 2. Shared Topics & Mesh Synergies\n*   **Knowledge Graph (KG) Standardization:** All three nodes output structured KG nodes/facts. This indicates a shared data schema or interoperability layer is likely in place or planned.\n*   **Multi-Agent System (MAS) Focus:** `agentic-knowledge-mapper` analyzes MAS risks; `hive-research-gpu` synthesizes MAS literature. This creates a direct feedback loop: research informs risk models, and risk models may guide research priorities.\n*   **LLM-Driven Structuring:** All services rely on LLMs to transform unstructured text (briefs, papers, news) into structured JSON/KG outputs, suggesting a common prompt-engineering or API infrastructure.\n\n## 3. Single Most Valuable Reconstruction Target\n**Target: The Unified Knowledge Graph (KG) Ingestion & Query Layer**\n\n*   **Rationale:** While each node generates KG nodes, the highest-value asset is the **centralized KG store and query interface** that allows cross-service correlation.\n*   **Why:** Reconstructing this layer enables:\n    1.  **Cross-Validation:** Matching `hive-research-gpu`'s academic claims against `quai-radar`'s market realities.",
+   "prompt_tokens": 570,
+   "completion_tokens": 512,
+   "ms": 7202.7,
+   "model": "qwen3.8:27b"
+  }
+ },
+ "errors": [],
+ "elapsed_s": 26.6,
+ "heuristic_investigation": {
+  "agentic-knowledge-mapper": {
+   "project": "multi-agent debate risk scorer",
+   "requests": 1207
+  },
+  "quai-radar": {
+   "project": "blockchain-news knowledge-graph extractor",
+   "requests": 1145
+  },
+  "hive-research-gpu": {
+   "project": "paper-surrogate / research-paper summarizer",
+   "requests": 277
+  }
+ }
+}

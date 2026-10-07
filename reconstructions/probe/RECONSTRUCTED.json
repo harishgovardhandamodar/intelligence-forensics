@@ -1,0 +1,30 @@
+{
+ "service": "probe",
+ "reconstructed_from": {
+  "requests": 1,
+  "models": {
+   "gemma4:31b": 1
+  },
+  "query_types": {
+   "(none)": 1
+  }
+ },
+ "inferred_project": "probe workload (unclassified)",
+ "pipeline_summary": "prompts -> LLM -> unknown sink (needs more samples)",
+ "pipeline_stages": [
+  "capture_prompt",
+  "llm.call(model)",
+  "unknown_sink"
+ ],
+ "io_schema": {
+  "inputs": [],
+  "prompt_slots": [
+   "template_1"
+  ]
+ },
+ "instructions_recovered": [],
+ "caveats": [
+  "Prompts in fox DB are truncated to ~500-2000 chars and PII-masked; templates are heads, not full sources.",
+  "Completion text is NOT logged \u2014 outputs must be re-derived by re-running."
+ ]
+}

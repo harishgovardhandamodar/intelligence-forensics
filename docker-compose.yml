@@ -1,0 +1,36 @@
+services:
+  # Access (no auth — tailnet/LAN only, do NOT publish to the internet):
+  #   Tailscale: http://100.101.3.115:8211  (this host = axiom)
+  #   LAN:       http://192.168.1.173:8211
+  # From any other tailnet/LAN device, verify with:
+  #   curl http://100.101.3.115:8211/health
+  # If that times out, host ufw is filtering inbound — allow it once:
+  #   sudo ufw allow 8211/tcp
+  # HTTPS alternative (needs sudo once): sudo tailscale set --operator=$USER,
+  # then: tailscale serve --bg http://127.0.0.1:8211
+  intel-forensics:
+    build: .
+    container_name: intel-forensics
+    hostname: intel-forensics
+    restart: unless-stopped
+    ports:
+      - "8211:8211"
+    environment:
+      # Reach host-side fox-services + Ollama from inside the container.
+      - FOX_URL=http://host.docker.internal:8210
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - IF_MODEL=${IF_MODEL:-qwen3.8:27b}
+      - FOX_SERVICES_DB=/fox-data/fox_services.db
+    volumes:
+      # Fox telemetry DB, read-only: we snapshot-copy it, never write.
+      - /home/fox/codebase/fox-services/data:/fox-data:ro
+      # Persist our own evidence + reconstructions on the host repo.
+      - ./evidence:/app/evidence
+      - ./reconstructions:/app/reconstructions
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8211/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
