@@ -146,7 +146,7 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 - [x] P1.8 Unify live/history row shapes (`model`, `total_tokens`, real `requestor`)
 
 ### P2 — charts & GUI
-- [ ] P2.9 Extract `static/app.css` + `static/app.js`; loading/empty/error states; URL-addressable tabs
+- [x] P2.9 Extract `static/app.css` + `static/app.js`; loading/empty/error states; URL-addressable tabs
 - [ ] P2.10 Traffic timeline, token volume, latency p50/p95, model mix, heatmap, sparklines; shared tooltip/legend/resize
 - [ ] P2.11 Sortable/filterable tables, CSV/JSON export, evidence preview + download, rendered markdown brief, print stylesheet
 
