@@ -176,6 +176,59 @@ def cmd_progression(args) -> int:
     return 0
 
 
+def cmd_fidelity(args) -> int:
+    """Template recall of reconstructions against observed traffic (P5.20)."""
+    from iforensics import fidelity as fid_mod
+    db_path = _latest_db_path()
+    if not db_path:
+        print("[!] no DB available", file=sys.stderr)
+        return 2
+    rows = store.load_requests(db_path, limit=args.limit)
+    if args.service:
+        rows = [r for r in rows if (r.get("service") or "") == args.service]
+        if not rows:
+            print(f"[!] no queries for service {args.service!r}", file=sys.stderr)
+            return 2
+        out = fid_mod.score_service(args.service, [r.get("prompt") or "" for r in rows])
+        print(f"{out['service']}: {out['matched']}/{out['prompts']} prompts explained "
+              f"({out['match_rate']}) [{out['verdict']}]")
+        for d in out["drifted"]:
+            print(f"  drifted: {d}")
+        return 0
+    out = fid_mod.score_all(rows)
+    for s in out["services"]:
+        print(f"{s['service']}: {s['matched']}/{s['prompts']} ({s['match_rate']}) "
+              f"[{s['verdict']}]")
+    return 0
+
+
+def cmd_prune(args) -> int:
+    """Drop old evidence per the retention policy (P5.22). Dry run by default."""
+    from iforensics import retention as ret_mod
+    total = 0
+    db = ret_mod.prune_snapshots(keep=args.keep_db, dry_run=not args.apply)
+    print(f"db snapshots: {len(db)} {'would remove' if not args.apply else 'removed'} "
+          f"(keep {args.keep_db})")
+    for p in db[:10]:
+        print(f"  {p}")
+    total += len(db)
+    rep = ret_mod.prune_reports(keep=args.keep_reports, dry_run=not args.apply)
+    print(f"reports: {len(rep['removed'])} {'would remove' if not args.apply else 'removed'} "
+          f"(keep {args.keep_reports})")
+    for rid in rep["removed"]:
+        print(f"  {rid}")
+    total += len(rep["removed"])
+    logs = ret_mod.prune_live_logs(keep_days=args.keep_days, dry_run=not args.apply)
+    print(f"live logs: {len(logs)} {'would remove' if not args.apply else 'removed'} "
+          f"(older than {args.keep_days}d)")
+    for p in logs[:10]:
+        print(f"  {p}")
+    total += len(logs)
+    if not args.apply:
+        print("[*] dry run — pass --apply to delete")
+    return 0
+
+
 def cmd_report(args) -> int:
     """Unified report: heuristic + agentic + scores + critic gaps + security,
     provenance block + SHA-256 of the source DB, versioned with a diff."""
@@ -255,6 +308,18 @@ def main() -> int:
     r.add_argument("--every", type=int, default=0,
                    help="repeat every N seconds (scheduled runs); 0 = run once")
     r.set_defaults(fn=cmd_report)
+    h = sub.add_parser("fidelity",
+                       help="template recall of reconstructions vs traffic (P5.20)")
+    h.add_argument("--service", default="")
+    h.add_argument("--limit", type=int, default=5000)
+    h.set_defaults(fn=cmd_fidelity)
+    p = sub.add_parser("prune", help="drop old evidence per retention policy (P5.22)")
+    p.add_argument("--keep-db", type=int, default=5)
+    p.add_argument("--keep-reports", type=int, default=10)
+    p.add_argument("--keep-days", type=int, default=30)
+    p.add_argument("--apply", action="store_true",
+                   help="delete; without it, dry run only")
+    p.set_defaults(fn=cmd_prune)
     g = sub.add_parser("live-tail",
                        help="sniff fox :8210 live (queue IN, completed OUT, model SYS) to stdout")
     g.add_argument("--interval", type=float, default=5.0)

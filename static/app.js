@@ -190,8 +190,12 @@ const MERMAID_SRC=['/static/mermaid.min.js','https://cdn.jsdelivr.net/npm/mermai
 const renderMermaid=async root=>{
  const nodes=root.querySelectorAll('pre.mermaid');
  if(!nodes.length)return;
+ const fail=(n,e)=>{try{console.error('mermaid failed:',e);}catch(_){}
+  const d=document.createElement('div');d.className='warn';
+  d.textContent='diagram failed to render: '+((e&&e.message)||e||'parse error')+' — source kept below';
+  n.replaceWith(d);};
  const run=async()=>{try{window.mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:'dark',themeVariables:{darkMode:true,background:'#0a0e14',primaryColor:'#1f6feb',primaryTextColor:'#e6edf3',lineColor:'#8b949e',textColor:'#e6edf3'}});}catch(e){}
-  for(const n of nodes){try{await window.mermaid.run({nodes:[n],suppressErrors:true});}catch(e){}}};
+  for(const n of nodes){try{await window.mermaid.run({nodes:[n],suppressErrors:false});}catch(e){fail(n,e);}}};
  if(window.mermaid&&window.mermaid.run){try{await run();return;}catch(e){}}
  for(const src of MERMAID_SRC){
   try{

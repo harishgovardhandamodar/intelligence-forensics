@@ -73,3 +73,41 @@ def test_trust_and_risk_endpoints():
     r = c.get("/api/risk")
     assert r.status_code == 200
     assert "services" in r.json() and "summary" in r.json()
+
+
+def test_run_validation_endpoint(monkeypatch):
+    from fastapi.testclient import TestClient
+    from iforensics import agents as ag
+    monkeypatch.setattr(ag, "load_run", lambda rid: {
+        "run_id": rid, "services": ["s"],
+        "heuristic_investigation": {"s": {"project": "p", "evidence": {"templates": [],
+                                                        "instructions": [], "sample_heads": []}}},
+        "agents": {"profilers": {"s": {"error": "down"}},
+                   "reporter": {"content": "brief"}}} if rid == "r1" else None)
+    c = TestClient(dashboard.app)
+    assert c.get("/api/runs/nope/validation").status_code == 404
+    r = c.get("/api/runs/r1/validation")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["summary"]["unproven"] == 1
+    assert "no security scan recorded for this run" in body["brief_issues"]
+
+
+def test_fidelity_endpoint():
+    from fastapi.testclient import TestClient
+    c = TestClient(dashboard.app)
+    r = c.get("/api/reconstructions/definitely-not-a-service/fidelity")
+    assert r.status_code == 404
+
+
+def test_post_rate_limit(monkeypatch):
+    from fastapi.testclient import TestClient
+    monkeypatch.setattr(dashboard, "_POST_HITS", {})
+    monkeypatch.setitem(dashboard.POST_LIMITS, "/api/live/stop", (2, 60))
+    c = TestClient(dashboard.app)
+    assert c.post("/api/live/stop").status_code == 200
+    assert c.post("/api/live/stop").status_code == 200
+    r = c.post("/api/live/stop")
+    assert r.status_code == 429
+    assert r.json()["detail"].startswith("rate limited")
+    assert c.get("/api/live/status").status_code == 200  # GETs unaffected

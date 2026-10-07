@@ -234,7 +234,18 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
     manifest["elapsed_s"] = round(time.time() - t0, 1)
     manifest["heuristic_investigation"] = {
         s: {"project": inv["services"][s].get("project"),
-            "requests": inv["services"][s].get("requests")}
+            "requests": inv["services"][s].get("requests"),
+            # groundable source text for claims validation (P5.21):
+            # evidence quotes must appear here (normalized substring).
+            "evidence": {
+                "templates": [(t.get("template") or "")[:400]
+                              for t in (inv["services"][s].get("fingerprint", {})
+                                        .get("templates") or [])[:4]],
+                "instructions": [(i or "")[:300]
+                                 for i in (inv["services"][s].get("instructions")
+                                           or [])[:6]],
+                "sample_heads": (inv["services"][s].get("sample_heads") or [])[:3],
+            }}
         for s in services
     }
     _write(run_dir, "manifest.json", manifest)

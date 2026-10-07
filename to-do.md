@@ -168,7 +168,7 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 - [x] P5.18 Live anomaly alerts: error-rate spike, new-service, model load/evict,
       volume spike, stale edge — evaluated in the tap, surfaced in `status()` + Live tab
 - [x] P5.19 Topology join: service→container→peer→model graph from already-collected sources
-- [ ] P5.20 Outflow decision: pcap decode for Ollama traffic *or* scaffold re-run
-      harness with fidelity scoring (completions are NOT logged upstream)
-- [ ] P5.21 Reporter claims-vs-evidence validation; surface mermaid errors instead of swallowing them
-- [ ] P5.22 Retention/prune policy, pinned requirements, rate-limit POSTs, JS tests
+- [x] P5.20 Fidelity scoring: template recall of reconstructions vs observed traffic
+      (`fidelity.py`, endpoint, CLI); full outflow still needs fox-side completions
+- [x] P5.21 Reporter claims-vs-evidence validation + mermaid errors surfaced
+- [x] P5.22 Retention/prune policy, pinned requirements, rate-limit POSTs, JS tests

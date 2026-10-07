@@ -13,6 +13,7 @@ import os
 import re
 import sys
 import time
+from collections import deque
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,6 +31,34 @@ app.mount("/static", StaticFiles(directory=os.path.join(config.BASE_DIR, "static
 
 # Bump on every deploy — shown in the header so cached pages are detectable.
 APP_VERSION = "0.5.0-live"
+
+# POST rate limits (P5.22): max calls per window per path. No auth by design
+# (T5: LAN/tailnet deployment), so this is abuse friction, not access
+# control — it stops a runaway tab or LAN neighbour fork-bombing Ollama via
+# POST /api/runs while leaving normal clicks untouched.
+POST_LIMITS = {
+    "/api/runs": (10, 60),
+    "/api/investigate": (10, 60),
+    "/api/security/scan": (10, 60),
+    "/api/reports/run": (10, 60),
+    "/api/live/start": (30, 60),
+    "/api/live/stop": (30, 60),
+}
+_POST_HITS: dict[str, deque] = {}
+
+
+@app.middleware("http")
+async def _post_rate_limit(request, call_next):
+    if request.method == "POST" and request.url.path in POST_LIMITS:
+        now = time.time()
+        limit, window = POST_LIMITS[request.url.path]
+        hits = _POST_HITS.setdefault(request.url.path, deque())
+        while hits and now - hits[0] > window:
+            hits.popleft()
+        if len(hits) >= limit:
+            return JSONResponse({"detail": "rate limited: too many POSTs"}, 429)
+        hits.append(now)
+    return await call_next(request)
 
 PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>Intelligence Forensics</title>
@@ -279,6 +308,20 @@ def reconstruction_file(svc: str, path: str):
         return {"content": f.read()[:30000]}
 
 
+@app.get("/api/reconstructions/{svc}/fidelity")
+def reconstruction_fidelity(svc: str):
+    """How much of a service's recent traffic its recovered templates explain.
+
+    Completions are not logged upstream, so this scores template recall
+    against observed prompts — drift signal, not I/O proof.
+    """
+    from iforensics import fidelity as fid_mod
+    rows = [r for r in _service_rows(limit=5000) if (r.get("service") or "") == svc]
+    if not rows:
+        raise HTTPException(404, "unknown service (no queries)")
+    return fid_mod.score_service(svc, [r.get("prompt") or "" for r in rows])
+
+
 @app.get("/api/reconstructions/{svc}/progression")
 def reconstruction_progression(svc: str, n: int = 5, mode: str = "cumulative"):
     """Partial + progressive reconstructions from Fox-server queries.
@@ -313,6 +356,16 @@ def run_detail(run_id: str):
     if not m:
         raise HTTPException(404, "unknown run")
     return m
+
+
+@app.get("/api/runs/{run_id}/validation")
+def run_validation(run_id: str):
+    """Claims-vs-evidence check on the reporter's brief (P5.21)."""
+    from iforensics import claims as claims_mod
+    m = ag.load_run(run_id)
+    if not m:
+        raise HTTPException(404, "unknown run")
+    return claims_mod.validate_run(m)
 
 
 @app.get("/api/runs/{run_id}/graph")
