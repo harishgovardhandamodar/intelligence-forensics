@@ -276,7 +276,13 @@ const liveTime=t=>new Date(t*1000).toTimeString().slice(0,8);
 const loadLive=async()=>{
  let st={running:false};
  try{st=await j('/api/live/status');}catch(e){$('live-state').textContent='status failed: '+e;return;}
- $('live-state').textContent=st.running?`● live · ${st.events_buffered} events · ${st.polls} polls · up ${st.uptime_s||0}s`:'○ stopped';
+  const stateCls=st.possible_loss?'warn':(st.stale?'warn':'ok');
+ const bits=[`live · ${st.events_buffered} events · ${st.polls} polls · up ${st.uptime_s||0}s`,
+   `out ${st.out_seen||0} seen / ${st.out_lost||0} lost`];
+ if(st.stale)bits.push('stale '+(st.poll_age_s||'?')+'s since poll');
+ if(st.possible_loss)bits.push('⚠ page overflow, older completions missed');
+ if(st.running){$('live-state').innerHTML=`<span class="${stateCls}">● ${escH(bits[0])}</span>`+bits.slice(1).map(b=>' · <span class="mut">'+escH(b)+'</span>').join('');}
+ else{$('live-state').textContent='○ stopped';}
  if(!st.running)return;
  try{const f=await j('/api/live/feed?limit=40');
   $('t-feed').querySelector('tbody').innerHTML=f.events.map(e=>`<tr><td class="mut">${escH(liveTime(e.t))}</td><td>${liveDir(e.dir)}</td><td><code>${escH(e.service)}</code></td><td class="mut">${escH((e.model||'').split(':')[0])}</td><td class="mut">${escH((e.prompt_head||'').slice(0,120))} <span class="mut">· ${escH(e.prompt_tokens+e.completion_tokens)} tok</span></td></tr>`).join('')||'<tr><td class="mut" colspan=5>no events yet — waiting for traffic</td></tr>';

@@ -19,6 +19,40 @@ from collections import deque, Counter
 from . import fox_client
 
 MAX_EVENTS = 2000
+# ids only matter for a few polls (req_limit each); keeping every id ever seen
+# is an unbounded leak on a daemon that runs for weeks.
+MAX_SEEN = 20000
+MAX_INFLIGHT_SEEN = 5000
+# a poll is "unhealthy" when fox has not produced a result for this many
+# intervals — surfaced in status() so the UI can stop showing a frozen "live".
+STALE_INTERVALS = 3
+
+
+class _BoundedIdSet:
+    """A set that evicts oldest-inserted members past *cap*."""
+
+    __slots__ = ("_set", "_order", "cap", "evicted")
+
+    def __init__(self, cap: int):
+        self.cap = cap
+        self._set: set = set()
+        self._order: deque = deque()
+        self.evicted = 0
+
+    def __contains__(self, item) -> bool:
+        return item in self._set
+
+    def add(self, item) -> None:
+        if item in self._set:
+            return
+        self._set.add(item)
+        self._order.append(item)
+        while len(self._order) > self.cap:
+            self._set.discard(self._order.popleft())
+            self.evicted += 1
+
+    def __len__(self) -> int:
+        return len(self._set)
 
 
 def _row_to_event(r: dict, direction: str) -> dict:
@@ -46,12 +80,19 @@ class LiveTap(threading.Thread):
         self.interval_s = interval_s
         self.req_limit = req_limit
         self.events: deque = deque(maxlen=MAX_EVENTS)
-        self.seen_ids: set = set()
-        self.seen_inflight: set = set()
+        self.seen_ids = _BoundedIdSet(MAX_SEEN)
+        self.seen_inflight = _BoundedIdSet(MAX_INFLIGHT_SEEN)
         self.loaded_models: set = set()
         self.started_at: float | None = None
         self.last_poll_at: float | None = None
         self.polls = 0
+        # loss accounting: a full page with no continuity means older
+        # completions were never fetched and never counted.
+        self.out_seen = 0
+        self.out_lost = 0          # lower bound of unseen completions (id gaps)
+        self.out_lost_pages = 0    # number of overflow events
+        self.out_saturated_polls = 0
+        self.last_newest_id = None
         self.errors: list[str] = []
         self._stop_event = threading.Event()
         self._lock = threading.Lock()
@@ -90,7 +131,31 @@ class LiveTap(threading.Thread):
         # OUT: completed requests by id delta
         try:
             res = fox_client.llm_requests(limit=self.req_limit)
-            for r in (res.get("requests") or [])[::-1]:  # oldest first
+            batch = res.get("requests") or []
+            ids = [r.get("id") for r in batch]
+            idset = set(ids)
+            prev_newest = self.last_newest_id
+            if batch:
+                self.last_newest_id = ids[0]
+            # --- loss detection -------------------------------------------
+            # fox returns newest-first, capped at req_limit. If that page
+            # fills up and the id we last saw is no longer in it, every
+            # completion between the previous newest and this page's oldest
+            # was never returned: it never reached the buffer, and nothing
+            # else would ever have noticed.
+            if len(batch) >= self.req_limit:
+                self.out_saturated_polls += 1
+                if prev_newest is not None and prev_newest not in idset:
+                    oldest = ids[-1] if ids else None
+                    if isinstance(prev_newest, int) and isinstance(oldest, int) \
+                            and oldest < prev_newest:
+                        self.out_lost += max(0, prev_newest - oldest)
+                    self.out_lost_pages += 1
+                    self.errors.append(
+                        f"out: page overflow (limit={self.req_limit}) — "
+                        "older completions missed")
+            # ----------------------------------------------------------------
+            for r in batch[::-1]:  # oldest first
                 rid = r.get("id")
                 if rid is None or rid in self.seen_ids:
                     continue
@@ -99,6 +164,7 @@ class LiveTap(threading.Thread):
                     continue  # history predating the tap, not live traffic
                 self._push(_row_to_event(r, "out"))
                 got["out"] += 1
+                self.out_seen += 1
         except Exception as e:  # noqa: BLE001
             self.errors.append(f"requests: {type(e).__name__}")
         # IN: in-flight queue first-seen
@@ -143,9 +209,13 @@ class LiveTap(threading.Thread):
         # baseline: mark current history seen without emitting
         try:
             res = fox_client.llm_requests(limit=self.req_limit)
-            for r in res.get("requests") or []:
+            batch = res.get("requests") or []
+            for r in batch:
                 if r.get("id") is not None:
                     self.seen_ids.add(r["id"])
+            if batch:
+                # anchor continuity so the first live poll can detect loss
+                self.last_newest_id = batch[0].get("id")
         except Exception:  # noqa: BLE001
             pass
         try:
@@ -161,13 +231,27 @@ class LiveTap(threading.Thread):
                 pass
 
     def status(self) -> dict:
+        # one lock for the whole snapshot: iterating the deque while the tap
+        # thread appends to it can raise "deque mutated during iteration".
+        now = time.time()
         with self._lock:
             n = len(self.events)
-        by_svc = Counter(e["service"] for e in list(self.events)[-500:])
+            recent = list(self.events)[-500:]
+        by_svc = Counter(e["service"] for e in recent)
+        since = (now - self.last_poll_at) if self.last_poll_at else None
+        stale_after = self.interval_s * STALE_INTERVALS
         return {"running": self.is_alive(), "interval_s": self.interval_s,
-                "started_at": self.started_at, "uptime_s": round(time.time() - self.started_at, 1) if self.started_at else 0,
+                "started_at": self.started_at,
+                "uptime_s": round(now - self.started_at, 1) if self.started_at else 0,
                 "polls": self.polls, "last_poll_at": self.last_poll_at,
+                "poll_age_s": round(since, 1) if since is not None else None,
+                "stale": bool(since is not None and since > stale_after),
                 "events_buffered": n, "recent_by_service": dict(by_svc.most_common(10)),
+                "seen_ids": len(self.seen_ids), "seen_ids_evicted": self.seen_ids.evicted,
+                "out_seen": self.out_seen, "out_lost": self.out_lost,
+                "out_lost_pages": self.out_lost_pages,
+                "out_saturated_polls": self.out_saturated_polls,
+                "possible_loss": self.out_lost > 0 or self.out_lost_pages > 0,
                 "recent_errors": self.errors[-5:]}
 
 
