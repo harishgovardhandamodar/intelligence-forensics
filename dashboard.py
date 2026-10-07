@@ -53,7 +53,12 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=row><select id=sel-live></select><select id=sel-lmode><option value=cumulative>cumulative</option><option value=window>window</option></select>
 <button class=act id=b-live-recon>Reconstruct live</button><span class=mut id=live-recon-msg></span></div>
 <table id=t-liveprog><thead><tr><th>step</th><th>score</th><th>queries</th><th>inferred build</th><th>Δ vs prev</th></tr></thead><tbody></tbody></table></div>
-<div class=card><h3>Feed <span class=mut style="font-weight:normal">— newest first, auto-refresh</span></h3><table id=t-feed><thead><tr><th>time</th><th>dir</th><th>service</th><th>model</th><th>detail</th></tr></thead><tbody><tr><td class=mut colspan=5>tap not running</td></tr></tbody></table></div></section>
+<div class=card><h3>Feed <span class=mut style="font-weight:normal">— newest first, auto-refresh</span></h3><table id=t-feed><thead><tr><th>time</th><th>dir</th><th>service</th><th>model</th><th>detail</th></tr></thead><tbody><tr><td class=mut colspan=5>tap not running</td></tr></tbody></table></div>
+<div class=card><h3>Traffic <span class=mut style="font-weight:normal">— requests &amp; tokens per bucket</span></h3>
+<div class=row><span class=mut>bucket</span><select id=sel-tsbucket><option value=1m>1m</option><option value=5m selected>5m</option><option value=15m>15m</option><option value=1h>1h</option></select>
+<span class=mut>window</span><select id=sel-tswindow><option value=15m>15m</option><option value=1h selected>1h</option><option value=6h>6h</option><option value=24h>24h</option></select>
+<label class=mut><input type=checkbox id=chk-tsauto checked> auto</label><span class=mut id=ts-msg></span></div>
+<div id=ts-chart class="mut loading">loading&hellip;</div><div id=ts-legend class=mut></div></div></section>
 <section id=s-recon><div class=card><div class=row><select id=sel-recon></select><select id=sel-file></select></div><pre id=recon-view>pick a reconstruction&hellip;</pre></div>
 <div class=card><h3>Partial &amp; progressive reconstruction <span class=mut style="font-weight:normal">— same service, re-profiled as Fox queries accumulate</span></h3>
 <div class=row><select id=sel-pmode><option value=cumulative>cumulative (0..k — confidence growth)</option><option value=window>window (slice k alone — partial views)</option></select>
@@ -76,6 +81,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <section id=s-design><div class=row><div class=card style="min-width:230px"><h3>Documents</h3><div id=design-rail class=mut>loading&hellip;</div></div>
 <div class=card style="flex:1"><h3 id=design-title>Design &amp; architecture</h3><div class=mut id=design-meta></div><div id=design-doc class=mut>pick a document&hellip;</div></div></div></section>
 </main>
+<div id=tip class=tip></div>
 <script src="/static/app.js" defer></script></body></html>
 """
 

@@ -3,7 +3,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 const TABS=[...document.querySelectorAll('#tabs button')].map(b=>b.dataset.t);
 const trowState=(cols,msg,cls='mut')=>`<tr><td class="${cls}" colspan="${cols}">${escH(msg)}</td></tr>`;
-const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}name==='live'?startLiveStream():stopLiveStream();document.title='Intelligence Forensics — '+name;};
+const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}document.title='Intelligence Forensics — '+name;};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 window.addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 window.addEventListener('popstate',()=>activateTab(location.hash.slice(1),false));
@@ -188,6 +188,44 @@ const liveTbody=()=>$('t-feed').querySelector('tbody');
 const renderFeed=evs=>{const tb=liveTbody();if(!evs.length)return;if(tb.querySelectorAll('tr').length===1&&tb.textContent.indexOf('no events')>=0)tb.innerHTML='';tb.insertAdjacentHTML('afterbegin',evs.map(liveRow).join(''));const rows=tb.querySelectorAll('tr');for(let i=rows.length-1;i>=120;i--)rows[i].remove();};
 function startLiveStream(){if(liveES||!window.EventSource)return;liveES=new EventSource(`/api/live/stream?since_id=${liveLastSeq}`);liveES.onmessage=ev=>{let e;try{e=JSON.parse(ev.data)}catch(_){return}if(!e.seq||e.seq<=liveLastSeq)return;liveLastSeq=e.seq;renderFeed([e]);};liveES.onerror=()=>{if(liveES){liveES.close();liveES=null;}};}
 function stopLiveStream(){if(liveES){liveES.close();liveES=null;}}
+
+const tip=$('tip');
+const showTip=(html,ev)=>{if(!tip)return;tip.innerHTML=html;tip.style.display='block';const p=12;tip.style.left=Math.min(ev.clientX+p,innerWidth-tip.offsetWidth-8)+'px';tip.style.top=Math.min(ev.clientY+p,innerHeight-tip.offsetHeight-8)+'px';};
+const hideTip=()=>{if(tip)tip.style.display='none';};
+const fmtN=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'k':''+n;
+
+let tsCache=null,tsMsg='';
+function drawTsChart(){
+ const el=$('ts-chart');if(!el)return;
+ const bs=(tsCache&&tsCache.buckets)||[];
+ if(!bs.length){el.className='mut';el.textContent='no data in window';$('ts-legend').textContent='';return;}
+ el.className='';el.innerHTML='';
+ $('ts-legend').innerHTML='<span class=k><span class=sw style="background:#1f6feb"></span>requests</span><span class=k><span class=sw style="background:#58a6ff"></span>total tokens</span>';
+ const W=el.clientWidth||900,H=190,padL=48,padR=14,padT=14,padB=26;
+ const maxR=Math.max(1,...bs.map(b=>b.req||0)),maxT=Math.max(1,...bs.map(b=>b.total_tokens||0));
+ const bw=(W-padL-padR)/bs.length,bh=H-padT-padB;
+ const yR=v=>padT+bh-(v/maxR)*bh, yT=v=>padT+bh-(v/maxT)*bh;
+ let g='';
+ for(let i=0;i<=2;i++){const v=maxR*i/2,y=padT+bh-(i/2)*bh;g+=`<line x1=${padL} y1=${y} x2=${W-padR} y2=${y} stroke="#30363d" stroke-width="1"/><text class=ax x=${padL-6} y=${y+3} text-anchor="end">${fmtN(Math.round(v))}</text>`;}
+ const pts=bs.map((b,i)=>`${padL+i*bw+bw/2},${yT(b.total_tokens||0)}`).join(' ');
+ bs.forEach((b,i)=>{const x=padL+i*bw,gap=Math.max(1,bw*0.18),y=yR(b.req||0);
+  g+=`<rect class=bar x=${x+gap} y=${y} width=${Math.max(1,bw-2*gap)} height=${Math.max(0,padT+bh-y)} rx=2></rect>`;
+  const t=new Date(b.t*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  g+=`<rect class=hit data-i=${i} x=${x} y=${padT} width=${bw} height=${bh}></rect>`;
+  if(bs.length<=14||i%Math.ceil(bs.length/10)===0)g+=`<text class=ax x=${x+bw/2} y=${H-8} text-anchor="middle">${t}</text>`;});
+ g+=`<polyline class=ln points="${pts}"/>`;
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width=${W} height=${H}>${g}</svg>`;
+ el.querySelectorAll('.hit').forEach(h=>{const b=bs[+h.dataset.i];h.addEventListener('mousemove',ev=>showTip(`${new Date(b.t*1000).toLocaleString()}\nrequests  ${b.req}\ntokens    ${b.total_tokens}\nerrors    ${b.errors||0}`,ev));h.addEventListener('mouseleave',hideTip);});
+}
+function loadTs(){
+ const el=$('ts-chart');if(!el)return;
+ const b=$('sel-tsbucket').value,w=$('sel-tswindow').value;
+ j(`/api/stats/timeseries?bucket=${encodeURIComponent(b)}&window=${encodeURIComponent(w)}&source=auto`).then(r=>{tsCache=r;const t=r.totals||{};
+  $('ts-msg').textContent=`${t.req||0} req · ${t.total_tokens||0} tok · source ${r.source}`;drawTsChart();})
+ .catch(e=>{el.className='mut';el.textContent='failed: '+e;});
+}
+['sel-tsbucket','sel-tswindow'].forEach(id=>{const e=$(id);if(e)e.onchange=loadTs;});
+let tsRz;addEventListener('resize',()=>{clearTimeout(tsRz);tsRz=setTimeout(drawTsChart,150);});
 const loadLive=async()=>{
  let st={running:false};
  try{st=await j('/api/live/status');}catch(e){$('live-state').textContent='status failed: '+e;return;}
@@ -226,7 +264,7 @@ $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;con
    return `<tr><td>${escH(st.step)}</td><td>${scoreCell(st.score.score,st.score.grade)}</td><td>${escH(st.requests)}</td><td><b>${escH(st.project||'')}</b></td><td>${dl.project_changed?'<span class="warn">flip</span>':'<span class="ok">stable</span>'}</td></tr>`;}).join('');
   loadLive();
  }catch(e){$('live-recon-msg').textContent='failed: '+e;}};
-setInterval(()=>{const s=$('s-live');if(s&&s.classList.contains('on'))loadLive();},4000);
+setInterval(()=>{const s=$('s-live');if(s&&s.classList.contains('on')){loadLive();const a=$('chk-tsauto');if(a&&a.checked)loadTs();}},4000);
 $('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';try{const r=await pj('/api/investigate');$('runmsg').textContent=r.report||JSON.stringify(r);load();}catch(e){$('runmsg').textContent='failed: '+e;}};
 $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';}catch(e){$('runmsg').textContent='launch failed: '+e;}};
 load();

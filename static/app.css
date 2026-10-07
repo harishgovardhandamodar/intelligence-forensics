@@ -34,3 +34,15 @@ a{color:var(--acc)}
 .loading{opacity:.55;font-style:italic}
 tr td[colspan]{color:var(--mut)}
 nav button:focus-visible,button.act:focus-visible,a:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+/* chart + shared tooltip */
+#ts-chart{background:#0a0e14;border:1px solid var(--line);border-radius:8px;padding:6px;margin-top:6px;overflow:hidden}
+#ts-chart svg{display:block;width:100%}
+#ts-chart .hit{fill:transparent;cursor:crosshair}
+#ts-chart .bar{fill:#1f6feb;opacity:.85}
+#ts-chart .bar:hover{opacity:1}
+#ts-chart .ln{fill:none;stroke:#58a6ff;stroke-width:1.6}
+#ts-chart .ax{fill:var(--mut);font-size:10px}
+#ts-legend{margin-top:4px;font-size:12px}
+#ts-legend .k{display:inline-block;margin-right:12px}
+#ts-legend .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.tip{position:fixed;display:none;pointer-events:none;background:#000d;border:1px solid var(--line);border-radius:6px;padding:6px 9px;font-size:12px;line-height:1.4;z-index:60;white-space:pre;box-shadow:0 4px 14px #0008}
