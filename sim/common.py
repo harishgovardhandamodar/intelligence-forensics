@@ -53,11 +53,14 @@ def build_turns(user_id: str, scenario: str, base_prompt: str, field: str,
     i = 0
     while len(turns) < n:
         qp = progressive[i % len(progressive)]
-        prompt = qp["prompt"]
+        # paraphrase varies the CARRIER only — real users reword the question,
+        # never scatter the secret's own characters across the sentence
+        carrier = base_prompt
         if vary and i >= len(progressive):
             variants = engine_queries.near_duplicates(
-                prompt, seed=rng_seed + i)
-            prompt = variants[i % len(variants)]
+                base_prompt, seed=rng_seed + i)
+            carrier = variants[i % len(variants)]
+        prompt = f"{carrier} Ref: {qp['mask']}"
         turns.append({"prompt": prompt, "mask": qp["mask"], "step": qp["step"],
                       "field": field,
                       "metadata": {"scenario": scenario, "user_id": user_id,

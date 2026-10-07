@@ -1,0 +1,173 @@
+{
+ "scenario": "chatbot_health",
+ "user_id": "u-health",
+ "n_turns": 12,
+ "style": "regular",
+ "run_id": "sim-20261007_215742",
+ "truth": {
+  "ssn": "954-34-9828",
+  "bp": "129/114"
+ },
+ "attack": {
+  "n_clusters": 5,
+  "mean_cohesion": 0.913
+ },
+ "report": {
+  "fields": {
+   "ssn": {
+    "accuracy": 1.0,
+    "matched": 9,
+    "total": 9,
+    "recovered": true,
+    "direct_exposure": true
+   },
+   "bp": {
+    "accuracy": 1.0,
+    "matched": 6,
+    "total": 6,
+    "recovered": true,
+    "direct_exposure": true
+   }
+  },
+  "n_fields": 2,
+  "recovered": 2,
+  "mean_accuracy": 1.0,
+  "curves": {
+   "ssn": [
+    {
+     "queries": 1,
+     "accuracy": 0.333,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "bp": [
+    {
+     "queries": 1,
+     "accuracy": 0.333,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ]
+  },
+  "user_id": "u-health",
+  "backend": "numpy",
+  "clusters": 5,
+  "plausibility": {
+   "actions": [
+    {
+     "action": "gateway logs prompts",
+     "plausibility": "high",
+     "why": "Abuse monitoring, debugging and analytics routinely retain prompt text; most hosted LLM APIs do this by default."
+    },
+    {
+     "action": "embeddings stored per query/response",
+     "plausibility": "high",
+     "why": "Retrieval caches, semantic analytics and eval pipelines persist vectors beside the texts that produced them."
+    },
+    {
+     "action": "users paste secrets into prompts",
+     "plausibility": "high",
+     "why": "Vibe-coding workflows paste keys/tokens into debug prompts repeatedly; support tickets do the same for PII."
+    },
+    {
+     "action": "progressive masked disclosure across repeats",
+     "plausibility": "medium",
+     "why": "Users self-redact then relent when asked to clarify, or the same secret recurs across sessions with different masking habits."
+    },
+    {
+     "action": "attacker reads the vector store",
+     "plausibility": "medium",
+     "why": "This is THE gating assumption: it needs a breach, a misconfigured store, or an insider. Without read access none of the below applies.",
+     "gating": true
+    },
+    {
+     "action": "reconstruction from stored texts + vectors",
+     "plausibility": "high",
+     "why": "Given read access, masked variants cluster by similarity and assemble position-wise \u2014 demonstrated live in this sim.",
+     "demonstrated": true
+    },
+    {
+     "action": "pure embedding inversion (vectors only, no texts)",
+     "plausibility": "low",
+     "why": "Exact recovery from vectors alone is active research and far harder than this demo, which exploits the stored texts beside the vectors. Do not cite this sim for that claim."
+    },
+    {
+     "action": "DLP redaction stops the attack",
+     "plausibility": "medium",
+     "why": "Measured: redaction drops recovery 6/8 fields to 2/8, but short numeric PII outside the pattern set still passes. Coverage, not presence, is the residual risk.",
+     "demonstrated": true
+    }
+   ],
+   "verdict": "The attack chain is plausible end-to-end for any operator who already logs prompts beside embeddings: the only exotic step is obtaining read access, and that is a security-incident assumption, not a research one. Pure vector-only inversion remains the hard case this demo does NOT claim."
+  },
+  "estimates": {
+   "groups": [
+    {
+     "shape": "###-##-####",
+     "occurrences": 12,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "###/###",
+     "occurrences": 12,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    }
+   ],
+   "n_groups": 2,
+   "exposure": 1.0
+  },
+  "dlp": {
+   "mode": "off",
+   "interceptions": 0,
+   "by_action": {},
+   "actions": {}
+  },
+  "reconstructed": [
+   {
+    "assembled": "954-34-9828",
+    "coverage": 1.0,
+    "occurrences": 12
+   },
+   {
+    "assembled": "129/114",
+    "coverage": 1.0,
+    "occurrences": 12
+   }
+  ]
+ },
+ "membership": {
+  "ssn": {
+   "true_score": 1.0,
+   "fresh_score": 0.2132,
+   "likely_member": true
+  },
+  "bp": {
+   "true_score": 1.0,
+   "fresh_score": 0.2132,
+   "likely_member": true
+  }
+ }
+}

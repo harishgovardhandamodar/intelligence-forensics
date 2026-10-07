@@ -199,7 +199,7 @@ def test_partial_schedule_plateaus():
     sched = queries_mod.mask_schedule("123-45-6789", 3, complete=False)
     assert all(s[-1] == "*" for s in sched)  # final slot never revealed
     out = att.assemble_fragments(sched)
-    assert out["assembled"] == "123-45-678"
+    assert out["assembled"] == "123-45-678*"
     # positional accuracy against truth plateaus below 1.0: the honest regime
     r = anal.char_accuracy(out["assembled"], "123-45-6789")
     assert r == {"accuracy": 0.889, "matched": 8, "total": 9,
@@ -318,7 +318,10 @@ def test_runner_describe_has_diagrams():
     from iforensics.sim import runner as sim_runner
     descs = sim_runner.describe()
     assert {d["id"] for d in descs} == {"chatbot_health", "chatbot_financial",
-                                        "coding_api_keys", "coding_secrets"}
+                                        "coding_api_keys", "coding_secrets",
+                                        "hr_onboarding", "support_tickets",
+                                        "devops_deploy", "legal_contracts",
+                                        "sales_crm", "data_engineering"}
     for d in descs:
         assert d["title"] and d["fields"]
         assert d["diagram"].startswith("flowchart ")
@@ -351,7 +354,7 @@ def test_sim_run_and_scenarios_endpoints():
     c = _sim_client()
     c.post("/api/sim/reset")
     s = c.get("/api/sim/scenarios")
-    assert s.status_code == 200 and len(s.json()["scenarios"]) == 4
+    assert s.status_code == 200 and len(s.json()["scenarios"]) == 10
     assert c.post("/api/sim/run", json={"scenario": "nope"}).status_code == 400
     assert c.post("/api/sim/run",
                   json={"scenario": "chatbot_health", "style": "yolo"}
@@ -472,3 +475,50 @@ def test_sim_batch_run_id_and_dossier_endpoints(tmp_path, monkeypatch):
     runs = c.get("/api/sim/runs").json()["runs"]
     assert run_id in runs
     assert c.get("/api/sim/dossier", params={"run_id": "nope"}).status_code == 404
+
+
+def test_enterprise_generators_seeded_and_fake():
+    from iforensics.sim import sensitive as sens
+    assert sens.generate("phone", seed=3)["value"].startswith("555-")
+    em = sens.generate("email", seed=3)["value"]
+    assert em.endswith("@example.com") and em == sens.generate("email", seed=3)["value"]
+    assert sens.generate("ssh_key", seed=3)["value"].startswith("ssh-ed25519 ")
+    assert "test.invalid" in sens.generate("ssh_key", seed=3)["value"]
+    assert sens.generate("deploy_token", seed=3)["value"].startswith("ghp_test_")
+    assert "T00000000" in sens.generate("slack_webhook", seed=3)["value"]
+    assert sens.generate("bank_account", seed=3)["value"].startswith("routing 021TEST")
+    assert sens.generate("person_name", seed=3)["value"] == sens.generate("person_name", seed=3)["value"]
+
+
+def test_enterprise_scenarios_build_and_run():
+    from sim.scenarios import (data_engineering, devops_deploy, hr_onboarding,
+                               legal_contracts, sales_crm, support_tickets)
+    mods = [hr_onboarding, support_tickets, devops_deploy,
+            legal_contracts, sales_crm, data_engineering]
+    assert len(mods) == 6
+    for m in mods:
+        sc = m.build(seed=11, n=24)
+        assert len(sc["turns"]) == 24 and len(sc["truth"]) >= 2
+        assert all(t["prompt"] and "metadata" in t for t in sc["turns"])
+    from iforensics.sim import runner as sim_runner
+    out = sim_runner.run_scenario("hr_onboarding", n=24, seed=11)
+    assert out["report"]["n_fields"] == 4
+    # wordy values (names, addresses) assemble partially — but every field
+    # is directly readable in the log, which is the actual compromise
+    assert out["report"]["mean_accuracy"] > 0.3
+    assert all(v.get("direct_exposure")
+               for v in out["report"]["fields"].values())
+    assert out["report"]["fields"]["bank_account"]["accuracy"] > 0.5
+
+
+def test_dlp_enterprise_patterns():
+    from iforensics.sim import dlp
+    kinds = {h["kind"] for h in dlp.scan("mail me at ava.sharma42@example.com")}
+    assert "email" in kinds
+    kinds = {h["kind"] for h in dlp.scan("call 555-014-2288 today")}
+    assert "phone" in kinds
+    kinds = {h["kind"] for h in dlp.scan("ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGx test.invalid")}
+    assert "ssh_key" in kinds
+    kinds = {h["kind"] for h in dlp.scan("token ghp_test_AbCdEfGhIjKlMnOpQrStUvWx")}
+    assert "deploy_token" in kinds
+    assert dlp.scan("plain friendly text with no secrets") == []

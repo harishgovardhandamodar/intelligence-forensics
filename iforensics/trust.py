@@ -82,7 +82,10 @@ def _host_ok(host: str) -> bool:
     host = host.split(":")[0]
     if host in ALLOWED_HOSTS or re.fullmatch(r"127\.\d+\.\d+\.\d+", host):
         return True
-    return host.endswith((".local", ".ts.net"))
+    # RFC-reserved: .localhost/.invalid/.example/.test can never route,
+    # so fixture URLs using them are not peer contact
+    return host.endswith((".local", ".ts.net", ".localhost", ".invalid",
+                           ".example", ".test"))
 
 
 def check_t1(base_dir: str) -> dict:

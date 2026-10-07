@@ -78,5 +78,77 @@
  "sim-20261007_215140": {
   "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_215140.jsonl",
   "updated_at": 1791402700.8192308
+ },
+ "sim-20261007_195318": {
+  "path": "/app/evidence/ledger/sim-20261007_195318.jsonl",
+  "updated_at": 1791402799.9419963
+ },
+ "sim-20261007_215742": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_215742.jsonl",
+  "updated_at": 1791403062.8568134
+ },
+ "sim-20261007_215747": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_215747.jsonl",
+  "updated_at": 1791403067.5907063
+ },
+ "sim-20261007_215753": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_215753.jsonl",
+  "updated_at": 1791403073.2477736
+ },
+ "sim-20261007_215811": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_215811.jsonl",
+  "updated_at": 1791403092.0414178
+ },
+ "sim-20261007_215821": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_215821.jsonl",
+  "updated_at": 1791403101.151342
+ },
+ "sim-20261007_215911": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_215911.jsonl",
+  "updated_at": 1791403151.7488828
+ },
+ "sim-20261007_220001": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220001.jsonl",
+  "updated_at": 1791403201.5716696
+ },
+ "sim-20261007_220007": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220007.jsonl",
+  "updated_at": 1791403207.1016943
+ },
+ "sim-20261007_220020": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220020.jsonl",
+  "updated_at": 1791403220.8147254
+ },
+ "sim-20261007_220146": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220146.jsonl",
+  "updated_at": 1791403306.385542
+ },
+ "sim-20261007_220225": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220225.jsonl",
+  "updated_at": 1791403345.3000293
+ },
+ "sim-20261007_220236": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220236.jsonl",
+  "updated_at": 1791403356.2577775
+ },
+ "sim-20261007_220302": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220302.jsonl",
+  "updated_at": 1791403383.0276482
+ },
+ "sim-20261007_220343": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220343.jsonl",
+  "updated_at": 1791403423.1103618
+ },
+ "sim-20261007_220404": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220404.jsonl",
+  "updated_at": 1791403444.3185909
+ },
+ "sim-20261007_220505": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220505.jsonl",
+  "updated_at": 1791403505.930267
+ },
+ "sim-20261007_220538": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220538.jsonl",
+  "updated_at": 1791403538.3414469
  }
 }

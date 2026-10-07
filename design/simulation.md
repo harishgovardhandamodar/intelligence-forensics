@@ -61,6 +61,26 @@ progression curve (accuracy vs number of queries) is the chart that matters:
 it is monotone non-decreasing by construction, and its slope measures how
 fast repetition burns a secret.
 
+## Enterprise coverage
+
+Beyond chatbots and coding, six day-to-day workflows ship with the client,
+each with its own synthetic PII/secret shapes (555- numbers, example.com
+mail, TEST routing prefixes, `ghp_test_` tokens — reserved space only):
+
+| Scenario | Leaks | Measured regime |
+|---|---|---|
+| `hr_onboarding` | names, addresses, salary, bank details | partial (~0.48) — wordy values fragment; all direct-readable |
+| `support_tickets` | emails, callback numbers, order ids | full (1.0) |
+| `devops_deploy` | deploy tokens, SSH keys, webhooks | mixed (~0.67) — long keys assemble, URLs partially |
+| `legal_contracts` | deal values, counterparties, signatories | partial (~0.46) |
+| `sales_crm` | champion emails, numbers, deal sizes | mixed (~0.75) |
+| `data_engineering` | DB connection strings, cost centers | mixed (~0.56) |
+
+The pattern is consistent: structured tokens (keys, PANs, SSNs) assemble
+well; wordy values (names, addresses, prose-embedded secrets) fragment and
+score partial — while `direct_exposure` stays true throughout, because the
+complete schedule still logs every bare value once.
+
 ## What the results mean
 
 - **Complete-disclosure regimes recover at 1.0 through paraphrase and

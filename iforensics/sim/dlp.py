@@ -24,6 +24,10 @@ _PATTERNS = [
     ("pan", re.compile(r"\b(?:\d{4}[ -]?){3}\d{4}\b")),
     ("api_key", re.compile(r"\bsk-(?:test-|proj-|live-)?[A-Za-z0-9]{8,}\b")),
     ("aws_key", re.compile(r"\bAKIA[0-9A-Z]{16}\b")),
+    ("deploy_token", re.compile(r"\bghp_[A-Za-z0-9_]{8,}\b")),
+    ("ssh_key", re.compile(r"ssh-(?:ed25519|rsa) [A-Za-z0-9+/=]{16,}")),
+    ("email", re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")),
+    ("phone", re.compile(r"\b\d{3}[-.]\d{3}[-.]\d{4}\b")),
     ("secret_assignment", re.compile(
         r"(?i)\b(?:password|passwd|secret|api[_-]?key|access[_-]?token)\b\s*[:=]\s*\S{4,}")),
     ("masked_span", re.compile(r"[A-Za-z0-9*/.!@#%-]*\*[A-Za-z0-9*/.!@#% *-]*[A-Za-z0-9*!@#%]")),

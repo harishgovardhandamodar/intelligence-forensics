@@ -43,6 +43,10 @@ def test_t2_flags_server_host_but_only_warns_for_browser_cdn(tmp_path):
     b3 = str(tmp_path / "c")
     _write(b3, "iforensics/a.py", "URL='http://localhost:8210/x'\n")
     assert trust.check_t2(b3)["status"] == "pass"
+    b4 = str(tmp_path / "d")
+    _write(b4, "iforensics/b.py",
+           "URL='https://hooks.example.invalid/services/T00000000'\n")
+    assert trust.check_t2(b4)["status"] == "pass"
 
 
 def test_t3_fails_on_cloud_host_or_remote_ollama(tmp_path):

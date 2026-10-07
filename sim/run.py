@@ -39,11 +39,20 @@ def _post(server: str, path: str, body: dict):
 
 def run_scenario(server: str, name: str, n: int, seed: int, threshold: float,
                  out_dir: str, style: str = "regular") -> dict:
-    from sim.scenarios import chatbot_financial, chatbot_health, coding_api_keys, coding_secrets
+    from sim.scenarios import (chatbot_financial, chatbot_health,
+                                 coding_api_keys, coding_secrets, data_engineering,
+                                 devops_deploy, hr_onboarding, legal_contracts,
+                                 sales_crm, support_tickets)
     builders = {"chatbot_health": chatbot_health.build,
                 "chatbot_financial": chatbot_financial.build,
                 "coding_api_keys": coding_api_keys.build,
-                "coding_secrets": coding_secrets.build}
+                "coding_secrets": coding_secrets.build,
+                "hr_onboarding": hr_onboarding.build,
+                "support_tickets": support_tickets.build,
+                "devops_deploy": devops_deploy.build,
+                "legal_contracts": legal_contracts.build,
+                "sales_crm": sales_crm.build,
+                "data_engineering": data_engineering.build}
     if name not in builders:
         raise ValueError(f"unknown scenario: {name!r}")
     sc = builders[name](seed=seed, n=n, style=style)
@@ -119,7 +128,9 @@ def main() -> int:
     names = list(cfg.get("scenarios") or []) if args.all else []
     if not names:
         names = ["chatbot_health", "chatbot_financial", "coding_api_keys",
-                 "coding_secrets"] if args.all else [args.scenario or "chatbot_health"]
+                 "coding_secrets", "hr_onboarding", "support_tickets",
+                 "devops_deploy", "legal_contracts", "sales_crm",
+                 "data_engineering"] if args.all else [args.scenario or "chatbot_health"]
     try:
         _post(args.server, "/api/sim/reset", {})
         _post(args.server, "/api/sim/dlp",

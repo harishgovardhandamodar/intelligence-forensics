@@ -31,8 +31,10 @@ def assemble_fragments(fragments: list[str], mask_chars: str = "*") -> dict:
     slots: dict[int, str] = {}
     for frag in fragments:
         for i, ch in enumerate(frag):
-            if ch not in mask_chars:
-                slots.setdefault(i, ch)
+            if ch in mask_chars:
+                slots.setdefault(i, ch)  # placeholder only, never overwrites
+            else:
+                slots[i] = ch  # known characters always win their slot
     if not slots:
         return {"assembled": "", "coverage": 0.0}
     width = max(slots) + 1
@@ -162,8 +164,11 @@ def _candidate_re():
     global _CANDIDATE_RE
     if _CANDIDATE_RE is None:
         import re
-        # secret token core: alnum, masks, separators and password symbols
-        tok = r"[A-Za-z0-9*/.!@#%-]*[0-9*!@#%][A-Za-z0-9*/.!@#%-]*"
+        # secret token core: alnum, masks, separators, password/base64
+        # symbols and underscores (token prefixes like ghp_test_).
+        # NOTE: no colon — it would glue labels to secrets ("Ref: ***").
+        # URL schemes are droppable; the secret part still assembles.
+        tok = r"[A-Za-z0-9*/.!@#%+=~_-]*[0-9*!@#%+=~][A-Za-z0-9*/.!@#%+=~_-]*"
         # multi-token spans: spaced secrets ("4**2 **0* *3** 7**1") stay one
         # candidate, because every space-separated piece must itself contain
         # a digit or mask char — carrier words ("Ref:", "trend?") break the run

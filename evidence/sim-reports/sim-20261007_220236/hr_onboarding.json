@@ -1,0 +1,329 @@
+{
+ "scenario": "hr_onboarding",
+ "user_id": "u-hr",
+ "n_turns": 24,
+ "style": "regular",
+ "run_id": "sim-20261007_220236",
+ "truth": {
+  "person_name": "Omar Haddad",
+  "home_address": "7 Fixture Lane, Lakeside 13954",
+  "salary": "$230 base",
+  "bank_account": "routing 021TEST355 acct 9386934952"
+ },
+ "attack": {
+  "n_clusters": 7,
+  "mean_cohesion": 0.851
+ },
+ "report": {
+  "fields": {
+   "person_name": {
+    "accuracy": 0.7,
+    "matched": 7,
+    "total": 10,
+    "recovered": false,
+    "direct_exposure": true
+   },
+   "home_address": {
+    "accuracy": 0.32,
+    "matched": 8,
+    "total": 25,
+    "recovered": false,
+    "direct_exposure": true
+   },
+   "salary": {
+    "accuracy": 0.143,
+    "matched": 1,
+    "total": 7,
+    "recovered": false,
+    "direct_exposure": true
+   },
+   "bank_account": {
+    "accuracy": 0.677,
+    "matched": 21,
+    "total": 31,
+    "recovered": false,
+    "direct_exposure": true
+   }
+  },
+  "n_fields": 4,
+  "recovered": 0,
+  "mean_accuracy": 0.46,
+  "curves": {
+   "person_name": [
+    {
+     "queries": 1,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.7,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "home_address": [
+    {
+     "queries": 1,
+     "accuracy": 0.36,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.68,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "salary": [
+    {
+     "queries": 1,
+     "accuracy": 0.429,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.714,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "bank_account": [
+    {
+     "queries": 1,
+     "accuracy": 0.355,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.677,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ]
+  },
+  "user_id": "u-hr",
+  "backend": "numpy",
+  "clusters": 7,
+  "plausibility": {
+   "actions": [
+    {
+     "action": "gateway logs prompts",
+     "plausibility": "high",
+     "why": "Abuse monitoring, debugging and analytics routinely retain prompt text; most hosted LLM APIs do this by default."
+    },
+    {
+     "action": "embeddings stored per query/response",
+     "plausibility": "high",
+     "why": "Retrieval caches, semantic analytics and eval pipelines persist vectors beside the texts that produced them."
+    },
+    {
+     "action": "users paste secrets into prompts",
+     "plausibility": "high",
+     "why": "Vibe-coding workflows paste keys/tokens into debug prompts repeatedly; support tickets do the same for PII."
+    },
+    {
+     "action": "progressive masked disclosure across repeats",
+     "plausibility": "medium",
+     "why": "Users self-redact then relent when asked to clarify, or the same secret recurs across sessions with different masking habits."
+    },
+    {
+     "action": "attacker reads the vector store",
+     "plausibility": "medium",
+     "why": "This is THE gating assumption: it needs a breach, a misconfigured store, or an insider. Without read access none of the below applies.",
+     "gating": true
+    },
+    {
+     "action": "reconstruction from stored texts + vectors",
+     "plausibility": "high",
+     "why": "Given read access, masked variants cluster by similarity and assemble position-wise \u2014 demonstrated live in this sim.",
+     "demonstrated": true
+    },
+    {
+     "action": "pure embedding inversion (vectors only, no texts)",
+     "plausibility": "low",
+     "why": "Exact recovery from vectors alone is active research and far harder than this demo, which exploits the stored texts beside the vectors. Do not cite this sim for that claim."
+    },
+    {
+     "action": "DLP redaction stops the attack",
+     "plausibility": "medium",
+     "why": "Measured: redaction drops recovery 6/8 fields to 2/8, but short numeric PII outside the pattern set still passes. Coverage, not presence, is the residual risk.",
+     "demonstrated": true
+    }
+   ],
+   "verdict": "The attack chain is plausible end-to-end for any operator who already logs prompts beside embeddings: the only exotic step is obtaining read access, and that is a security-incident assumption, not a research one. Pure vector-only inversion remains the hard case this demo does NOT claim."
+  },
+  "estimates": {
+   "groups": [
+    {
+     "shape": "###:",
+     "occurrences": 10,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "######## #####",
+     "occurrences": 8,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "### ####",
+     "occurrences": 8,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "###: #### ######",
+     "occurrences": 4,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "#### ######",
+     "occurrences": 4,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "###: # ####### ####",
+     "occurrences": 4,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "# ####### ####",
+     "occurrences": 4,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "#####",
+     "occurrences": 4,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "###: ####### ########## #### ##########",
+     "occurrences": 4,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "####### ########## #### ##########",
+     "occurrences": 4,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    }
+   ],
+   "n_groups": 14,
+   "exposure": 1.0
+  },
+  "dlp": {
+   "mode": "off",
+   "interceptions": 0,
+   "by_action": {},
+   "actions": {}
+  },
+  "reconstructed": [
+   {
+    "assembled": "Ref:",
+    "coverage": 1.0,
+    "occurrences": 10
+   },
+   {
+    "assembled": "La*es*de *39*4",
+    "coverage": 1.0,
+    "occurrences": 8
+   },
+   {
+    "assembled": "23* ba*e",
+    "coverage": 1.0,
+    "occurrences": 8
+   },
+   {
+    "assembled": "Ref: Om*r H*dd*d",
+    "coverage": 1.0,
+    "occurrences": 4
+   },
+   {
+    "assembled": "Om*r H*dd*d",
+    "coverage": 1.0,
+    "occurrences": 4
+   },
+   {
+    "assembled": "Ref: 7 F*xt*re *an*",
+    "coverage": 1.0,
+    "occurrences": 4
+   },
+   {
+    "assembled": "7 F*xt*re *an*",
+    "coverage": 1.0,
+    "occurrences": 4
+   },
+   {
+    "assembled": "13954",
+    "coverage": 1.0,
+    "occurrences": 4
+   },
+   {
+    "assembled": "Ref: ro*ti*g 0*1T*ST*55 *cc* 93*69*49*2",
+    "coverage": 1.0,
+    "occurrences": 4
+   },
+   {
+    "assembled": "ro*ti*g 0*1T*ST*55 *cc* 93*69*49*2",
+    "coverage": 1.0,
+    "occurrences": 4
+   }
+  ]
+ },
+ "membership": {
+  "person_name": {
+   "true_score": 0.0,
+   "fresh_score": 0.2571,
+   "likely_member": false
+  },
+  "home_address": {
+   "true_score": 0.4364,
+   "fresh_score": 0.2571,
+   "likely_member": false
+  },
+  "salary": {
+   "true_score": 0.2,
+   "fresh_score": 0.2571,
+   "likely_member": false
+  },
+  "bank_account": {
+   "true_score": 0.6586,
+   "fresh_score": 0.2571,
+   "likely_member": true
+  }
+ }
+}

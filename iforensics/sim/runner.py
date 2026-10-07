@@ -13,6 +13,12 @@ BUILDERS = {
     "chatbot_financial": "sim.scenarios.chatbot_financial",
     "coding_api_keys": "sim.scenarios.coding_api_keys",
     "coding_secrets": "sim.scenarios.coding_secrets",
+    "hr_onboarding": "sim.scenarios.hr_onboarding",
+    "support_tickets": "sim.scenarios.support_tickets",
+    "devops_deploy": "sim.scenarios.devops_deploy",
+    "legal_contracts": "sim.scenarios.legal_contracts",
+    "sales_crm": "sim.scenarios.sales_crm",
+    "data_engineering": "sim.scenarios.data_engineering",
 }
 
 META = {
@@ -62,8 +68,7 @@ META = {
         "blurb": "DB passwords and second-service keys in debug output. Runs "
                  "the partial regime: the final slot is never disclosed, so "
                  "the curve plateaus below 1.0.",
-        "fields": ["db_password", "api_key"],
-        "diagram": ("flowchart TB\n"
+        "fields": ["db_password", "api_key"],        "diagram": ("flowchart TB\n"
                     '    U["user u-secrets<br/>debug output"] --> Q1["q1: ***partial***"]\n'
                     '    U --> Q2["q2: ***partial***"]\n'
                     '    U --> Q3["q3: still masked<br/>last slot held"]\n'
@@ -71,6 +76,90 @@ META = {
                     '    Q2 --> G\n    Q3 --> G\n'
                     '    G --> A["structure attack"]\n'
                     '    A --> P["plateau ~0.95<br/>never completes"]\n'),
+    },
+    "hr_onboarding": {
+        "title": "HR onboarding",
+        "blurb": "Employee PII across intake forms and follow-ups: names, "
+                 "home addresses, salary bands and direct-deposit details.",
+        "fields": ["person_name", "home_address", "salary", "bank_account"],
+        "diagram": ("flowchart TB\n"
+                    '    U["user u-hr<br/>intake forms"] --> Q1["q1: register hire?"]\n'
+                    '    U --> Q2["q2: + name + address"]\n'
+                    '    U --> Q3["q3: + salary + routing"]\n'
+                    '    Q1 --> G["gateway: embed + store"]\n'
+                    '    Q2 --> G\n    Q3 --> G\n'
+                    '    G --> A["structure attack"]\n'
+                    '    A --> R["PII bundle recovered"]\n'),
+    },
+    "support_tickets": {
+        "title": "Support tickets",
+        "blurb": "Customer contact details repeated across follow-up threads: "
+                 "emails, callback numbers and order ids.",
+        "fields": ["email", "phone", "order_id"],
+        "diagram": ("flowchart TB\n"
+                    '    U["user u-support<br/>ticket threads"] --> Q1["q1: history?"]\n'
+                    '    U --> Q2["q2: + email + callback"]\n'
+                    '    U --> Q3["q3: + order id"]\n'
+                    '    Q1 --> G["gateway: embed + store"]\n'
+                    '    Q2 --> G\n    Q3 --> G\n'
+                    '    G --> A["structure attack"]\n'
+                    '    A --> R["contact bundle recovered"]\n'),
+    },
+    "devops_deploy": {
+        "title": "DevOps deploys",
+        "blurb": "CI/CD secrets pasted while debugging pipelines: deploy "
+                 "tokens, SSH keys and webhook URLs.",
+        "fields": ["deploy_token", "ssh_key", "slack_webhook"],
+        "diagram": ("flowchart TB\n"
+                    '    U["user u-devops<br/>pipeline debugging"] --> Q1["q1: auth failing?"]\n'
+                    '    U --> Q2["q2: + deploy token"]\n'
+                    '    U --> Q3["q3: + ssh key + webhook"]\n'
+                    '    Q1 --> G["gateway: embed + store"]\n'
+                    '    Q2 --> G\n    Q3 --> G\n'
+                    '    G --> A["structure attack"]\n'
+                    '    A --> R["infra secrets recovered"]\n'),
+    },
+    "legal_contracts": {
+        "title": "Legal contracts",
+        "blurb": "Deal terms and signatory PII across redlines: values, "
+                 "counterparties and authorized names.",
+        "fields": ["deal_value", "company", "person_name"],
+        "diagram": ("flowchart TB\n"
+                    '    U["user u-legal<br/>redlines"] --> Q1["q1: total value?"]\n'
+                    '    U --> Q2["q2: + counterparty"]\n'
+                    '    U --> Q3["q3: + signatory"]\n'
+                    '    Q1 --> G["gateway: embed + store"]\n'
+                    '    Q2 --> G\n    Q3 --> G\n'
+                    '    G --> A["structure attack"]\n'
+                    '    A --> R["deal terms recovered"]\n'),
+    },
+    "sales_crm": {
+        "title": "Sales CRM",
+        "blurb": "Customer contact details across deal follow-ups: champion "
+                 "emails, renewal numbers and opportunity sizes.",
+        "fields": ["email", "phone", "deal_value"],
+        "diagram": ("flowchart TB\n"
+                    '    U["user u-sales<br/>deal follow-ups"] --> Q1["q1: champion?"]\n'
+                    '    U --> Q2["q2: + email + number"]\n'
+                    '    U --> Q3["q3: + opportunity size"]\n'
+                    '    Q1 --> G["gateway: embed + store"]\n'
+                    '    Q2 --> G\n    Q3 --> G\n'
+                    '    G --> A["structure attack"]\n'
+                    '    A --> R["customer data recovered"]\n'),
+    },
+    "data_engineering": {
+        "title": "Data engineering",
+        "blurb": "Connection strings and billing owners in query help: full "
+                 "database URIs with embedded passwords.",
+        "fields": ["db_conn_string", "account_number"],
+        "diagram": ("flowchart TB\n"
+                    '    U["user u-data<br/>query help"] --> Q1["q1: timing out?"]\n'
+                    '    U --> Q2["q2: + connection URI"]\n'
+                    '    U --> Q3["q3: + cost center"]\n'
+                    '    Q1 --> G["gateway: embed + store"]\n'
+                    '    Q2 --> G\n    Q3 --> G\n'
+                    '    G --> A["structure attack"]\n'
+                    '    A --> R["credentials recovered"]\n'),
     },
 }
 

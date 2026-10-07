@@ -8,3 +8,9 @@ scenarios:
   - chatbot_financial
   - coding_api_keys
   - coding_secrets
+  - hr_onboarding
+  - support_tickets
+  - devops_deploy
+  - legal_contracts
+  - sales_crm
+  - data_engineering

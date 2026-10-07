@@ -243,3 +243,12 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 - [x] P11.1 Server-side runner (`sim/runner.py`, shared report builder)
 - [x] P11.2 `/api/sim/run` trigger + `/api/sim/scenarios` catalogue
 - [x] P11.3 Sim tab run controls + per-scenario mermaid diagrams
+
+### P12 — enterprise day-to-day workflow scenarios
+- [x] P12.1 Synthetic generators (names, 555-phones, example.com mail,
+      TEST routing, ghp_test tokens, .invalid webhooks — reserved space only)
+- [x] P12.2 Six scenarios: hr_onboarding, support_tickets, devops_deploy,
+      legal_contracts, sales_crm, data_engineering (+ runner/META, client,
+      tab select, settings)
+- [x] P12.3 Fixes found live: carrier-only paraphrase, known-wins assembly,
+      span charsets (_ +/=), RFC-reserved TLD exemption in T2
