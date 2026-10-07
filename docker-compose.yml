@@ -66,6 +66,8 @@ services:
               count: 1
               capabilities: [gpu]
     command: ["python", "cli.py", "swarm-worker"]
+    healthcheck:
+      disable: true
     restart: unless-stopped
 
   # Gatherer role: same worker, plus the read-only fox DB (P7.32).
@@ -86,6 +88,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command: ["python", "cli.py", "swarm-worker", "--role", "gather"]
+    healthcheck:
+      disable: true
     restart: unless-stopped
 
   # Optional PORT-LEVEL capture (raw packets, not just fox APIs).
