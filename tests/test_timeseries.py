@@ -74,3 +74,24 @@ def test_bucketize_filter_service():
                   bucket_s=60, window_s=None, services={"a"}, fill=False)
     assert r["totals"]["req"] == 1
     assert set(r["buckets"][0]["services"]) == {"a"}
+
+def test_bucketize_latency_percentiles():
+    evs = [_ev(100.0), dict(_ev(100.0), duration_ms=100),
+           dict(_ev(100.0), duration_ms=300),
+           dict(_ev(100.0), duration_ms=500)]
+    b = bucketize(evs, bucket_s=60, window_s=None, fill=False)["buckets"][0]
+    assert b["p50_ms"] == 300.0
+    assert b["p95_ms"] == 500.0
+
+
+def test_bucketize_latency_zero_when_absent():
+    b = bucketize([_ev(100.0)], bucket_s=60, window_s=None,
+                  fill=False)["buckets"][0]
+    assert b["p50_ms"] == 0.0 and b["p95_ms"] == 0.0
+
+
+def test_bucketize_model_mix():
+    evs = [dict(_ev(100.0), model="m1"), dict(_ev(100.0), model="m1"),
+           dict(_ev(100.0), model="m2")]
+    b = bucketize(evs, bucket_s=60, window_s=None, fill=False)["buckets"][0]
+    assert b["models"] == {"m1": 2, "m2": 1}

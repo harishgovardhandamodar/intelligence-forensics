@@ -194,34 +194,58 @@ const showTip=(html,ev)=>{if(!tip)return;tip.innerHTML=html;tip.style.display='b
 const hideTip=()=>{if(tip)tip.style.display='none';};
 const fmtN=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'k':''+n;
 
-let tsCache=null,tsMsg='';
+let tsCache=null;
+const TSCOL=['#1f6feb','#58a6ff','#3fb950','#d29922','#f778ba','#a371f7','#e6edf3','#8b949e'];
+const spark=(vals,w=100,h=16)=>{if(!vals||!vals.length)return'';const mx=Math.max(1,...vals),mn=Math.min(...vals);const sx=i=>i*(w/(Math.max(1,vals.length-1)));const sy=v=>h-2-((v-mn)/((mx-mn)||1))*(h-4);return `<svg class=spark viewBox="0 0 ${w} ${h}" width=${w} height=${h}><polyline points="${vals.map((v,i)=>sx(i)+','+sy(v)).join(' ')}"/></svg>`;};
+const tsMergedModels=()=>{const m={};for(const b of (tsCache&&tsCache.buckets)||[])for(const[k,v]of Object.entries(b.models||{}))m[k]=(m[k]||0)+v;return Object.entries(m).sort((a,b)=>b[1]-a[1]);};
+function drawModelMix(){
+ const el=$('ts-models');if(!el)return;const ms=tsMergedModels(),tot=ms.reduce((s,x)=>s+x[1],0);
+ if(!tot){el.textContent='model mix: no data in window';return;}
+ const top=ms.slice(0,6),other=ms.slice(6).reduce((s,x)=>s+x[1],0);let bar='',leg='';
+ top.forEach(([m,c],i)=>{bar+=`<span style="width:${(c/tot*100).toFixed(2)}%;background:${TSCOL[i]}"></span>`;leg+=`<span class=k><span class=sw style="background:${TSCOL[i]}"></span>${escH(m)} ${Math.round(c/tot*100)}%</span>`;});
+ if(other){bar+=`<span style="width:${(other/tot*100).toFixed(2)}%;background:${TSCOL[7]}"></span>`;leg+=`<span class=k><span class=sw style="background:${TSCOL[7]}"></span>other ${Math.round(other/tot*100)}%</span>`;}
+ el.innerHTML=`<div class=mixbar>${bar}</div><div class=mut style="font-size:12px;margin-top:3px">${leg}</div>`;
+}
+function drawHeatmap(){
+ const el=$('ts-heatmap');if(!el)return;const bs=(tsCache&&tsCache.buckets)||[];
+ const svcs={};
+ for(const b of bs)for(const[k,v]of Object.entries(b.services||{})){const o=svcs[k]||(svcs[k]={total:0,byT:{}});o.total+=v.req;o.byT[b.t]=v.req;}
+ const names=Object.keys(svcs).sort((a,b)=>svcs[b].total-svcs[a].total).slice(0,8);
+ if(!names.length||!bs.length){el.textContent='heatmap: no services in window';return;}
+ const max=Math.max(1,...names.map(n=>Math.max(0,...Object.values(svcs[n].byT))));
+ const row=t=>{let r='';for(const b of bs){const v=svcs[t].byT[b.t]||0;r+=`<span class=cell data-t="${b.t}" data-s="${escA(t)}" data-v="${v}" data-a="${(v/max).toFixed(3)}"></span>`;}return `<div class=hrow><span class=hlabel title="${escA(t)}">${escH(t)}</span><div class=cells>${r}</div></div>`;};
+ el.innerHTML=`<div class=mut style="font-size:12px;margin-top:8px">service × time heatmap (brighter = more requests)</div>${names.map(row).join('')}`;
+ el.querySelectorAll('.cell').forEach(c=>{const a=+c.dataset.a;c.style.background=`rgba(31,111,235,${(0.06+0.94*a).toFixed(2)})`;c.addEventListener('mousemove',ev=>showTip(`${new Date(+c.dataset.t*1000).toLocaleString()}\n${c.dataset.s}\nrequests  ${c.dataset.v}`,ev));c.addEventListener('mouseleave',hideTip);});
+}
 function drawTsChart(){
  const el=$('ts-chart');if(!el)return;
  const bs=(tsCache&&tsCache.buckets)||[];
  if(!bs.length){el.className='mut';el.textContent='no data in window';$('ts-legend').textContent='';return;}
  el.className='';el.innerHTML='';
- $('ts-legend').innerHTML='<span class=k><span class=sw style="background:#1f6feb"></span>requests</span><span class=k><span class=sw style="background:#58a6ff"></span>total tokens</span>';
- const W=el.clientWidth||900,H=190,padL=48,padR=14,padT=14,padB=26;
+ $('ts-legend').innerHTML='<span class=k><span class=sw style="background:#1f6feb"></span>requests</span><span class=k><span class=sw style="background:#58a6ff"></span>total tokens</span><span class=k><span class=sw style="background:#a371f7"></span>p95 ms</span><span class=k>req trend '+spark(bs.map(b=>b.req||0))+'</span>';
+ const W=el.clientWidth||900,H=200,padL=48,padR=14,padT=14,padB=26;
  const maxR=Math.max(1,...bs.map(b=>b.req||0)),maxT=Math.max(1,...bs.map(b=>b.total_tokens||0));
  const bw=(W-padL-padR)/bs.length,bh=H-padT-padB;
- const yR=v=>padT+bh-(v/maxR)*bh, yT=v=>padT+bh-(v/maxT)*bh;
+ const yT=v=>padT+bh-(v/maxT)*bh;
+ const maxLat=()=>Math.max(1,...bs.map(b=>b.p95_ms||0));
  let g='';
  for(let i=0;i<=2;i++){const v=maxR*i/2,y=padT+bh-(i/2)*bh;g+=`<line x1=${padL} y1=${y} x2=${W-padR} y2=${y} stroke="#30363d" stroke-width="1"/><text class=ax x=${padL-6} y=${y+3} text-anchor="end">${fmtN(Math.round(v))}</text>`;}
- const pts=bs.map((b,i)=>`${padL+i*bw+bw/2},${yT(b.total_tokens||0)}`).join(' ');
- bs.forEach((b,i)=>{const x=padL+i*bw,gap=Math.max(1,bw*0.18),y=yR(b.req||0);
-  g+=`<rect class=bar x=${x+gap} y=${y} width=${Math.max(1,bw-2*gap)} height=${Math.max(0,padT+bh-y)} rx=2></rect>`;
+ bs.forEach((b,i)=>{const x0=padL+i*bw,gap=Math.max(1,bw*0.18),y=padT+bh-((b.req||0)/maxR)*bh;
+  g+=`<rect class=bar x=${x0+gap} y=${y} width=${Math.max(1,bw-2*gap)} height=${Math.max(0,padT+bh-y)} rx=2></rect>`;
   const t=new Date(b.t*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  g+=`<rect class=hit data-i=${i} x=${x} y=${padT} width=${bw} height=${bh}></rect>`;
-  if(bs.length<=14||i%Math.ceil(bs.length/10)===0)g+=`<text class=ax x=${x+bw/2} y=${H-8} text-anchor="middle">${t}</text>`;});
- g+=`<polyline class=ln points="${pts}"/>`;
+  if(bs.length<=14||i%Math.ceil(bs.length/10)===0)g+=`<text class=ax x=${x0+bw/2} y=${H-8} text-anchor="middle">${t}</text>`;});
+ const xc=i=>padL+i*bw+bw/2;
+ g+=`<polyline class=ln points="${bs.map((b,i)=>xc(i)+','+yT(b.total_tokens||0)).join(' ')}"/>`;
+ g+=`<polyline class=ln p95 points="${bs.map((b,i)=>xc(i)+','+(padT+bh-((b.p95_ms||0)/Math.max(1,Math.max(...bs.map(x=>x.p95_ms||0))))*bh)).join(' ')}"/>`;
+ bs.forEach((b,i)=>g+=`<rect class=hit data-i=${i} x=${padL+i*bw} y=${padT} width=${bw} height=${H-padT-padB}></rect>`);
  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width=${W} height=${H}>${g}</svg>`;
- el.querySelectorAll('.hit').forEach(h=>{const b=bs[+h.dataset.i];h.addEventListener('mousemove',ev=>showTip(`${new Date(b.t*1000).toLocaleString()}\nrequests  ${b.req}\ntokens    ${b.total_tokens}\nerrors    ${b.errors||0}`,ev));h.addEventListener('mouseleave',hideTip);});
+ el.querySelectorAll('.hit').forEach(h=>{const b=bs[+h.dataset.i];h.addEventListener('mousemove',ev=>showTip(`${new Date(b.t*1000).toLocaleString()}\nrequests  ${b.req}\ntokens    ${b.total_tokens}\np50/p95   ${b.p50_ms||0} / ${b.p95_ms||0} ms\nerrors    ${b.errors||0}`,ev));h.addEventListener('mouseleave',hideTip);});
 }
 function loadTs(){
  const el=$('ts-chart');if(!el)return;
  const b=$('sel-tsbucket').value,w=$('sel-tswindow').value;
  j(`/api/stats/timeseries?bucket=${encodeURIComponent(b)}&window=${encodeURIComponent(w)}&source=auto`).then(r=>{tsCache=r;const t=r.totals||{};
-  $('ts-msg').textContent=`${t.req||0} req · ${t.total_tokens||0} tok · source ${r.source}`;drawTsChart();})
+  $('ts-msg').textContent=`${t.req||0} req · ${t.total_tokens||0} tok · source ${r.source}`;drawTsChart();drawModelMix();drawHeatmap();})
  .catch(e=>{el.className='mut';el.textContent='failed: '+e;});
 }
 ['sel-tsbucket','sel-tswindow'].forEach(id=>{const e=$(id);if(e)e.onchange=loadTs;});

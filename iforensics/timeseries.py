@@ -27,15 +27,24 @@ def _t(e: dict) -> float:
     return e.get("t") or e.get("ts") or e.get("created_at") or 0 or 0
 
 
+def _pctile(values: list[float], q: float) -> float:
+    """Nearest-rank percentile of a non-empty sorted-or-not list."""
+    if not values:
+        return 0.0
+    vs = sorted(values)
+    idx = min(len(vs) - 1, max(0, int(round(q * (len(vs) - 1)))))
+    return vs[idx]
+
+
 def bucketize(events: list[dict], bucket_s: float = 60, window_s: float | None = None,
               now: float | None = None, services: set | None = None,
               fill: bool | None = None) -> dict:
     """Aggregate OUT events into fixed buckets (ascending).
 
     Each bucket: {t, req, prompt_tokens, completion_tokens, total_tokens,
-    errors, services: {name: {req, tokens}}}. `fill` (default: on when a
-    window is given) inserts zero buckets so charts show real gaps, not a
-    straight line between distant points.
+    errors, p50_ms, p95_ms, models: {name: count}, services: {name: {req,
+    tokens}}}. `fill` (default: on when a window is given) inserts zero
+    buckets so charts show real gaps, not a straight line between points.
     """
     now = now if now is not None else time.time()
     bucket_s = max(1.0, float(bucket_s))
@@ -44,6 +53,7 @@ def bucketize(events: list[dict], bucket_s: float = 60, window_s: float | None =
         fill = window_s is not None
 
     buckets: dict[int, dict] = {}
+    lat: dict[int, list[float]] = {}
     for e in events:
         if (e.get("dir") or "out") != "out":
             continue
@@ -58,7 +68,7 @@ def bucketize(events: list[dict], bucket_s: float = 60, window_s: float | None =
         if b is None:
             b = buckets[key] = {"t": key, "req": 0, "prompt_tokens": 0,
                                 "completion_tokens": 0, "total_tokens": 0,
-                                "errors": 0, "services": {}}
+                                "errors": 0, "models": {}, "services": {}}
         pt = e.get("prompt_tokens", 0) or 0
         ct = e.get("completion_tokens", 0) or 0
         b["req"] += 1
@@ -67,6 +77,11 @@ def bucketize(events: list[dict], bucket_s: float = 60, window_s: float | None =
         b["total_tokens"] += pt + ct
         if (e.get("status") or "").lower() not in _OK:
             b["errors"] += 1
+        model = e.get("model") or "unknown"
+        b["models"][model] = b["models"].get(model, 0) + 1
+        dur = e.get("duration_ms")
+        if dur:
+            lat.setdefault(key, []).append(float(dur))
         sb = b["services"].setdefault(svc, {"req": 0, "tokens": 0})
         sb["req"] += 1
         sb["tokens"] += pt + ct
@@ -77,10 +92,15 @@ def bucketize(events: list[dict], bucket_s: float = 60, window_s: float | None =
         while k <= end:
             buckets.setdefault(k, {"t": k, "req": 0, "prompt_tokens": 0,
                                    "completion_tokens": 0, "total_tokens": 0,
-                                   "errors": 0, "services": {}})
+                                   "errors": 0, "models": {}, "services": {}})
             k += int(bucket_s)
 
     rows = sorted(buckets.values(), key=lambda b: b["t"])
+    for b in rows:
+        ds = lat.get(b["t"], [])
+        b["p50_ms"] = round(_pctile(ds, 0.50), 1)
+        b["p95_ms"] = round(_pctile(ds, 0.95), 1)
+
     totals = {"req": sum(b["req"] for b in rows),
               "total_tokens": sum(b["total_tokens"] for b in rows),
               "errors": sum(b["errors"] for b in rows)}
