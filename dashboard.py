@@ -24,6 +24,9 @@ from iforensics import config, store, infer, agents as ag, ollama_client
 app = FastAPI(title="Intelligence Forensics Dashboard", version="0.2.0")
 app.mount("/static", StaticFiles(directory=os.path.join(config.BASE_DIR, "static")), name="static")
 
+# Bump on every deploy — shown in the header so cached pages are detectable.
+APP_VERSION = "0.5.0-live"
+
 PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>Intelligence Forensics</title>
 <style>
@@ -76,7 +79,7 @@ a{color:var(--acc)}
 <label class=mut>every <input id=inp-live-int type=number value=5 min=1 max=60 style="width:56px">s</label>
 <span class=mut>API-level sniff of fox :8210 — queue IN, completed OUT, model load SYS. Raw pcap needs the <code>pcap</code> compose profile (see README).</span></div></div>
 <div class=card><h3>Rates <span class=mut style="font-weight:normal">— live window</span></h3><table id=t-rates><thead><tr><th>service</th><th>req</th><th>tokens</th><th>req/min</th><th>tok/min</th></tr></thead><tbody><tr><td class=mut colspan=5>tap not running</td></tr></tbody></table></div>
-<div class=card><h3>Live reconstruction <span class=mut style="font-weight:normal">— progression over traffic since tap started</span></h3>
+<div class=card><h3>Live reconstruction <span class=mut style="font-weight:normal">— recent history + live rows since tap started</span></h3>
 <div class=row><select id=sel-live></select><select id=sel-lmode><option value=cumulative>cumulative</option><option value=window>window</option></select>
 <button class=act id=b-live-recon>Reconstruct live</button><span class=mut id=live-recon-msg></span></div>
 <table id=t-liveprog><thead><tr><th>step</th><th>score</th><th>queries</th><th>inferred build</th><th>Δ vs prev</th></tr></thead><tbody></tbody></table></div>
@@ -113,7 +116,7 @@ async function load(){
  const sec=async(id,fn)=>{try{await fn();}catch(e){const el=document.querySelector(id);if(el)el.innerHTML=`<tr><td class=warn>failed: ${e}</td></tr>`;}};
  try{
   const o=await j('/api/overview');
-  $('hdr').textContent=`fox:${o.fox} model:${o.model} reqs:${o.requests} svcs:${o.services} recon:${o.reconstructions} agent-runs:${o.agent_runs}`;
+  $('hdr').textContent=`v${o.version||'?'} · fox:${o.fox} model:${o.model} reqs:${o.requests} svcs:${o.services} recon:${o.reconstructions} agent-runs:${o.agent_runs}`;
   $('stats').innerHTML=['requests|'+o.requests,'services|'+o.services,'reconstructions|'+o.reconstructions,'agentic runs|'+o.agent_runs,'fox|'+o.fox,'model|'+o.model].map(s=>{const[k,v]=s.split('|');return `<div class=card stat><div class=v>${v}</div><div class=k>${k}</div></div>`}).join('');
  }catch(e){$('hdr').textContent='overview failed: '+e;$('stats').innerHTML=`<div class="card warn">overview failed: ${e}</div>`;}
  await sec('#t-svc tbody',async()=>{
@@ -287,11 +290,14 @@ const loadLive=async()=>{
 $('b-live-start').onclick=async()=>{const i=+$('inp-live-int').value||5;await (await fetch('/api/live/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({interval_s:i})})).json();loadLive();};
 $('b-live-stop').onclick=async()=>{await fetch('/api/live/stop',{method:'POST'});loadLive();};
 $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;const mode=$('sel-lmode').value;$('live-recon-msg').textContent='reconstructing…';
- try{const d=await j(`/api/live/reconstruction?service=${encodeURIComponent(s)}&n=5&mode=${mode}`);
-  $('live-recon-msg').textContent=`${d.steps.length} steps, converged=${d.converged}`;
+ try{
+  try{const st=await j('/api/live/status');if(!st.running)await (await fetch('/api/live/start',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).json();}catch(e){}
+  const d=await j(`/api/live/reconstruction?service=${encodeURIComponent(s)}&n=5&mode=${mode}&history=200`);
+  $('live-recon-msg').textContent=`${d.steps.length} steps (${d.history_rows} history + ${d.live_rows} live), converged=${d.converged}`;
   $('t-liveprog').querySelector('tbody').innerHTML=d.steps.map(st=>{const dl=st.delta||{};
    return `<tr><td>${st.step}</td><td>${scoreCell(st.score.score,st.score.grade)}</td><td>${st.requests}</td><td><b>${st.project||''}</b></td><td>${dl.project_changed?'<span class=warn>flip</span>':'<span class=ok>stable</span>'}</td></tr>`;}).join('');
- }catch(e){$('live-recon-msg').textContent='need more live traffic';}};
+  loadLive();
+ }catch(e){$('live-recon-msg').textContent='failed: '+e;}};
 setInterval(()=>{const s=$('s-live');if(s&&s.classList.contains('on'))loadLive();},4000);
 $('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';const r=await j('/api/investigate');$('runmsg').textContent=r.report||JSON.stringify(r);load();};
 $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;const r=await (await fetch('/api/runs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({quick:q})})).json();$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';};
@@ -339,7 +345,7 @@ def overview():
     return {"requests": len(rows), "services": len(svcs),
             "reconstructions": len(recon), "agent_runs": len(ag.list_runs()),
             "fox": fox_ok, "model": ollama_client.MODEL,
-            "ollama": ollama_client.OLLAMA_URL}
+            "ollama": ollama_client.OLLAMA_URL, "version": APP_VERSION}
 
 
 @app.get("/api/services")
@@ -528,19 +534,33 @@ def live_rates(window_s: float = 300):
 
 
 @app.get("/api/live/reconstruction")
-def live_reconstruction(service: str, n: int = 5, mode: str = "cumulative"):
-    """Progressive reconstruction over the LIVE window (since tap started)."""
+def live_reconstruction(service: str, n: int = 5, mode: str = "cumulative",
+                        history: int = 200):
+    """Progressive reconstruction over recent history + live rows.
+
+    Sparse live traffic alone rarely fills a window, so the window is
+    backfilled from recent fox history (oldest first) with tap-buffered
+    live rows appended (deduped by id). Response reports the mix.
+    """
     from iforensics import live as live_mod
     from iforensics import progression as prog, score as scoring
     if mode not in ("cumulative", "window"):
         raise HTTPException(400, "mode must be cumulative|window")
+    hist = live_mod.history_rows(service, limit=max(0, min(2000, history)))
+    live_rows: list[dict] = []
     t = live_mod.tap()
-    if not t:
-        raise HTTPException(409, "tap not running (POST /api/live/start)")
-    rows = [r for r in t.rows() if r.get("service") == service]
-    if len(rows) < 4:
-        raise HTTPException(409, f"only {len(rows)} live rows for {service!r} — wait for traffic")
-    return scoring.attach_scores(prog.progression(service, rows, n=max(2, min(12, n)), mode=mode))
+    if t:
+        seen = {r.get("id") for r in hist}
+        live_rows = [r for r in t.rows() if r.get("service") == service
+                     and r.get("id") not in seen]
+    rows = sorted(hist + live_rows, key=lambda r: r.get("ts", 0))
+    if len(rows) < 2:
+        raise HTTPException(409, f"only {len(rows)} rows for {service!r} — no history yet")
+    res = scoring.attach_scores(prog.progression(service, rows, n=max(2, min(12, n)), mode=mode))
+    res["history_rows"] = len(hist)
+    res["live_rows"] = len(live_rows)
+    res["tap_running"] = t is not None
+    return res
 
 
 @app.get("/api/design/docs")

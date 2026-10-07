@@ -73,7 +73,7 @@ class LiveTap(threading.Thread):
             evs = [e for e in self.events if e["dir"] == "out"]
         rows = []
         for e in evs[-limit:]:
-            rows.append({"ts": e["t"], "service": e["service"], "model": e["model"],
+            rows.append({"id": e.get("qid"), "ts": e["t"], "service": e["service"], "model": e["model"],
                          "prompt_tokens": e["prompt_tokens"],
                          "completion_tokens": e["completion_tokens"],
                          "total_tokens": e["prompt_tokens"] + e["completion_tokens"],
@@ -81,6 +81,8 @@ class LiveTap(threading.Thread):
                          "prompt": e["prompt_head"], "query_type": e["query_type"],
                          "requestor": "user"})
         return rows
+
+
 
     def poll_once(self) -> dict:
         """One tap cycle. Returns counts; never raises."""
@@ -168,6 +170,31 @@ class LiveTap(threading.Thread):
                 "events_buffered": n, "recent_by_service": dict(by_svc.most_common(10)),
                 "recent_errors": self.errors[-5:]}
 
+
+
+def history_rows(service: str, limit: int = 200) -> list[dict]:
+    """Recent fox history for one service, same row shape (oldest first)."""
+    try:
+        res = fox_client.llm_requests(limit=max(limit * 2, 100))
+    except Exception:  # noqa: BLE001
+        return []
+    rows = []
+    for r in res.get("requests") or []:
+        if (r.get("service") or "") != service:
+            continue
+        rows.append({"id": r.get("id"), "ts": r.get("ts", 0),
+                     "service": r.get("service"), "model": r.get("model"),
+                     "prompt_tokens": r.get("prompt_tokens", 0) or 0,
+                     "completion_tokens": r.get("completion_tokens", 0) or 0,
+                     "total_tokens": r.get("total_tokens", 0) or 0,
+                     "duration_ms": r.get("duration_ms", 0) or 0,
+                     "status": r.get("status") or "complete",
+                     "prompt": r.get("prompt") or "",
+                     "query_type": r.get("query_type") or "",
+                     "requestor": r.get("requestor") or "user"})
+        if len(rows) >= limit:
+            break
+    return sorted(rows, key=lambda r: r["ts"])
 
 _TAP: LiveTap | None = None
 _TAP_LOCK = threading.Lock()
