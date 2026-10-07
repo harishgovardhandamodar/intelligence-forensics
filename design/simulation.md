@@ -92,6 +92,19 @@ fast repetition burns a secret.
   structure attacks to GPU containers with ledger entries; the estimator
   (`exposure` score, no ground truth) predicts leakage from structure alone.
 
+## Running it
+
+```bash
+uv venv sim/.venv                                  # once; stdlib only, no deps
+sim/.venv/bin/python sim/run.py --all              # all four scenarios
+sim/.venv/bin/python sim/run.py --scenario coding_api_keys --style vibe
+sim/.venv/bin/python sim/run.py --all --dlp-mode redact   # mitigation sweep
+```
+
+The dashboard must be up (`docker compose up -d`): the client drives
+`/api/sim/*`, and the Sim tab shows curves, reconstructions, estimates,
+DLP state and plausibility for whatever was ingested.
+
 ## Honest limits
 
 - The mock gateway *echoes* the masked secret; a real LLM paraphrases, which
