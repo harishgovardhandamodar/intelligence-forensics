@@ -154,7 +154,7 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 - [x] P3.12 Deterministic leak + exposure scanner (D2, D3)
 - [x] P3.13 Untrusted-data fencing in `ollama_client.ask*` + injection scanner (D1)
 - [x] P3.14 `SECURITY_SYSTEM` agent role + artifacts + Security tab + reporter integration (D6)
-- [ ] P3.15 Trust-boundary assertions (D4) + per-service risk score (D5)
+- [x] P3.15 Trust-boundary assertions (D4) + per-service risk score (D5)
 
 ### P4 — reporting
 - [ ] P4.16 Unified report generator: heuristic + agentic + scores + critic gaps + security findings, provenance block, SHA-256 of source DB

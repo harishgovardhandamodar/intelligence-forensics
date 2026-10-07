@@ -60,3 +60,16 @@ def test_evidence_file_preview_download_and_containment(tmp_path, monkeypatch):
 
     for bad in ("../secret", "/etc/passwd", "missing.txt", "", "a/../../etc/passwd"):
         assert c.get("/api/evidence/file", params={"name": bad}).status_code == 404
+
+
+def test_trust_and_risk_endpoints():
+    from fastapi.testclient import TestClient
+    c = TestClient(dashboard.app)
+    t = c.get("/api/trust")
+    assert t.status_code == 200
+    body = t.json()
+    assert {r["rule"] for r in body["rules"]} == {"T1", "T2", "T3", "T4", "T5", "T6"}
+    assert body["summary"]["fail"] == 0
+    r = c.get("/api/risk")
+    assert r.status_code == 200
+    assert "services" in r.json() and "summary" in r.json()

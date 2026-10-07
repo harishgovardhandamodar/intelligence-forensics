@@ -29,6 +29,10 @@ Env: `FOX_URL` (default `http://localhost:8210`), `FOX_SERVICES_DB` override,
 
 ## Docker + remote access (Tailscale / LAN)
 
+> **No auth.** The dashboard implements no authentication, so its viewer
+> boundary is LAN/tailnet only — bind it to a private interface and let
+> Tailscale/`ufw` be the gate. Never expose it to the public internet.
+
 ```bash
 docker compose up -d --build   # dashboard at :8211 (container `intel-forensics`)
 ```

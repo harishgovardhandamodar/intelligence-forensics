@@ -282,9 +282,30 @@ function renderSecurity(resp){
  $('sec-stored').innerHTML=st?`<div class=mut>last scan ${new Date((st.generated_at||0)*1000).toLocaleString()} — ${escH((st.assessment||{}).summary||'(no LLM summary)')}</div>`:'<span class=mut>no stored security.json yet</span>';
  wireTable('#t-sec-secrets',null);
 }
+const TRUST_CLS=s=>(s==='fail'?'warn':(s==='warn'?'':'ok'));
+function renderTrust(resp){
+ const rules=resp.rules||[],sum=resp.summary||{};
+ const s=$('sec-trust-sum');
+ if(s)s.textContent=`${sum.pass||0} pass · ${sum.warn||0} warn · ${sum.fail||0} fail`;
+ const tb=$('t-sec-trust')&&$('t-sec-trust').querySelector('tbody');
+ if(!tb)return;
+ tb.innerHTML=rules.map(r=>`<tr><td><b>${escH(r.rule)}</b></td><td class="${TRUST_CLS(r.status)}">${escH(r.status)}</td><td class=mut>${escH(r.severity)}</td><td>${escH(r.detail)}</td></tr>`).join('')||trowState(4,'no assertions');
+ wireTable('#t-sec-trust',null);
+}
+function renderRisk(resp){
+ const rows=resp.services||[],sum=resp.summary||{};
+ const s=$('sec-risk-sum');
+ if(s)s.textContent=`${sum.n_services||0} services · worst ${escH(sum.worst||'low')}`;
+ const tb=$('t-sec-risk')&&$('t-sec-risk').querySelector('tbody');
+ if(!tb)return;
+ tb.innerHTML=rows.map(r=>{const g=r.signals||{};return `<tr><td>${escH(r.service)}</td><td class="${SEC_CLS(r.band)}">${escH(r.band)}</td><td>${r.score}</td><td class=mut>${r.n}</td><td>${g.pii||0}</td><td>${g.injection||0}</td><td>${g.cross_service_reuse||0}</td></tr>`;}).join('')||trowState(7,'no requests yet');
+ wireTable('#t-sec-risk',null);
+}
 function loadSecurity(){
  $('sec-msg').textContent='loading…';
  j('/api/security').then(renderSecurity).catch(e=>{$('sec-msg').textContent='security failed: '+e;});
+ j('/api/trust').then(renderTrust).catch(()=>{});
+ j('/api/risk').then(renderRisk).catch(()=>{});
 }
 function secScan(){
  $('sec-msg').textContent='scanning (deterministic + LLM)…';

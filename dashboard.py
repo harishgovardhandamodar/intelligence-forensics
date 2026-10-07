@@ -83,10 +83,23 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=card><h3>Preview <span class=mut id=ev-name style="font-weight:normal"></span></h3><div class=row><a id=ev-dl class=act download href="#">Download</a><span class=mut id=ev-info></span></div><pre id=ev-view>click a file&hellip;</pre></div></section>
 <section id=s-security><div class=card><div class=row>
 <button class=act id=b-sec-scan>Run security scan (deterministic + LLM)</button>
-<span class=mut id=sec-msg></span><span class=mut id=sec-stored></span></div>
-<div class=grid id=sec-stats></div>
+<span class=mut id=sec-msg></span></div>
+<div class=mut id=sec-stored></div><div class=mut id=sec-tracked></div>
+<div class="grid stats" id=sec-stats></div>
 <h3>Dashboard exposure</h3><div id=sec-exp class=mut>loading&hellip;</div>
-<h3>Secret / PII survivors</h3><table id=t-sec-secrets><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th></tr></thead><tbody></tbody></table>
+<h3>Secret / PII survivors</h3><table class=tbl id=t-sec-secrets><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th></tr></thead><tbody></tbody></table>
+<h3>Prompt-injection attempts</h3><table class=tbl><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th></tr></thead><tbody id=sec-inject></tbody></table>
+<h3>Over-permissive files</h3><table class=tbl><thead><tr><th>file</th><th>mode</th><th>sev</th></tr></thead><tbody id=sec-perm></tbody></table>
+</div>
+<div class=card>
+<div class=row><h3>Trust boundaries (D4)</h3><span class=mut id=sec-trust-sum></span></div>
+<div class=mut>Assertions from design/trust-boundaries.md, re-checked against the code.</div>
+<table class=tbl id=t-sec-trust><thead><tr><th>rule</th><th>status</th><th>sev</th><th>detail</th></tr></thead><tbody></tbody></table>
+</div>
+<div class=card>
+<div class=row><h3>Inflow risk by service (D5)</h3><span class=mut id=sec-risk-sum></span></div>
+<div class=mut>Ranked from secrets/injection attempts, volume outliers and cross-service prompt reuse.</div>
+<table class=tbl id=t-sec-risk><thead><tr><th>service</th><th>band</th><th>score</th><th>PII</th><th>inj</th><th>vol z</th><th>reuse</th></tr></thead><tbody></tbody></table>
 </div></section>
 <section id=s-design><div class=row><div class=card style="min-width:230px"><h3>Documents</h3><div id=design-rail class=mut>loading&hellip;</div></div>
 <div class=card style="flex:1"><h3 id=design-title>Design &amp; architecture</h3><div class=mut id=design-meta></div><div id=design-doc class=mut>pick a document&hellip;</div></div></div></section>
@@ -529,6 +542,25 @@ def security_report():
 def security_scan(model: str | None = None):
     """Run the deterministic scan plus the LLM security advisor; persist artifacts."""
     return security_agent.run_security(app=app, model=model, use_llm=True)
+
+
+@app.get("/api/trust")
+def trust_audit():
+    """Re-check the trust-boundary claims (T1-T6) against the current code."""
+    from iforensics import trust
+    return trust.audit()
+
+
+@app.get("/api/risk")
+def service_risk(limit: int = 5000):
+    """Rank services by inflow risk (PII/injection/volume/cross-service reuse)."""
+    from iforensics import risk as risk_mod
+    from iforensics import live as live_mod
+    rows = _service_rows(limit=max(1, min(20000, limit)))
+    if not rows:
+        t = live_mod.tap()
+        rows = t.rows() if t else []
+    return risk_mod.service_risk(rows)
 
 
 @app.get("/api/ollama")
