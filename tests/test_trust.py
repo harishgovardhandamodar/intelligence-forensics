@@ -21,7 +21,7 @@ def test_audit_on_repo_passes_no_boundary_is_violated():
     r = trust.audit(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     assert r["summary"]["fail"] == 0
     assert r["ok"] is True
-    assert {x["rule"] for x in r["rules"]} == {"T1", "T2", "T3", "T4", "T5", "T6"}
+    assert {x["rule"] for x in r["rules"]} == {"T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"}
 
 
 def test_t1_fails_without_ro_mount_and_with_write_sql(tmp_path):
@@ -70,3 +70,25 @@ def test_t6_fails_when_reconstruction_missing_label(tmp_path):
     assert trust.check_t6(b)["status"] == "fail"
     _write(b, "reconstructions/svc_a/RECONSTRUCTED.json", "{}")
     assert trust.check_t6(b)["status"] == "pass"
+
+def test_t7_passes_on_repo_and_fails_without_user_directive(tmp_path):
+    repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    r = trust.check_t7(repo)
+    assert r["status"] == "pass", r["evidence"]
+    b = str(tmp_path)
+    _write(b, "docker-compose.yml",
+           "services:\n  swarm-worker:\n    build: .\n  swarm-gather:\n    build: .\n")
+    r2 = trust.check_t7(b)
+    assert r2["status"] == "fail"
+    assert any("user:" in e for e in r2["evidence"])
+
+
+def test_t8_passes_on_repo_and_fails_without_gates(tmp_path):
+    repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    assert trust.check_t8(repo)["status"] == "pass"
+    b = str(tmp_path)
+    _write(b, "cli.py", "print('hello')\n")
+    _write(b, "iforensics/ledger.py", "x = 1\n")
+    r = trust.check_t8(b)
+    assert r["status"] == "fail"
+    assert len(r["evidence"]) == 3

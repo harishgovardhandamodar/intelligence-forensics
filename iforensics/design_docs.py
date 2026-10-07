@@ -39,6 +39,9 @@ _DOCS: list[dict[str, str]] = [
     {"id": "ethics", "file": "ethics.md", "title": "Ethics",
      "group": "Data & assurance", "kind": "constraints · decision check",
      "answers": "The constraints that keep reconstruction honest"},
+    {"id": "agent-swarm", "file": "07-agent-swarm.md", "title": "Agent swarm",
+     "group": "Structure", "kind": "workers · queue · ledger · GPUs",
+     "answers": "How forensic work is distributed, isolated, and recorded"},
 ]
 
 _FENCE_RE = re.compile(r"^\s*```(\w*)\s*$")

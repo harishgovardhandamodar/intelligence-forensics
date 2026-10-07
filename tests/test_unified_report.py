@@ -29,7 +29,7 @@ def test_assemble_sections(tmp_path):
     assert {s["service"] for s in b["services"]} == {"svc-a", "svc-b"}
     for s in b["services"]:
         assert s["score"] is not None and s["grade"] in ("A", "B", "C", "D")
-    assert {r["rule"] for r in b["trust"]["rules"]} == {"T1", "T2", "T3", "T4", "T5", "T6"}
+    assert {r["rule"] for r in b["trust"]["rules"]} == {"T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"}
     by = {s["service"]: s for s in b["risk"]["services"]}
     assert by["svc-b"]["signals"]["injection"] >= 1
     assert "error" not in b["security"]

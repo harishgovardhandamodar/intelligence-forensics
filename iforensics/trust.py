@@ -1,6 +1,6 @@
 """Trust-boundary assertions (D4).
 
-The claims in `design/trust-boundaries.md` (T1-T6) are *enforced, not advised*.
+The claims in `design/trust-boundaries.md` (T1-T8) are *enforced, not advised*.
 This module re-checks them against the actual code/config on every run, so a
 regression that quietly crosses a boundary shows up as a failing assertion
 instead of a stale promise in a design doc.
@@ -207,7 +207,65 @@ def check_t6(base_dir: str) -> dict:
             "evidence": evidence}
 
 
-CHECKS = [check_t1, check_t2, check_t3, check_t4, check_t5, check_t6]
+def check_t7(base_dir: str) -> dict:
+    """T7 — Workers are isolated: host UID, GPUs, least mount wins."""
+    evidence, ok = [], True
+    compose = _read_file(os.path.join(base_dir, "docker-compose.yml"))
+    for svc in ("swarm-worker", "swarm-gather"):
+        block = re.search(rf"^  {svc}:(.*?)(?=^  \S|\Z)", compose,
+                          re.M | re.S)
+        body = block.group(1) if block else ""
+        if re.search(r"^\s*user:\s*[\"']?\$\{UID", body, re.M):
+            evidence.append(f"{svc}: runs as host UID (user: $UID)")
+        else:
+            ok = False
+            evidence.append(f"{svc}: missing user: directive (root-owned volume files)")
+        if "nvidia" in body:
+            evidence.append(f"{svc}: NVIDIA GPU reservation present")
+        else:
+            evidence.append(f"{svc}: no GPU reservation (CPU-only worker)")
+    fox_ro = [m.start() for m in re.finditer(r"/fox-data:ro", compose)]
+    if fox_ro:
+        evidence.append("docker-compose.yml: fox-data mounts are :ro")
+    else:
+        ok = False
+        evidence.append("docker-compose.yml: no :ro fox-data mount found")
+    return {"rule": "T7", "status": "pass" if ok else "fail",
+            "severity": "high",
+            "detail": ("Swarm workers run as host UID with least-privilege mounts."
+                       if ok else "Worker isolation regressed — see evidence."),
+            "evidence": evidence}
+
+
+def check_t8(base_dir: str) -> dict:
+    """T8 — Destruction needs a recorded human: prune gates + ledger approvals."""
+    evidence, ok = [], True
+    cli = _read_file(os.path.join(base_dir, "cli.py"))
+    if "needs " in cli and "--approve" in cli and "refusing" in cli:
+        evidence.append("cli.py: prune --apply refuses without --approve")
+    else:
+        ok = False
+        evidence.append("cli.py: prune --apply gate missing")
+    if "find_approval" in cli and "PermissionError" in cli:
+        evidence.append("cli.py: worker prune re-checks find_approval")
+    else:
+        ok = False
+        evidence.append("cli.py: worker prune approval check missing")
+    led = _read_file(os.path.join(base_dir, "iforensics", "ledger.py"))
+    if "def approve" in led and "def find_approval" in led:
+        evidence.append("ledger.py: approve/find_approval present")
+    else:
+        ok = False
+        evidence.append("ledger.py: approval helpers missing")
+    return {"rule": "T8", "status": "pass" if ok else "fail",
+            "severity": "high",
+            "detail": ("Destructive actions require a ledger-recorded human approval."
+                       if ok else "Approval gating regressed — see evidence."),
+            "evidence": evidence}
+
+
+CHECKS = [check_t1, check_t2, check_t3, check_t4, check_t5, check_t6,
+          check_t7, check_t8]
 
 
 def audit(base_dir: str | None = None) -> dict:

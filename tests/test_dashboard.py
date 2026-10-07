@@ -68,7 +68,7 @@ def test_trust_and_risk_endpoints():
     t = c.get("/api/trust")
     assert t.status_code == 200
     body = t.json()
-    assert {r["rule"] for r in body["rules"]} == {"T1", "T2", "T3", "T4", "T5", "T6"}
+    assert {r["rule"] for r in body["rules"]} == {"T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"}
     assert body["summary"]["fail"] == 0
     r = c.get("/api/risk")
     assert r.status_code == 200

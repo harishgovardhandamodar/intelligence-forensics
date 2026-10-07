@@ -23,6 +23,11 @@ flowchart TB
         BLD["Builder<br/>reconstruct · progression"]
         EV[(evidence/<br/>snapshots + runs)]
         RC[(reconstructions/<br/>inferred scaffolds)]
+        LG[(ledger/<br/>hash-chained actions)]
+    end
+    subgraph SWARM["Swarm workers · 1 container per role · 1x GPU"]
+        WK["profiler / critic<br/>./evidence only"]
+        WG["gather<br/>./evidence + /fox-data:ro"]
     end
     subgraph OUT["Outside the box"]
         FOX["fox-services :8210<br/>llm_usage telemetry<br/>mesh · docker · stats"]
@@ -39,9 +44,17 @@ flowchart TB
     INV --> FDB
     AGT --> OL
     AGT --> EV
+    AGT --> LG
     BLD --> RC
+    AGT -.->|"enqueue profile/critic"| WK
+    AGT -.->|"enqueue gather"| WG
+    WK -->|"results"| AGT
     FOX -.->|"gossip (read-only)"| PEER
 ```
+
+Swarm detail lives in [07-agent-swarm.md](07-agent-swarm.md); the trust
+zones and rules covering workers, GPUs, and the ledger are T7–T8 in
+[trust-boundaries.md](trust-boundaries.md).
 
 Every arrow is a real integration, and every arrow points *inward*: this app
 only ever reads. It never writes to the fox DB, never calls a peer, never

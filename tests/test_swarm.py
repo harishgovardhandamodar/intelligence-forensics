@@ -199,6 +199,9 @@ def test_collect_results_groups_done_failed_missing(tmp_path):
                                  "t-missing"], timeout_s=0.05, poll_s=0.05,
                                 base_dir=base)
     assert len(out["done"]) == 1 and len(out["failed"]) == 1
-    assert out["missing"] == sorted([t3["task_id"], "t-missing"])
+    assert out["missing"] == sorted(
+        set([t1["task_id"], t2["task_id"], t3["task_id"], "t-missing"])
+        - set(out["done"]) - set(out["failed"]))
+    assert len(out["missing"]) == 2
     assert next(iter(out["done"].values())) == {"parsed": {"project": "p"}}
     assert next(iter(out["failed"].values())) == "worker blew up"
