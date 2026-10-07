@@ -1,0 +1,2609 @@
+{
+ "generated_at": 1791395272.482994,
+ "root": "/app",
+ "secrets": [
+  {
+   "kind": "private_ip",
+   "severity": "low",
+   "source": "evidence/swarm/results/t-1791394211-aa0f.json",
+   "line": 1,
+   "match": "172.\u2026.1",
+   "remediation": "Confirm the internal address is expected; avoid leaking topology in reports.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 51,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 52,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 53,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 54,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 55,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 56,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 57,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 75,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 76,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 77,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 78,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 79,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 80,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 81,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 82,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 83,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 84,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 85,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 86,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 87,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 88,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 89,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 134,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 141,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 148,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 155,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 162,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 169,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 17,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 26,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 35,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 44,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 53,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 62,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 71,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 190,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 199,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 208,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 217,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 226,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 235,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 244,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 253,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 262,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 271,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 280,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 289,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 298,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 307,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 316,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 668,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 724,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 780,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 836,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 892,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 948,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 1004,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 1044,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 1188,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 1615,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 1622,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  },
+  {
+   "kind": "high_entropy",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 1629,
+   "match": "evid\u2026EF",
+   "remediation": "Verify whether this is a live secret; rotate if so.",
+   "status": "open"
+  }
+ ],
+ "injections": [
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/INVESTIGATION.md",
+   "line": 88,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 74,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 75,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 76,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 77,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 78,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 79,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 80,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 81,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 82,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 83,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 84,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 85,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 86,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 87,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 88,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 89,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 90,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 91,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 92,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 93,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 94,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 95,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 96,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 97,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 98,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 99,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 100,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 101,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 102,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 103,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 104,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 105,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 106,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 107,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 108,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 109,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 110,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 111,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 112,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 113,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 114,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 115,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 116,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 117,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "line": 118,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 183,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 192,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 201,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 210,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 219,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 228,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 237,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 246,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 255,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 264,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 273,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 282,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 291,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 300,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 309,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 318,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 327,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 336,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 345,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 354,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 363,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 372,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 381,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 390,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 399,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 408,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 417,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 426,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 435,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 444,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 453,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 462,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 471,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 480,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 489,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 498,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 507,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 516,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 525,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 534,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 543,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 552,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 561,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 570,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "line": 579,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_142848/manifest.json",
+   "line": 61,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_142848/manifest.json",
+   "line": 91,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_142848/manifest.json",
+   "line": 95,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_142848/profiler.kid-learning-lab.json",
+   "line": 4,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_142848/profiler.kid-learning-lab.json",
+   "line": 34,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_142848/profiler.kid-learning-lab.json",
+   "line": 38,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_145050/manifest.json",
+   "line": 187,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_145050/manifest.json",
+   "line": 219,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_145050/manifest.json",
+   "line": 223,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_145050/profiler.kid-learning-lab.json",
+   "line": 4,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_145050/profiler.kid-learning-lab.json",
+   "line": 36,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_145050/profiler.kid-learning-lab.json",
+   "line": 40,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "reconstructions/kid-learning-lab/RECONSTRUCTED.json",
+   "line": 40,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  },
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "reconstructions/kid-learning-lab/prompts/template_1.txt",
+   "line": 6,
+   "match": "Act as",
+   "remediation": "Keep fenced as untrusted data; never let prompts steer reconstruction.",
+   "status": "open"
+  }
+ ],
+ "permissions": [
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/INVESTIGATION.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/api_dump_20261007_142450.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/ledger/20261007_174732.jsonl",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/ledger/20261007_193228.jsonl",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/ledger/index.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/ledger/live1.jsonl",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/ledger/live2.jsonl",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/swarm/queue/done/t-1791394211-aa0f.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/swarm/queue/done/t-1791394234-23c2.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/swarm/queue/done/t-1791394352-29fe.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/swarm/results/t-1791394211-aa0f.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/registry.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130116/BRIEF.md",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130116/manifest.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130116/profiler.agentic-knowledge-mapper.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130116/profiler.hive-research-gpu.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130116/profiler.quai-radar.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130116/reporter.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130116/scout.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_174732/profiler.agentic-knowledge-mapper.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_174732/profiler.hive-research-gpu.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_174732/profiler.quai-radar.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_174732/scout.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/BRIEF.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/manifest.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/profiler.quai-radar.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/reporter.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/scout.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_193228/security.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142748/BRIEF.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142748/manifest.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142748/profiler.agentic-knowledge-mapper.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142748/profiler.hive-research-gpu.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142748/profiler.quai-radar.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142748/reporter.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142748/scout.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_124725/BRIEF.md",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_124725/manifest.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_124725/profiler.agentic-knowledge-mapper.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_124725/profiler.hive-research-gpu.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_124725/profiler.quai-radar.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_124725/reporter.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_124725/scout.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142708/BRIEF.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142708/manifest.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142708/profiler.agentic-knowledge-mapper.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142708/profiler.hive-research-gpu.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142708/profiler.quai-radar.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142708/reporter.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142708/scout.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130138/BRIEF.md",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130138/manifest.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130138/profiler.agentic-knowledge-mapper.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130138/profiler.hive-research-gpu.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130138/profiler.quai-radar.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130138/reporter.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_130138/scout.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142848/BRIEF.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142848/manifest.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142848/profiler.kid-learning-lab.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142848/reporter.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_142848/scout.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/BRIEF.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/critic.agentic-knowledge-mapper.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/critic.gateway-unknown.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/critic.hive-research-gpu.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/critic.kid-learning-lab.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/critic.probe.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/critic.quai-radar.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/critic.warmup.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/manifest.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/profiler.agentic-knowledge-mapper.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/profiler.gateway-unknown.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/profiler.hive-research-gpu.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/profiler.kid-learning-lab.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/profiler.probe.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/profiler.quai-radar.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/profiler.warmup.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/reporter.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "evidence/agentic/20261007_145050/scout.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_162423/BRIEF.md",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_162423/manifest.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_162423/profiler.agentic-knowledge-mapper.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_162423/profiler.hive-research-gpu.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_162423/profiler.quai-radar.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_162423/reporter.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "medium",
+   "source": "evidence/agentic/20261007_162423/scout.json",
+   "mode": "0644",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/probe/README_RECONSTRUCTED.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/probe/RECONSTRUCTED.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/probe/inferred_pipeline.py",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/probe/prompts/template_1.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/quai-radar/README_RECONSTRUCTED.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/quai-radar/RECONSTRUCTED.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/quai-radar/inferred_pipeline.py",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/quai-radar/prompts/template_1.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/quai-radar/prompts/template_2.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/quai-radar/prompts/template_3.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/quai-radar/prompts/template_4.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/quai-radar/prompts/template_5.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/quai-radar/prompts/template_6.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/gateway-unknown/README_RECONSTRUCTED.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/gateway-unknown/RECONSTRUCTED.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/gateway-unknown/inferred_pipeline.py",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/gateway-unknown/prompts/template_1.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/gateway-unknown/prompts/template_2.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/gateway-unknown/prompts/template_3.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/warmup/README_RECONSTRUCTED.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/warmup/RECONSTRUCTED.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/warmup/inferred_pipeline.py",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/warmup/prompts/template_1.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/hive-research-gpu/README_RECONSTRUCTED.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/hive-research-gpu/RECONSTRUCTED.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/hive-research-gpu/inferred_pipeline.py",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/hive-research-gpu/prompts/template_1.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/hive-research-gpu/prompts/template_2.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/hive-research-gpu/prompts/template_3.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/hive-research-gpu/prompts/template_4.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/hive-research-gpu/prompts/template_5.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/hive-research-gpu/prompts/template_6.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/agentic-knowledge-mapper/README_RECONSTRUCTED.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/agentic-knowledge-mapper/RECONSTRUCTED.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/agentic-knowledge-mapper/inferred_pipeline.py",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/agentic-knowledge-mapper/prompts/template_1.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/agentic-knowledge-mapper/prompts/template_2.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/agentic-knowledge-mapper/prompts/template_3.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/agentic-knowledge-mapper/prompts/template_4.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/kid-learning-lab/README_RECONSTRUCTED.md",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/kid-learning-lab/RECONSTRUCTED.json",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/kid-learning-lab/inferred_pipeline.py",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/kid-learning-lab/prompts/template_1.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/kid-learning-lab/prompts/template_2.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/kid-learning-lab/prompts/template_3.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  },
+  {
+   "kind": "world_readable",
+   "severity": "high",
+   "source": "reconstructions/kid-learning-lab/prompts/template_4.txt",
+   "mode": "0664",
+   "remediation": "chmod 0600 evidence files and set the collector umask to 077.",
+   "status": "open"
+  }
+ ],
+ "exposure": [],
+ "tracked_evidence": {
+  "count": 0,
+  "sample": []
+ },
+ "summary": {
+  "counts": {
+   "info": 0,
+   "low": 1,
+   "medium": 146,
+   "high": 154,
+   "critical": 0
+  },
+  "total": 301,
+  "worst": "high"
+ },
+ "totals": {
+  "low": 1,
+  "medium": 146,
+  "high": 154
+ },
+ "n_findings": 301,
+ "risk_rating": "high"
+}

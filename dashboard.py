@@ -43,6 +43,11 @@ POST_LIMITS = {
     "/api/reports/run": (10, 60),
     "/api/live/start": (30, 60),
     "/api/live/stop": (30, 60),
+    "/api/sim/ingest": (1000, 300),
+    "/api/sim/attack": (60, 60),
+    "/api/sim/begin": (60, 60),
+    "/api/sim/reset": (30, 60),
+    "/api/sim/demo": (10, 60),
 }
 _POST_HITS: dict[str, deque] = {}
 
@@ -65,7 +70,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <link rel="stylesheet" href="/static/app.css"></head><body>
 <header><h1>&#x1f575; Intelligence Forensics</h1><span class=sub id=hdr>loading&hellip;</span><span style="flex:1"></span><button id=b-theme title="toggle light/dark theme">◐</button></header>
 <nav id=tabs>
-<button data-t=overview class=on>Overview</button><button data-t=findings>Findings</button><button data-t=live>Live tap</button><button data-t=timeline>Timeline</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=ledger>Ledger</button><button data-t=mesh>Mesh</button><button data-t=graph>Graph</button><button data-t=evidence>Evidence</button><button data-t=security>Security</button><button data-t=design>Design</button>
+<button data-t=overview class=on>Overview</button><button data-t=findings>Findings</button><button data-t=live>Live tap</button><button data-t=timeline>Timeline</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=ledger>Ledger</button><button data-t=mesh>Mesh</button><button data-t=graph>Graph</button><button data-t=evidence>Evidence</button><button data-t=security>Security</button><button data-t=design>Design</button><button data-t=sim>Sim</button>
 </nav><main>
 <section id=s-overview class=on><div class=grid id=stats></div><div class=card><h3>Latest brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=brief class=md>loading&hellip;</div></div>
 <div class=card><h3>Run investigation</h3><div class=row>
@@ -138,6 +143,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 </div></section>
 <section id=s-design><div class=row><div class=card style="min-width:230px"><h3>Documents</h3><div id=design-rail class=mut>loading&hellip;</div></div>
 <div class=card style="flex:1"><h3 id=design-title>Design &amp; architecture</h3><div class=mut id=design-meta></div><div id=design-doc class=mut>pick a document&hellip;</div></div></div></section>
+<section id=s-sim><div class=card><div class=row><h3>Embedding-reconstruction sim</h3><span class=mut id=sim-sum></span><span style="flex:1"></span><button class=act id=b-sim-demo>Load demo data</button><button class=act id=b-sim-reset>Reset</button></div><div class=mut>Progressive masked disclosure → cosine clustering → position-wise assembly. Run <code>python sim/run.py --all</code> for the full client, or inspect results here.</div><div class=row><span class=mut>user</span><select id=sel-sim></select><button class=act id=b-sim-report>Report</button></div><div id=sim-curve class=mut>pick a user&hellip;</div><div id=sim-fields class=mut></div></div></section>
 </main>
 <div id=tip class=tip></div>
 <script src="/static/app.js" defer></script></body></html>
@@ -402,6 +408,167 @@ def swarm_queue():
     """Task queue depths per state (P7.31)."""
     from iforensics import swarm as swarm_mod
     return swarm_mod.status()
+
+
+class SimBegin(BaseModel):
+    user_id: str
+    truth: dict = {}
+    scenario: str = ""
+
+
+class SimIngest(BaseModel):
+    prompt: str
+    mask: str = ""
+    step: int = 0
+    metadata: dict = {}
+
+
+class SimAttack(BaseModel):
+    kind: str = "progressive"
+    user_id: str = ""
+    field: str = ""
+    value: str = ""
+    threshold: float = 0.7
+
+
+@app.post("/api/sim/begin")
+def sim_begin(req: SimBegin):
+    """Register a scenario user's ground truth (synthetic values only)."""
+    from iforensics.sim import state as sim_state
+    if not req.user_id:
+        raise HTTPException(400, "user_id required")
+    sim_state.STATE.register_truth(req.user_id, req.truth or {})
+    return {"ok": True, "user_id": req.user_id,
+            "fields": sorted((req.truth or {}).keys())}
+
+
+@app.post("/api/sim/ingest")
+def sim_ingest(req: SimIngest):
+    """Embed + store one query/response pair with metadata."""
+    from iforensics.sim import state as sim_state
+    if not req.prompt:
+        raise HTTPException(400, "prompt required")
+    st = sim_state.STATE
+    with st.lock:
+        out = st.gateway.process_query(req.prompt, req.metadata or {},
+                                       mask=req.mask, step=req.step)
+    return {"ids": out["ids"], "response": out["response"],
+            "backend": st.backend_note, "stored": len(st.store)}
+
+
+@app.post("/api/sim/attack")
+def sim_attack(req: SimAttack):
+    """Run one reconstruction attack over the stored embeddings."""
+    from iforensics.sim import attacks as sim_attacks
+    from iforensics.sim import state as sim_state
+    st = sim_state.STATE
+    filtr = {"user_id": req.user_id} if req.user_id else None
+    texts, vecs = st.store.texts_vectors(filtr)
+    if req.kind == "progressive":
+        return sim_attacks.progressive_attack(texts, vecs, req.threshold)
+    if req.kind == "near_duplicates":
+        cls = sim_attacks.cluster(texts, vecs, req.threshold)
+        return {"n_clusters": len(cls),
+                "clusters": [{"size": len(c),
+                              "samples": [texts[i][:120] for i in c[:3]]}
+                             for c in cls if len(c) > 1]}
+    if req.kind == "membership":
+        if not req.value:
+            raise HTTPException(400, "value required for membership")
+        with st.lock:
+            cand = st.embedder.embed_one(req.value)
+        return sim_attacks.membership_score(cand, vecs)
+    raise HTTPException(400, f"unknown attack kind: {req.kind!r}")
+
+
+@app.get("/api/sim/report")
+def sim_report(user_id: str):
+    """Accuracy report: assembled secrets vs registered ground truth."""
+    from iforensics.sim import analysis as sim_analysis
+    from iforensics.sim import attacks as sim_attacks
+    from iforensics.sim import state as sim_state
+    st = sim_state.STATE
+    truth = st.get_truth(user_id)
+    if not truth:
+        raise HTTPException(404, "no ground truth for user (POST /api/sim/begin)")
+    items = st.store.get_all(filtr={"user_id": user_id})
+    texts, _vecs = st.store.texts_vectors(filtr={"user_id": user_id})
+    res = sim_attacks.progressive_attack(texts, _vecs)
+    # attribute each cluster's assembly to the field whose truth it matches best
+    by_field: dict[str, str] = {}
+    best_score: dict[str, float] = {}
+    for c in res["clusters"]:
+        best, score = "", 0.0
+        for field, tv in truth.items():
+            r = sim_analysis.window_accuracy(c["assembled"], tv)
+            if r["accuracy"] > score:
+                best, score = field, r["accuracy"]
+        if best and score > best_score.get(best, 0):
+            best_score[best] = score
+            by_field[best] = c["assembled"]
+    rep = sim_analysis.field_report(truth, by_field, sim_analysis.window_accuracy)
+    curves = {}
+    for field, tv in truth.items():
+        sched = sorted({(it["metadata"].get("step", 0), it["metadata"].get("mask", ""))
+                        for it in items
+                        if it["metadata"].get("mask")
+                        and it["metadata"].get("field", field) == field})
+        curves[field] = sim_analysis.progression_curve(
+            tv, [m for _, m in sched], sim_attacks.assemble_fragments)
+    rep["curves"] = curves
+    rep["user_id"] = user_id
+    rep["backend"] = st.backend_note
+    rep["clusters"] = res["n_clusters"]
+    return rep
+
+
+@app.post("/api/sim/reset")
+def sim_reset():
+    """Clear embeddings + truth (fresh experiment)."""
+    from iforensics.sim import state as sim_state
+    return {"cleared": sim_state.STATE.reset()["ok"],
+            "backend": sim_state.STATE.backend_note}
+
+
+@app.get("/api/sim/users")
+def sim_users():
+    """Scenario users with truth fields + stored pair counts."""
+    from iforensics.sim import state as sim_state
+    st = sim_state.STATE
+    users = st.truth_users()
+    counts = {}
+    for it in st.store.get_all():
+        u = it["metadata"].get("user_id")
+        if u:
+            counts[u] = counts.get(u, 0) + 1
+    return {"users": [{"user_id": u,
+                       "fields": sorted(st.get_truth(u)),
+                       "pairs": counts.get(u, 0) // 2} for u in users],
+            "backend": st.backend_note}
+
+
+@app.post("/api/sim/demo")
+def sim_demo():
+    """Self-contained demo: 2 users x 3 masked steps, no client needed."""
+    from iforensics.sim import queries as sim_q
+    from iforensics.sim import sensitive as sim_sens
+    from iforensics.sim import state as sim_state
+    import random
+    st = sim_state.STATE
+    st.reset()
+    demo = [("demo-health", "ssn", "What is my blood pressure trend?"),
+            ("demo-code", "api_key", "How do I connect to the API?")]
+    for user_id, field, base in demo:
+        rng = random.Random(hash(user_id) & 0xFFFFFFFF)
+        value = sim_sens.generate(field, seed=abs(hash(user_id)) % 100000)["value"]
+        st.register_truth(user_id, {field: value})
+        for i, qp in enumerate(sim_q.build_progressive(base, value, steps=3)):
+            with st.lock:
+                st.gateway.process_query(
+                    qp["prompt"], {"user_id": user_id, "scenario": "demo",
+                                   "field": field}, mask=qp["mask"], step=i)
+    return {"ok": True, "users": [u for u, _, _ in demo],
+            "backend": st.backend_note}
 
 
 @app.get("/api/findings")

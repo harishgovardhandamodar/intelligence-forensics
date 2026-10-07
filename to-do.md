@@ -209,5 +209,15 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 - [x] P7.36 Ledger task-level filtering (client-side task/actor/action filter)
 - [x] P7.37 Alert webhooks: `IF_ALERT_WEBHOOK` POST on every raised alert,
       delivery status in tap `status()`
-- [ ] P7.31 Surface: `/api/swarm/ledger` + Ledger tab, `ledger verify` CLI,
+- [x] P7.31 Surface: `/api/swarm/ledger` + Ledger tab, `ledger verify` CLI,
       human-approval entries for prune/export
+
+### P8 — embedding-reconstruction simulation (server in-app, sim/ client)
+- [x] P8.1 Engine `iforensics/sim/`: synthetic sensitive data, progressive
+      query generator, hash-embedding backend (+optional sentence-transformers),
+      numpy vector store (+optional Milvus), mock gateway, reconstruction
+      attacks (progressive, near-dup, membership), accuracy analysis
+- [x] P8.2 Server: `/api/sim/*` (ingest/run-attack/report/reset) + Sim tab
+      with progression chart
+- [x] P8.3 Client `sim/`: 4 scenarios, runner CLI, settings.yaml (stdlib only)
+- [x] P8.4 Compose `milvus` profile, docs, tests, verify

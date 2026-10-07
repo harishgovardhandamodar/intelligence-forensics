@@ -83,7 +83,8 @@ function loadApp() {
   const src = fs.readFileSync(path.join(__dirname, "app.js"), "utf8")
     + "\n;globalThis.__t = {escH, escA, fmtN, spark, trowState, safeHref,"
     + " renderMarkdown, drawTopo, drawKnowledge, renderFindings, renderChain,"
-    + " loadLedger, filterLedger, scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme};\n";
+    + " loadLedger, filterLedger, drawSimCurve, loadSimUsers, loadSimReport,"
+    + " scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme};\n";
   vm.createContext(sandbox);
   vm.runInContext(src, sandbox, { filename: "app.js" });
   return { t: sandbox.__t, el };
@@ -247,4 +248,17 @@ test("filterLedger matches task/actor/action, empty query passes through", () =>
   assert.deepEqual(t.filterLedger(es, "PROFILER").map((e) => e.seq), [2]);
   assert.deepEqual(t.filterLedger(es, "run.start").map((e) => e.seq), [1]);
   assert.deepEqual(t.filterLedger(es, "zzz"), []);
+});
+
+test("drawSimCurve renders one polyline per field", () => {
+  t.drawSimCurve({});
+  assert.match(el("sim-curve").textContent, /no curve data/);
+  t.drawSimCurve({
+    ssn: [{ queries: 1, accuracy: 0.444 }, { queries: 2, accuracy: 1.0 }],
+    bp: [{ queries: 1, accuracy: 0.5 }],
+  });
+  const html = el("sim-curve").innerHTML;
+  assert.match(html, /<svg/);
+  assert.equal((html.match(/<polyline/g) || []).length, 2);
+  assert.match(html, /ssn/);
 });

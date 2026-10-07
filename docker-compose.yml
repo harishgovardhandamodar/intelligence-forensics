@@ -108,3 +108,50 @@ services:
       - ./evidence/pcaps:/pcaps:rw
     command: ["tcpdump", "-i", "any", "-w", "/pcaps/fox-%Y%m%d-%H%M.pcap", "-G", "600", "tcp port 8210 or tcp port 11434"]
     restart: "no"
+
+  # Optional Milvus vector DB for the reconstruction sim (P8).
+  # Off by default: docker compose --profile milvus up -d.
+  # The sim engine uses it only when MILVUS_URL is set AND reachable;
+  # otherwise it degrades to the in-process numpy store (same API).
+  milvus-etcd:
+    profiles: [milvus]
+    image: quay.io/coreos/etcd:v3.5.5
+    environment:
+      - ETCD_AUTO_COMPACTION_MODE=revision
+      - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+      - ETCD_SNAPSHOT_COUNT=50000
+    volumes:
+      - milvus-etcd:/etcd
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+
+  milvus-minio:
+    profiles: [milvus]
+    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    volumes:
+      - milvus-minio:/minio_data
+    command: minio server /minio_data --console-address ":9001"
+
+  milvus-standalone:
+    profiles: [milvus]
+    image: milvusdb/milvus:v2.3.0
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: milvus-etcd:2379
+      MINIO_ADDRESS: milvus-minio:9000
+    volumes:
+      - milvus-data:/var/lib/milvus
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    depends_on:
+      - milvus-etcd
+      - milvus-minio
+
+volumes:
+  milvus-etcd:
+  milvus-minio:
+  milvus-data:

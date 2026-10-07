@@ -1,0 +1,99 @@
+"""Reconstruction attacks (P8.1): what an embedding log gives away.
+
+Three textbook attacks, all deterministic and explainable:
+
+- progressive: cluster one user's near-duplicate texts by cosine, then
+  position-wise merge their unmasked characters into the full secret.
+- near_duplicates: cluster the whole store above a similarity threshold.
+- membership: max cosine between a candidate value's embedding and the
+  store — high means "this value was very likely logged".
+
+Confidence is honest arithmetic (fraction of secret characters recovered,
+cluster cohesion), not a model verdict.
+"""
+from __future__ import annotations
+
+from .embeddings import cosine
+
+
+def _masked_positions(text: str, mask_chars: str = "*") -> set[int]:
+    return {i for i, ch in enumerate(text) if ch in mask_chars}
+
+
+def assemble_fragments(fragments: list[str], mask_chars: str = "*") -> dict:
+    """Position-wise merge: every unmasked char wins its slot.
+
+    Returns {assembled, coverage} where coverage is the fraction of
+    alphanumeric slots filled by at least one fragment.
+    """
+    slots: dict[int, str] = {}
+    for frag in fragments:
+        for i, ch in enumerate(frag):
+            if ch not in mask_chars and ch.strip():
+                slots.setdefault(i, ch)
+    if not slots:
+        return {"assembled": "", "coverage": 0.0}
+    width = max(slots) + 1
+    out = "".join(slots.get(i, mask_chars[0]) for i in range(width))
+    secret_slots = [i for i in range(width)
+                    if any(f[i].isalnum() for f in fragments if i < len(f))]
+    filled = sum(1 for i in secret_slots if slots.get(i, mask_chars[0]) != mask_chars[0])
+    coverage = round(filled / max(1, len(secret_slots)), 3)
+    return {"assembled": out, "coverage": coverage}
+
+
+def cluster(texts: list[str], vectors: list[list[float]],
+            threshold: float = 0.7) -> list[list[int]]:
+    """Greedy single-linkage cosine clustering (deterministic seed order).
+
+    A vector joins the cluster holding its *nearest* member above threshold,
+    so chains of overlapping masks (A~B, B~C) stay together even when the
+    endpoints (A~C) drift apart — exactly the progressive-disclosure shape.
+    """
+    clusters: list[list[int]] = []
+    for i, vec in enumerate(vectors):
+        best, best_sim = -1, threshold
+        for c, members in enumerate(clusters):
+            sim = max(cosine(vec, vectors[m]) for m in members)
+            if sim >= best_sim:
+                best, best_sim = c, sim
+        if best >= 0:
+            clusters[best].append(i)
+        else:
+            clusters.append([i])
+    return clusters
+
+
+def progressive_attack(texts: list[str], vectors: list[list[float]],
+                       threshold: float = 0.6) -> dict:
+    """Cluster one user's texts, assemble each cluster's fragments."""
+    clusters = cluster(texts, vectors, threshold)
+    cohesion = []
+    results = []
+    for c in clusters:
+        frags = [texts[i] for i in c]
+        asm = assemble_fragments(frags)
+        if len(c) > 1:
+            sims = [cosine(vectors[c[i]], vectors[c[j]])
+                    for i in range(len(c)) for j in range(i + 1, len(c))]
+            cohesion.append(round(sum(sims) / len(sims), 3))
+        results.append({"size": len(c), "assembled": asm["assembled"],
+                        "coverage": asm["coverage"]})
+    return {"n_clusters": len(clusters),
+            "mean_cohesion": round(sum(cohesion) / len(cohesion), 3) if cohesion else 0.0,
+            "clusters": results}
+
+
+def membership_score(candidate_vector: list[float],
+                     store_vectors: list[list[float]],
+                     threshold: float = 0.5) -> dict:
+    """Max cosine of a candidate value against everything stored.
+
+    Calibrated on the hash backend: a logged secret scores ~0.56-0.74,
+    unseen values ~0.0-0.05 — 0.5 separates them with margin.
+    """
+    if not store_vectors:
+        return {"max_score": 0.0, "likely_member": False}
+    best = max(cosine(candidate_vector, v) for v in store_vectors)
+    best = round(best, 4)
+    return {"max_score": best, "likely_member": best >= threshold}

@@ -1,0 +1,289 @@
+{
+ "run_id": "20261007_174732",
+ "model": "qwen3.8:27b",
+ "quick": true,
+ "services": [
+  "agentic-knowledge-mapper",
+  "quai-radar",
+  "hive-research-gpu"
+ ],
+ "agents": {
+  "scout": {
+   "agent": "scout",
+   "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage suggests complex orchestration or potential resource exhaustion.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage, indicating heavy steady-state load.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed model usage including embedding and small LLMs, typical of research pipelines.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) but non-trivial token count relative to requests, suggesting longer context windows or specific use cases.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Unclassified workload with diverse model usage including 'unknown' model, potentially indicating misconfiguration or probing.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal volume (6 reqs), likely automated health checks or low-priority tests.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request with zero tokens, likely a connectivity check or minimal probe.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request with zero tokens, likely a cache warmup or initialization step.\"\n    }\n  ]\n}",
+   "prompt_tokens": 572,
+   "completion_tokens": 439,
+   "ms": 8864.3,
+   "model": "qwen3.8:27b",
+   "parsed": {
+    "rankings": [
+     {
+      "rank": 1,
+      "service": "agentic-knowledge-mapper",
+      "reason": "Highest volume (1.2k reqs, 2.2M toks) and multi-model usage suggests complex orchestration or potential resource exhaustion."
+     },
+     {
+      "rank": 2,
+      "service": "quai-radar",
+      "reason": "Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage, indicating heavy steady-state load."
+     },
+     {
+      "rank": 3,
+      "service": "hive-research-gpu",
+      "reason": "Moderate volume (277 reqs) with mixed model usage including embedding and small LLMs, typical of research pipelines."
+     },
+     {
+      "rank": 4,
+      "service": "kid-learning-lab",
+      "reason": "Low volume (37 reqs) but non-trivial token count relative to requests, suggesting longer context windows or specific use cases."
+     },
+     {
+      "rank": 5,
+      "service": "gateway-unknown",
+      "reason": "Unclassified workload with diverse model usage including 'unknown' model, potentially indicating misconfiguration or probing."
+     },
+     {
+      "rank": 6,
+      "service": "live-selftest",
+      "reason": "Minimal volume (6 reqs), likely automated health checks or low-priority tests."
+     },
+     {
+      "rank": 7,
+      "service": "probe",
+      "reason": "Single request with zero tokens, likely a connectivity check or minimal probe."
+     },
+     {
+      "rank": 8,
+      "service": "warmup",
+      "reason": "Single request with zero tokens, likely a cache warmup or initialization step."
+     }
+    ]
+   },
+   "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage suggests complex orchestration or potential resource exhaustion.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage, indicating heavy steady-state load.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed model usage including embedding and small LLMs, typical of research pipelines.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) but non-trivial token count relative to requests, suggesting longer context windows or specific use cases.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Unclassified workload with diverse model usage including 'unknown' model, potentially indicating misconfiguration or probing.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal volume (6 reqs), likely automated health checks or low-priority tests.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request with zero tokens, likely a connectivity check or minimal probe.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request with zero tokens, likely a cache warmup or initialization step.\"\n    }\n  ]\n}"
+  },
+  "profilers": {
+   "agentic-knowledge-mapper": {
+    "agent": "profiler",
+    "service": "agentic-knowledge-mapper",
+    "injection_risk": 0,
+    "content": "{\n  \"project\": \"Agentic Knowledge Mapper: A multi-agent risk assessment and mapping service for LLM-based systems, specifically focusing on multi-agent debate architectures and their failure modes.\",\n  \"what_building\": \"The service constructs a risk register by evaluating the safety, robustness, and operational risks of multi-agent debate systems. It maps potential attack vectors, such as prompt injection and collusion, to specific exposure tiers and control measures.\",\n  \"pipeline\": [\n    \"make_brief\",\n    \"score_product_risk\",\n    \"score_model_risk\",\n    \"map_attacks(CVE)\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"brief\",\n    \"product\",\n    \"model_desc\",\n    \"exposure tier\",\n    \"subject profile\",\n    \"declared controls\"\n  ],\n  \"outputs\": [\n    \"risk register\",\n    \"exposure tier (0-100)\",\n    \"knowledge graph\",\n    \"misuse potential assessment\",\n    \"residual risk score\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\",\n    \"Title: Risks and failure modes of multi-agent debate systems\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"heuristic pipeline: make_brief -> score_product_risk -> score_model_risk -> map_attacks(CVE) -> emit_register\"\n  ]\n}",
+    "prompt_tokens": 797,
+    "completion_tokens": 378,
+    "ms": 4155.7,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "Agentic Knowledge Mapper: A multi-agent risk assessment and mapping service for LLM-based systems, specifically focusing on multi-agent debate architectures and their failure modes.",
+     "what_building": "The service constructs a risk register by evaluating the safety, robustness, and operational risks of multi-agent debate systems. It maps potential attack vectors, such as prompt injection and collusion, to specific exposure tiers and control measures.",
+     "pipeline": [
+      "make_brief",
+      "score_product_risk",
+      "score_model_risk",
+      "map_attacks(CVE)",
+      "emit_register"
+     ],
+     "inputs": [
+      "brief",
+      "product",
+      "model_desc",
+      "exposure tier",
+      "subject profile",
+      "declared controls"
+     ],
+     "outputs": [
+      "risk register",
+      "exposure tier (0-100)",
+      "knowledge graph",
+      "misuse potential assessment",
+      "residual risk score"
+     ],
+     "confidence": 0.92,
+     "evidence_quotes": [
+      "heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register",
+      "Title: Risks and failure modes of multi-agent debate systems",
+      "schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']",
+      "heuristic pipeline: make_brief -> score_product_risk -> score_model_risk -> map_attacks(CVE) -> emit_register"
+     ]
+    },
+    "raw": "{\n  \"project\": \"Agentic Knowledge Mapper: A multi-agent risk assessment and mapping service for LLM-based systems, specifically focusing on multi-agent debate architectures and their failure modes.\",\n  \"what_building\": \"The service constructs a risk register by evaluating the safety, robustness, and operational risks of multi-agent debate systems. It maps potential attack vectors, such as prompt injection and collusion, to specific exposure tiers and control measures.\",\n  \"pipeline\": [\n    \"make_brief\",\n    \"score_product_risk\",\n    \"score_model_risk\",\n    \"map_attacks(CVE)\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"brief\",\n    \"product\",\n    \"model_desc\",\n    \"exposure tier\",\n    \"subject profile\",\n    \"declared controls\"\n  ],\n  \"outputs\": [\n    \"risk register\",\n    \"exposure tier (0-100)\",\n    \"knowledge graph\",\n    \"misuse potential assessment\",\n    \"residual risk score\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\",\n    \"Title: Risks and failure modes of multi-agent debate systems\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"heuristic pipeline: make_brief -> score_product_risk -> score_model_risk -> map_attacks(CVE) -> emit_register\"\n  ]\n}"
+   },
+   "hive-research-gpu": {
+    "agent": "profiler",
+    "service": "hive-research-gpu",
+    "injection_risk": 0,
+    "content": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A research paper summarization and surrogate generation service that processes academic papers, particularly in multi-agent systems and reinforcement learning. It extracts key sections like abstracts and experimental setups to create condensed summaries or 'surrogates' for rapid analysis.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"abstract\",\n    \"experimental setup\",\n    \"figures\",\n    \"research questions\"\n  ],\n  \"outputs\": [\n    \"section-wise summaries\",\n    \"paper surrogates\",\n    \"knowledge graph hints\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"heuristic guess: paper-surrogate / research-paper summarizer\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\",\n    \"templates: (x5) Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent\",\n    \"query_types: {'chat': 228, 'research': 27, 'context-heavy': 17, 'chart/price': 5}\"\n  ]\n}",
+    "prompt_tokens": 930,
+    "completion_tokens": 307,
+    "ms": 7476.2,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "hive-research-gpu",
+     "what_building": "A research paper summarization and surrogate generation service that processes academic papers, particularly in multi-agent systems and reinforcement learning. It extracts key sections like abstracts and experimental setups to create condensed summaries or 'surrogates' for rapid analysis.",
+     "pipeline": [
+      "extract_sections",
+      "summarize_section",
+      "summarize_figures",
+      "build_surrogate"
+     ],
+     "inputs": [
+      "paper_title",
+      "abstract",
+      "experimental setup",
+      "figures",
+      "research questions"
+     ],
+     "outputs": [
+      "section-wise summaries",
+      "paper surrogates",
+      "knowledge graph hints"
+     ],
+     "confidence": 0.85,
+     "evidence_quotes": [
+      "heuristic guess: paper-surrogate / research-paper summarizer",
+      "schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']",
+      "templates: (x5) Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent",
+      "query_types: {'chat': 228, 'research': 27, 'context-heavy': 17, 'chart/price': 5}"
+     ]
+    },
+    "raw": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A research paper summarization and surrogate generation service that processes academic papers, particularly in multi-agent systems and reinforcement learning. It extracts key sections like abstracts and experimental setups to create condensed summaries or 'surrogates' for rapid analysis.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"abstract\",\n    \"experimental setup\",\n    \"figures\",\n    \"research questions\"\n  ],\n  \"outputs\": [\n    \"section-wise summaries\",\n    \"paper surrogates\",\n    \"knowledge graph hints\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"heuristic guess: paper-surrogate / research-paper summarizer\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\",\n    \"templates: (x5) Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent\",\n    \"query_types: {'chat': 228, 'research': 27, 'context-heavy': 17, 'chart/price': 5}\"\n  ]\n}"
+   },
+   "quai-radar": {
+    "agent": "profiler",
+    "service": "quai-radar",
+    "injection_risk": 0,
+    "content": "{\n  \"project\": \"Quai-RADAR\",\n  \"what_building\": \"An intelligence dashboard for the Quai Network that monitors market dynamics and research landscapes. It uses LLMs to extract structured knowledge graph facts from external content and generate daily research briefs.\",\n  \"pipeline\": [\n    \"ingest_feed\",\n    \"build_kg_prompt\",\n    \"llm.extract\",\n    \"parse_facts\",\n    \"upsert_graph\",\n    \"generate_brief\"\n  ],\n  \"inputs\": [\n    \"title\",\n    \"content\",\n    \"live_market_data\",\n    \"soap_dynamics\"\n  ],\n  \"outputs\": [\n    \"structured_facts\",\n    \"knowledge_graph_nodes\",\n    \"daily_research_brief\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.\",\n    \"LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807\",\n    \"You are Fox writing the daily research brief for the Quai Network intelligence dashboard.\",\n    \"schema hints: ['brief', 'digest', 'implications for quai', 'knowledge graph', 'schema', 'structured facts']\"\n  ]\n}",
+    "prompt_tokens": 1010,
+    "completion_tokens": 324,
+    "ms": 11062.8,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "Quai-RADAR",
+     "what_building": "An intelligence dashboard for the Quai Network that monitors market dynamics and research landscapes. It uses LLMs to extract structured knowledge graph facts from external content and generate daily research briefs.",
+     "pipeline": [
+      "ingest_feed",
+      "build_kg_prompt",
+      "llm.extract",
+      "parse_facts",
+      "upsert_graph",
+      "generate_brief"
+     ],
+     "inputs": [
+      "title",
+      "content",
+      "live_market_data",
+      "soap_dynamics"
+     ],
+     "outputs": [
+      "structured_facts",
+      "knowledge_graph_nodes",
+      "daily_research_brief"
+     ],
+     "confidence": 0.95,
+     "evidence_quotes": [
+      "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.",
+      "LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807",
+      "You are Fox writing the daily research brief for the Quai Network intelligence dashboard.",
+      "schema hints: ['brief', 'digest', 'implications for quai', 'knowledge graph', 'schema', 'structured facts']"
+     ]
+    },
+    "raw": "{\n  \"project\": \"Quai-RADAR\",\n  \"what_building\": \"An intelligence dashboard for the Quai Network that monitors market dynamics and research landscapes. It uses LLMs to extract structured knowledge graph facts from external content and generate daily research briefs.\",\n  \"pipeline\": [\n    \"ingest_feed\",\n    \"build_kg_prompt\",\n    \"llm.extract\",\n    \"parse_facts\",\n    \"upsert_graph\",\n    \"generate_brief\"\n  ],\n  \"inputs\": [\n    \"title\",\n    \"content\",\n    \"live_market_data\",\n    \"soap_dynamics\"\n  ],\n  \"outputs\": [\n    \"structured_facts\",\n    \"knowledge_graph_nodes\",\n    \"daily_research_brief\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.\",\n    \"LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807\",\n    \"You are Fox writing the daily research brief for the Quai Network intelligence dashboard.\",\n    \"schema hints: ['brief', 'digest', 'implications for quai', 'knowledge graph', 'schema', 'structured facts']\"\n  ]\n}"
+   }
+  },
+  "critics": {},
+  "reporter": {
+   "agent": "reporter",
+   "content": "## Executive Brief: Mesh Service Analysis\n\n**Node Capabilities**\n*   **agentic-knowledge-mapper:** Constructs risk registers for LLM multi-agent debate architectures. Maps attack vectors (prompt injection, collusion) to exposure tiers and control measures.\n*   **hive-research-gpu:** Processes academic papers in multi-agent systems and RL. Generates condensed \"surrogates\" and knowledge graph hints from abstracts and experimental setups.\n*   **quai-radar:** Monitors Quai Network market dynamics. Extracts structured facts from external feeds to build knowledge graph nodes and daily research briefs.\n\n**Shared Topics**\nAll three nodes converge on **multi-agent system analysis** and **knowledge graph construction**. The mapper defines the risk framework, the GPU node provides the academic substrate, and the radar ingests live market data to populate the graph.\n\n## Security Posture\n**Risk Rating:** **HIGH**\n**Top Issues & Remediation:**\n1.  **High-Severity Findings (154):** Immediate triage required for critical vulnerabilities. *Remediation:* Patch high-severity CVEs identified in the `map_attacks` pipeline.\n2.  **Medium-Severity Backlog (146):** Significant exposure surface. *Remediation:* Prioritize remediation of medium-risk items to reduce attack surface.\n3.  **Untracked Evidence (0):** Lack of forensic linkage. *Remediation:* Implement evidence tracking to correlate findings with specific service instances.\n\n**Reconstruction Target**\nThe **agentic-knowledge-mapper** risk register is the single most valuable target. It synthesizes the academic insights from `hive-research-gpu` and market context from `quai-radar` into a structured control framework, providing the highest leverage for understanding the mesh\u2019s operational security and failure modes.",
+   "prompt_tokens": 698,
+   "completion_tokens": 380,
+   "ms": 5175.4,
+   "model": "qwen3.8:27b"
+  }
+ },
+ "errors": [],
+ "security": {
+  "risk_rating": "high",
+  "totals": {
+   "low": 1,
+   "medium": 146,
+   "high": 154
+  },
+  "n_findings": 301
+ },
+ "elapsed_s": 25.2,
+ "heuristic_investigation": {
+  "agentic-knowledge-mapper": {
+   "project": "multi-agent debate risk scorer",
+   "requests": 1226,
+   "evidence": {
+    "templates": [
+     "Brief: {{brief}}",
+     "Product: {{product}}\nUse case: \nExposure tier: confidential_data\nSubject profile: no model-specific signals; assess as described\nDeclared controls already in place: none\nEvidence snippets: none\n\nControl catalogue:\n- C01 Classification gate before AI (efficacy 0.7)\n- C02 Schema-only prompt (no raw values) (efficacy 0.7)\n- C03 Client-side DLP redaction (efficacy 0.65)\n- C04 Zero-retention / no-train",
+     "Brief: {{brief}}\nDescription: x",
+     "Model: {{model_desc}}\nUse: what adversarial scenarios could an attacker engineer with this model for credit scoring of tabular records\nProfile: foundation model over tabular records no conversational surface\nInterface: non_conversational\nData: tabular records\nFocus: tabular, models, adversarial\nAttacker capabilities:\n- C01: batch scoring oracle (dim capability_abuse, strength 4) \u2014 tabular scoring "
+    ],
+    "instructions": [
+     "Title: Risks and failure modes of multi-agent debate systems",
+     "Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents, collusion or echo-chamber dynamics, prompt-injection amplification across agents, resource/compute blow-up, adversarial manipulation of the judge, hallucination prop",
+     "Product: multi-agent debate systems (safety, robustness, and operational risks)",
+     "Model: multi-agent debate methods (LLM-based and beyond)",
+     "Model: multi-agent debate methods (LLM-based and beyond) (model)",
+     "Title: Multi-agent debate methods: architectures, variants, and empirical results"
+    ],
+    "sample_heads": [
+     "Brief: Risks and failure modes of multi-agent debate systems | multi-agent risk, sycophancy, collusion, prompt injection, judge manipulation, hallucination propagation, compute cost, oversight, safety alignment, failure modes | Enumerate documented and hypothesized risks: sycophancy and conformity p",
+     "Brief: Risks and failure modes of multi-agent debate systems | multi-agent risk, sycophancy, collusion, prompt injection, judge manipulation, hallucination propagation, compute cost, oversight, safety alignment, failure modes | Enumerate documented and hypothesized risks: sycophancy and conformity p",
+     "Brief: Risks and failure modes of multi-agent debate systems | multi-agent risk, sycophancy, collusion, prompt injection, judge manipulation, hallucination propagation, compute cost, oversight, safety alignment, failure modes | Enumerate documented and hypothesized risks: sycophancy and conformity p"
+    ]
+   }
+  },
+  "quai-radar": {
+   "project": "blockchain-news knowledge-graph extractor",
+   "requests": 1151,
+   "evidence": {
+    "templates": [
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts.\n\nTITLE: {{title}}\n\nCONTENT: {{content}}",
+     "PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard):\n\nLIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807 (cross $1.1050992885383195) \u00b7 WQI/QUAI rate 0.009128179094877679 \u00b7 data age 1.7454500198364258s\nSOAP DYNAMICS (31d): mined 43328323.6025 QUAI \u00b7 burned 14000000",
+     "You are Fox writing the daily research brief for the Quai Network intelligence dashboard. Based ONLY on the digest below (what's new in the research landscape, news, market and the swarm-protocol regime/gates), write a concise brief with:\n## What's new\n## Implications for QUAI/QI\n## What to watch\nBe",
+     "PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard):\n\nLIVE MARKET: QUAI $0.009054467008212618 \u00b7 QI $1.132035890098335 (cross $1.056700316653958) \u00b7 WQI/QUAI rate 0.008568623350926582 \u00b7 data age 1.5975353717803955s\nSOAP DYNAMICS (31d): mined 35699535.7764 QUAI \u00b7 burned 22000000.1"
+    ],
+    "instructions": [
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check.",
+     "TITLE: Fundamental CRB-Rate Tradeoff of Rydberg Atomic Receivers fo",
+     "TITLE: Keeping the interaction structure explicit: comment on ''Gra",
+     "TITLE: Disentangling Paradigm, Identifier, and Decoding in Generati",
+     "TITLE: RIS-Assisted Reliability Maximization for URLLC in Upper Mid",
+     "TITLE: Rapid Fredholm stabilization of the Kuramoto--Sivashinsky eq"
+    ],
+    "sample_heads": [
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check.",
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts. |  | TITLE: Fundamental CRB-Rate Tradeoff of Rydberg Atomic Receivers fo |  | CONTENT: | I",
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts. |  | TITLE: Keeping the interaction structure explicit: comment on ''Gra |  | CONTENT: | P"
+    ]
+   }
+  },
+  "hive-research-gpu": {
+   "project": "paper-surrogate / research-paper summarizer",
+   "requests": 277,
+   "evidence": {
+    "templates": [
+     "Title: {{paper_title}}\n\n## abstract\nAOAD-MAT: Transformer-based Multi-Agent\nDeep Reinforcement Learning Model considering\nAgents\u2019 Order of Action Decisions \u22c6\nShota Takayama and Katsuhide Fujita\nGraduate School of Engineering, Tokyo University of Agriculture and Technology\nAbstract. Multi-agent reinforcement learning focuses on training the\nbehaviors of multiple learning agents that coexist in",
+     "Title: {{paper_title}}\n\n## abstract\nFrom Model-Based Screening to Data-Driven\nSurrogates: A Multi-Stage Workflow for\nExploring Stochastic Agent-Based Models\nPaul Saves1[0000\u22120001\u22125889\u22122302], Matthieu Mastio1[0009\u22120002\u22123486\u22123739], Nicolas\nVerstaevel1[0000\u22120002\u22127879\u22126681], and Benoit Gaudou1[0000\u22120002\u22129005\u22123004]\nIRIT, Universit\u00e9 Toulouse Capitole, Toulouse, France. {first.last}@irit.fr\nAbstract",
+     "Title: {{paper_title}}\n\n## abstract\nAugmenting the action space with conventions to\nimprove multi-agent cooperation in Hanabi\nF. Bredell1*, H. A. Engelbrecht1 and J. C. Schoeman1\n1*Electrical and Electronic Engineering, University of Stellenbosch,\nWestern Cape, South Africa.\n*Corresponding author(s). E-mail(s): 207***c.za;\nContributing authors: heb***.za; jcs***c.za;\nAbstract\nThe card game Hanabi",
+     "Title: {{paper_title}}\n\n## abstract\nSWE-Debate: Competitive Multi-Agent Debate for Software Issue\nResolution\nHan Li\u2020\nShanghai Jiao Tong University\nChina\nlih***u.cn\nYuling Shi\u2020\nShanghai Jiao Tong University\nChina\nyul***u.cn\nShaoxin Lin\nHuawei\nChina\n212***u.cn\nXiaodong Gu\u2021\nShanghai Jiao Tong University\nChina\nxia***u.cn\nHeng Lian\nXidian University\nChina\nlia***.com\nXin Wang\nHuawei"
+    ],
+    "instructions": [
+     "Title: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models",
+     "Title: SWE-Debate: Competitive Multi-Agent Debate for Software Issue Resolution",
+     "Title: AOAD-MAT: Transformer-based multi-agent deep reinforcement learning model considering agents' order of action decisions",
+     "Title: A Review of Cooperative Multi-Agent Deep Reinforcement Learn",
+     "Title: Augmenting the action space with conventions to improve multi-agent cooperation in Hanabi",
+     "Title: A Methodology to Engineer and Validate Dynamic Multi-level Multi-agent Based Simulations"
+    ],
+    "sample_heads": [
+     "Title: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models |  | ## abstract | From Model-Based Screening to Data-Driven | Surrogates: A Multi-Stage Workflow for | Exploring Stochastic Agent-Based Models | Paul Saves1[0000\u22120001\u22125889\u22122302], Matt",
+     "Title: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models |  | ## abstract | From Model-Based Screening to Data-Driven | Surrogates: A Multi-Stage Workflow for | Exploring Stochastic Agent-Based Models | Paul Saves1[0000\u22120001\u22125889\u22122302], Matt",
+     "Title: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models |  | ## abstract | From Model-Based Screening to Data-Driven | Surrogates: A Multi-Stage Workflow for | Exploring Stochastic Agent-Based Models | Paul Saves1[0000\u22120001\u22125889\u22122302], Matt"
+    ]
+   }
+  }
+ }
+}

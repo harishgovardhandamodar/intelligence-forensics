@@ -10,5 +10,9 @@
  "20261007_193228": {
   "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/20261007_193228.jsonl",
   "updated_at": 1791394365.6561525
+ },
+ "20261007_174732": {
+  "path": "/app/evidence/ledger/20261007_174732.jsonl",
+  "updated_at": 1791395277.6613562
  }
 }

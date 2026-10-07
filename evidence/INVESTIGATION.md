@@ -1,6 +1,6 @@
 # Intelligence Forensics — what the mesh is building
 
-Requests analyzed: **2689** across **7** services.
+Requests analyzed: **2720** across **8** services.
 
 Mesh peers visible: **2**.
 - `harishs-macbook-pro-1` online=True hw=mlx llm_1h=0 services:[]
@@ -9,43 +9,43 @@ Mesh peers visible: **2**.
 ## agentic-knowledge-mapper
 Inferred build: **multi-agent debate risk scorer**
 brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register
-- requests: 1207, tokens: 2116937 (avg 1753.9/req), cadence ~828.0s
-- window: 2026-09-24T08:05:15 -> 2026-10-05T21:28:43
-- models: `{'qwen3.8:27b': 967, 'qwen3.8:latest': 130, 'nomic-embed-text:latest': 109, 'gemma4:31b': 1}`
-- query types: `{'context-heavy': 302, 'research': 217, 'chat': 214, 'chart/price': 210, 'trade': 142, 'supply': 82, 'mining': 37, 'qa': 2, '(none)': 1}` / requestors: `{'user': 1207}`
+- requests: 1226, tokens: 2200581 (avg 1794.9/req), cadence ~932.9s
+- window: 2026-09-24T08:05:15 -> 2026-10-07T13:32:07
+- models: `{'qwen3.8:27b': 986, 'qwen3.8:latest': 130, 'nomic-embed-text:latest': 109, 'gemma4:31b': 1}`
+- query types: `{'context-heavy': 302, 'research': 217, 'chat': 214, 'chart/price': 210, 'trade': 161, 'supply': 82, 'mining': 37, 'qa': 2, '(none)': 1}` / requestors: `{'user': 1226}`
 - pipeline: `make_brief -> score_product_risk -> score_model_risk -> map_attacks(CVE) -> emit_register`
 - schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']
 - recovered instructions:
+  - Title: Risks and failure modes of multi-agent debate systems
+  - Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents, collusion or echo-chamber dynamics, prompt-injection amplification across agents, resource/compute blow-up, adversarial
   - Product: multi-agent debate systems (safety, robustness, and operational risks)
   - Model: multi-agent debate methods (LLM-based and beyond)
   - Model: multi-agent debate methods (LLM-based and beyond) (model)
-  - Title: Risks and failure modes of multi-agent debate systems
-  - Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents, collusion or echo-chamber dynamics, prompt-injection amplification across agents, resource/compute blow-up, adversarial
   - Title: Multi-agent debate methods: architectures, variants, and empirical results
 - prompt templates observed:
-  - (x333) Model: {{model_desc}}
-  - (x263) Brief: {{brief}}
-  - (x125) Product: {{product}}
-  - (x43) Question: what level of memorization by these network is plausible, what would be the closest reconstruction plausible ? is it possible to use this synthetic data by a party who has major share in data trained to reconst
+  - (x128) Brief: {{brief}}
+  - (x125) Product: {{product}} | Use case:  | Exposure tier: confidential_data | Subject profile: no model-specific signals; assess as described | Declared controls already in place: none | Evidence snippets: none |  | Control catalogue: | - C01 
+  - (x77) Brief: {{brief}} | Description: x
+  - (x74) Model: {{model_desc}} | Use: what adversarial scenarios could an attacker engineer with this model for credit scoring of tabular records | Profile: foundation model over tabular records no conversational surface | Interface: n
 
 ## quai-radar
 Inferred build: **blockchain-news knowledge-graph extractor**
 ingests news items (title+content) -> LLM extracts structured KG facts -> writes graph nodes/edges
-- requests: 1145, tokens: 1797921 (avg 1570.2/req), cadence ~1954.2s
-- window: 2026-09-11T14:55:21 -> 2026-10-07T11:54:48
-- models: `{'qwen3.8:latest': 1145}`
-- query types: `{'(none)': 821, 'chart/price': 322, 'research': 2}` / requestors: `{'user': 1145}`
+- requests: 1151, tokens: 1803855 (avg 1567.2/req), cadence ~1948.8s
+- window: 2026-09-11T14:55:21 -> 2026-10-07T13:28:06
+- models: `{'qwen3.8:latest': 1151}`
+- query types: `{'(none)': 821, 'chart/price': 328, 'research': 2}` / requestors: `{'user': 1151}`
 - pipeline: `ingest_feed -> build_kg_prompt(title, content) -> llm.extract(model) -> parse_facts -> upsert_graph`
 - schema hints: ['brief', 'digest', 'implications for quai', 'knowledge graph', 'schema', 'structured facts', 'tutor', 'what to watch']
 - recovered instructions:
-  - You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back — produce the actual facts.
-  - TITLE: ‘Old money’ has stronger Bitcoin ‘diamond hands,’ says BingX
-  - TITLE: Wall Street wealth creation model is unsustainable for most
-  - TITLE: Trump-backed WLFI plans USD1 payments for online businesses
-  - TITLE: Crypto card access doesn’t match global demand, Tangem says
-  - TITLE: Finland orders halt to work on two Google data centres
+  - You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check.
+  - TITLE: Fundamental CRB-Rate Tradeoff of Rydberg Atomic Receivers fo
+  - TITLE: Keeping the interaction structure explicit: comment on ''Gra
+  - TITLE: Disentangling Paradigm, Identifier, and Decoding in Generati
+  - TITLE: RIS-Assisted Reliability Maximization for URLLC in Upper Mid
+  - TITLE: Rapid Fredholm stabilization of the Kuramoto--Sivashinsky eq
 - prompt templates observed:
-  - (x1061) You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back — produce the actual facts. | 
+  - (x1066) You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back — produce the actual facts. | 
   - (x24) PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard): |  | LIVE MARKET: QUAI $0.010087544223399685 · QI $0.7875559257826807 (cross $1.1050992885383195) · WQI/QUAI rate 0.009128179094877679 · data age 1.7
   - (x6) You are Fox writing the daily research brief for the Quai Network intelligence dashboard. Based ONLY on the digest below (what's new in the research landscape, news, market and the swarm-protocol regime/gates), write a c
   - (x4) PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard): |  | LIVE MARKET: QUAI $0.009054467008212618 · QI $1.132035890098335 (cross $1.056700316653958) · WQI/QUAI rate 0.008568623350926582 · data age 1.597
@@ -67,10 +67,10 @@ paper sections (abstract/figures/experiments) -> section-wise summarization prom
   - Title: Augmenting the action space with conventions to improve multi-agent cooperation in Hanabi
   - Title: A Methodology to Engineer and Validate Dynamic Multi-level Multi-agent Based Simulations
 - prompt templates observed:
-  - (x27) Title: {{paper_title}}
-  - (x4) Paper: {{paper}}
-  - (x2) Answer using ONLY the numbered context excerpts provided. Cite every claim with its excerpt number like [1] or [2][5]. If the context is insufficient, say exactly what is missing instead of guessing. |  | Write a thorough re
-  - (x2) You drafted a partial research answer. List up to 3 specific information gaps as refined arXiv-style search queries. Return JSON: {"queries": ["..."]} |  | Question: Summarize the state of multi-agent debate methods | Draft:
+  - (x5) Title: {{paper_title}} |  | ## abstract | AOAD-MAT: Transformer-based Multi-Agent | Deep Reinforcement Learning Model considering | Agents’ Order of Action Decisions ⋆ | Shota Takayama and Katsuhide Fujita | Graduate School of Enginee
+  - (x4) Title: {{paper_title}} |  | ## abstract | From Model-Based Screening to Data-Driven | Surrogates: A Multi-Stage Workflow for | Exploring Stochastic Agent-Based Models | Paul Saves1[0000−0001−5889−2302], Matthieu Mastio1[0009−0002−34
+  - (x4) Title: {{paper_title}} |  | ## abstract | Augmenting the action space with conventions to | improve multi-agent cooperation in Hanabi | F. Bredell1*, H. A. Engelbrecht1 and J. C. Schoeman1 | 1*Electrical and Electronic Engineering, 
+  - (x3) Title: {{paper_title}} |  | ## abstract | SWE-Debate: Competitive Multi-Agent Debate for Software Issue | Resolution | Han Li† | Shanghai Jiao Tong University | China | lih***u.cn | Yuling Shi† | Shanghai Jiao Tong University | China | yul***u.
 
 ## kid-learning-lab
 Inferred build: **tutor / learning-lab skill coach**
@@ -89,7 +89,7 @@ skill+learner-state -> pedagogical prompts (teach/clue/investigate/challenge) ->
   - Task: Suggest one next challenge that is slightly harder and explain why in one sentence.
   - Task: Give a warm, specific reflection prompt that helps a child notice their strategy.
 - prompt templates observed:
-  - (x26) Subject: {{subject}}
+  - (x26) Subject: {{subject}} | Skill: {{skill}} | Task: {{task}} | Context: {{context}}
   - (x4) Give one short hint about fractions without giving the answer.
   - (x2) Say hi in five words.
   - (x2) hi
@@ -108,6 +108,22 @@ prompts -> LLM -> unknown sink (needs more samples)
   - (x13) hi
   - (x4) say hi
   - (x1) Reply with the single word: ready
+
+## live-selftest
+Inferred build: **live-selftest workload (unclassified)**
+prompts -> LLM -> unknown sink (needs more samples)
+- requests: 6, tokens: 299 (avg 49.8/req), cadence ~3.9s
+- window: 2026-10-07T13:15:56 -> 2026-10-07T13:16:15
+- models: `{'qwen3.8:27b': 6}`
+- query types: `{'trade': 5, 'chat': 1}` / requestors: `{'user': 6}`
+- pipeline: `capture_prompt -> llm.call(model) -> unknown_sink`
+- schema hints: ['brief']
+- recovered instructions:
+- prompt templates observed:
+  - (x1) Live probe 5: multi-agent debate risk brief
+  - (x1) Live probe 4: multi-agent debate risk brief
+  - (x1) Live probe 3: multi-agent debate risk brief
+  - (x1) Live probe 2: multi-agent debate risk brief
 
 ## probe
 Inferred build: **probe workload (unclassified)**

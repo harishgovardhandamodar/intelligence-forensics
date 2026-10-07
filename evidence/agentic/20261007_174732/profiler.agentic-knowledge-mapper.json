@@ -1,0 +1,44 @@
+{
+ "agent": "profiler",
+ "service": "agentic-knowledge-mapper",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"Agentic Knowledge Mapper: A multi-agent risk assessment and mapping service for LLM-based systems, specifically focusing on multi-agent debate architectures and their failure modes.\",\n  \"what_building\": \"The service constructs a risk register by evaluating the safety, robustness, and operational risks of multi-agent debate systems. It maps potential attack vectors, such as prompt injection and collusion, to specific exposure tiers and control measures.\",\n  \"pipeline\": [\n    \"make_brief\",\n    \"score_product_risk\",\n    \"score_model_risk\",\n    \"map_attacks(CVE)\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"brief\",\n    \"product\",\n    \"model_desc\",\n    \"exposure tier\",\n    \"subject profile\",\n    \"declared controls\"\n  ],\n  \"outputs\": [\n    \"risk register\",\n    \"exposure tier (0-100)\",\n    \"knowledge graph\",\n    \"misuse potential assessment\",\n    \"residual risk score\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\",\n    \"Title: Risks and failure modes of multi-agent debate systems\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"heuristic pipeline: make_brief -> score_product_risk -> score_model_risk -> map_attacks(CVE) -> emit_register\"\n  ]\n}",
+ "prompt_tokens": 797,
+ "completion_tokens": 378,
+ "ms": 4155.7,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "Agentic Knowledge Mapper: A multi-agent risk assessment and mapping service for LLM-based systems, specifically focusing on multi-agent debate architectures and their failure modes.",
+  "what_building": "The service constructs a risk register by evaluating the safety, robustness, and operational risks of multi-agent debate systems. It maps potential attack vectors, such as prompt injection and collusion, to specific exposure tiers and control measures.",
+  "pipeline": [
+   "make_brief",
+   "score_product_risk",
+   "score_model_risk",
+   "map_attacks(CVE)",
+   "emit_register"
+  ],
+  "inputs": [
+   "brief",
+   "product",
+   "model_desc",
+   "exposure tier",
+   "subject profile",
+   "declared controls"
+  ],
+  "outputs": [
+   "risk register",
+   "exposure tier (0-100)",
+   "knowledge graph",
+   "misuse potential assessment",
+   "residual risk score"
+  ],
+  "confidence": 0.92,
+  "evidence_quotes": [
+   "heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register",
+   "Title: Risks and failure modes of multi-agent debate systems",
+   "schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']",
+   "heuristic pipeline: make_brief -> score_product_risk -> score_model_risk -> map_attacks(CVE) -> emit_register"
+  ]
+ },
+ "raw": "{\n  \"project\": \"Agentic Knowledge Mapper: A multi-agent risk assessment and mapping service for LLM-based systems, specifically focusing on multi-agent debate architectures and their failure modes.\",\n  \"what_building\": \"The service constructs a risk register by evaluating the safety, robustness, and operational risks of multi-agent debate systems. It maps potential attack vectors, such as prompt injection and collusion, to specific exposure tiers and control measures.\",\n  \"pipeline\": [\n    \"make_brief\",\n    \"score_product_risk\",\n    \"score_model_risk\",\n    \"map_attacks(CVE)\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"brief\",\n    \"product\",\n    \"model_desc\",\n    \"exposure tier\",\n    \"subject profile\",\n    \"declared controls\"\n  ],\n  \"outputs\": [\n    \"risk register\",\n    \"exposure tier (0-100)\",\n    \"knowledge graph\",\n    \"misuse potential assessment\",\n    \"residual risk score\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\",\n    \"Title: Risks and failure modes of multi-agent debate systems\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"heuristic pipeline: make_brief -> score_product_risk -> score_model_risk -> map_attacks(CVE) -> emit_register\"\n  ]\n}"
+}

@@ -1,0 +1,53 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage suggests complex orchestration or potential resource exhaustion.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage, indicating heavy steady-state load.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed model usage including embedding and small LLMs, typical of research pipelines.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) but non-trivial token count relative to requests, suggesting longer context windows or specific use cases.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Unclassified workload with diverse model usage including 'unknown' model, potentially indicating misconfiguration or probing.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal volume (6 reqs), likely automated health checks or low-priority tests.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request with zero tokens, likely a connectivity check or minimal probe.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request with zero tokens, likely a cache warmup or initialization step.\"\n    }\n  ]\n}",
+ "prompt_tokens": 572,
+ "completion_tokens": 439,
+ "ms": 8864.3,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "Highest volume (1.2k reqs, 2.2M toks) and multi-model usage suggests complex orchestration or potential resource exhaustion."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage, indicating heavy steady-state load."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Moderate volume (277 reqs) with mixed model usage including embedding and small LLMs, typical of research pipelines."
+   },
+   {
+    "rank": 4,
+    "service": "kid-learning-lab",
+    "reason": "Low volume (37 reqs) but non-trivial token count relative to requests, suggesting longer context windows or specific use cases."
+   },
+   {
+    "rank": 5,
+    "service": "gateway-unknown",
+    "reason": "Unclassified workload with diverse model usage including 'unknown' model, potentially indicating misconfiguration or probing."
+   },
+   {
+    "rank": 6,
+    "service": "live-selftest",
+    "reason": "Minimal volume (6 reqs), likely automated health checks or low-priority tests."
+   },
+   {
+    "rank": 7,
+    "service": "probe",
+    "reason": "Single request with zero tokens, likely a connectivity check or minimal probe."
+   },
+   {
+    "rank": 8,
+    "service": "warmup",
+    "reason": "Single request with zero tokens, likely a cache warmup or initialization step."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage suggests complex orchestration or potential resource exhaustion.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks) with consistent single-model usage, indicating heavy steady-state load.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed model usage including embedding and small LLMs, typical of research pipelines.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) but non-trivial token count relative to requests, suggesting longer context windows or specific use cases.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Unclassified workload with diverse model usage including 'unknown' model, potentially indicating misconfiguration or probing.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal volume (6 reqs), likely automated health checks or low-priority tests.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request with zero tokens, likely a connectivity check or minimal probe.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request with zero tokens, likely a cache warmup or initialization step.\"\n    }\n  ]\n}"
+}

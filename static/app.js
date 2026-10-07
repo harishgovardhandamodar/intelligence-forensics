@@ -3,7 +3,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 const TABS=[...document.querySelectorAll('#tabs button')].map(b=>b.dataset.t);
 const trowState=(cols,msg,cls='mut')=>`<tr><td class="${cls}" colspan="${cols}">${escH(msg)}</td></tr>`;
-const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();document.title='Intelligence Forensics — '+name;};
+const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='sim')loadSimUsers();document.title='Intelligence Forensics — '+name;};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 window.addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 window.addEventListener('popstate',()=>activateTab(location.hash.slice(1),false));
@@ -255,6 +255,35 @@ async function loadLedger(preset){
   const qt=$('t-queue')&&$('t-queue').querySelector('tbody');
   if(qt)qt.innerHTML=['pending','claimed','done','failed'].map(k=>`<tr><td>${k}</td><td>${q[k]||0}</td></tr>`).join('');
  }catch(e){}
+}
+function drawSimCurve(curves){
+ const el=$('sim-curve');if(!el)return;
+ const fields=Object.keys(curves||{});
+ if(!fields.length){el.className='mut';el.textContent='no curve data';return;}
+ el.className='';
+ const W=640,H=180,padL=44,padR=10,padT=10,padB=24,bh=H-padT-padB;
+ const cols=['#58a6ff','#3fb950','#d29922','#a371f7','#f85149'];
+ let g='';
+ [0,0.5,1].forEach(v=>{const y=padT+bh*(1-v);g+=`<line x1=${padL} y1=${y} x2=${W-padR} y2=${y} stroke="#30363d"/><text class=ax x=${padL-6} y=${y+3} text-anchor="end">${v}</text>`;});
+ fields.forEach((f,fi)=>{
+  const pts=(curves[f]||[]).map((p,i,a)=>`${(padL+i*(W-padL-padR)/Math.max(1,a.length-1)).toFixed(1)},${(padT+bh*(1-(p.accuracy||0))).toFixed(1)}`).join(' ');
+  g+=`<polyline points="${pts}" fill="none" stroke="${cols[fi%cols.length]}" stroke-width="2"><title>${escH(f)}</title></polyline>`;
+ });
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:680px">${g}</svg><div class="mut">${fields.map((f,fi)=>`<span class=k><span class=sw style="background:${cols[fi%cols.length]}"></span>${escH(f)}</span>`).join('')}</div>`;
+}
+async function loadSimUsers(){
+ const sel=$('sel-sim');if(!sel)return;
+ try{const d=await j('/api/sim/users');sel.innerHTML=(d.users||[]).map(u=>`<option value="${escA(u.user_id)}">${escH(u.user_id)} (${escH(u.pairs)} pairs)</option>`).join('')||'<option value="">no users — load demo or run sim/run.py</option>';
+  const s=$('sim-sum');if(s)s.textContent=`backend: ${(d.backend||'?')}`;}catch(e){const s=$('sim-sum');if(s)s.textContent='sim failed: '+e;}
+}
+async function loadSimReport(){
+ const sel=$('sel-sim'),uid=sel&&sel.value;
+ const fc=$('sim-fields');
+ if(!uid){if(fc)fc.innerHTML='<span class="mut">pick a user</span>';return;}
+ try{const r=await j('/api/sim/report?user_id='+encodeURIComponent(uid));
+  drawSimCurve(r.curves||{});
+  if(fc)fc.innerHTML=`<div class="mut">${escH(r.recovered)}/${escH(r.n_fields)} fields recovered · mean accuracy ${escH(r.mean_accuracy)} · ${escH(r.clusters)} clusters</div>`+Object.entries(r.fields||{}).map(([f,v])=>`<div>${pill(v.recovered?'high':'low')} <code>${escH(f)}</code> <span class="mut">${escH(v.accuracy)} (${escH(v.matched)}/${escH(v.total)} chars)${v.recovered?' — RECOVERED':''}</span></div>`).join('');
+ }catch(e){if(fc)fc.textContent='report failed: '+e;}
 }
 function initTheme(){
  const root=document.documentElement;
@@ -520,6 +549,9 @@ const _sf=$('sel-find');if(_sf)_sf.onchange=renderFindRows;
 const _bc=$('b-chain');if(_bc)_bc.onclick=loadChain;
 const _bl=$('b-ledger');if(_bl)_bl.onclick=()=>loadLedger();
 const _fl=$('filt-ledger');if(_fl)_fl.oninput=renderLedgerRows;
+const _sd=$('b-sim-demo');if(_sd)_sd.onclick=async()=>{try{await pj('/api/sim/demo');loadSimUsers();}catch(e){const s=$('sim-sum');if(s)s.textContent='demo failed: '+e;}};
+const _sr=$('b-sim-reset');if(_sr)_sr.onclick=async()=>{try{await pj('/api/sim/reset');loadSimUsers();const fc=$('sim-fields');if(fc)fc.innerHTML='';const c=$('sim-curve');if(c){c.className='mut';c.textContent='pick a user…';}}catch(e){}};
+const _sp=$('b-sim-report');if(_sp)_sp.onclick=loadSimReport;
 initTheme();
 load();
 activateTab(location.hash.slice(1)||'overview',false);

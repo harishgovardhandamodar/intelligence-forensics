@@ -1,0 +1,10 @@
+# Embedding-reconstruction simulation client settings.
+server: http://localhost:8211
+seed: 42
+n_queries: 60
+threshold: 0.6
+scenarios:
+  - chatbot_health
+  - chatbot_financial
+  - coding_api_keys
+  - coding_secrets
