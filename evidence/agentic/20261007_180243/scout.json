@@ -1,0 +1,53 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.2M toks) with multi-model orchestration and 'multi-agent debate' heuristic suggests complex, potentially sensitive data flows or prompt injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) focused on a single model; 'blockchain-news' extraction may involve scraping or processing untrusted external content, posing injection risks.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed models including embedding and small LLMs; 'paper-surrogate' implies processing external documents, a common vector for data exfiltration or prompt leakage.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model identifier and multiple models; unclassified traffic with ambiguous model usage warrants verification of integrity and routing logic.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume; 'tutor' role implies user interaction but low token count suggests limited exposure or testing phase.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal volume (6 reqs); likely internal health check, low risk unless self-test logic is compromised.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely infrastructure probe, negligible forensic value.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard initialization, no actionable evidence.\"\n    }\n  ]\n}",
+ "prompt_tokens": 572,
+ "completion_tokens": 477,
+ "ms": 27418.9,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "High volume (1.2k reqs, 2.2M toks) with multi-model orchestration and 'multi-agent debate' heuristic suggests complex, potentially sensitive data flows or prompt injection surface."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "High volume (1.1k reqs, 1.8M toks) focused on a single model; 'blockchain-news' extraction may involve scraping or processing untrusted external content, posing injection risks."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Moderate volume with mixed models including embedding and small LLMs; 'paper-surrogate' implies processing external documents, a common vector for data exfiltration or prompt leakage."
+   },
+   {
+    "rank": 4,
+    "service": "gateway-unknown",
+    "reason": "Low volume but includes an 'unknown' model identifier and multiple models; unclassified traffic with ambiguous model usage warrants verification of integrity and routing logic."
+   },
+   {
+    "rank": 5,
+    "service": "kid-learning-lab",
+    "reason": "Low volume; 'tutor' role implies user interaction but low token count suggests limited exposure or testing phase."
+   },
+   {
+    "rank": 6,
+    "service": "live-selftest",
+    "reason": "Minimal volume (6 reqs); likely internal health check, low risk unless self-test logic is compromised."
+   },
+   {
+    "rank": 7,
+    "service": "probe",
+    "reason": "Single request, zero tokens; likely infrastructure probe, negligible forensic value."
+   },
+   {
+    "rank": 8,
+    "service": "warmup",
+    "reason": "Single request, zero tokens; standard initialization, no actionable evidence."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.2M toks) with multi-model orchestration and 'multi-agent debate' heuristic suggests complex, potentially sensitive data flows or prompt injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) focused on a single model; 'blockchain-news' extraction may involve scraping or processing untrusted external content, posing injection risks.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed models including embedding and small LLMs; 'paper-surrogate' implies processing external documents, a common vector for data exfiltration or prompt leakage.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model identifier and multiple models; unclassified traffic with ambiguous model usage warrants verification of integrity and routing logic.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume; 'tutor' role implies user interaction but low token count suggests limited exposure or testing phase.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal volume (6 reqs); likely internal health check, low risk unless self-test logic is compromised.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely infrastructure probe, negligible forensic value.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard initialization, no actionable evidence.\"\n    }\n  ]\n}"
+}

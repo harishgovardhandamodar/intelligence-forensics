@@ -1,0 +1,42 @@
+{
+ "agent": "profiler",
+ "service": "agentic-knowledge-mapper",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment engine that evaluates the safety and robustness of multi-agent debate systems and foundation models. It generates structured risk registers by mapping potential misuse scenarios, such as prompt injection and collusion, to specific exposure tiers.\",\n  \"pipeline\": [\n    \"make_brief\",\n    \"score_product_risk\",\n    \"score_model_risk\",\n    \"map_attacks\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"brief\",\n    \"product\",\n    \"model_desc\",\n    \"exposure tier\",\n    \"subject profile\"\n  ],\n  \"outputs\": [\n    \"risk register\",\n    \"exposure tier\",\n    \"residual risk\",\n    \"misuse potential\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\",\n    \"Title: Risks and failure modes of multi-agent debate systems\",\n    \"Use case: what adversarial scenarios could an attacker engineer with this model for credit scoring of tabular records\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\"\n  ]\n}",
+ "prompt_tokens": 797,
+ "completion_tokens": 325,
+ "ms": 61529.3,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "agentic-knowledge-mapper",
+  "what_building": "A risk assessment engine that evaluates the safety and robustness of multi-agent debate systems and foundation models. It generates structured risk registers by mapping potential misuse scenarios, such as prompt injection and collusion, to specific exposure tiers.",
+  "pipeline": [
+   "make_brief",
+   "score_product_risk",
+   "score_model_risk",
+   "map_attacks",
+   "emit_register"
+  ],
+  "inputs": [
+   "brief",
+   "product",
+   "model_desc",
+   "exposure tier",
+   "subject profile"
+  ],
+  "outputs": [
+   "risk register",
+   "exposure tier",
+   "residual risk",
+   "misuse potential"
+  ],
+  "confidence": 0.85,
+  "evidence_quotes": [
+   "heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register",
+   "Title: Risks and failure modes of multi-agent debate systems",
+   "Use case: what adversarial scenarios could an attacker engineer with this model for credit scoring of tabular records",
+   "schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']"
+  ]
+ },
+ "raw": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment engine that evaluates the safety and robustness of multi-agent debate systems and foundation models. It generates structured risk registers by mapping potential misuse scenarios, such as prompt injection and collusion, to specific exposure tiers.\",\n  \"pipeline\": [\n    \"make_brief\",\n    \"score_product_risk\",\n    \"score_model_risk\",\n    \"map_attacks\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"brief\",\n    \"product\",\n    \"model_desc\",\n    \"exposure tier\",\n    \"subject profile\"\n  ],\n  \"outputs\": [\n    \"risk register\",\n    \"exposure tier\",\n    \"residual risk\",\n    \"misuse potential\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\",\n    \"Title: Risks and failure modes of multi-agent debate systems\",\n    \"Use case: what adversarial scenarios could an attacker engineer with this model for credit scoring of tabular records\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\"\n  ]\n}"
+}

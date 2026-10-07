@@ -1,0 +1,33 @@
+{
+ "agent": "profiler",
+ "service": "live-selftest",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"live-selftest\",\n  \"what_building\": \"A diagnostic or load-testing service that generates multi-agent debate risk briefs. It appears to be a self-test harness validating LLM behavior under specific query types.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"brief\"\n  ],\n  \"outputs\": [\n    \"risk_brief\"\n  ],\n  \"confidence\": 0.4,\n  \"evidence_quotes\": [\n    \"Live probe 5: multi-agent debate risk brief\",\n    \"query_types: {'trade': 5, 'chat': 1}\",\n    \"heuristic guess: live-selftest workload (unclassified)\",\n    \"schema hints: ['brief']\"\n  ]\n}",
+ "prompt_tokens": 398,
+ "completion_tokens": 189,
+ "ms": 64069.5,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "live-selftest",
+  "what_building": "A diagnostic or load-testing service that generates multi-agent debate risk briefs. It appears to be a self-test harness validating LLM behavior under specific query types.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "brief"
+  ],
+  "outputs": [
+   "risk_brief"
+  ],
+  "confidence": 0.4,
+  "evidence_quotes": [
+   "Live probe 5: multi-agent debate risk brief",
+   "query_types: {'trade': 5, 'chat': 1}",
+   "heuristic guess: live-selftest workload (unclassified)",
+   "schema hints: ['brief']"
+  ]
+ },
+ "raw": "{\n  \"project\": \"live-selftest\",\n  \"what_building\": \"A diagnostic or load-testing service that generates multi-agent debate risk briefs. It appears to be a self-test harness validating LLM behavior under specific query types.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"brief\"\n  ],\n  \"outputs\": [\n    \"risk_brief\"\n  ],\n  \"confidence\": 0.4,\n  \"evidence_quotes\": [\n    \"Live probe 5: multi-agent debate risk brief\",\n    \"query_types: {'trade': 5, 'chat': 1}\",\n    \"heuristic guess: live-selftest workload (unclassified)\",\n    \"schema hints: ['brief']\"\n  ]\n}"
+}

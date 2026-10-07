@@ -1,0 +1,9 @@
+{
+ "agent": "critic",
+ "service": "live-selftest",
+ "content": "*   **Unresolved Sink Behavior:** The logs identify `unknown_sink` but do not prove *where* the `risk_brief` is persisted (e.g., database, API response, file system).\n    *   *Next Observation:* Capture the HTTP response body or database write event immediately following `llm.call` to confirm the final destination of the output.\n*   **Missing Output Content:** The evidence quotes only confirm the *type* of output (\"risk brief\") but do not contain the actual generated text, making it impossible to verify if the LLM actually performed the multi-agent debate logic or hallucinated the format.\n    *   *Next Observation:* Log the full JSON/text payload of the `risk_brief` for at least one successful probe to validate content structure and semantic correctness.\n*   **Input-Output Causality Gap:** The profiler lists `probe_id` and `scenario_type` as inputs, but there is no evidence linking specific input parameters to specific output variations. It is unproven whether the service differentiates behavior based on `scenario_type`.\n    *   *Next Observation:* Run two probes with identical `probe_id` but different `scenario_type` values and diff the resulting `risk_brief` outputs",
+ "prompt_tokens": 348,
+ "completion_tokens": 256,
+ "ms": 83124.7,
+ "model": "qwen3.8:27b"
+}

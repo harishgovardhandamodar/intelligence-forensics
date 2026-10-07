@@ -1,0 +1,29 @@
+{
+ "agent": "profiler",
+ "service": "probe",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"probe\",\n  \"what_building\": \"A minimal routing or health-check service that validates LLM connectivity. It appears to be a lightweight probe designed to test the 'gemma4:31b' model endpoint.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": \"None (empty query)\",\n  \"outputs\": \"Static string 'routed'\",\n  \"confidence\": 0.8,\n  \"evidence_quotes\": [\n    \"models: {'gemma4:31b': 1}\",\n    \"query_types: {'(none)': 1}\",\n    \"Reply with exactly: routed\",\n    \"heuristic guess: probe workload (unclassified)\"\n  ]\n}",
+ "prompt_tokens": 325,
+ "completion_tokens": 179,
+ "ms": 62498.1,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "probe",
+  "what_building": "A minimal routing or health-check service that validates LLM connectivity. It appears to be a lightweight probe designed to test the 'gemma4:31b' model endpoint.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call",
+   "unknown_sink"
+  ],
+  "inputs": "None (empty query)",
+  "outputs": "Static string 'routed'",
+  "confidence": 0.8,
+  "evidence_quotes": [
+   "models: {'gemma4:31b': 1}",
+   "query_types: {'(none)': 1}",
+   "Reply with exactly: routed",
+   "heuristic guess: probe workload (unclassified)"
+  ]
+ },
+ "raw": "{\n  \"project\": \"probe\",\n  \"what_building\": \"A minimal routing or health-check service that validates LLM connectivity. It appears to be a lightweight probe designed to test the 'gemma4:31b' model endpoint.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": \"None (empty query)\",\n  \"outputs\": \"Static string 'routed'\",\n  \"confidence\": 0.8,\n  \"evidence_quotes\": [\n    \"models: {'gemma4:31b': 1}\",\n    \"query_types: {'(none)': 1}\",\n    \"Reply with exactly: routed\",\n    \"heuristic guess: probe workload (unclassified)\"\n  ]\n}"
+}

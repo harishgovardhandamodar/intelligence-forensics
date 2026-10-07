@@ -1,0 +1,53 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.2M toks) and multi-model orchestration (Qwen, Nomic, Gemma) suggest complex agentic workflows or potential prompt injection/data exfiltration vectors.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) focused on a single model (Qwen) for knowledge-graph extraction; high token-per-request ratio indicates heavy context processing, potential for sensitive data leakage in blockchain/news data.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed models (Embedding, Llama, Qwen) for paper summarization; embedding usage suggests vector store interactions, a common target for data poisoning or retrieval attacks.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model identifier and multiple model types; unclassified traffic with unknown components is a high-risk anomaly for potential unauthorized access or misconfiguration.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume and token count; standard educational workload with no immediate red flags in model selection or cadence.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal activity (6 reqs); likely automated health check, low forensic value.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely a connectivity check, negligible risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard infrastructure warmup, negligible risk.\"\n    }\n  ]\n}",
+ "prompt_tokens": 572,
+ "completion_tokens": 493,
+ "ms": 5746.0,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "High volume (1.2k reqs, 2.2M toks) and multi-model orchestration (Qwen, Nomic, Gemma) suggest complex agentic workflows or potential prompt injection/data exfiltration vectors."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "High volume (1.1k reqs, 1.8M toks) focused on a single model (Qwen) for knowledge-graph extraction; high token-per-request ratio indicates heavy context processing, potential for sensitive data leakage in blockchain/news data."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Moderate volume with mixed models (Embedding, Llama, Qwen) for paper summarization; embedding usage suggests vector store interactions, a common target for data poisoning or retrieval attacks."
+   },
+   {
+    "rank": 4,
+    "service": "gateway-unknown",
+    "reason": "Low volume but includes an 'unknown' model identifier and multiple model types; unclassified traffic with unknown components is a high-risk anomaly for potential unauthorized access or misconfiguration."
+   },
+   {
+    "rank": 5,
+    "service": "kid-learning-lab",
+    "reason": "Low volume and token count; standard educational workload with no immediate red flags in model selection or cadence."
+   },
+   {
+    "rank": 6,
+    "service": "live-selftest",
+    "reason": "Minimal activity (6 reqs); likely automated health check, low forensic value."
+   },
+   {
+    "rank": 7,
+    "service": "probe",
+    "reason": "Single request, zero tokens; likely a connectivity check, negligible risk."
+   },
+   {
+    "rank": 8,
+    "service": "warmup",
+    "reason": "Single request, zero tokens; standard infrastructure warmup, negligible risk."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.2M toks) and multi-model orchestration (Qwen, Nomic, Gemma) suggest complex agentic workflows or potential prompt injection/data exfiltration vectors.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) focused on a single model (Qwen) for knowledge-graph extraction; high token-per-request ratio indicates heavy context processing, potential for sensitive data leakage in blockchain/news data.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed models (Embedding, Llama, Qwen) for paper summarization; embedding usage suggests vector store interactions, a common target for data poisoning or retrieval attacks.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model identifier and multiple model types; unclassified traffic with unknown components is a high-risk anomaly for potential unauthorized access or misconfiguration.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume and token count; standard educational workload with no immediate red flags in model selection or cadence.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal activity (6 reqs); likely automated health check, low forensic value.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely a connectivity check, negligible risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard infrastructure warmup, negligible risk.\"\n    }\n  ]\n}"
+}

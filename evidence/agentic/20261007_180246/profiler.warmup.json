@@ -1,0 +1,33 @@
+{
+ "agent": "profiler",
+ "service": "warmup",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"warmup\",\n  \"what_building\": \"A lightweight service designed to trigger model inference for warmup purposes. It likely initializes the embedding model or connection pool without processing real user data.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"static prompt: 'Reply with exactly: warm'\"\n  ],\n  \"outputs\": [\n    \"text response: 'warm'\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"service: warmup\",\n    \"models: {'nomic-embed-text:latest': 1}\",\n    \"Reply with exactly: warm\",\n    \"heuristic guess: warmup workload (unclassified)\"\n  ]\n}",
+ "prompt_tokens": 328,
+ "completion_tokens": 187,
+ "ms": 62073.9,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "warmup",
+  "what_building": "A lightweight service designed to trigger model inference for warmup purposes. It likely initializes the embedding model or connection pool without processing real user data.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call(model)",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "static prompt: 'Reply with exactly: warm'"
+  ],
+  "outputs": [
+   "text response: 'warm'"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "service: warmup",
+   "models: {'nomic-embed-text:latest': 1}",
+   "Reply with exactly: warm",
+   "heuristic guess: warmup workload (unclassified)"
+  ]
+ },
+ "raw": "{\n  \"project\": \"warmup\",\n  \"what_building\": \"A lightweight service designed to trigger model inference for warmup purposes. It likely initializes the embedding model or connection pool without processing real user data.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"static prompt: 'Reply with exactly: warm'\"\n  ],\n  \"outputs\": [\n    \"text response: 'warm'\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"service: warmup\",\n    \"models: {'nomic-embed-text:latest': 1}\",\n    \"Reply with exactly: warm\",\n    \"heuristic guess: warmup workload (unclassified)\"\n  ]\n}"
+}

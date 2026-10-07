@@ -1,0 +1,40 @@
+{
+ "agent": "profiler",
+ "service": "hive-research-gpu",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A research paper summarization and surrogate generation service that processes academic papers, particularly in the domain of multi-agent systems and reinforcement learning. It extracts specific sections like abstracts and experimental setups to generate structured summaries or 'surrogates' for further analysis.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"abstract\",\n    \"experimental_setup\",\n    \"figures\",\n    \"research_questions\"\n  ],\n  \"outputs\": [\n    \"section_summaries\",\n    \"paper_surrogates\",\n    \"knowledge_graphs\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\",\n    \"templates: - (x5) Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent...\",\n    \"models: {'nomic-embed-text:latest': 227, 'llama3.2:3b': 38, 'qwen3.8:27b': 12}\"\n  ]\n}",
+ "prompt_tokens": 930,
+ "completion_tokens": 345,
+ "ms": 65839.6,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "hive-research-gpu",
+  "what_building": "A research paper summarization and surrogate generation service that processes academic papers, particularly in the domain of multi-agent systems and reinforcement learning. It extracts specific sections like abstracts and experimental setups to generate structured summaries or 'surrogates' for further analysis.",
+  "pipeline": [
+   "extract_sections",
+   "summarize_section",
+   "summarize_figures",
+   "build_surrogate"
+  ],
+  "inputs": [
+   "paper_title",
+   "abstract",
+   "experimental_setup",
+   "figures",
+   "research_questions"
+  ],
+  "outputs": [
+   "section_summaries",
+   "paper_surrogates",
+   "knowledge_graphs"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries",
+   "schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']",
+   "templates: - (x5) Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent...",
+   "models: {'nomic-embed-text:latest': 227, 'llama3.2:3b': 38, 'qwen3.8:27b': 12}"
+  ]
+ },
+ "raw": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A research paper summarization and surrogate generation service that processes academic papers, particularly in the domain of multi-agent systems and reinforcement learning. It extracts specific sections like abstracts and experimental setups to generate structured summaries or 'surrogates' for further analysis.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"abstract\",\n    \"experimental_setup\",\n    \"figures\",\n    \"research_questions\"\n  ],\n  \"outputs\": [\n    \"section_summaries\",\n    \"paper_surrogates\",\n    \"knowledge_graphs\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\",\n    \"templates: - (x5) Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent...\",\n    \"models: {'nomic-embed-text:latest': 227, 'llama3.2:3b': 38, 'qwen3.8:27b': 12}\"\n  ]\n}"
+}

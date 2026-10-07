@@ -1,0 +1,29 @@
+{
+ "agent": "profiler",
+ "service": "probe",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"probe\",\n  \"what_building\": \"A lightweight service designed to validate model routing or availability. It likely functions as a health check or load balancer probe for the 'gemma4:31b' model.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": \"Static prompt template requesting a specific string response\",\n  \"outputs\": \"The exact string 'routed'\",\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"models: {'gemma4:31b': 1}\",\n    \"Reply with exactly: routed\",\n    \"heuristic guess: probe workload (unclassified)\",\n    \"requests: 1 tokens: 0\"\n  ]\n}",
+ "prompt_tokens": 325,
+ "completion_tokens": 184,
+ "ms": 66365.2,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "probe",
+  "what_building": "A lightweight service designed to validate model routing or availability. It likely functions as a health check or load balancer probe for the 'gemma4:31b' model.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call",
+   "unknown_sink"
+  ],
+  "inputs": "Static prompt template requesting a specific string response",
+  "outputs": "The exact string 'routed'",
+  "confidence": 0.85,
+  "evidence_quotes": [
+   "models: {'gemma4:31b': 1}",
+   "Reply with exactly: routed",
+   "heuristic guess: probe workload (unclassified)",
+   "requests: 1 tokens: 0"
+  ]
+ },
+ "raw": "{\n  \"project\": \"probe\",\n  \"what_building\": \"A lightweight service designed to validate model routing or availability. It likely functions as a health check or load balancer probe for the 'gemma4:31b' model.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": \"Static prompt template requesting a specific string response\",\n  \"outputs\": \"The exact string 'routed'\",\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"models: {'gemma4:31b': 1}\",\n    \"Reply with exactly: routed\",\n    \"heuristic guess: probe workload (unclassified)\",\n    \"requests: 1 tokens: 0\"\n  ]\n}"
+}

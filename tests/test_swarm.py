@@ -205,3 +205,35 @@ def test_collect_results_groups_done_failed_missing(tmp_path):
     assert len(out["missing"]) == 2
     assert next(iter(out["done"].values())) == {"parsed": {"project": "p"}}
     assert next(iter(out["failed"].values())) == "worker blew up"
+
+
+def test_launch_cap_and_unique_keys(monkeypatch, tmp_path):
+    from iforensics import agents as ag
+    from iforensics import config
+    import pytest
+    monkeypatch.setattr(config, "EVIDENCE_DIR", str(tmp_path))
+    monkeypatch.setattr(ag, "AGENT_DIR", str(tmp_path / "agentic"))
+    monkeypatch.setattr(ag, "run_deep_investigation",
+                        lambda rows, **kw: {"run_id": "r-mock", "ok": True})
+    monkeypatch.setattr(ag, "MAX_BACKGROUND_RUNS", 1)
+    swarm.register_run("pending-x", {"status": "running", "started": 1.0})
+    with pytest.raises(RuntimeError, match="busy"):
+        ag.launch_background(lambda: [], model="m", quick=True, only=None)
+    monkeypatch.setattr(ag, "MAX_BACKGROUND_RUNS", 10)
+    swarm.update_run("pending-x", {"status": "done"})
+    k1 = ag.launch_background(lambda: [], model="m", quick=True, only=None)
+    k2 = ag.launch_background(lambda: [], model="m", quick=True, only=None)
+    assert k1 != k2  # same-second launches must not share a key
+    assert ag.background_status(k1)["status"] in ("running", "done", "error")
+
+
+def test_pending_runs_lists_in_flight(monkeypatch, tmp_path):
+    from iforensics import agents as ag
+    from iforensics import config
+    monkeypatch.setattr(config, "EVIDENCE_DIR", str(tmp_path))
+    swarm.register_run("pending-a", {"status": "running", "started": 100.0,
+                                     "model": "m"})
+    swarm.register_run("pending-b", {"status": "done"})
+    pend = ag.pending_runs()
+    assert [p["run_id"] for p in pend] == ["pending-a"]
+    assert pend[0]["elapsed_s"] >= 0 and pend[0]["model"] == "m"

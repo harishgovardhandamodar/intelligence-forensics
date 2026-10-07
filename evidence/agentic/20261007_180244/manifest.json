@@ -1,0 +1,630 @@
+{
+ "run_id": "20261007_180244",
+ "model": "qwen3.8:27b",
+ "quick": false,
+ "services": [
+  "agentic-knowledge-mapper",
+  "quai-radar",
+  "hive-research-gpu",
+  "kid-learning-lab",
+  "gateway-unknown",
+  "live-selftest",
+  "probe",
+  "warmup"
+ ],
+ "agents": {
+  "scout": {
+   "agent": "scout",
+   "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.2M toks) and multi-model usage suggest complex orchestration or potential resource abuse.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) with single-model focus indicates heavy load or potential scraping behavior.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed models including embedding and LLMs, typical for research pipelines but worth checking for efficiency.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes 'unknown' model and multiple model types, indicating potential misconfiguration or unauthorized access.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) and low token count, likely benign but low priority.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Very low volume (6 reqs), likely internal testing, low risk.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens, likely a health check or minimal probe, negligible risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens, likely infrastructure warmup, negligible risk.\"\n    }\n  ]\n}",
+   "prompt_tokens": 572,
+   "completion_tokens": 433,
+   "ms": 30493.1,
+   "model": "qwen3.8:27b",
+   "parsed": {
+    "rankings": [
+     {
+      "rank": 1,
+      "service": "agentic-knowledge-mapper",
+      "reason": "High volume (1.2k reqs, 2.2M toks) and multi-model usage suggest complex orchestration or potential resource abuse."
+     },
+     {
+      "rank": 2,
+      "service": "quai-radar",
+      "reason": "High volume (1.1k reqs, 1.8M toks) with single-model focus indicates heavy load or potential scraping behavior."
+     },
+     {
+      "rank": 3,
+      "service": "hive-research-gpu",
+      "reason": "Moderate volume (277 reqs) with mixed models including embedding and LLMs, typical for research pipelines but worth checking for efficiency."
+     },
+     {
+      "rank": 4,
+      "service": "gateway-unknown",
+      "reason": "Low volume but includes 'unknown' model and multiple model types, indicating potential misconfiguration or unauthorized access."
+     },
+     {
+      "rank": 5,
+      "service": "kid-learning-lab",
+      "reason": "Low volume (37 reqs) and low token count, likely benign but low priority."
+     },
+     {
+      "rank": 6,
+      "service": "live-selftest",
+      "reason": "Very low volume (6 reqs), likely internal testing, low risk."
+     },
+     {
+      "rank": 7,
+      "service": "probe",
+      "reason": "Single request, zero tokens, likely a health check or minimal probe, negligible risk."
+     },
+     {
+      "rank": 8,
+      "service": "warmup",
+      "reason": "Single request, zero tokens, likely infrastructure warmup, negligible risk."
+     }
+    ]
+   },
+   "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.2M toks) and multi-model usage suggest complex orchestration or potential resource abuse.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) with single-model focus indicates heavy load or potential scraping behavior.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed models including embedding and LLMs, typical for research pipelines but worth checking for efficiency.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes 'unknown' model and multiple model types, indicating potential misconfiguration or unauthorized access.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) and low token count, likely benign but low priority.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Very low volume (6 reqs), likely internal testing, low risk.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens, likely a health check or minimal probe, negligible risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens, likely infrastructure warmup, negligible risk.\"\n    }\n  ]\n}"
+  },
+  "profilers": {
+   "quai-radar": {
+    "agent": "profiler",
+    "service": "quai-radar",
+    "injection_risk": 0,
+    "content": "{\n  \"project\": \"Quai-RADAR\",\n  \"what_building\": \"An intelligence dashboard and knowledge-graph engine for the Quai Network ecosystem. It ingests external research and news to generate structured insights and daily briefs for stakeholders.\",\n  \"pipeline\": [\n    \"ingest_feed\",\n    \"build_kg_prompt\",\n    \"llm_extract\",\n    \"parse_facts\",\n    \"upsert_graph\",\n    \"generate_brief\"\n  ],\n  \"inputs\": [\n    \"title\",\n    \"content\",\n    \"live_market_data\",\n    \"soap_dynamics\"\n  ],\n  \"outputs\": [\n    \"structured_kg_facts\",\n    \"daily_research_brief\",\n    \"implications_for_quai\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.\",\n    \"PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard)\",\n    \"You are Fox writing the daily research brief for the Quai Network intelligence dashboard.\",\n    \"LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807\"\n  ]\n}",
+    "prompt_tokens": 1010,
+    "completion_tokens": 315,
+    "ms": 39182.4,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "Quai-RADAR",
+     "what_building": "An intelligence dashboard and knowledge-graph engine for the Quai Network ecosystem. It ingests external research and news to generate structured insights and daily briefs for stakeholders.",
+     "pipeline": [
+      "ingest_feed",
+      "build_kg_prompt",
+      "llm_extract",
+      "parse_facts",
+      "upsert_graph",
+      "generate_brief"
+     ],
+     "inputs": [
+      "title",
+      "content",
+      "live_market_data",
+      "soap_dynamics"
+     ],
+     "outputs": [
+      "structured_kg_facts",
+      "daily_research_brief",
+      "implications_for_quai"
+     ],
+     "confidence": 0.95,
+     "evidence_quotes": [
+      "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.",
+      "PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard)",
+      "You are Fox writing the daily research brief for the Quai Network intelligence dashboard.",
+      "LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807"
+     ]
+    },
+    "raw": "{\n  \"project\": \"Quai-RADAR\",\n  \"what_building\": \"An intelligence dashboard and knowledge-graph engine for the Quai Network ecosystem. It ingests external research and news to generate structured insights and daily briefs for stakeholders.\",\n  \"pipeline\": [\n    \"ingest_feed\",\n    \"build_kg_prompt\",\n    \"llm_extract\",\n    \"parse_facts\",\n    \"upsert_graph\",\n    \"generate_brief\"\n  ],\n  \"inputs\": [\n    \"title\",\n    \"content\",\n    \"live_market_data\",\n    \"soap_dynamics\"\n  ],\n  \"outputs\": [\n    \"structured_kg_facts\",\n    \"daily_research_brief\",\n    \"implications_for_quai\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.\",\n    \"PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard)\",\n    \"You are Fox writing the daily research brief for the Quai Network intelligence dashboard.\",\n    \"LIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807\"\n  ]\n}"
+   },
+   "kid-learning-lab": {
+    "agent": "profiler",
+    "service": "kid-learning-lab",
+    "injection_risk": 1,
+    "injection_findings": [
+     {
+      "kind": "prompt_injection:role_hijack",
+      "severity": "medium",
+      "source": "kid-learning-lab",
+      "line": 10,
+      "match": "Act as"
+     }
+    ],
+    "content": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"A personalized tutoring service for children that adapts pedagogical strategies based on specific skills and subjects. It uses LLMs to generate guided learning interactions such as hints, challenges, and reflections rather than direct answers.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"prompt_rendering\",\n    \"llm_inference\",\n    \"response_generation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"task\",\n    \"context\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"hint\",\n    \"challenge\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}\",\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\"\n  ]\n}",
+    "prompt_tokens": 600,
+    "completion_tokens": 300,
+    "ms": 42115.1,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "kid-learning-lab",
+     "what_building": "A personalized tutoring service for children that adapts pedagogical strategies based on specific skills and subjects. It uses LLMs to generate guided learning interactions such as hints, challenges, and reflections rather than direct answers.",
+     "pipeline": [
+      "learner_state_ingestion",
+      "prompt_rendering",
+      "llm_inference",
+      "response_generation"
+     ],
+     "inputs": [
+      "subject",
+      "skill",
+      "task",
+      "context"
+     ],
+     "outputs": [
+      "tutor_turn",
+      "hint",
+      "challenge",
+      "reflection_prompt"
+     ],
+     "confidence": 0.95,
+     "evidence_quotes": [
+      "Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}",
+      "Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.",
+      "Task: Give a short clue, never the answer. Ask one guiding question.",
+      "Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them."
+     ]
+    },
+    "raw": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"A personalized tutoring service for children that adapts pedagogical strategies based on specific skills and subjects. It uses LLMs to generate guided learning interactions such as hints, challenges, and reflections rather than direct answers.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"prompt_rendering\",\n    \"llm_inference\",\n    \"response_generation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"task\",\n    \"context\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"hint\",\n    \"challenge\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}\",\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\"\n  ]\n}"
+   },
+   "hive-research-gpu": {
+    "agent": "profiler",
+    "service": "hive-research-gpu",
+    "injection_risk": 0,
+    "content": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A research paper summarization and surrogate generation service that processes academic literature, specifically focusing on multi-agent systems and reinforcement learning. It utilizes a multi-stage pipeline to extract sections and generate summaries or surrogates from paper abstracts and experimental setups.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"abstract\",\n    \"experimental_setup\",\n    \"figures\",\n    \"research_questions\"\n  ],\n  \"outputs\": [\n    \"section_summaries\",\n    \"paper_surrogates\",\n    \"knowledge_graphs\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\",\n    \"templates: - (x5) Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent...\",\n    \"models: {'nomic-embed-text:latest': 227, 'llama3.2:3b': 38, 'qwen3.8:27b': 12}\"\n  ]\n}",
+    "prompt_tokens": 930,
+    "completion_tokens": 343,
+    "ms": 45344.4,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "hive-research-gpu",
+     "what_building": "A research paper summarization and surrogate generation service that processes academic literature, specifically focusing on multi-agent systems and reinforcement learning. It utilizes a multi-stage pipeline to extract sections and generate summaries or surrogates from paper abstracts and experimental setups.",
+     "pipeline": [
+      "extract_sections",
+      "summarize_section",
+      "summarize_figures",
+      "build_surrogate"
+     ],
+     "inputs": [
+      "paper_title",
+      "abstract",
+      "experimental_setup",
+      "figures",
+      "research_questions"
+     ],
+     "outputs": [
+      "section_summaries",
+      "paper_surrogates",
+      "knowledge_graphs"
+     ],
+     "confidence": 0.95,
+     "evidence_quotes": [
+      "heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries",
+      "schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']",
+      "templates: - (x5) Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent...",
+      "models: {'nomic-embed-text:latest': 227, 'llama3.2:3b': 38, 'qwen3.8:27b': 12}"
+     ]
+    },
+    "raw": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A research paper summarization and surrogate generation service that processes academic literature, specifically focusing on multi-agent systems and reinforcement learning. It utilizes a multi-stage pipeline to extract sections and generate summaries or surrogates from paper abstracts and experimental setups.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"abstract\",\n    \"experimental_setup\",\n    \"figures\",\n    \"research_questions\"\n  ],\n  \"outputs\": [\n    \"section_summaries\",\n    \"paper_surrogates\",\n    \"knowledge_graphs\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\",\n    \"templates: - (x5) Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent...\",\n    \"models: {'nomic-embed-text:latest': 227, 'llama3.2:3b': 38, 'qwen3.8:27b': 12}\"\n  ]\n}"
+   },
+   "agentic-knowledge-mapper": {
+    "agent": "profiler",
+    "service": "agentic-knowledge-mapper",
+    "injection_risk": 0,
+    "content": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment service that evaluates the safety and robustness of multi-agent debate systems and LLM-based models. It generates structured risk registers by mapping potential failure modes, such as sycophancy and prompt injection, to specific exposure tiers and control measures.\",\n  \"pipeline\": [\n    \"make_brief\",\n    \"score_product_risk\",\n    \"score_model_risk\",\n    \"map_attacks(CVE)\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"brief\",\n    \"product\",\n    \"model_desc\",\n    \"exposure tier\",\n    \"subject profile\"\n  ],\n  \"outputs\": [\n    \"risk register\",\n    \"exposure tier\",\n    \"residual risk\",\n    \"control catalogue recommendations\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\",\n    \"Title: Risks and failure modes of multi-agent debate systems\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"Control catalogue: - C01 Classification gate before AI (efficacy 0.7)\"\n  ]\n}",
+    "prompt_tokens": 797,
+    "completion_tokens": 331,
+    "ms": 48466.3,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "agentic-knowledge-mapper",
+     "what_building": "A risk assessment service that evaluates the safety and robustness of multi-agent debate systems and LLM-based models. It generates structured risk registers by mapping potential failure modes, such as sycophancy and prompt injection, to specific exposure tiers and control measures.",
+     "pipeline": [
+      "make_brief",
+      "score_product_risk",
+      "score_model_risk",
+      "map_attacks(CVE)",
+      "emit_register"
+     ],
+     "inputs": [
+      "brief",
+      "product",
+      "model_desc",
+      "exposure tier",
+      "subject profile"
+     ],
+     "outputs": [
+      "risk register",
+      "exposure tier",
+      "residual risk",
+      "control catalogue recommendations"
+     ],
+     "confidence": 0.85,
+     "evidence_quotes": [
+      "heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register",
+      "Title: Risks and failure modes of multi-agent debate systems",
+      "schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']",
+      "Control catalogue: - C01 Classification gate before AI (efficacy 0.7)"
+     ]
+    },
+    "raw": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment service that evaluates the safety and robustness of multi-agent debate systems and LLM-based models. It generates structured risk registers by mapping potential failure modes, such as sycophancy and prompt injection, to specific exposure tiers and control measures.\",\n  \"pipeline\": [\n    \"make_brief\",\n    \"score_product_risk\",\n    \"score_model_risk\",\n    \"map_attacks(CVE)\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"brief\",\n    \"product\",\n    \"model_desc\",\n    \"exposure tier\",\n    \"subject profile\"\n  ],\n  \"outputs\": [\n    \"risk register\",\n    \"exposure tier\",\n    \"residual risk\",\n    \"control catalogue recommendations\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\",\n    \"Title: Risks and failure modes of multi-agent debate systems\",\n    \"schema hints: ['brief', 'exposure tier', 'knowledge graph', 'misuse potential', 'model risk', 'residual risk', 'schema']\",\n    \"Control catalogue: - C01 Classification gate before AI (efficacy 0.7)\"\n  ]\n}"
+   },
+   "gateway-unknown": {
+    "agent": "profiler",
+    "service": "gateway-unknown",
+    "injection_risk": 0,
+    "content": "{\n  \"project\": \"gateway-unknown\",\n  \"what_building\": \"The service appears to be a lightweight LLM gateway or proxy that routes simple conversational requests to various local or remote models. It likely serves as a testing harness or a minimal API endpoint for evaluating model responsiveness with basic prompts.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"hi\",\n    \"say hi\",\n    \"Reply with the single word: ready\"\n  ],\n  \"outputs\": [\n    \"unknown\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"requests: 21 tokens: 161\",\n    \"models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, ...}\",\n    \"templates: - (x13) hi\",\n    \"heuristic guess: gateway-unknown workload (unclassified)\"\n  ]\n}",
+    "prompt_tokens": 420,
+    "completion_tokens": 236,
+    "ms": 64919.5,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "gateway-unknown",
+     "what_building": "The service appears to be a lightweight LLM gateway or proxy that routes simple conversational requests to various local or remote models. It likely serves as a testing harness or a minimal API endpoint for evaluating model responsiveness with basic prompts.",
+     "pipeline": [
+      "capture_prompt",
+      "llm.call(model)",
+      "unknown_sink"
+     ],
+     "inputs": [
+      "hi",
+      "say hi",
+      "Reply with the single word: ready"
+     ],
+     "outputs": [
+      "unknown"
+     ],
+     "confidence": 0.3,
+     "evidence_quotes": [
+      "requests: 21 tokens: 161",
+      "models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, ...}",
+      "templates: - (x13) hi",
+      "heuristic guess: gateway-unknown workload (unclassified)"
+     ]
+    },
+    "raw": "{\n  \"project\": \"gateway-unknown\",\n  \"what_building\": \"The service appears to be a lightweight LLM gateway or proxy that routes simple conversational requests to various local or remote models. It likely serves as a testing harness or a minimal API endpoint for evaluating model responsiveness with basic prompts.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"hi\",\n    \"say hi\",\n    \"Reply with the single word: ready\"\n  ],\n  \"outputs\": [\n    \"unknown\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"requests: 21 tokens: 161\",\n    \"models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, ...}\",\n    \"templates: - (x13) hi\",\n    \"heuristic guess: gateway-unknown workload (unclassified)\"\n  ]\n}"
+   },
+   "live-selftest": {
+    "agent": "profiler",
+    "service": "live-selftest",
+    "injection_risk": 0,
+    "content": "{\n  \"project\": \"live-selftest\",\n  \"what_building\": \"A self-testing service that generates multi-agent debate risk briefs. It appears to be a diagnostic or validation harness for evaluating LLM-based risk assessment workflows.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"brief\"\n  ],\n  \"outputs\": [\n    \"risk_brief\"\n  ],\n  \"confidence\": 0.4,\n  \"evidence_quotes\": [\n    \"Live probe 5: multi-agent debate risk brief\",\n    \"Live probe 4: multi-agent debate risk brief\",\n    \"Live probe 3: multi-agent debate risk brief\",\n    \"Live probe 2: multi-agent debate risk brief\"\n  ]\n}",
+    "prompt_tokens": 398,
+    "completion_tokens": 187,
+    "ms": 63798.1,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "live-selftest",
+     "what_building": "A self-testing service that generates multi-agent debate risk briefs. It appears to be a diagnostic or validation harness for evaluating LLM-based risk assessment workflows.",
+     "pipeline": [
+      "capture_prompt",
+      "llm.call",
+      "unknown_sink"
+     ],
+     "inputs": [
+      "brief"
+     ],
+     "outputs": [
+      "risk_brief"
+     ],
+     "confidence": 0.4,
+     "evidence_quotes": [
+      "Live probe 5: multi-agent debate risk brief",
+      "Live probe 4: multi-agent debate risk brief",
+      "Live probe 3: multi-agent debate risk brief",
+      "Live probe 2: multi-agent debate risk brief"
+     ]
+    },
+    "raw": "{\n  \"project\": \"live-selftest\",\n  \"what_building\": \"A self-testing service that generates multi-agent debate risk briefs. It appears to be a diagnostic or validation harness for evaluating LLM-based risk assessment workflows.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"brief\"\n  ],\n  \"outputs\": [\n    \"risk_brief\"\n  ],\n  \"confidence\": 0.4,\n  \"evidence_quotes\": [\n    \"Live probe 5: multi-agent debate risk brief\",\n    \"Live probe 4: multi-agent debate risk brief\",\n    \"Live probe 3: multi-agent debate risk brief\",\n    \"Live probe 2: multi-agent debate risk brief\"\n  ]\n}"
+   },
+   "probe": {
+    "agent": "profiler",
+    "service": "probe",
+    "injection_risk": 0,
+    "content": "{\n  \"project\": \"probe\",\n  \"what_building\": \"A minimal routing or health-check service that validates LLM connectivity. It appears to be a lightweight probe designed to test the 'gemma4:31b' model endpoint.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": \"None (empty query)\",\n  \"outputs\": \"Static string 'routed'\",\n  \"confidence\": 0.8,\n  \"evidence_quotes\": [\n    \"models: {'gemma4:31b': 1}\",\n    \"query_types: {'(none)': 1}\",\n    \"Reply with exactly: routed\",\n    \"heuristic guess: probe workload (unclassified)\"\n  ]\n}",
+    "prompt_tokens": 325,
+    "completion_tokens": 179,
+    "ms": 62498.1,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "probe",
+     "what_building": "A minimal routing or health-check service that validates LLM connectivity. It appears to be a lightweight probe designed to test the 'gemma4:31b' model endpoint.",
+     "pipeline": [
+      "capture_prompt",
+      "llm.call",
+      "unknown_sink"
+     ],
+     "inputs": "None (empty query)",
+     "outputs": "Static string 'routed'",
+     "confidence": 0.8,
+     "evidence_quotes": [
+      "models: {'gemma4:31b': 1}",
+      "query_types: {'(none)': 1}",
+      "Reply with exactly: routed",
+      "heuristic guess: probe workload (unclassified)"
+     ]
+    },
+    "raw": "{\n  \"project\": \"probe\",\n  \"what_building\": \"A minimal routing or health-check service that validates LLM connectivity. It appears to be a lightweight probe designed to test the 'gemma4:31b' model endpoint.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": \"None (empty query)\",\n  \"outputs\": \"Static string 'routed'\",\n  \"confidence\": 0.8,\n  \"evidence_quotes\": [\n    \"models: {'gemma4:31b': 1}\",\n    \"query_types: {'(none)': 1}\",\n    \"Reply with exactly: routed\",\n    \"heuristic guess: probe workload (unclassified)\"\n  ]\n}"
+   },
+   "warmup": {
+    "agent": "profiler",
+    "service": "warmup",
+    "injection_risk": 0,
+    "content": "{\n  \"project\": \"warmup\",\n  \"what_building\": \"A lightweight service designed to initialize or validate the availability of the `nomic-embed-text:latest` model. It executes a minimal, deterministic prompt to ensure the inference pipeline is responsive without processing complex user data.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"Static prompt: 'Reply with exactly: warm'\"\n  ],\n  \"outputs\": [\n    \"String: 'warm'\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"models: {'nomic-embed-text:latest': 1}\",\n    \"Reply with exactly: warm\",\n    \"requests: 1 tokens: 0\",\n    \"heuristic guess: warmup workload (unclassified)\"\n  ]\n}",
+    "prompt_tokens": 328,
+    "completion_tokens": 205,
+    "ms": 61588.4,
+    "model": "qwen3.8:27b",
+    "parsed": {
+     "project": "warmup",
+     "what_building": "A lightweight service designed to initialize or validate the availability of the `nomic-embed-text:latest` model. It executes a minimal, deterministic prompt to ensure the inference pipeline is responsive without processing complex user data.",
+     "pipeline": [
+      "capture_prompt",
+      "llm.call(model)",
+      "unknown_sink"
+     ],
+     "inputs": [
+      "Static prompt: 'Reply with exactly: warm'"
+     ],
+     "outputs": [
+      "String: 'warm'"
+     ],
+     "confidence": 0.95,
+     "evidence_quotes": [
+      "models: {'nomic-embed-text:latest': 1}",
+      "Reply with exactly: warm",
+      "requests: 1 tokens: 0",
+      "heuristic guess: warmup workload (unclassified)"
+     ]
+    },
+    "raw": "{\n  \"project\": \"warmup\",\n  \"what_building\": \"A lightweight service designed to initialize or validate the availability of the `nomic-embed-text:latest` model. It executes a minimal, deterministic prompt to ensure the inference pipeline is responsive without processing complex user data.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"Static prompt: 'Reply with exactly: warm'\"\n  ],\n  \"outputs\": [\n    \"String: 'warm'\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"models: {'nomic-embed-text:latest': 1}\",\n    \"Reply with exactly: warm\",\n    \"requests: 1 tokens: 0\",\n    \"heuristic guess: warmup workload (unclassified)\"\n  ]\n}"
+   }
+  },
+  "critics": {
+   "quai-radar": {
+    "agent": "critic",
+    "service": "quai-radar",
+    "content": "*   **Missing LLM Output Artifacts:** The logs show the prompt construction (`build_kg_prompt`) and the call to `llm.extract`, but there is no evidence of the raw JSON/text returned by the LLM. Without the actual model response, we cannot verify if `parse_facts` received valid data or if the extraction hallucinated facts.\n    *   *Next Observation:* Capture the raw stdout/response body of the `llm.extract` step for a single known input item.\n*   **Unverified Graph Mutation:** The plan claims `upsert_graph` writes nodes/edges, but there is no log evidence of database writes, transaction IDs, or graph query results confirming the state change. The \"confidence\" in the profiler is high, but the execution of the write operation is unproven.\n    *   *Next Observation:* Query the knowledge graph database for the specific node/edge IDs expected from the last processed feed item to confirm persistence.\n*   **Ambiguity in \"Live Market Data\" Integration:** The inputs list `live_market_data` and `soap_dynamics`, but the heuristic plan only details the news ingestion path. It is unclear if market data is injected into the `build_kg_prompt` or",
+    "prompt_tokens": 475,
+    "completion_tokens": 256,
+    "ms": 63038.7,
+    "model": "qwen3.8:27b"
+   },
+   "kid-learning-lab": {
+    "agent": "critic",
+    "service": "kid-learning-lab",
+    "content": "*   **Learner State Persistence & Update Logic**: The logs show `learner_state` as an input but do not prove how it is mutated after a turn. The heuristic plan implies a static `pipe=learner_state`, but there is no evidence of a state-update function (e.g., `update_state(response, learner_state)`) or a database write. *Next observation*: Capture a request/response pair where the `learner_state` JSON object differs between the input and the subsequent internal context, or inspect the `next_step` payload for a `state_delta` field.\n*   **LLM Provider & Model Specificity**: The plan references `llm.coach(embed_model|chat)` but the logs do not confirm which specific model (e.g., GPT-4, Llama-3) or provider (OpenAI, Anthropic, local) is actually invoked. The `embed_model` reference is ambiguous\u2014it could be a vector search step or a specific embedding API call. *Next observation*: Extract the HTTP headers or SDK initialization logs from the `llm_inference` stage to identify the `Authorization` header, `User-Agent`, or specific endpoint URL (e.g., `/v1/chat/completions` vs. `/v1",
+    "prompt_tokens": 451,
+    "completion_tokens": 256,
+    "ms": 66957.2,
+    "model": "qwen3.8:27b"
+   },
+   "hive-research-gpu": {
+    "agent": "critic",
+    "service": "hive-research-gpu",
+    "content": "*   **Missing Output Artifacts:** The profile claims `knowledge_graphs` are an output, but the pipeline ends at `build_surrogate` with no evidence of graph extraction, node/edge generation, or serialization logic.\n    *   *Next Observation:* Inspect the `build_surrogate` function source code or logs for calls to graph libraries (e.g., NetworkX, Neo4j drivers) or JSON schema definitions for nodes/edges.\n*   **Ambiguous \"Surrogate\" Definition:** The term `paper_surrogates` is undefined; it is unclear if this refers to a compressed vector embedding, a text summary, or a synthetic data generator.\n    *   *Next Observation:* Retrieve a sample output payload from the `build_surrogate` stage to determine the data type (string, vector, or structured object).\n*   **Figure Processing Gap:** The pipeline includes `summarize_figures`, but no evidence exists for image-to-text conversion (OCR/VLM) or how binary figure data is ingested.\n    *   *Next Observation:* Check logs for image processing libraries (e.g., PIL, OpenCV) or multimodal model calls (e.g., LLaVA) during the `summarize",
+    "prompt_tokens": 492,
+    "completion_tokens": 256,
+    "ms": 70864.8,
+    "model": "qwen3.8:27b"
+   },
+   "agentic-knowledge-mapper": {
+    "agent": "critic",
+    "service": "agentic-knowledge-mapper",
+    "content": "*   **Gap: Actual Risk Scores and Tier Assignments**\n    *   **Cannot Prove:** The logs show the pipeline structure (`score_product_risk`, `score_model_risk`) but contain no evidence of the actual numerical scores (0-100) or specific tier assignments generated for any input.\n    *   **Missing Output:** The final \"risk register\" JSON/CSV payload with concrete `residual_risk` values.\n    *   **Next Observation:** Capture a raw API response or log entry from the `emit_register` stage showing a specific product/model pair with its assigned `exposure_tier` and `residual_risk` score.\n\n*   **Gap: CVE/Attack Mapping Specificity**\n    *   **Cannot Prove:** The heuristic mentions `map_attacks(CVE)`, but there is no evidence of which specific CVEs or attack vectors (e.g., prompt injection, sycophancy) were actually mapped to the models.\n    *   **Missing Output:** The `control_catalogue` recommendations linked to specific failure modes.\n    *   **Next Observation:** Inspect the intermediate state between `map_attacks` and `emit_register` to see the list of identified CVEs",
+    "prompt_tokens": 490,
+    "completion_tokens": 256,
+    "ms": 74063.3,
+    "model": "qwen3.8:27b"
+   },
+   "gateway-unknown": {
+    "agent": "critic",
+    "service": "gateway-unknown",
+    "content": "*   **Missing Output Verification:** The logs record token counts and model usage but explicitly mark outputs as \"unknown.\" The heuristic plan cannot prove what the LLM actually returned (e.g., did it return \"ready\" or an error?).\n    *   *Next Observation:* Capture the raw HTTP response body or the specific string returned by `llm.call` for the prompt \"Reply with the single word: ready.\"\n\n*   **Undefined \"Unknown Sink\":** The pipeline terminates at an \"unknown sink,\" meaning the destination of the LLM response is unverified. It is unclear if the response is logged, sent to a client, stored in a database, or discarded.\n    *   *Next Observation:* Trace the function call immediately following `llm.call(model)` to identify the consumer of the response object (e.g., `response.json()`, `db.insert()`, or `print()`).\n\n*   **Input-Output Correlation Gap:** The evidence lists inputs like \"hi\" and \"say hi\" but provides no corresponding outputs. Without paired data, the system cannot confirm if the gateway is functioning as a proxy or if it is failing silently.\n    *   *Next Observation:* Log a single request-response pair with a unique identifier",
+    "prompt_tokens": 377,
+    "completion_tokens": 256,
+    "ms": 77363.2,
+    "model": "qwen3.8:27b"
+   },
+   "live-selftest": {
+    "agent": "critic",
+    "service": "live-selftest",
+    "content": "*   **Unresolved Sink Identity:** The logs identify the final stage as `unknown_sink` with zero evidence of where the `risk_brief` is persisted, transmitted, or consumed.\n    *   *Smallest Next Observation:* Capture the network egress or file system write event immediately following the `llm.call` completion to identify the destination endpoint or storage path.\n*   **Missing Output Verification:** The profile claims `risk_brief` is an output, but no log entries contain the actual content, schema, or success status of the generated brief.\n    *   *Smallest Next Observation:* Retrieve the raw response payload from the `llm.call` step to confirm the structure and validity of the generated `risk_brief`.\n*   **Input Provenance Gap:** The input is labeled `brief`, but there is no evidence of its source, format, or whether it is user-supplied or system-generated.\n    *   *Smallest Next Observation:* Log the incoming request headers or body at the `capture_prompt` stage to verify the origin and structure of the `brief` input.\n*   **Multi-Agent Ambiguity:** The description mentions \"multi-agent debate,\" but the pipeline shows a single `llm.call",
+    "prompt_tokens": 331,
+    "completion_tokens": 256,
+    "ms": 76802.6,
+    "model": "qwen3.8:27b"
+   },
+   "probe": {
+    "agent": "critic",
+    "service": "probe",
+    "content": "*   **Unproven Sink Behavior**: The logs confirm `llm.call` execution but cannot prove what happens to the response after the \"unknown_sink.\"\n    *   *Next Observation*: Capture the raw HTTP response body or stdout immediately following the `llm.call` to verify if the string \"routed\" is actually returned to the client or discarded.\n*   **Input Source Ambiguity**: The profile claims \"None (empty query)\" as input, but it is unclear if this is a hardcoded default, a failed extraction, or a specific health-check payload.\n    *   *Next Observation*: Inspect the request headers or the specific function signature of `capture_prompt` to determine if the empty query is an intentional design choice or a parsing artifact.\n*   **Model Endpoint Verification**: The evidence cites `gemma4:31b` but does not prove the request actually reached that specific model endpoint versus a mock or fallback.\n    *   *Next Observation*: Check the network egress logs or the LLM client's internal telemetry for the specific URL/host targeted during the `llm.call` phase.\n*   **Error Handling Gap**: The reconstruction assumes a successful path (\"Static string 'routed'\"), but there",
+    "prompt_tokens": 332,
+    "completion_tokens": 256,
+    "ms": 76656.1,
+    "model": "qwen3.8:27b"
+   },
+   "warmup": {
+    "agent": "critic",
+    "service": "warmup",
+    "content": "*   **Missing Sink Verification:** The logs identify the model (`nomic-embed-text:latest`) but label the final step as `unknown_sink`. The logs cannot prove whether the output was returned to the caller, logged, or discarded.\n    *   *Next Observation:* Capture the HTTP response body or application log entry immediately following the `llm.call` to confirm the string \"warm\" was emitted to the expected destination.\n*   **Token Count Discrepancy:** The evidence states `tokens: 0`, which contradicts the execution of a prompt (\"Reply with exactly: warm\") and the generation of a response. The logs cannot prove if the token counter is broken, if the call failed silently, or if the \"warm\" response was cached/generated without inference.\n    *   *Next Observation:* Inspect the raw API response headers or provider-specific metrics (e.g., `prompt_tokens`, `completion_tokens`) from the inference provider to verify actual token consumption.\n*   **Model Type Mismatch:** The service is described as initializing an *embedding* model (`nomic-embed-text`), but the prompt is a text-generation instruction (\"Reply with exactly...\"). The logs cannot prove if the model is being used for its intended",
+    "prompt_tokens": 350,
+    "completion_tokens": 256,
+    "ms": 77077.4,
+    "model": "qwen3.8:27b"
+   }
+  },
+  "reporter": {
+   "agent": "reporter",
+   "content": "## Executive Brief: LLM Mesh Forensic Analysis\n\n**Overview**\nThe monitored mesh comprises eight nodes operating a distributed LLM inference and processing pipeline. The architecture separates high-value cognitive tasks (research, tutoring, risk assessment) from low-level infrastructure validation (probes, warmups).\n\n**Node Capabilities**\n*   **quai-radar:** High-confidence (0.95) intelligence engine. Ingests market data to build knowledge graphs and generate daily stakeholder briefs for the Quai Network.\n*   **kid-learning-lab:** High-confidence (0.95) adaptive tutoring service. Uses LLMs to generate pedagogical hints and challenges rather than direct answers.\n*   **hive-research-gpu:** High-confidence (0.95) academic summarization pipeline. Processes multi-agent and RL literature to generate paper surrogates and section summaries.\n*   **agentic-knowledge-mapper:** Medium-high confidence (0.85) risk assessment service. Maps failure modes (sycophancy, injection) to exposure tiers and generates control catalogs.\n*   **gateway-unknown / probe / warmup / live-selftest:** Low-complexity infrastructure nodes. These handle model availability checks, connectivity validation, and basic routing tests for models like `gemma4:31b` and `nomic-embed-text`.\n\n**Shared Topics**\n*   **Multi-Agent Systems:** Central to `hive-research-gpu` (research focus) and `agentic-knowledge-mapper` (risk focus).\n*   **LLM Risk & Safety:** `agentic-knowledge-mapper` explicitly models prompt injection and sycophancy; `live-selftest` validates these risk briefs.\n*   **Knowledge Graphing:** `quai-radar` and `hive-research-gpu` both output structured knowledge graphs from unstructured text.\n\n**Top Reconstruction Target**\n**`agentic-knowledge-mapper`**\n*   **Rationale:** It is the only node explicitly focused on *security and robustness* of the other LLM services. Reconstructing its risk register logic and control catalog recommendations provides the highest defensive value, as it directly addresses the \"high\" risk posture identified in the security data.\n\n## Security Posture\n\n**Risk Rating:** **HIGH**\n*   **Metrics:** 787 High-severity findings, 1,332 Medium-severity findings.\n*   **Tracked Evidence:** 0 (Critical gap in audit trail).\n\n**Top Issues & Remediation**\n1.  **Untracked High-Severity Findings (787 items):**\n    *   *Issue:* A large volume of high-risk vulnerabilities lacks associated evidence or tracking, indicating a breakdown in the vulnerability management lifecycle.\n    *   *Remediation:* Immediately implement automated evidence linking for all high-severity alerts. Prioritize triage of the 787 high-risk items to identify active exploits.\n2.  **Prompt Injection Exposure:**\n    *   *Issue:* `agentic-knowledge-mapper` identifies sycophancy and prompt injection as key failure modes, yet the mesh lacks a unified input sanitization layer across `quai-radar` and `kid-learning-lab`.\n    *   *Remediation:* Deploy the control catalog recommendations from `agentic-knowledge-mapper` as a mandatory middleware layer for all user-facing LLM inputs.\n3.  **Lack of Audit Trail:**\n    *   *Issue:* `tracked_evidence=0` suggests logs are not being persisted or correlated with security events.\n    *   *Remediation:* Enable centralized logging for all",
+   "prompt_tokens": 1519,
+   "completion_tokens": 768,
+   "ms": 61758.0,
+   "model": "qwen3.8:27b"
+  }
+ },
+ "errors": [],
+ "security": {
+  "risk_rating": "high",
+  "totals": {
+   "low": 1,
+   "medium": 1332,
+   "high": 787
+  },
+  "n_findings": 2120
+ },
+ "elapsed_s": 353.9,
+ "heuristic_investigation": {
+  "agentic-knowledge-mapper": {
+   "project": "multi-agent debate risk scorer",
+   "requests": 1226,
+   "evidence": {
+    "templates": [
+     "Brief: {{brief}}",
+     "Product: {{product}}\nUse case: \nExposure tier: confidential_data\nSubject profile: no model-specific signals; assess as described\nDeclared controls already in place: none\nEvidence snippets: none\n\nControl catalogue:\n- C01 Classification gate before AI (efficacy 0.7)\n- C02 Schema-only prompt (no raw values) (efficacy 0.7)\n- C03 Client-side DLP redaction (efficacy 0.65)\n- C04 Zero-retention / no-train",
+     "Brief: {{brief}}\nDescription: x",
+     "Model: {{model_desc}}\nUse: what adversarial scenarios could an attacker engineer with this model for credit scoring of tabular records\nProfile: foundation model over tabular records no conversational surface\nInterface: non_conversational\nData: tabular records\nFocus: tabular, models, adversarial\nAttacker capabilities:\n- C01: batch scoring oracle (dim capability_abuse, strength 4) \u2014 tabular scoring "
+    ],
+    "instructions": [
+     "Title: Risks and failure modes of multi-agent debate systems",
+     "Brief: Enumerate documented and hypothesized risks: sycophancy and conformity pressure among agents, collusion or echo-chamber dynamics, prompt-injection amplification across agents, resource/compute blow-up, adversarial manipulation of the judge, hallucination prop",
+     "Product: multi-agent debate systems (safety, robustness, and operational risks)",
+     "Model: multi-agent debate methods (LLM-based and beyond)",
+     "Model: multi-agent debate methods (LLM-based and beyond) (model)",
+     "Title: Multi-agent debate methods: architectures, variants, and empirical results"
+    ],
+    "sample_heads": [
+     "Brief: Risks and failure modes of multi-agent debate systems | multi-agent risk, sycophancy, collusion, prompt injection, judge manipulation, hallucination propagation, compute cost, oversight, safety alignment, failure modes | Enumerate documented and hypothesized risks: sycophancy and conformity p",
+     "Brief: Risks and failure modes of multi-agent debate systems | multi-agent risk, sycophancy, collusion, prompt injection, judge manipulation, hallucination propagation, compute cost, oversight, safety alignment, failure modes | Enumerate documented and hypothesized risks: sycophancy and conformity p",
+     "Brief: Risks and failure modes of multi-agent debate systems | multi-agent risk, sycophancy, collusion, prompt injection, judge manipulation, hallucination propagation, compute cost, oversight, safety alignment, failure modes | Enumerate documented and hypothesized risks: sycophancy and conformity p"
+    ]
+   }
+  },
+  "quai-radar": {
+   "project": "blockchain-news knowledge-graph extractor",
+   "requests": 1151,
+   "evidence": {
+    "templates": [
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts.\n\nTITLE: {{title}}\n\nCONTENT: {{content}}",
+     "PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard):\n\nLIVE MARKET: QUAI $0.010087544223399685 \u00b7 QI $0.7875559257826807 (cross $1.1050992885383195) \u00b7 WQI/QUAI rate 0.009128179094877679 \u00b7 data age 1.7454500198364258s\nSOAP DYNAMICS (31d): mined 43328323.6025 QUAI \u00b7 burned 14000000",
+     "You are Fox writing the daily research brief for the Quai Network intelligence dashboard. Based ONLY on the digest below (what's new in the research landscape, news, market and the swarm-protocol regime/gates), write a concise brief with:\n## What's new\n## Implications for QUAI/QI\n## What to watch\nBe",
+     "PROJECT DATA GROUNDING (real, citable data from the Quai-RADAR dashboard):\n\nLIVE MARKET: QUAI $0.009054467008212618 \u00b7 QI $1.132035890098335 (cross $1.056700316653958) \u00b7 WQI/QUAI rate 0.008568623350926582 \u00b7 data age 1.5975353717803955s\nSOAP DYNAMICS (31d): mined 35699535.7764 QUAI \u00b7 burned 22000000.1"
+    ],
+    "instructions": [
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check.",
+     "TITLE: Fundamental CRB-Rate Tradeoff of Rydberg Atomic Receivers fo",
+     "TITLE: Keeping the interaction structure explicit: comment on ''Gra",
+     "TITLE: Disentangling Paradigm, Identifier, and Decoding in Generati",
+     "TITLE: RIS-Assisted Reliability Maximization for URLLC in Upper Mid",
+     "TITLE: Rapid Fredholm stabilization of the Kuramoto--Sivashinsky eq"
+    ],
+    "sample_heads": [
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check.",
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts. |  | TITLE: Fundamental CRB-Rate Tradeoff of Rydberg Atomic Receivers fo |  | CONTENT: | I",
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts. |  | TITLE: Keeping the interaction structure explicit: comment on ''Gra |  | CONTENT: | P"
+    ]
+   }
+  },
+  "hive-research-gpu": {
+   "project": "paper-surrogate / research-paper summarizer",
+   "requests": 277,
+   "evidence": {
+    "templates": [
+     "Title: {{paper_title}}\n\n## abstract\nAOAD-MAT: Transformer-based Multi-Agent\nDeep Reinforcement Learning Model considering\nAgents\u2019 Order of Action Decisions \u22c6\nShota Takayama and Katsuhide Fujita\nGraduate School of Engineering, Tokyo University of Agriculture and Technology\nAbstract. Multi-agent reinforcement learning focuses on training the\nbehaviors of multiple learning agents that coexist in",
+     "Title: {{paper_title}}\n\n## abstract\nFrom Model-Based Screening to Data-Driven\nSurrogates: A Multi-Stage Workflow for\nExploring Stochastic Agent-Based Models\nPaul Saves1[0000\u22120001\u22125889\u22122302], Matthieu Mastio1[0009\u22120002\u22123486\u22123739], Nicolas\nVerstaevel1[0000\u22120002\u22127879\u22126681], and Benoit Gaudou1[0000\u22120002\u22129005\u22123004]\nIRIT, Universit\u00e9 Toulouse Capitole, Toulouse, France. {first.last}@irit.fr\nAbstract",
+     "Title: {{paper_title}}\n\n## abstract\nAugmenting the action space with conventions to\nimprove multi-agent cooperation in Hanabi\nF. Bredell1*, H. A. Engelbrecht1 and J. C. Schoeman1\n1*Electrical and Electronic Engineering, University of Stellenbosch,\nWestern Cape, South Africa.\n*Corresponding author(s). E-mail(s): 207***c.za;\nContributing authors: heb***.za; jcs***c.za;\nAbstract\nThe card game Hanabi",
+     "Title: {{paper_title}}\n\n## abstract\nSWE-Debate: Competitive Multi-Agent Debate for Software Issue\nResolution\nHan Li\u2020\nShanghai Jiao Tong University\nChina\nlih***u.cn\nYuling Shi\u2020\nShanghai Jiao Tong University\nChina\nyul***u.cn\nShaoxin Lin\nHuawei\nChina\n212***u.cn\nXiaodong Gu\u2021\nShanghai Jiao Tong University\nChina\nxia***u.cn\nHeng Lian\nXidian University\nChina\nlia***.com\nXin Wang\nHuawei"
+    ],
+    "instructions": [
+     "Title: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models",
+     "Title: SWE-Debate: Competitive Multi-Agent Debate for Software Issue Resolution",
+     "Title: AOAD-MAT: Transformer-based multi-agent deep reinforcement learning model considering agents' order of action decisions",
+     "Title: A Review of Cooperative Multi-Agent Deep Reinforcement Learn",
+     "Title: Augmenting the action space with conventions to improve multi-agent cooperation in Hanabi",
+     "Title: A Methodology to Engineer and Validate Dynamic Multi-level Multi-agent Based Simulations"
+    ],
+    "sample_heads": [
+     "Title: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models |  | ## abstract | From Model-Based Screening to Data-Driven | Surrogates: A Multi-Stage Workflow for | Exploring Stochastic Agent-Based Models | Paul Saves1[0000\u22120001\u22125889\u22122302], Matt",
+     "Title: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models |  | ## abstract | From Model-Based Screening to Data-Driven | Surrogates: A Multi-Stage Workflow for | Exploring Stochastic Agent-Based Models | Paul Saves1[0000\u22120001\u22125889\u22122302], Matt",
+     "Title: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models |  | ## abstract | From Model-Based Screening to Data-Driven | Surrogates: A Multi-Stage Workflow for | Exploring Stochastic Agent-Based Models | Paul Saves1[0000\u22120001\u22125889\u22122302], Matt"
+    ]
+   }
+  },
+  "kid-learning-lab": {
+   "project": "tutor / learning-lab skill coach",
+   "requests": 37,
+   "evidence": {
+    "templates": [
+     "Subject: {{subject}}\nSkill: {{skill}}\nTask: {{task}}\nContext: {{context}}",
+     "Give one short hint about fractions without giving the answer.",
+     "Say hi in five words.",
+     "hi"
+    ],
+    "instructions": [
+     "Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.",
+     "Task: Give a short clue, never the answer. Ask one guiding question.",
+     "Task: Invite one thoughtful question and one possible way to investigate it. Do not give a quiz answer.",
+     "Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.",
+     "Task: Suggest one next challenge that is slightly harder and explain why in one sentence.",
+     "Task: Give a warm, specific reflection prompt that helps a child notice their strategy."
+    ],
+    "sample_heads": [
+     "Subject: math | Skill: Fractions | Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question. | Context: Teach Fractions: Which fraction is equal to 1/2? Correct answer: 5/10.",
+     "Subject: math | Skill: Fractions | Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question. | Context: Teach Fractions.",
+     "Subject: math | Skill: Fractions | Task: Give a short clue, never the answer. Ask one guiding question. | Context: "
+    ]
+   }
+  },
+  "gateway-unknown": {
+   "project": "gateway-unknown workload (unclassified)",
+   "requests": 21,
+   "evidence": {
+    "templates": [
+     "hi",
+     "say hi",
+     "Reply with the single word: ready"
+    ],
+    "instructions": [],
+    "sample_heads": [
+     "Reply with the single word: ready",
+     "hi",
+     "hi"
+    ]
+   }
+  },
+  "live-selftest": {
+   "project": "live-selftest workload (unclassified)",
+   "requests": 6,
+   "evidence": {
+    "templates": [
+     "Live probe 5: multi-agent debate risk brief",
+     "Live probe 4: multi-agent debate risk brief",
+     "Live probe 3: multi-agent debate risk brief",
+     "Live probe 2: multi-agent debate risk brief"
+    ],
+    "instructions": [],
+    "sample_heads": [
+     "Live probe 5: multi-agent debate risk brief",
+     "Live probe 4: multi-agent debate risk brief",
+     "Live probe 3: multi-agent debate risk brief"
+    ]
+   }
+  },
+  "probe": {
+   "project": "probe workload (unclassified)",
+   "requests": 1,
+   "evidence": {
+    "templates": [
+     "Reply with exactly: routed"
+    ],
+    "instructions": [],
+    "sample_heads": [
+     "Reply with exactly: routed"
+    ]
+   }
+  },
+  "warmup": {
+   "project": "warmup workload (unclassified)",
+   "requests": 1,
+   "evidence": {
+    "templates": [
+     "Reply with exactly: warm"
+    ],
+    "instructions": [],
+    "sample_heads": [
+     "Reply with exactly: warm"
+    ]
+   }
+  }
+ }
+}

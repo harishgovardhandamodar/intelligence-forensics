@@ -1,0 +1,35 @@
+{
+ "agent": "profiler",
+ "service": "gateway-unknown",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"gateway-unknown\",\n  \"what_building\": \"The service appears to be a lightweight LLM gateway or proxy handling minimal, low-complexity chat requests. It routes simple prompts to various small-to-medium language models for basic conversational or readiness-check tasks.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"hi\",\n    \"say hi\",\n    \"Reply with the single word: ready\"\n  ],\n  \"outputs\": [\n    \"unclassified\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"requests: 21 tokens: 161\",\n    \"models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, ...}\",\n    \"templates: - (x13) hi\",\n    \"heuristic guess: gateway-unknown workload (unclassified) :: prompts -> LLM -> unknown sink\"\n  ]\n}",
+ "prompt_tokens": 420,
+ "completion_tokens": 243,
+ "ms": 36968.9,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "gateway-unknown",
+  "what_building": "The service appears to be a lightweight LLM gateway or proxy handling minimal, low-complexity chat requests. It routes simple prompts to various small-to-medium language models for basic conversational or readiness-check tasks.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call(model)",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "hi",
+   "say hi",
+   "Reply with the single word: ready"
+  ],
+  "outputs": [
+   "unclassified"
+  ],
+  "confidence": 0.3,
+  "evidence_quotes": [
+   "requests: 21 tokens: 161",
+   "models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, ...}",
+   "templates: - (x13) hi",
+   "heuristic guess: gateway-unknown workload (unclassified) :: prompts -> LLM -> unknown sink"
+  ]
+ },
+ "raw": "{\n  \"project\": \"gateway-unknown\",\n  \"what_building\": \"The service appears to be a lightweight LLM gateway or proxy handling minimal, low-complexity chat requests. It routes simple prompts to various small-to-medium language models for basic conversational or readiness-check tasks.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"hi\",\n    \"say hi\",\n    \"Reply with the single word: ready\"\n  ],\n  \"outputs\": [\n    \"unclassified\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"requests: 21 tokens: 161\",\n    \"models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, ...}\",\n    \"templates: - (x13) hi\",\n    \"heuristic guess: gateway-unknown workload (unclassified) :: prompts -> LLM -> unknown sink\"\n  ]\n}"
+}

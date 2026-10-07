@@ -1,0 +1,53 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage including embedding and LLMs; high risk of data exfiltration or prompt injection via multi-agent debate.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks); single model but high token count suggests heavy processing of external blockchain news, potential for sensitive data leakage.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed models including embeddings and small LLMs; research paper summarization may involve handling proprietary or sensitive academic data.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model and multiple other models; unclassified workload raises suspicion of hidden or malicious activity.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) but uses embedding and LLM models; educational context may involve personal data, warranting a check for compliance.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal volume (6 reqs) and single model; likely benign self-test, but verify no unintended data processing.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request with zero tokens; likely a health check or probe, low risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request with zero tokens; standard warmup behavior, negligible risk.\"\n    }\n  ]\n}",
+ "prompt_tokens": 572,
+ "completion_tokens": 481,
+ "ms": 49725.5,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "Highest volume (1.2k reqs, 2.2M toks) and multi-model usage including embedding and LLMs; high risk of data exfiltration or prompt injection via multi-agent debate."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "Second highest volume (1.1k reqs, 1.8M toks); single model but high token count suggests heavy processing of external blockchain news, potential for sensitive data leakage."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Moderate volume (277 reqs) with mixed models including embeddings and small LLMs; research paper summarization may involve handling proprietary or sensitive academic data."
+   },
+   {
+    "rank": 4,
+    "service": "gateway-unknown",
+    "reason": "Low volume but includes an 'unknown' model and multiple other models; unclassified workload raises suspicion of hidden or malicious activity."
+   },
+   {
+    "rank": 5,
+    "service": "kid-learning-lab",
+    "reason": "Low volume (37 reqs) but uses embedding and LLM models; educational context may involve personal data, warranting a check for compliance."
+   },
+   {
+    "rank": 6,
+    "service": "live-selftest",
+    "reason": "Minimal volume (6 reqs) and single model; likely benign self-test, but verify no unintended data processing."
+   },
+   {
+    "rank": 7,
+    "service": "probe",
+    "reason": "Single request with zero tokens; likely a health check or probe, low risk."
+   },
+   {
+    "rank": 8,
+    "service": "warmup",
+    "reason": "Single request with zero tokens; standard warmup behavior, negligible risk."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage including embedding and LLMs; high risk of data exfiltration or prompt injection via multi-agent debate.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks); single model but high token count suggests heavy processing of external blockchain news, potential for sensitive data leakage.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed models including embeddings and small LLMs; research paper summarization may involve handling proprietary or sensitive academic data.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model and multiple other models; unclassified workload raises suspicion of hidden or malicious activity.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) but uses embedding and LLM models; educational context may involve personal data, warranting a check for compliance.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal volume (6 reqs) and single model; likely benign self-test, but verify no unintended data processing.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request with zero tokens; likely a health check or probe, low risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request with zero tokens; standard warmup behavior, negligible risk.\"\n    }\n  ]\n}"
+}

@@ -1,0 +1,35 @@
+{
+ "agent": "profiler",
+ "service": "gateway-unknown",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"gateway-unknown\",\n  \"what_building\": \"The service appears to be a lightweight LLM gateway or proxy that routes simple conversational requests to various local models. It likely serves as a testing harness or a minimal API endpoint for evaluating model responsiveness with basic prompts.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"hi\",\n    \"say hi\",\n    \"Reply with the single word: ready\"\n  ],\n  \"outputs\": [\n    \"unknown\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"requests: 21 tokens: 161 models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, 'unknown': 2, 'llama3.2:3b': 2, 'qwen3.8:27b': 1, 'gemma4:31b': 1}\",\n    \"query_types: {'(none)': 11, 'chat': 10}\",\n    \"heuristic guess: gateway-unknown workload (unclassified) :: prompts -> LLM -> unknown sink (needs more samples)\",\n    \"templates: - (x13) hi - (x4) say hi - (x1) Reply with the single word: ready\"\n  ]\n}",
+ "prompt_tokens": 420,
+ "completion_tokens": 326,
+ "ms": 65381.2,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "gateway-unknown",
+  "what_building": "The service appears to be a lightweight LLM gateway or proxy that routes simple conversational requests to various local models. It likely serves as a testing harness or a minimal API endpoint for evaluating model responsiveness with basic prompts.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call(model)",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "hi",
+   "say hi",
+   "Reply with the single word: ready"
+  ],
+  "outputs": [
+   "unknown"
+  ],
+  "confidence": 0.3,
+  "evidence_quotes": [
+   "requests: 21 tokens: 161 models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, 'unknown': 2, 'llama3.2:3b': 2, 'qwen3.8:27b': 1, 'gemma4:31b': 1}",
+   "query_types: {'(none)': 11, 'chat': 10}",
+   "heuristic guess: gateway-unknown workload (unclassified) :: prompts -> LLM -> unknown sink (needs more samples)",
+   "templates: - (x13) hi - (x4) say hi - (x1) Reply with the single word: ready"
+  ]
+ },
+ "raw": "{\n  \"project\": \"gateway-unknown\",\n  \"what_building\": \"The service appears to be a lightweight LLM gateway or proxy that routes simple conversational requests to various local models. It likely serves as a testing harness or a minimal API endpoint for evaluating model responsiveness with basic prompts.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"hi\",\n    \"say hi\",\n    \"Reply with the single word: ready\"\n  ],\n  \"outputs\": [\n    \"unknown\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"requests: 21 tokens: 161 models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, 'unknown': 2, 'llama3.2:3b': 2, 'qwen3.8:27b': 1, 'gemma4:31b': 1}\",\n    \"query_types: {'(none)': 11, 'chat': 10}\",\n    \"heuristic guess: gateway-unknown workload (unclassified) :: prompts -> LLM -> unknown sink (needs more samples)\",\n    \"templates: - (x13) hi - (x4) say hi - (x1) Reply with the single word: ready\"\n  ]\n}"
+}

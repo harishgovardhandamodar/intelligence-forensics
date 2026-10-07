@@ -1,0 +1,9 @@
+{
+ "agent": "critic",
+ "service": "live-selftest",
+ "content": "*   **Unresolved Sink Identity:** The logs identify the final stage as `unknown_sink` with zero evidence of where the `risk_brief` is persisted, transmitted, or consumed.\n    *   *Smallest Next Observation:* Capture the network egress or file system write event immediately following the `llm.call` completion to identify the destination endpoint or storage path.\n*   **Missing Output Verification:** The profile claims `risk_brief` is an output, but no log entries contain the actual content, schema, or success status of the generated brief.\n    *   *Smallest Next Observation:* Retrieve the raw response payload from the `llm.call` step to confirm the structure and validity of the generated `risk_brief`.\n*   **Input Provenance Gap:** The input is labeled `brief`, but there is no evidence of its source, format, or whether it is user-supplied or system-generated.\n    *   *Smallest Next Observation:* Log the incoming request headers or body at the `capture_prompt` stage to verify the origin and structure of the `brief` input.\n*   **Multi-Agent Ambiguity:** The description mentions \"multi-agent debate,\" but the pipeline shows a single `llm.call",
+ "prompt_tokens": 331,
+ "completion_tokens": 256,
+ "ms": 76802.6,
+ "model": "qwen3.8:27b"
+}

@@ -1,0 +1,49 @@
+{
+ "agent": "profiler",
+ "service": "kid-learning-lab",
+ "injection_risk": 1,
+ "injection_findings": [
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "kid-learning-lab",
+   "line": 10,
+   "match": "Act as"
+  }
+ ],
+ "content": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"A personalized tutoring service for children that adapts pedagogical strategies based on specific skills and subjects. It uses LLMs to generate guided learning interactions such as hints, challenges, and reflections rather than direct answers.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"prompt_rendering\",\n    \"llm_inference\",\n    \"response_generation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"task\",\n    \"context\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"hint\",\n    \"challenge\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}\",\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\"\n  ]\n}",
+ "prompt_tokens": 600,
+ "completion_tokens": 300,
+ "ms": 42115.1,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "kid-learning-lab",
+  "what_building": "A personalized tutoring service for children that adapts pedagogical strategies based on specific skills and subjects. It uses LLMs to generate guided learning interactions such as hints, challenges, and reflections rather than direct answers.",
+  "pipeline": [
+   "learner_state_ingestion",
+   "prompt_rendering",
+   "llm_inference",
+   "response_generation"
+  ],
+  "inputs": [
+   "subject",
+   "skill",
+   "task",
+   "context"
+  ],
+  "outputs": [
+   "tutor_turn",
+   "hint",
+   "challenge",
+   "reflection_prompt"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}",
+   "Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.",
+   "Task: Give a short clue, never the answer. Ask one guiding question.",
+   "Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them."
+  ]
+ },
+ "raw": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"A personalized tutoring service for children that adapts pedagogical strategies based on specific skills and subjects. It uses LLMs to generate guided learning interactions such as hints, challenges, and reflections rather than direct answers.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"prompt_rendering\",\n    \"llm_inference\",\n    \"response_generation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"task\",\n    \"context\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"hint\",\n    \"challenge\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}\",\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\"\n  ]\n}"
+}

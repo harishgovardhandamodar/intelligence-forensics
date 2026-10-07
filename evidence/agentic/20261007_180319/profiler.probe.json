@@ -1,0 +1,33 @@
+{
+ "agent": "profiler",
+ "service": "probe",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"probe\",\n  \"what_building\": \"The service appears to be a lightweight routing or health-check mechanism that directs requests to a specific model. It likely functions as a gatekeeper or load balancer component within a larger inference pipeline.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"prompt\"\n  ],\n  \"outputs\": [\n    \"routed\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"service: probe\",\n    \"models: {'gemma4:31b': 1}\",\n    \"heuristic guess: probe workload (unclassified)\",\n    \"Reply with exactly: routed\"\n  ]\n}",
+ "prompt_tokens": 325,
+ "completion_tokens": 182,
+ "ms": 71553.9,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "probe",
+  "what_building": "The service appears to be a lightweight routing or health-check mechanism that directs requests to a specific model. It likely functions as a gatekeeper or load balancer component within a larger inference pipeline.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call(model)",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "prompt"
+  ],
+  "outputs": [
+   "routed"
+  ],
+  "confidence": 0.3,
+  "evidence_quotes": [
+   "service: probe",
+   "models: {'gemma4:31b': 1}",
+   "heuristic guess: probe workload (unclassified)",
+   "Reply with exactly: routed"
+  ]
+ },
+ "raw": "{\n  \"project\": \"probe\",\n  \"what_building\": \"The service appears to be a lightweight routing or health-check mechanism that directs requests to a specific model. It likely functions as a gatekeeper or load balancer component within a larger inference pipeline.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"prompt\"\n  ],\n  \"outputs\": [\n    \"routed\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"service: probe\",\n    \"models: {'gemma4:31b': 1}\",\n    \"heuristic guess: probe workload (unclassified)\",\n    \"Reply with exactly: routed\"\n  ]\n}"
+}

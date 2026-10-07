@@ -1,0 +1,40 @@
+{
+ "agent": "profiler",
+ "service": "hive-research-gpu",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A research paper summarization and surrogate generation service that processes academic documents, specifically focusing on multi-agent systems and reinforcement learning. It utilizes a pipeline to extract sections and generate summaries or 'surrogates' from paper abstracts and experimental details.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"abstract\",\n    \"experimental setup\",\n    \"figures available\",\n    \"knowledge graph\"\n  ],\n  \"outputs\": [\n    \"section-wise summaries\",\n    \"surrogates\",\n    \"briefs\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries\",\n    \"heuristic pipeline: extract_sections -> summarize_section(model) -> summarize_figures -> build_surrogate\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\",\n    \"Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent Deep Reinforcement Learning Model\"\n  ]\n}",
+ "prompt_tokens": 930,
+ "completion_tokens": 315,
+ "ms": 8854.4,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "hive-research-gpu",
+  "what_building": "A research paper summarization and surrogate generation service that processes academic documents, specifically focusing on multi-agent systems and reinforcement learning. It utilizes a pipeline to extract sections and generate summaries or 'surrogates' from paper abstracts and experimental details.",
+  "pipeline": [
+   "extract_sections",
+   "summarize_section",
+   "summarize_figures",
+   "build_surrogate"
+  ],
+  "inputs": [
+   "paper_title",
+   "abstract",
+   "experimental setup",
+   "figures available",
+   "knowledge graph"
+  ],
+  "outputs": [
+   "section-wise summaries",
+   "surrogates",
+   "briefs"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries",
+   "heuristic pipeline: extract_sections -> summarize_section(model) -> summarize_figures -> build_surrogate",
+   "schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']",
+   "Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent Deep Reinforcement Learning Model"
+  ]
+ },
+ "raw": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A research paper summarization and surrogate generation service that processes academic documents, specifically focusing on multi-agent systems and reinforcement learning. It utilizes a pipeline to extract sections and generate summaries or 'surrogates' from paper abstracts and experimental details.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"abstract\",\n    \"experimental setup\",\n    \"figures available\",\n    \"knowledge graph\"\n  ],\n  \"outputs\": [\n    \"section-wise summaries\",\n    \"surrogates\",\n    \"briefs\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries\",\n    \"heuristic pipeline: extract_sections -> summarize_section(model) -> summarize_figures -> build_surrogate\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\",\n    \"Title: {{paper_title}} ## abstract AOAD-MAT: Transformer-based Multi-Agent Deep Reinforcement Learning Model\"\n  ]\n}"
+}

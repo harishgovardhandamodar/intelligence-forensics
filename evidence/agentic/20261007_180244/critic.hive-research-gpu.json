@@ -1,0 +1,9 @@
+{
+ "agent": "critic",
+ "service": "hive-research-gpu",
+ "content": "*   **Missing Output Artifacts:** The profile claims `knowledge_graphs` are an output, but the pipeline ends at `build_surrogate` with no evidence of graph extraction, node/edge generation, or serialization logic.\n    *   *Next Observation:* Inspect the `build_surrogate` function source code or logs for calls to graph libraries (e.g., NetworkX, Neo4j drivers) or JSON schema definitions for nodes/edges.\n*   **Ambiguous \"Surrogate\" Definition:** The term `paper_surrogates` is undefined; it is unclear if this refers to a compressed vector embedding, a text summary, or a synthetic data generator.\n    *   *Next Observation:* Retrieve a sample output payload from the `build_surrogate` stage to determine the data type (string, vector, or structured object).\n*   **Figure Processing Gap:** The pipeline includes `summarize_figures`, but no evidence exists for image-to-text conversion (OCR/VLM) or how binary figure data is ingested.\n    *   *Next Observation:* Check logs for image processing libraries (e.g., PIL, OpenCV) or multimodal model calls (e.g., LLaVA) during the `summarize",
+ "prompt_tokens": 492,
+ "completion_tokens": 256,
+ "ms": 70864.8,
+ "model": "qwen3.8:27b"
+}

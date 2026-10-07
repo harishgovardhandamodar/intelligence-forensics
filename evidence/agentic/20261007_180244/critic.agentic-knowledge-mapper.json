@@ -1,0 +1,9 @@
+{
+ "agent": "critic",
+ "service": "agentic-knowledge-mapper",
+ "content": "*   **Gap: Actual Risk Scores and Tier Assignments**\n    *   **Cannot Prove:** The logs show the pipeline structure (`score_product_risk`, `score_model_risk`) but contain no evidence of the actual numerical scores (0-100) or specific tier assignments generated for any input.\n    *   **Missing Output:** The final \"risk register\" JSON/CSV payload with concrete `residual_risk` values.\n    *   **Next Observation:** Capture a raw API response or log entry from the `emit_register` stage showing a specific product/model pair with its assigned `exposure_tier` and `residual_risk` score.\n\n*   **Gap: CVE/Attack Mapping Specificity**\n    *   **Cannot Prove:** The heuristic mentions `map_attacks(CVE)`, but there is no evidence of which specific CVEs or attack vectors (e.g., prompt injection, sycophancy) were actually mapped to the models.\n    *   **Missing Output:** The `control_catalogue` recommendations linked to specific failure modes.\n    *   **Next Observation:** Inspect the intermediate state between `map_attacks` and `emit_register` to see the list of identified CVEs",
+ "prompt_tokens": 490,
+ "completion_tokens": 256,
+ "ms": 74063.3,
+ "model": "qwen3.8:27b"
+}

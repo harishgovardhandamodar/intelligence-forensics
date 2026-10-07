@@ -1,0 +1,33 @@
+{
+ "agent": "profiler",
+ "service": "live-selftest",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"live-selftest\",\n  \"what_building\": \"A diagnostic service that executes live probes to test multi-agent debate capabilities. It generates risk briefs using a specific LLM model to validate system behavior.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"brief\"\n  ],\n  \"outputs\": [\n    \"risk brief\"\n  ],\n  \"confidence\": 0.4,\n  \"evidence_quotes\": [\n    \"Live probe 5: multi-agent debate risk brief\",\n    \"models: {'qwen3.8:27b': 6}\",\n    \"query_types: {'trade': 5, 'chat': 1}\",\n    \"heuristic guess: live-selftest workload (unclassified)\"\n  ]\n}",
+ "prompt_tokens": 398,
+ "completion_tokens": 195,
+ "ms": 35513.1,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "live-selftest",
+  "what_building": "A diagnostic service that executes live probes to test multi-agent debate capabilities. It generates risk briefs using a specific LLM model to validate system behavior.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "brief"
+  ],
+  "outputs": [
+   "risk brief"
+  ],
+  "confidence": 0.4,
+  "evidence_quotes": [
+   "Live probe 5: multi-agent debate risk brief",
+   "models: {'qwen3.8:27b': 6}",
+   "query_types: {'trade': 5, 'chat': 1}",
+   "heuristic guess: live-selftest workload (unclassified)"
+  ]
+ },
+ "raw": "{\n  \"project\": \"live-selftest\",\n  \"what_building\": \"A diagnostic service that executes live probes to test multi-agent debate capabilities. It generates risk briefs using a specific LLM model to validate system behavior.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"brief\"\n  ],\n  \"outputs\": [\n    \"risk brief\"\n  ],\n  \"confidence\": 0.4,\n  \"evidence_quotes\": [\n    \"Live probe 5: multi-agent debate risk brief\",\n    \"models: {'qwen3.8:27b': 6}\",\n    \"query_types: {'trade': 5, 'chat': 1}\",\n    \"heuristic guess: live-selftest workload (unclassified)\"\n  ]\n}"
+}

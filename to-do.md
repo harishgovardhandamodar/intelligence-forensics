@@ -209,6 +209,11 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 - [x] P7.36 Ledger task-level filtering (client-side task/actor/action filter)
 - [x] P7.37 Alert webhooks: `IF_ALERT_WEBHOOK` POST on every raised alert,
       delivery status in tap `status()`
+- [x] P7.38 Run pile-up fixes (from live incident): in-flight runs visible
+      first in `/api/runs` with elapsed spinner; `MAX_BACKGROUND_RUNS=2`
+      with 429 + human message; unique run dirs/keys; defensive registry
+      reads; `user:` on the main service (root-owned volume files broke
+      host reads the same way workers did)
 - [x] P7.31 Surface: `/api/swarm/ledger` + Ledger tab, `ledger verify` CLI,
       human-approval entries for prune/export
 

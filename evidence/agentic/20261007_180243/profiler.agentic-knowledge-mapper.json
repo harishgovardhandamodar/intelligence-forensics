@@ -1,0 +1,42 @@
+{
+ "agent": "profiler",
+ "service": "agentic-knowledge-mapper",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment service that evaluates the safety and robustness of multi-agent debate systems and other LLM-based architectures. It generates structured risk registers by mapping potential failure modes, such as sycophancy and prompt injection, to specific exposure tiers and control measures.\",\n  \"pipeline\": [\n    \"make_brief\",\n    \"score_product_risk\",\n    \"score_model_risk\",\n    \"map_attacks\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"brief\",\n    \"product\",\n    \"model_desc\",\n    \"exposure_tier\",\n    \"subject_profile\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier_score\",\n    \"control_recommendations\",\n    \"attack_mapping\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\",\n    \"Title: Risks and failure modes of multi-agent debate systems\",\n    \"Exposure tier: confidential_data\",\n    \"Control catalogue: - C01 Classification gate before AI (efficacy 0.7)\"\n  ]\n}",
+ "prompt_tokens": 797,
+ "completion_tokens": 307,
+ "ms": 30969.2,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "agentic-knowledge-mapper",
+  "what_building": "A risk assessment service that evaluates the safety and robustness of multi-agent debate systems and other LLM-based architectures. It generates structured risk registers by mapping potential failure modes, such as sycophancy and prompt injection, to specific exposure tiers and control measures.",
+  "pipeline": [
+   "make_brief",
+   "score_product_risk",
+   "score_model_risk",
+   "map_attacks",
+   "emit_register"
+  ],
+  "inputs": [
+   "brief",
+   "product",
+   "model_desc",
+   "exposure_tier",
+   "subject_profile"
+  ],
+  "outputs": [
+   "risk_register",
+   "exposure_tier_score",
+   "control_recommendations",
+   "attack_mapping"
+  ],
+  "confidence": 0.85,
+  "evidence_quotes": [
+   "heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register",
+   "Title: Risks and failure modes of multi-agent debate systems",
+   "Exposure tier: confidential_data",
+   "Control catalogue: - C01 Classification gate before AI (efficacy 0.7)"
+  ]
+ },
+ "raw": "{\n  \"project\": \"agentic-knowledge-mapper\",\n  \"what_building\": \"A risk assessment service that evaluates the safety and robustness of multi-agent debate systems and other LLM-based architectures. It generates structured risk registers by mapping potential failure modes, such as sycophancy and prompt injection, to specific exposure tiers and control measures.\",\n  \"pipeline\": [\n    \"make_brief\",\n    \"score_product_risk\",\n    \"score_model_risk\",\n    \"map_attacks\",\n    \"emit_register\"\n  ],\n  \"inputs\": [\n    \"brief\",\n    \"product\",\n    \"model_desc\",\n    \"exposure_tier\",\n    \"subject_profile\"\n  ],\n  \"outputs\": [\n    \"risk_register\",\n    \"exposure_tier_score\",\n    \"control_recommendations\",\n    \"attack_mapping\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"heuristic guess: multi-agent debate risk scorer :: brief/product/model descriptors -> risk-scoring prompts (tiers 0-100, CVE/attack mapping) -> risk register\",\n    \"Title: Risks and failure modes of multi-agent debate systems\",\n    \"Exposure tier: confidential_data\",\n    \"Control catalogue: - C01 Classification gate before AI (efficacy 0.7)\"\n  ]\n}"
+}

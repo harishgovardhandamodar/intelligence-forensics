@@ -1,0 +1,53 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.2M toks) and multi-model usage suggest complex orchestration or potential resource abuse.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) with single-model focus indicates heavy load or potential scraping behavior.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed models including embedding and LLMs, typical for research pipelines but worth checking for efficiency.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes 'unknown' model and multiple model types, indicating potential misconfiguration or unauthorized access.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) and low token count, likely benign but low priority.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Very low volume (6 reqs), likely internal testing, low risk.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens, likely a health check or minimal probe, negligible risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens, likely infrastructure warmup, negligible risk.\"\n    }\n  ]\n}",
+ "prompt_tokens": 572,
+ "completion_tokens": 433,
+ "ms": 30493.1,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "High volume (1.2k reqs, 2.2M toks) and multi-model usage suggest complex orchestration or potential resource abuse."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "High volume (1.1k reqs, 1.8M toks) with single-model focus indicates heavy load or potential scraping behavior."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Moderate volume (277 reqs) with mixed models including embedding and LLMs, typical for research pipelines but worth checking for efficiency."
+   },
+   {
+    "rank": 4,
+    "service": "gateway-unknown",
+    "reason": "Low volume but includes 'unknown' model and multiple model types, indicating potential misconfiguration or unauthorized access."
+   },
+   {
+    "rank": 5,
+    "service": "kid-learning-lab",
+    "reason": "Low volume (37 reqs) and low token count, likely benign but low priority."
+   },
+   {
+    "rank": 6,
+    "service": "live-selftest",
+    "reason": "Very low volume (6 reqs), likely internal testing, low risk."
+   },
+   {
+    "rank": 7,
+    "service": "probe",
+    "reason": "Single request, zero tokens, likely a health check or minimal probe, negligible risk."
+   },
+   {
+    "rank": 8,
+    "service": "warmup",
+    "reason": "Single request, zero tokens, likely infrastructure warmup, negligible risk."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.2M toks) and multi-model usage suggest complex orchestration or potential resource abuse.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) with single-model focus indicates heavy load or potential scraping behavior.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed models including embedding and LLMs, typical for research pipelines but worth checking for efficiency.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes 'unknown' model and multiple model types, indicating potential misconfiguration or unauthorized access.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) and low token count, likely benign but low priority.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Very low volume (6 reqs), likely internal testing, low risk.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens, likely a health check or minimal probe, negligible risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens, likely infrastructure warmup, negligible risk.\"\n    }\n  ]\n}"
+}

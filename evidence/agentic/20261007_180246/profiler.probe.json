@@ -1,0 +1,33 @@
+{
+ "agent": "profiler",
+ "service": "probe",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"probe\",\n  \"what_building\": \"A lightweight routing or health-check service that validates LLM connectivity. It uses a minimal prompt to trigger a specific keyword response from the model.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"response_validation\"\n  ],\n  \"inputs\": [\n    \"static_probe_prompt\"\n  ],\n  \"outputs\": [\n    \"routed\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"service: probe\",\n    \"models: {'gemma4:31b': 1}\",\n    \"Reply with exactly: routed\",\n    \"heuristic guess: probe workload (unclassified)\"\n  ]\n}",
+ "prompt_tokens": 325,
+ "completion_tokens": 174,
+ "ms": 62957.2,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "probe",
+  "what_building": "A lightweight routing or health-check service that validates LLM connectivity. It uses a minimal prompt to trigger a specific keyword response from the model.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call",
+   "response_validation"
+  ],
+  "inputs": [
+   "static_probe_prompt"
+  ],
+  "outputs": [
+   "routed"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "service: probe",
+   "models: {'gemma4:31b': 1}",
+   "Reply with exactly: routed",
+   "heuristic guess: probe workload (unclassified)"
+  ]
+ },
+ "raw": "{\n  \"project\": \"probe\",\n  \"what_building\": \"A lightweight routing or health-check service that validates LLM connectivity. It uses a minimal prompt to trigger a specific keyword response from the model.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"response_validation\"\n  ],\n  \"inputs\": [\n    \"static_probe_prompt\"\n  ],\n  \"outputs\": [\n    \"routed\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"service: probe\",\n    \"models: {'gemma4:31b': 1}\",\n    \"Reply with exactly: routed\",\n    \"heuristic guess: probe workload (unclassified)\"\n  ]\n}"
+}

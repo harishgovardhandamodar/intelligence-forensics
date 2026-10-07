@@ -22,6 +22,11 @@ from . import security_agent
 
 AGENT_DIR = os.path.join(config.EVIDENCE_DIR, "agentic")
 
+# Ollama serves (effectively) one 27b inference at a time; each background
+# run holds ~5 LLM calls, so unbounded launches pile up into a silent queue
+# while the UI shows nothing. Cap it and say so out loud (429).
+MAX_BACKGROUND_RUNS = 2
+
 SCOUT_SYSTEM = (
     "You are a forensic traffic scout. You read LLM-gateway telemetry summaries "
     "(which service called which model, how often, token volumes, cadence) and "
@@ -250,8 +255,12 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
         services = sorted(services,
                           key=lambda s: -inv["services"][s]["requests"])[:3]
     np = 256 if quick else 512
-    run_id = time.strftime("%Y%m%d_%H%M%S")
-    run_dir = os.path.join(AGENT_DIR, run_id)
+    stamp = time.strftime("%Y%m%d_%H%M%S")
+    run_id, run_dir, n = stamp, os.path.join(AGENT_DIR, stamp), 2
+    while os.path.exists(run_dir):  # two launches in the same second
+        run_id = f"{stamp}-{n}"
+        run_dir = os.path.join(AGENT_DIR, run_id)
+        n += 1
     os.makedirs(run_dir, exist_ok=True)
     manifest: dict = {"run_id": run_id, "model": model, "quick": quick,
                       "services": services, "agents": {}, "errors": []}
@@ -421,9 +430,19 @@ def launch_background(rows_fn, model: str, quick: bool,
                       only: list[str] | None, swarm: bool = False,
                       swarm_timeout: float = 900.0) -> str:
     from . import swarm as swarm_mod
-    run_key = f"pending-{time.strftime('%Y%m%d_%H%M%S')}"
+    running = sum(1 for v in swarm_mod.all_runs().values()
+                  if isinstance(v, dict) and v.get("status") == "running")
+    if running >= MAX_BACKGROUND_RUNS:
+        raise RuntimeError(f"busy: {running} runs already in flight "
+                           f"(max {MAX_BACKGROUND_RUNS}) — wait for one to finish")
+    stamp = time.strftime("%Y%m%d_%H%M%S")
+    run_key, n = f"pending-{stamp}", 2
+    while swarm_mod.get_run(run_key).get("status") != "unknown":
+        run_key = f"pending-{stamp}-{n}"
+        n += 1
     swarm_mod.register_run(run_key, {"status": "running",
-                                     "started": time.time()})
+                                     "started": time.time(), "model": model,
+                                     "quick": quick, "only": only, "swarm": swarm})
 
     def _work():
         try:
@@ -441,3 +460,17 @@ def launch_background(rows_fn, model: str, quick: bool,
 def background_status(key: str) -> dict:
     from . import swarm as swarm_mod
     return swarm_mod.get_run(key)
+
+
+def pending_runs() -> list[dict]:
+    """In-flight background runs with elapsed time (for the runs table)."""
+    from . import swarm as swarm_mod
+    now = time.time()
+    out = []
+    for key, v in swarm_mod.all_runs().items():
+        if isinstance(v, dict) and v.get("status") == "running":
+            out.append({"run_id": key, "status": "running", "pending_key": key,
+                        "model": v.get("model"), "quick": v.get("quick"),
+                        "started": v.get("started"),
+                        "elapsed_s": round(now - (v.get("started") or now), 1)})
+    return sorted(out, key=lambda r: r.get("started") or 0, reverse=True)

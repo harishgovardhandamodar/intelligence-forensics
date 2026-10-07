@@ -1,0 +1,53 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model orchestration (Qwen, Nomic, Gemma) suggests complex agentic workflows or potential prompt-injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) with single-model focus; high token-per-request ratio indicates heavy context processing or potential data exfiltration via large prompts.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed model usage (Embedding + LLM); embedding usage alongside LLMs suggests RAG pipelines which are common vectors for indirect prompt injection.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but high model diversity (5+ models including 'unknown') and unclassified status; potential for shadow AI usage or misconfigured routing.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume, low tokens; likely benign educational use, but embedding usage warrants a quick check for PII leakage in prompts.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal activity (6 reqs); likely automated health checks, low risk.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely connectivity check, negligible risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard infrastructure warmup, negligible risk.\"\n    }\n  ]\n}",
+ "prompt_tokens": 572,
+ "completion_tokens": 472,
+ "ms": 12019.5,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "Highest volume (1.2k reqs, 2.2M toks) and multi-model orchestration (Qwen, Nomic, Gemma) suggests complex agentic workflows or potential prompt-injection surface."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "High volume (1.1k reqs, 1.8M toks) with single-model focus; high token-per-request ratio indicates heavy context processing or potential data exfiltration via large prompts."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Moderate volume with mixed model usage (Embedding + LLM); embedding usage alongside LLMs suggests RAG pipelines which are common vectors for indirect prompt injection."
+   },
+   {
+    "rank": 4,
+    "service": "gateway-unknown",
+    "reason": "Low volume but high model diversity (5+ models including 'unknown') and unclassified status; potential for shadow AI usage or misconfigured routing."
+   },
+   {
+    "rank": 5,
+    "service": "kid-learning-lab",
+    "reason": "Low volume, low tokens; likely benign educational use, but embedding usage warrants a quick check for PII leakage in prompts."
+   },
+   {
+    "rank": 6,
+    "service": "live-selftest",
+    "reason": "Minimal activity (6 reqs); likely automated health checks, low risk."
+   },
+   {
+    "rank": 7,
+    "service": "probe",
+    "reason": "Single request, zero tokens; likely connectivity check, negligible risk."
+   },
+   {
+    "rank": 8,
+    "service": "warmup",
+    "reason": "Single request, zero tokens; standard infrastructure warmup, negligible risk."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model orchestration (Qwen, Nomic, Gemma) suggests complex agentic workflows or potential prompt-injection surface.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) with single-model focus; high token-per-request ratio indicates heavy context processing or potential data exfiltration via large prompts.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed model usage (Embedding + LLM); embedding usage alongside LLMs suggests RAG pipelines which are common vectors for indirect prompt injection.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but high model diversity (5+ models including 'unknown') and unclassified status; potential for shadow AI usage or misconfigured routing.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume, low tokens; likely benign educational use, but embedding usage warrants a quick check for PII leakage in prompts.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal activity (6 reqs); likely automated health checks, low risk.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely connectivity check, negligible risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard infrastructure warmup, negligible risk.\"\n    }\n  ]\n}"
+}

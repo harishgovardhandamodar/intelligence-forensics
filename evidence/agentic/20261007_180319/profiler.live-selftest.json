@@ -1,0 +1,33 @@
+{
+ "agent": "profiler",
+ "service": "live-selftest",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"live-selftest\",\n  \"what_building\": \"A live self-test service that generates multi-agent debate risk briefs. It appears to be a diagnostic or validation tool for evaluating LLM performance in structured debate scenarios.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"brief\"\n  ],\n  \"outputs\": [\n    \"unknown_sink\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"Live probe 5: multi-agent debate risk brief\",\n    \"Live probe 4: multi-agent debate risk brief\",\n    \"Live probe 3: multi-agent debate risk brief\",\n    \"Live probe 2: multi-agent debate risk brief\"\n  ]\n}",
+ "prompt_tokens": 398,
+ "completion_tokens": 188,
+ "ms": 72818.7,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "live-selftest",
+  "what_building": "A live self-test service that generates multi-agent debate risk briefs. It appears to be a diagnostic or validation tool for evaluating LLM performance in structured debate scenarios.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "brief"
+  ],
+  "outputs": [
+   "unknown_sink"
+  ],
+  "confidence": 0.3,
+  "evidence_quotes": [
+   "Live probe 5: multi-agent debate risk brief",
+   "Live probe 4: multi-agent debate risk brief",
+   "Live probe 3: multi-agent debate risk brief",
+   "Live probe 2: multi-agent debate risk brief"
+  ]
+ },
+ "raw": "{\n  \"project\": \"live-selftest\",\n  \"what_building\": \"A live self-test service that generates multi-agent debate risk briefs. It appears to be a diagnostic or validation tool for evaluating LLM performance in structured debate scenarios.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"brief\"\n  ],\n  \"outputs\": [\n    \"unknown_sink\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"Live probe 5: multi-agent debate risk brief\",\n    \"Live probe 4: multi-agent debate risk brief\",\n    \"Live probe 3: multi-agent debate risk brief\",\n    \"Live probe 2: multi-agent debate risk brief\"\n  ]\n}"
+}

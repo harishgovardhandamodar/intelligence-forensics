@@ -1,0 +1,35 @@
+{
+ "agent": "profiler",
+ "service": "gateway-unknown",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"gateway-unknown\",\n  \"what_building\": \"The service appears to be a lightweight LLM gateway or health-check endpoint that routes simple prompts to various local models. It likely serves as a connectivity test or minimal interface for a larger, unclassified application.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"response_return\"\n  ],\n  \"inputs\": [\n    \"hi\",\n    \"say hi\",\n    \"Reply with the single word: ready\"\n  ],\n  \"outputs\": [\n    \"text_response\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"requests: 21 tokens: 161\",\n    \"models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5}\",\n    \"templates: - (x13) hi\",\n    \"heuristic guess: gateway-unknown workload (unclassified)\"\n  ]\n}",
+ "prompt_tokens": 420,
+ "completion_tokens": 230,
+ "ms": 68264.8,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "gateway-unknown",
+  "what_building": "The service appears to be a lightweight LLM gateway or health-check endpoint that routes simple prompts to various local models. It likely serves as a connectivity test or minimal interface for a larger, unclassified application.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call",
+   "response_return"
+  ],
+  "inputs": [
+   "hi",
+   "say hi",
+   "Reply with the single word: ready"
+  ],
+  "outputs": [
+   "text_response"
+  ],
+  "confidence": 0.3,
+  "evidence_quotes": [
+   "requests: 21 tokens: 161",
+   "models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5}",
+   "templates: - (x13) hi",
+   "heuristic guess: gateway-unknown workload (unclassified)"
+  ]
+ },
+ "raw": "{\n  \"project\": \"gateway-unknown\",\n  \"what_building\": \"The service appears to be a lightweight LLM gateway or health-check endpoint that routes simple prompts to various local models. It likely serves as a connectivity test or minimal interface for a larger, unclassified application.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"response_return\"\n  ],\n  \"inputs\": [\n    \"hi\",\n    \"say hi\",\n    \"Reply with the single word: ready\"\n  ],\n  \"outputs\": [\n    \"text_response\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"requests: 21 tokens: 161\",\n    \"models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5}\",\n    \"templates: - (x13) hi\",\n    \"heuristic guess: gateway-unknown workload (unclassified)\"\n  ]\n}"
+}

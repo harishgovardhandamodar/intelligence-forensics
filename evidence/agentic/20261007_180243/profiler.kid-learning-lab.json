@@ -1,0 +1,51 @@
+{
+ "agent": "profiler",
+ "service": "kid-learning-lab",
+ "injection_risk": 1,
+ "injection_findings": [
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "kid-learning-lab",
+   "line": 10,
+   "match": "Act as"
+  }
+ ],
+ "content": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"A personalized tutoring service that adapts pedagogical strategies to specific learner states and skill levels. It generates interactive educational prompts, including hints, challenges, and reflection questions, to guide children through learning without providing direct answers.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"pedagogical_prompt_rendering\",\n    \"llm_coach_generation\",\n    \"response_delivery\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"task\",\n    \"context\",\n    \"learner_state\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"guiding_question\",\n    \"hint\",\n    \"challenge\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\",\n    \"Subject: {{subject}}\\nSkill: {{skill}}\\nTask: {{task}}\\nContext: {{context}}\"\n  ]\n}",
+ "prompt_tokens": 600,
+ "completion_tokens": 323,
+ "ms": 34151.0,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "kid-learning-lab",
+  "what_building": "A personalized tutoring service that adapts pedagogical strategies to specific learner states and skill levels. It generates interactive educational prompts, including hints, challenges, and reflection questions, to guide children through learning without providing direct answers.",
+  "pipeline": [
+   "learner_state_ingestion",
+   "pedagogical_prompt_rendering",
+   "llm_coach_generation",
+   "response_delivery"
+  ],
+  "inputs": [
+   "subject",
+   "skill",
+   "task",
+   "context",
+   "learner_state"
+  ],
+  "outputs": [
+   "tutor_turn",
+   "guiding_question",
+   "hint",
+   "challenge",
+   "reflection_prompt"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.",
+   "Task: Give a short clue, never the answer. Ask one guiding question.",
+   "Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.",
+   "Subject: {{subject}}\nSkill: {{skill}}\nTask: {{task}}\nContext: {{context}}"
+  ]
+ },
+ "raw": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"A personalized tutoring service that adapts pedagogical strategies to specific learner states and skill levels. It generates interactive educational prompts, including hints, challenges, and reflection questions, to guide children through learning without providing direct answers.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"pedagogical_prompt_rendering\",\n    \"llm_coach_generation\",\n    \"response_delivery\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"task\",\n    \"context\",\n    \"learner_state\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"guiding_question\",\n    \"hint\",\n    \"challenge\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Task: Give a short clue, never the answer. Ask one guiding question.\",\n    \"Task: Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question, and guide the learner without doing all the thinking for them.\",\n    \"Subject: {{subject}}\\nSkill: {{skill}}\\nTask: {{task}}\\nContext: {{context}}\"\n  ]\n}"
+}

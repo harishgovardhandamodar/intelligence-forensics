@@ -13,6 +13,9 @@ services:
     container_name: intel-forensics
     hostname: intel-forensics
     restart: unless-stopped
+    # Same reason as the swarm workers: everything the dashboard writes
+    # (reports, runs, ledger, registry) must stay host-writable.
+    user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "8211:8211"
     environment:

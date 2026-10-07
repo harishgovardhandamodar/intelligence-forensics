@@ -1,0 +1,34 @@
+{
+ "agent": "profiler",
+ "service": "live-selftest",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"live-selftest\",\n  \"what_building\": \"A self-test or probe service that generates multi-agent debate risk briefs. It appears to be a diagnostic tool for validating LLM behavior in adversarial or multi-agent scenarios.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"generate_risk_brief\"\n  ],\n  \"inputs\": [\n    \"probe_id\",\n    \"scenario_type (multi-agent debate)\"\n  ],\n  \"outputs\": [\n    \"risk_brief\"\n  ],\n  \"confidence\": 0.6,\n  \"evidence_quotes\": [\n    \"Live probe 5: multi-agent debate risk brief\",\n    \"Live probe 4: multi-agent debate risk brief\",\n    \"Live probe 3: multi-agent debate risk brief\",\n    \"Live probe 2: multi-agent debate risk brief\"\n  ]\n}",
+ "prompt_tokens": 398,
+ "completion_tokens": 205,
+ "ms": 67158.0,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "live-selftest",
+  "what_building": "A self-test or probe service that generates multi-agent debate risk briefs. It appears to be a diagnostic tool for validating LLM behavior in adversarial or multi-agent scenarios.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call",
+   "generate_risk_brief"
+  ],
+  "inputs": [
+   "probe_id",
+   "scenario_type (multi-agent debate)"
+  ],
+  "outputs": [
+   "risk_brief"
+  ],
+  "confidence": 0.6,
+  "evidence_quotes": [
+   "Live probe 5: multi-agent debate risk brief",
+   "Live probe 4: multi-agent debate risk brief",
+   "Live probe 3: multi-agent debate risk brief",
+   "Live probe 2: multi-agent debate risk brief"
+  ]
+ },
+ "raw": "{\n  \"project\": \"live-selftest\",\n  \"what_building\": \"A self-test or probe service that generates multi-agent debate risk briefs. It appears to be a diagnostic tool for validating LLM behavior in adversarial or multi-agent scenarios.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"generate_risk_brief\"\n  ],\n  \"inputs\": [\n    \"probe_id\",\n    \"scenario_type (multi-agent debate)\"\n  ],\n  \"outputs\": [\n    \"risk_brief\"\n  ],\n  \"confidence\": 0.6,\n  \"evidence_quotes\": [\n    \"Live probe 5: multi-agent debate risk brief\",\n    \"Live probe 4: multi-agent debate risk brief\",\n    \"Live probe 3: multi-agent debate risk brief\",\n    \"Live probe 2: multi-agent debate risk brief\"\n  ]\n}"
+}

@@ -1,0 +1,53 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage suggests complex orchestration or potential resource abuse.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks) with single-model focus, indicating high-frequency extraction workload.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed model usage including embedding and LLMs, typical for research pipelines.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) but non-trivial token count, likely interactive or stateful sessions.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes 'unknown' model tag, indicating potential misconfiguration or unclassified traffic.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal volume (6 reqs), likely automated health checks.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens, likely connectivity check.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens, likely initialization.\"\n    }\n  ]\n}",
+ "prompt_tokens": 572,
+ "completion_tokens": 415,
+ "ms": 37242.9,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "Highest volume (1.2k reqs, 2.2M toks) and multi-model usage suggests complex orchestration or potential resource abuse."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "Second highest volume (1.1k reqs, 1.8M toks) with single-model focus, indicating high-frequency extraction workload."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Moderate volume (277 reqs) with mixed model usage including embedding and LLMs, typical for research pipelines."
+   },
+   {
+    "rank": 4,
+    "service": "kid-learning-lab",
+    "reason": "Low volume (37 reqs) but non-trivial token count, likely interactive or stateful sessions."
+   },
+   {
+    "rank": 5,
+    "service": "gateway-unknown",
+    "reason": "Low volume but includes 'unknown' model tag, indicating potential misconfiguration or unclassified traffic."
+   },
+   {
+    "rank": 6,
+    "service": "live-selftest",
+    "reason": "Minimal volume (6 reqs), likely automated health checks."
+   },
+   {
+    "rank": 7,
+    "service": "probe",
+    "reason": "Single request, zero tokens, likely connectivity check."
+   },
+   {
+    "rank": 8,
+    "service": "warmup",
+    "reason": "Single request, zero tokens, likely initialization."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage suggests complex orchestration or potential resource abuse.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"Second highest volume (1.1k reqs, 1.8M toks) with single-model focus, indicating high-frequency extraction workload.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume (277 reqs) with mixed model usage including embedding and LLMs, typical for research pipelines.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume (37 reqs) but non-trivial token count, likely interactive or stateful sessions.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes 'unknown' model tag, indicating potential misconfiguration or unclassified traffic.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal volume (6 reqs), likely automated health checks.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens, likely connectivity check.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens, likely initialization.\"\n    }\n  ]\n}"
+}

@@ -1,0 +1,52 @@
+{
+ "agent": "profiler",
+ "service": "kid-learning-lab",
+ "injection_risk": 1,
+ "injection_findings": [
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "kid-learning-lab",
+   "line": 10,
+   "match": "Act as"
+  }
+ ],
+ "content": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"An adaptive tutoring engine that generates pedagogical prompts for children based on specific skills and learner states. It uses a dual-model approach with embeddings for context and a large language model for generating tutor responses.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"prompt_rendering\",\n    \"embedding_generation\",\n    \"llm_tutor_response\",\n    \"next_step_generation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"task\",\n    \"context\",\n    \"learner_state\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"check_question\",\n    \"guiding_question\",\n    \"next_challenge\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}\",\n    \"models: {'nomic-embed-text:latest': 32, 'gemma4:31b': 5}\",\n    \"Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question\"\n  ]\n}",
+ "prompt_tokens": 600,
+ "completion_tokens": 317,
+ "ms": 16874.1,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "kid-learning-lab",
+  "what_building": "An adaptive tutoring engine that generates pedagogical prompts for children based on specific skills and learner states. It uses a dual-model approach with embeddings for context and a large language model for generating tutor responses.",
+  "pipeline": [
+   "learner_state_ingestion",
+   "prompt_rendering",
+   "embedding_generation",
+   "llm_tutor_response",
+   "next_step_generation"
+  ],
+  "inputs": [
+   "subject",
+   "skill",
+   "task",
+   "context",
+   "learner_state"
+  ],
+  "outputs": [
+   "tutor_turn",
+   "check_question",
+   "guiding_question",
+   "next_challenge",
+   "reflection_prompt"
+  ],
+  "confidence": 0.92,
+  "evidence_quotes": [
+   "Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.",
+   "Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}",
+   "models: {'nomic-embed-text:latest': 32, 'gemma4:31b': 5}",
+   "Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question"
+  ]
+ },
+ "raw": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"An adaptive tutoring engine that generates pedagogical prompts for children based on specific skills and learner states. It uses a dual-model approach with embeddings for context and a large language model for generating tutor responses.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"prompt_rendering\",\n    \"embedding_generation\",\n    \"llm_tutor_response\",\n    \"next_step_generation\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"task\",\n    \"context\",\n    \"learner_state\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"check_question\",\n    \"guiding_question\",\n    \"next_challenge\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.92,\n  \"evidence_quotes\": [\n    \"Task: Teach the skill like a patient tutor: define it simply, walk through the example step by step, then give one quick check question.\",\n    \"Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}\",\n    \"models: {'nomic-embed-text:latest': 32, 'gemma4:31b': 5}\",\n    \"Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question\"\n  ]\n}"
+}

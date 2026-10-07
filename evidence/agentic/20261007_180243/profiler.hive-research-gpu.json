@@ -1,0 +1,40 @@
+{
+ "agent": "profiler",
+ "service": "hive-research-gpu",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A research paper processing service that ingests academic papers, specifically focusing on multi-agent systems and reinforcement learning. It generates section-wise summaries and surrogates using a multi-stage workflow involving embedding and LLM summarization.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"abstract\",\n    \"experimental setup\",\n    \"figures\",\n    \"research questions\"\n  ],\n  \"outputs\": [\n    \"section-wise summaries\",\n    \"surrogates\",\n    \"knowledge graph hints\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\",\n    \"models: {'nomic-embed-text:latest': 227, 'llama3.2:3b': 38, 'qwen3.8:27b': 12}\",\n    \"Title: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models\"\n  ]\n}",
+ "prompt_tokens": 930,
+ "completion_tokens": 340,
+ "ms": 40227.9,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "hive-research-gpu",
+  "what_building": "A research paper processing service that ingests academic papers, specifically focusing on multi-agent systems and reinforcement learning. It generates section-wise summaries and surrogates using a multi-stage workflow involving embedding and LLM summarization.",
+  "pipeline": [
+   "extract_sections",
+   "summarize_section",
+   "summarize_figures",
+   "build_surrogate"
+  ],
+  "inputs": [
+   "paper_title",
+   "abstract",
+   "experimental setup",
+   "figures",
+   "research questions"
+  ],
+  "outputs": [
+   "section-wise summaries",
+   "surrogates",
+   "knowledge graph hints"
+  ],
+  "confidence": 0.85,
+  "evidence_quotes": [
+   "heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries",
+   "schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']",
+   "models: {'nomic-embed-text:latest': 227, 'llama3.2:3b': 38, 'qwen3.8:27b': 12}",
+   "Title: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models"
+  ]
+ },
+ "raw": "{\n  \"project\": \"hive-research-gpu\",\n  \"what_building\": \"A research paper processing service that ingests academic papers, specifically focusing on multi-agent systems and reinforcement learning. It generates section-wise summaries and surrogates using a multi-stage workflow involving embedding and LLM summarization.\",\n  \"pipeline\": [\n    \"extract_sections\",\n    \"summarize_section\",\n    \"summarize_figures\",\n    \"build_surrogate\"\n  ],\n  \"inputs\": [\n    \"paper_title\",\n    \"abstract\",\n    \"experimental setup\",\n    \"figures\",\n    \"research questions\"\n  ],\n  \"outputs\": [\n    \"section-wise summaries\",\n    \"surrogates\",\n    \"knowledge graph hints\"\n  ],\n  \"confidence\": 0.85,\n  \"evidence_quotes\": [\n    \"heuristic guess: paper-surrogate / research-paper summarizer :: paper sections (abstract/figures/experiments) -> section-wise summarization prompts -> surrogates/summaries\",\n    \"schema hints: ['abstract', 'brief', 'experimental setup', 'figures available', 'knowledge graph', 'research questions']\",\n    \"models: {'nomic-embed-text:latest': 227, 'llama3.2:3b': 38, 'qwen3.8:27b': 12}\",\n    \"Title: From Model-Based Screening to Data-Driven Surrogates: A Multi-Stage Workflow for Exploring Stochastic Agent-Based Models\"\n  ]\n}"
+}

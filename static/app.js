@@ -53,10 +53,12 @@ instructions:
   }catch(e){$('prog-msg').textContent='failed: '+e;}};
  $('b-prog').onclick=showProg;$('sel-recon').addEventListener('change',()=>{progCache=null;$('prog-msg').textContent='';});
   const runs=await j('/api/runs').catch(e=>{document.querySelector('#t-runs tbody').innerHTML=`<tr><td class="warn">failed: ${escH(e)}</td></tr>`;return [];});
-  $('t-runs').querySelector('tbody').innerHTML=runs.map(r=>`<tr><td><a href="#" data-run="${escA(r.run_id)}">${escH(r.run_id)}</a></td><td class="mut">${escH(r.model||'')}</td><td class="mut">${escH((r.services||[]).join(', ').slice(0,80))}</td><td>${escH(r.elapsed_s??'?')}s</td><td>${escH(r.errors??0)}</td></tr>`).join('')||'<tr><td class="mut">no runs yet</td></tr>';
+  $('t-runs').querySelector('tbody').innerHTML=runs.map(r=>r.status==='running'
+   ?`<tr><td><code>${escH(r.run_id)}</code> <span class="pill">running ${escH(r.elapsed_s??'?')}s</span></td><td class="mut">${escH(r.model||'')}</td><td class="mut">queued behind Ollama — refresh to update</td><td>—</td><td>—</td></tr>`
+   :`<tr><td><a href="#" data-run="${escA(r.run_id)}">${escH(r.run_id)}</a></td><td class="mut">${escH(r.model||'')}</td><td class="mut">${escH((r.services||[]).join(', ').slice(0,80))}</td><td>${escH(r.elapsed_s??'?')}s</td><td>${escH(r.errors??0)}</td></tr>`).join('')||'<tr><td class="mut">no runs yet</td></tr>';
   document.querySelectorAll('[data-run]').forEach(a=>a.onclick=e=>{e.preventDefault();showRun(a.dataset.run);});
   loadTrend();
-  try{const b=await j('/api/runs');let md;if(b.length){const d=await j('/api/runs/'+b[0].run_id);md=d.brief||'';}else{const inv=await j('/api/investigation');md=inv.readme||'no brief yet — launch an agentic run';}$('brief').innerHTML=renderMarkdown(md.slice(0,6000));renderMermaid($('brief'));}catch(e){$('brief').innerHTML=`<span class="warn">brief unavailable: ${escH(e)}</span>`;}
+  try{const b=(await j('/api/runs')).filter(r=>r.status!=='running');let md;if(b.length){const d=await j('/api/runs/'+b[0].run_id);md=d.brief||'';}else{const inv=await j('/api/investigation');md=inv.readme||'no brief yet — launch an agentic run';}$('brief').innerHTML=renderMarkdown(md.slice(0,6000));renderMermaid($('brief'));}catch(e){$('brief').innerHTML=`<span class="warn">brief unavailable: ${escH(e)}</span>`;}
   try{
    const m=await j('/api/fox/live');const peers=(m.mesh&&(m.mesh.peers||[]))||[];
    $('t-mesh').querySelector('tbody').innerHTML=peers.map(p=>{const h=p.health||{};return `<tr><td><code>${escH(p.machine||p.node_id)}</code></td><td class="${p.online?'ok':'warn'}">${escH(p.online)}</td><td>${escH((p.hardware||{}).kind||'?')}</td><td>${escH(h.llm_requests_1h??'?')}</td><td class="mut">${escH((h.services||[]).map(s=>s.name).join(', ').slice(0,120))}</td></tr>`}).join('')||'<tr><td class="mut">no peers</td></tr>';
@@ -543,7 +545,7 @@ const loadReports=async()=>{
 };
 $('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';try{const r=await pj('/api/investigate');$('runmsg').textContent=r.report||JSON.stringify(r);load();}catch(e){$('runmsg').textContent='failed: '+e;}};
 $('b-report').onclick=async()=>{$('runmsg').textContent='generating unified report…';try{const r=await pj('/api/reports/run');const d=r.diff||{};$('runmsg').textContent=`report ${r.id} (db-changed=${d.db_changed??'?'}${(d.services_added||[]).length?' +'+d.services_added.join(','):''}) — see Reports below`;loadReports();}catch(e){$('runmsg').textContent='report failed: '+e;}};
-$('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';}catch(e){$('runmsg').textContent='launch failed: '+e;}};
+$('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});if(r.detail){$('runmsg').textContent=r.detail+' — wait for a run to finish';}else{$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';}}catch(e){$('runmsg').textContent='launch failed: '+e;}};
 const _sb=$('b-sec-scan');if(_sb)_sb.onclick=secScan;
 const _sf=$('sel-find');if(_sf)_sf.onchange=renderFindRows;
 const _bc=$('b-chain');if(_bc)_bc.onclick=loadChain;

@@ -1,0 +1,53 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model orchestration suggests complex agentic workflows with potential for prompt injection or data exfiltration.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) focused on a single model; high token count per request indicates heavy processing, likely involving sensitive data ingestion or transformation.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed model usage (embedding + LLM); research summarizers are common vectors for indirect prompt injection via untrusted document content.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but unclassified traffic touching multiple models including an 'unknown' model; potential for hidden or misconfigured routing.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume; educational context implies lower risk profile, though embedding usage warrants basic check for PII leakage.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal traffic; likely internal health check, low forensic value.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely infrastructure probe, negligible risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard initialization, no investigative value.\"\n    }\n  ]\n}",
+ "prompt_tokens": 572,
+ "completion_tokens": 448,
+ "ms": 34435.5,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "Highest volume (1.2k reqs, 2.2M toks) and multi-model orchestration suggests complex agentic workflows with potential for prompt injection or data exfiltration."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "High volume (1.1k reqs, 1.8M toks) focused on a single model; high token count per request indicates heavy processing, likely involving sensitive data ingestion or transformation."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Moderate volume with mixed model usage (embedding + LLM); research summarizers are common vectors for indirect prompt injection via untrusted document content."
+   },
+   {
+    "rank": 4,
+    "service": "gateway-unknown",
+    "reason": "Low volume but unclassified traffic touching multiple models including an 'unknown' model; potential for hidden or misconfigured routing."
+   },
+   {
+    "rank": 5,
+    "service": "kid-learning-lab",
+    "reason": "Low volume; educational context implies lower risk profile, though embedding usage warrants basic check for PII leakage."
+   },
+   {
+    "rank": 6,
+    "service": "live-selftest",
+    "reason": "Minimal traffic; likely internal health check, low forensic value."
+   },
+   {
+    "rank": 7,
+    "service": "probe",
+    "reason": "Single request, zero tokens; likely infrastructure probe, negligible risk."
+   },
+   {
+    "rank": 8,
+    "service": "warmup",
+    "reason": "Single request, zero tokens; standard initialization, no investigative value."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model orchestration suggests complex agentic workflows with potential for prompt injection or data exfiltration.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) focused on a single model; high token count per request indicates heavy processing, likely involving sensitive data ingestion or transformation.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed model usage (embedding + LLM); research summarizers are common vectors for indirect prompt injection via untrusted document content.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but unclassified traffic touching multiple models including an 'unknown' model; potential for hidden or misconfigured routing.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume; educational context implies lower risk profile, though embedding usage warrants basic check for PII leakage.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Minimal traffic; likely internal health check, low forensic value.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely infrastructure probe, negligible risk.\"\n    },\n    {\n      \"rank\": 8,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard initialization, no investigative value.\"\n    }\n  ]\n}"
+}

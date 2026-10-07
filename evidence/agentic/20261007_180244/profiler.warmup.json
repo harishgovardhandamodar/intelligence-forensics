@@ -1,0 +1,33 @@
+{
+ "agent": "profiler",
+ "service": "warmup",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"warmup\",\n  \"what_building\": \"A lightweight service designed to initialize or validate the availability of the `nomic-embed-text:latest` model. It executes a minimal, deterministic prompt to ensure the inference pipeline is responsive without processing complex user data.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"Static prompt: 'Reply with exactly: warm'\"\n  ],\n  \"outputs\": [\n    \"String: 'warm'\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"models: {'nomic-embed-text:latest': 1}\",\n    \"Reply with exactly: warm\",\n    \"requests: 1 tokens: 0\",\n    \"heuristic guess: warmup workload (unclassified)\"\n  ]\n}",
+ "prompt_tokens": 328,
+ "completion_tokens": 205,
+ "ms": 61588.4,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "warmup",
+  "what_building": "A lightweight service designed to initialize or validate the availability of the `nomic-embed-text:latest` model. It executes a minimal, deterministic prompt to ensure the inference pipeline is responsive without processing complex user data.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call(model)",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "Static prompt: 'Reply with exactly: warm'"
+  ],
+  "outputs": [
+   "String: 'warm'"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "models: {'nomic-embed-text:latest': 1}",
+   "Reply with exactly: warm",
+   "requests: 1 tokens: 0",
+   "heuristic guess: warmup workload (unclassified)"
+  ]
+ },
+ "raw": "{\n  \"project\": \"warmup\",\n  \"what_building\": \"A lightweight service designed to initialize or validate the availability of the `nomic-embed-text:latest` model. It executes a minimal, deterministic prompt to ensure the inference pipeline is responsive without processing complex user data.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"Static prompt: 'Reply with exactly: warm'\"\n  ],\n  \"outputs\": [\n    \"String: 'warm'\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"models: {'nomic-embed-text:latest': 1}\",\n    \"Reply with exactly: warm\",\n    \"requests: 1 tokens: 0\",\n    \"heuristic guess: warmup workload (unclassified)\"\n  ]\n}"
+}

@@ -195,9 +195,18 @@ def _registry_path() -> str:
 
 
 def _locked_registry():
+    """Read the registry; an unreadable file is an empty registry, never a crash."""
     path = _registry_path()
-    if not os.path.exists(path):
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
         return {}
+
+
+def _write_registry(reg: dict) -> None:
+    path = _registry_path()
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "a+", encoding="utf-8") as f:
         if fcntl is not None:
@@ -208,24 +217,21 @@ def _locked_registry():
         try:
             f.seek(0)
             raw = f.read()
-            return json.loads(raw) if raw.strip() else {}
-        except ValueError:
-            return {}
+            try:
+                disk = json.loads(raw) if raw.strip() else {}
+            except ValueError:
+                disk = {}
+            if isinstance(disk, dict):
+                reg = {**disk, **reg}
+            f.seek(0)
+            f.truncate()
+            json.dump(reg, f, indent=1, default=str)
         finally:
             if fcntl is not None:
                 try:
                     fcntl.flock(f.fileno(), fcntl.LOCK_UN)
                 except OSError:
                     pass
-
-
-def _write_registry(reg: dict) -> None:
-    path = _registry_path()
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    tmp = path + f".tmp-{os.getpid()}"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(reg, f, indent=1, default=str)
-    os.rename(tmp, path)
 
 
 def register_run(run_key: str, info: dict | None = None) -> dict:
@@ -248,6 +254,12 @@ def update_run(run_key: str, info: dict) -> dict:
 def get_run(run_key: str) -> dict:
     """One run entry; unknown keys report as unknown (dashboard contract)."""
     return dict(_locked_registry().get(run_key, {"status": "unknown"}))
+
+
+def all_runs() -> dict:
+    """Every registry entry (for pending-run listing)."""
+    reg = _locked_registry()
+    return dict(reg) if isinstance(reg, dict) else {}
 
 
 def recoverable_tasks(run_id: str, base_dir: str | None = None) -> list[dict]:

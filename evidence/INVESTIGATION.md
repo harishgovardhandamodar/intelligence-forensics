@@ -3,8 +3,8 @@
 Requests analyzed: **2720** across **8** services.
 
 Mesh peers visible: **2**.
-- `harishs-macbook-pro-1` online=True hw=mlx llm_1h=0 services:[]
 - `axiom-dgx` online=True hw=cpu llm_1h=0 services:[AI-Research-Workbench, Go-Quai-Radar, Go-fox-agentic-trader, Knowledgebase, Ollama-local-hives-cluster, Quai-Network-analytics, Quai-RADAR, agentic-knowledge-mapper, agentic-trade, finance-study, fox-agentic-trader, fox-analytics]
+- `harishs-macbook-pro-1` online=True hw=mlx llm_1h=0 services:[]
 
 ## agentic-knowledge-mapper
 Inferred build: **multi-agent debate risk scorer**

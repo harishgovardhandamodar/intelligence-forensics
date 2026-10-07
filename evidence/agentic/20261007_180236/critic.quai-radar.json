@@ -1,0 +1,9 @@
+{
+ "agent": "critic",
+ "service": "quai-radar",
+ "content": "*   **LLM Extraction Fidelity & Hallucination:** The logs show the prompt and the final graph write, but not the raw LLM output or the `parse_facts` validation logic. We cannot prove that the extracted facts were accurate or that the parser correctly rejected malformed JSON/hallucinations.\n    *   *Next Observation:* Capture the raw `llm.extract` response string and the `parse_facts` validation logs (success/error counts) for a specific `ingest_feed` event ID.\n\n*   **Graph State Consistency (Upsert Logic):** The plan mentions `upsert_graph`, but the logs do not show the pre-write state of the graph or the specific conflict resolution strategy (e.g., overwrite vs. merge). We cannot prove that existing nodes were not corrupted or that edge weights were updated correctly.\n    *   *Next Observation:* Log the `before` and `after` state of the specific node/edge keys involved in the `upsert_graph` call, including any transaction IDs or version numbers.\n\n*   **Brief Generation Input Scope:** The profiler lists `generate_brief` as a pipeline step, but the evidence quotes only show the extraction prompt and market data. It is unclear if the brief",
+ "prompt_tokens": 451,
+ "completion_tokens": 256,
+ "ms": 61896.7,
+ "model": "qwen3.8:27b"
+}

@@ -152,3 +152,26 @@ def test_swarm_endpoints(monkeypatch, tmp_path):
     q = c.get("/api/swarm/queue")
     assert q.status_code == 200
     assert set(q.json()) == {"pending", "claimed", "done", "failed"}
+
+
+def test_runs_lists_pending_first_and_caps_launches(monkeypatch):
+    import time
+    from fastapi.testclient import TestClient
+    from iforensics import agents as ag
+    from iforensics import config
+    import tempfile
+    tmp = tempfile.mkdtemp()
+    monkeypatch.setattr(config, "EVIDENCE_DIR", tmp)
+    c = TestClient(dashboard.app)
+    from iforensics import swarm as swarm_mod
+    swarm_mod.register_run("pending-t",
+                           {"status": "running", "started": time.time() - 30,
+                            "model": "m"})
+    runs = c.get("/api/runs").json()
+    assert runs and runs[0]["status"] == "running"
+    assert runs[0]["elapsed_s"] >= 30
+    # busy backend -> 429 with a human message, not a traceback
+    monkeypatch.setattr(ag, "MAX_BACKGROUND_RUNS", 0)
+    r = c.post("/api/runs", json={})
+    assert r.status_code == 429
+    assert "busy" in r.json()["detail"]

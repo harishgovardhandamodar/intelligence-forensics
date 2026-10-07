@@ -1,0 +1,51 @@
+{
+ "agent": "profiler",
+ "service": "kid-learning-lab",
+ "injection_risk": 1,
+ "injection_findings": [
+  {
+   "kind": "prompt_injection:role_hijack",
+   "severity": "medium",
+   "source": "kid-learning-lab",
+   "line": 10,
+   "match": "Act as"
+  }
+ ],
+ "content": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"A personalized tutoring service for children that adapts pedagogical strategies based on learner state and specific skills. It generates interactive tutor turns including teaching, hinting, and challenge suggestions using a persona like 'Prof. Fox'.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"skill_prompt_rendering\",\n    \"llm_coach_generation\",\n    \"tutor_turn_output\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"task\",\n    \"context\",\n    \"learner_state\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"check_question\",\n    \"guiding_question\",\n    \"challenge_suggestion\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question\",\n    \"Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}\",\n    \"Give a short clue, never the answer. Ask one guiding question.\",\n    \"Suggest one next challenge that is slightly harder and explain why in one sentence.\"\n  ]\n}",
+ "prompt_tokens": 600,
+ "completion_tokens": 293,
+ "ms": 62567.6,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "kid-learning-lab",
+  "what_building": "A personalized tutoring service for children that adapts pedagogical strategies based on learner state and specific skills. It generates interactive tutor turns including teaching, hinting, and challenge suggestions using a persona like 'Prof. Fox'.",
+  "pipeline": [
+   "learner_state_ingestion",
+   "skill_prompt_rendering",
+   "llm_coach_generation",
+   "tutor_turn_output"
+  ],
+  "inputs": [
+   "subject",
+   "skill",
+   "task",
+   "context",
+   "learner_state"
+  ],
+  "outputs": [
+   "tutor_turn",
+   "check_question",
+   "guiding_question",
+   "challenge_suggestion",
+   "reflection_prompt"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question",
+   "Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}",
+   "Give a short clue, never the answer. Ask one guiding question.",
+   "Suggest one next challenge that is slightly harder and explain why in one sentence."
+  ]
+ },
+ "raw": "{\n  \"project\": \"kid-learning-lab\",\n  \"what_building\": \"A personalized tutoring service for children that adapts pedagogical strategies based on learner state and specific skills. It generates interactive tutor turns including teaching, hinting, and challenge suggestions using a persona like 'Prof. Fox'.\",\n  \"pipeline\": [\n    \"learner_state_ingestion\",\n    \"skill_prompt_rendering\",\n    \"llm_coach_generation\",\n    \"tutor_turn_output\"\n  ],\n  \"inputs\": [\n    \"subject\",\n    \"skill\",\n    \"task\",\n    \"context\",\n    \"learner_state\"\n  ],\n  \"outputs\": [\n    \"tutor_turn\",\n    \"check_question\",\n    \"guiding_question\",\n    \"challenge_suggestion\",\n    \"reflection_prompt\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"Act as Prof. Fox. Explain concepts simply, use a small example, ask one check-for-understanding question\",\n    \"Subject: {{subject}} Skill: {{skill}} Task: {{task}} Context: {{context}}\",\n    \"Give a short clue, never the answer. Ask one guiding question.\",\n    \"Suggest one next challenge that is slightly harder and explain why in one sentence.\"\n  ]\n}"
+}

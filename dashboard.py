@@ -358,7 +358,8 @@ class RunReq(BaseModel):
 
 @app.get("/api/runs")
 def runs():
-    return ag.list_runs()
+    # in-flight runs first: otherwise a queued backlog looks like nothing happened
+    return ag.pending_runs() + ag.list_runs()
 
 
 @app.get("/api/runs/{run_id}")
@@ -820,8 +821,11 @@ def design_doc(doc_id: str):
 @app.post("/api/runs")
 def runs_create(req: RunReq):
     model = req.model or ollama_client.MODEL
-    key = ag.launch_background(_service_rows, model=model,
-                               quick=req.quick, only=req.only, swarm=req.swarm)
+    try:
+        key = ag.launch_background(_service_rows, model=model,
+                                   quick=req.quick, only=req.only, swarm=req.swarm)
+    except RuntimeError as e:  # concurrency cap (P7.35)
+        raise HTTPException(429, str(e))
     return {"launched": key, "model": model, "quick": req.quick,
             "swarm": req.swarm}
 

@@ -1,0 +1,35 @@
+{
+ "agent": "profiler",
+ "service": "gateway-unknown",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"gateway-unknown\",\n  \"what_building\": \"The service appears to be a lightweight LLM gateway or proxy that routes simple text prompts to various local or remote models. It is currently unclassified and likely in a development or testing phase given the minimal and repetitive nature of the inputs.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"hi\",\n    \"say hi\",\n    \"Reply with the single word: ready\"\n  ],\n  \"outputs\": [\n    \"unknown\"\n  ],\n  \"confidence\": 0.2,\n  \"evidence_quotes\": [\n    \"heuristic guess: gateway-unknown workload (unclassified) :: prompts -> LLM -> unknown sink (needs more samples)\",\n    \"heuristic pipeline: capture_prompt -> llm.call(model) -> unknown_sink\",\n    \"templates: - (x13) hi - (x4) say hi - (x1) Reply with the single word: ready\",\n    \"models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, 'unknown': 2, 'llama3.2:3b': 2, 'qwen3.8:27b': 1, 'gemma4:31b': 1}\"\n  ]\n}",
+ "prompt_tokens": 420,
+ "completion_tokens": 317,
+ "ms": 73751.3,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "gateway-unknown",
+  "what_building": "The service appears to be a lightweight LLM gateway or proxy that routes simple text prompts to various local or remote models. It is currently unclassified and likely in a development or testing phase given the minimal and repetitive nature of the inputs.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call(model)",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "hi",
+   "say hi",
+   "Reply with the single word: ready"
+  ],
+  "outputs": [
+   "unknown"
+  ],
+  "confidence": 0.2,
+  "evidence_quotes": [
+   "heuristic guess: gateway-unknown workload (unclassified) :: prompts -> LLM -> unknown sink (needs more samples)",
+   "heuristic pipeline: capture_prompt -> llm.call(model) -> unknown_sink",
+   "templates: - (x13) hi - (x4) say hi - (x1) Reply with the single word: ready",
+   "models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, 'unknown': 2, 'llama3.2:3b': 2, 'qwen3.8:27b': 1, 'gemma4:31b': 1}"
+  ]
+ },
+ "raw": "{\n  \"project\": \"gateway-unknown\",\n  \"what_building\": \"The service appears to be a lightweight LLM gateway or proxy that routes simple text prompts to various local or remote models. It is currently unclassified and likely in a development or testing phase given the minimal and repetitive nature of the inputs.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"hi\",\n    \"say hi\",\n    \"Reply with the single word: ready\"\n  ],\n  \"outputs\": [\n    \"unknown\"\n  ],\n  \"confidence\": 0.2,\n  \"evidence_quotes\": [\n    \"heuristic guess: gateway-unknown workload (unclassified) :: prompts -> LLM -> unknown sink (needs more samples)\",\n    \"heuristic pipeline: capture_prompt -> llm.call(model) -> unknown_sink\",\n    \"templates: - (x13) hi - (x4) say hi - (x1) Reply with the single word: ready\",\n    \"models: {'nomic-embed-text:latest': 10, 'qwen3.8:latest': 5, 'unknown': 2, 'llama3.2:3b': 2, 'qwen3.8:27b': 1, 'gemma4:31b': 1}\"\n  ]\n}"
+}

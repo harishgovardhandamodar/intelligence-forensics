@@ -1,0 +1,33 @@
+{
+ "agent": "profiler",
+ "service": "probe",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"probe\",\n  \"what_building\": \"A minimal routing or health-check service that validates LLM connectivity. It likely serves as a lightweight probe to confirm that the underlying model endpoint is responsive and correctly formatted.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"implicit system/user prompt (unspecified)\"\n  ],\n  \"outputs\": [\n    \"string: 'routed'\"\n  ],\n  \"confidence\": 0.2,\n  \"evidence_quotes\": [\n    \"service: probe\",\n    \"models: {'gemma4:31b': 1}\",\n    \"heuristic guess: probe workload (unclassified)\",\n    \"Reply with exactly: routed\"\n  ]\n}",
+ "prompt_tokens": 325,
+ "completion_tokens": 185,
+ "ms": 34499.0,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "probe",
+  "what_building": "A minimal routing or health-check service that validates LLM connectivity. It likely serves as a lightweight probe to confirm that the underlying model endpoint is responsive and correctly formatted.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "implicit system/user prompt (unspecified)"
+  ],
+  "outputs": [
+   "string: 'routed'"
+  ],
+  "confidence": 0.2,
+  "evidence_quotes": [
+   "service: probe",
+   "models: {'gemma4:31b': 1}",
+   "heuristic guess: probe workload (unclassified)",
+   "Reply with exactly: routed"
+  ]
+ },
+ "raw": "{\n  \"project\": \"probe\",\n  \"what_building\": \"A minimal routing or health-check service that validates LLM connectivity. It likely serves as a lightweight probe to confirm that the underlying model endpoint is responsive and correctly formatted.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"implicit system/user prompt (unspecified)\"\n  ],\n  \"outputs\": [\n    \"string: 'routed'\"\n  ],\n  \"confidence\": 0.2,\n  \"evidence_quotes\": [\n    \"service: probe\",\n    \"models: {'gemma4:31b': 1}\",\n    \"heuristic guess: probe workload (unclassified)\",\n    \"Reply with exactly: routed\"\n  ]\n}"
+}

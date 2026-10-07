@@ -1,0 +1,33 @@
+{
+ "agent": "profiler",
+ "service": "warmup",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"warmup\",\n  \"what_building\": \"A lightweight service designed to trigger model loading or connection establishment. It uses a minimal prompt to ensure the backend is ready for subsequent requests.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"static prompt: 'Reply with exactly: warm'\"\n  ],\n  \"outputs\": [\n    \"string: 'warm'\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"service: warmup\",\n    \"models: {'nomic-embed-text:latest': 1}\",\n    \"Reply with exactly: warm\",\n    \"heuristic guess: warmup workload (unclassified)\"\n  ]\n}",
+ "prompt_tokens": 328,
+ "completion_tokens": 185,
+ "ms": 33324.1,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "warmup",
+  "what_building": "A lightweight service designed to trigger model loading or connection establishment. It uses a minimal prompt to ensure the backend is ready for subsequent requests.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call(model)",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "static prompt: 'Reply with exactly: warm'"
+  ],
+  "outputs": [
+   "string: 'warm'"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "service: warmup",
+   "models: {'nomic-embed-text:latest': 1}",
+   "Reply with exactly: warm",
+   "heuristic guess: warmup workload (unclassified)"
+  ]
+ },
+ "raw": "{\n  \"project\": \"warmup\",\n  \"what_building\": \"A lightweight service designed to trigger model loading or connection establishment. It uses a minimal prompt to ensure the backend is ready for subsequent requests.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"static prompt: 'Reply with exactly: warm'\"\n  ],\n  \"outputs\": [\n    \"string: 'warm'\"\n  ],\n  \"confidence\": 0.95,\n  \"evidence_quotes\": [\n    \"service: warmup\",\n    \"models: {'nomic-embed-text:latest': 1}\",\n    \"Reply with exactly: warm\",\n    \"heuristic guess: warmup workload (unclassified)\"\n  ]\n}"
+}

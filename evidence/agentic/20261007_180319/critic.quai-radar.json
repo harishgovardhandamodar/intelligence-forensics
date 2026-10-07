@@ -1,0 +1,9 @@
+{
+ "agent": "critic",
+ "service": "quai-radar",
+ "content": "*   **Missing LLM Inference Logs:** The profile claims `llm.extract` and `generate_daily_brief` steps, but the evidence only shows prompt templates. There are no logs of actual model responses, token counts, or latency.\n    *   *Next Observation:* Capture the raw JSON output from the LLM API for a single `ingest_feed` event to verify the `parse_facts` schema alignment.\n*   **Unverified Graph Persistence:** The plan asserts `upsert_graph` writes nodes/edges, but there is no evidence of database transactions, commit IDs, or graph query results.\n    *   *Next Observation:* Execute a `MATCH` query on the target graph database for a specific entity mentioned in a recent news item to confirm node existence and edge connectivity.\n*   **Ambiguous \"Live Market\" Injection:** The evidence shows market data in the prompt, but it is unclear if this is fetched in real-time per item or cached. The logs do not prove the source or freshness of `live_market_data`.\n    *   *Next Observation:* Log the timestamp of the market data fetch relative to the LLM call start time to determine if it is synchronous or asynchronous.\n*   **Missing \"Daily",
+ "prompt_tokens": 484,
+ "completion_tokens": 256,
+ "ms": 75514.3,
+ "model": "qwen3.8:27b"
+}

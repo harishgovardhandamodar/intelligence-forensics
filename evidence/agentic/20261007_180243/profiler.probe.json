@@ -1,0 +1,33 @@
+{
+ "agent": "profiler",
+ "service": "probe",
+ "injection_risk": 0,
+ "content": "{\n  \"project\": \"probe\",\n  \"what_building\": \"The service appears to be a lightweight routing or health-check mechanism that directs traffic to a specific model. It likely functions as a gatekeeper or load balancer component within a larger inference pipeline.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"unclassified query\"\n  ],\n  \"outputs\": [\n    \"routed\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"models: {'gemma4:31b': 1}\",\n    \"query_types: {'(none)': 1}\",\n    \"Reply with exactly: routed\",\n    \"heuristic guess: probe workload (unclassified)\"\n  ]\n}",
+ "prompt_tokens": 325,
+ "completion_tokens": 190,
+ "ms": 66500.3,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "project": "probe",
+  "what_building": "The service appears to be a lightweight routing or health-check mechanism that directs traffic to a specific model. It likely functions as a gatekeeper or load balancer component within a larger inference pipeline.",
+  "pipeline": [
+   "capture_prompt",
+   "llm.call(model)",
+   "unknown_sink"
+  ],
+  "inputs": [
+   "unclassified query"
+  ],
+  "outputs": [
+   "routed"
+  ],
+  "confidence": 0.3,
+  "evidence_quotes": [
+   "models: {'gemma4:31b': 1}",
+   "query_types: {'(none)': 1}",
+   "Reply with exactly: routed",
+   "heuristic guess: probe workload (unclassified)"
+  ]
+ },
+ "raw": "{\n  \"project\": \"probe\",\n  \"what_building\": \"The service appears to be a lightweight routing or health-check mechanism that directs traffic to a specific model. It likely functions as a gatekeeper or load balancer component within a larger inference pipeline.\",\n  \"pipeline\": [\n    \"capture_prompt\",\n    \"llm.call(model)\",\n    \"unknown_sink\"\n  ],\n  \"inputs\": [\n    \"unclassified query\"\n  ],\n  \"outputs\": [\n    \"routed\"\n  ],\n  \"confidence\": 0.3,\n  \"evidence_quotes\": [\n    \"models: {'gemma4:31b': 1}\",\n    \"query_types: {'(none)': 1}\",\n    \"Reply with exactly: routed\",\n    \"heuristic guess: probe workload (unclassified)\"\n  ]\n}"
+}
