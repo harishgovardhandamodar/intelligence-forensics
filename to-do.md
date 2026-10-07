@@ -161,5 +161,5 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 - [x] P4.17 Versioned reports + "changes since last run" diff; HTML export; scheduled runs
 
 ### Verification
-- [ ] Run the full test suite, boot the dashboard, smoke-test every API
+- [x] Run the full test suite, boot the dashboard, smoke-test every API
       surface, commit each stage.
