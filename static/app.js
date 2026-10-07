@@ -3,7 +3,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 const TABS=[...document.querySelectorAll('#tabs button')].map(b=>b.dataset.t);
 const trowState=(cols,msg,cls='mut')=>`<tr><td class="${cls}" colspan="${cols}">${escH(msg)}</td></tr>`;
-const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}document.title='Intelligence Forensics — '+name;};
+const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();document.title='Intelligence Forensics — '+name;};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 window.addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 window.addEventListener('popstate',()=>activateTab(location.hash.slice(1),false));
@@ -266,6 +266,30 @@ function loadTs(){
 }
 ['sel-tsbucket','sel-tswindow'].forEach(id=>{const e=$(id);if(e)e.onchange=loadTs;});
 let tsRz;addEventListener('resize',()=>{clearTimeout(tsRz);tsRz=setTimeout(drawTsChart,150);});
+/* ---- security advisor tab (D6) ---- */
+const SEC_CLS=s=>(s==='critical'||s==='high')?'warn':(s==='medium'?'':'mut');
+function renderSecurity(resp){
+ const r=resp.report||{},st=resp.stored;
+ $('sec-msg').textContent=`scan: ${r.n_findings||0} findings, risk ${r.risk_rating||'low'}`;
+ const tot=r.totals||{};
+ $('sec-stats').innerHTML=['critical','high','medium','low'].map(k=>`<div class="card stat"><div class="v ${SEC_CLS(k)}">${tot[k]||0}</div><div class="k">${k}</div></div>`).join('');
+ $('sec-exp').innerHTML=(r.exposure||[]).map(f=>`<div style="margin:4px 0"><b class="${SEC_CLS(f.severity)}">${escH(f.kind)}</b> <span class=mut>${escH(f.source)}</span> — ${escH(f.detail||'')}</div>`).join('')||'<span class="mut">no exposure issues</span>';
+ $('t-sec-secrets').querySelector('tbody').innerHTML=(r.secrets||[]).slice(0,200).map(f=>`<tr><td>${escH(f.kind)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.severity)}</td><td class=mut>${escH(f.source)}:${escH(f.line)}</td><td><code>${escH(f.match)}</code></td></tr>`).join('')||trowState(4,'no secret/PII survivors','ok');
+ $('sec-inject').innerHTML=(r.injections||[]).slice(0,200).map(f=>`<tr><td>${escH(f.kind)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.severity)}</td><td class=mut>${escH(f.source)}:${escH(f.line)}</td><td><code>${escH(f.snippet||f.match)}</code></td></tr>`).join('')||trowState(4,'no injection patterns','ok');
+ $('sec-perm').innerHTML=(r.permissions||[]).slice(0,200).map(f=>`<tr><td>${escH(f.source)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.mode)}</td><td>${escH(f.severity)}</td></tr>`).join('')||trowState(3,'no permission issues');
+ const tr=r.tracked_evidence||{};
+ $('sec-tracked').textContent=(st&&st.assessment&&st.assessment.risk_rating)?`LLM assessment: ${st.assessment.risk_rating}`:'';
+ $('sec-stored').innerHTML=st?`<div class=mut>last scan ${new Date((st.generated_at||0)*1000).toLocaleString()} — ${escH((st.assessment||{}).summary||'(no LLM summary)')}</div>`:'<span class=mut>no stored security.json yet</span>';
+ wireTable('#t-sec-secrets',null);
+}
+function loadSecurity(){
+ $('sec-msg').textContent='loading…';
+ j('/api/security').then(renderSecurity).catch(e=>{$('sec-msg').textContent='security failed: '+e;});
+}
+function secScan(){
+ $('sec-msg').textContent='scanning (deterministic + LLM)…';
+ pj('/api/security/scan').then(()=>loadSecurity()).catch(e=>{$('sec-msg').textContent='scan failed: '+e;});
+}
 const loadLive=async()=>{
  let st={running:false};
  try{st=await j('/api/live/status');}catch(e){$('live-state').textContent='status failed: '+e;return;}
@@ -307,5 +331,6 @@ $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;con
 setInterval(()=>{const s=$('s-live');if(s&&s.classList.contains('on')){loadLive();const a=$('chk-tsauto');if(a&&a.checked)loadTs();}},4000);
 $('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';try{const r=await pj('/api/investigate');$('runmsg').textContent=r.report||JSON.stringify(r);load();}catch(e){$('runmsg').textContent='failed: '+e;}};
 $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';}catch(e){$('runmsg').textContent='launch failed: '+e;}};
+const _sb=$('b-sec-scan');if(_sb)_sb.onclick=secScan;
 load();
 activateTab(location.hash.slice(1)||'overview',false);

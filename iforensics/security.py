@@ -117,18 +117,21 @@ def scan_text(text: str, source: str = "") -> list[dict]:
                 if key in seen:
                     continue
                 seen.add(key)
-                out.append(_finding("prompt_injection:" + kind, sev, source, i, m.group(0)))
+                # injection text is attack evidence (not a secret) — keep it
+                out.append({"kind": "prompt_injection:" + kind, "severity": sev,
+                            "source": source, "line": i, "match": m.group(0)})
     return out
 
 
 def scan_injection(text: str, source: str = "") -> list[dict]:
-    """Detect prompt-injection / role-hijack phrasing in untrusted text (D1)."""
+    """Prompt-injection findings (match kept verbatim — it is attack evidence)."""
     out: list[dict] = []
-    for i, line in enumerate(str(text).splitlines(), 1):
+    for i, line in enumerate(str(text).splitlines(), start=1):
         for kind, sev, rx in _INJECTION_PATTERNS:
             m = rx.search(line)
             if m:
-                out.append(_finding("prompt_injection:" + kind, sev, source, i, m.group(0)))
+                out.append({"kind": "prompt_injection:" + kind, "severity": sev,
+                            "source": source, "line": i, "match": m.group(0)})
     return out
 
 
@@ -256,4 +259,5 @@ def run(root: str, subpaths: list[str] | None = None, app=None) -> dict:
             "permissions": perms, "exposure": exposure,
             "tracked_evidence": {"count": len(tracked), "sample": tracked[:20]},
             "summary": summarize(total),
-            "totals": {k: v for k, v in counts.items() if v}}
+            "totals": {k: v for k, v in counts.items() if v},
+            "n_findings": len(total)}

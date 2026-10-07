@@ -18,6 +18,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from . import config, ollama_client
 from . import infer as infer_mod
 from . import security as security_mod
+from . import security_agent
 
 AGENT_DIR = os.path.join(config.EVIDENCE_DIR, "agentic")
 
@@ -113,7 +114,8 @@ def critic(service: str, profile: dict, profiler_out: dict,
 
 
 def reporter(profiler_outs: list[dict], heuristic: dict | None = None,
-             model: str = "", num_predict: int = 512) -> dict:
+             model: str = "", num_predict: int = 512,
+             security: dict | None = None) -> dict:
     heuristic = heuristic or {}
     digest = []
     for po in profiler_outs:
@@ -127,8 +129,17 @@ def reporter(profiler_outs: list[dict], heuristic: dict | None = None,
             raw = (po.get("content") or "")[:500].replace("\n", " ")
             digest.append(f"- {svc} (heuristic: {h.get('project')}; "
                           f"llm-raw: {raw})")
+    if security:
+        totals = security.get("totals") or {}
+        digest.append(f"- security: risk={security.get('risk_rating')} "
+                      f"totals={totals} "
+                      f"tracked_evidence={security.get('tracked_evidence', {}).get('count')}")
+    instr = "Write the brief."
+    if security:
+        instr += (" Include a short '## Security posture' section: risk rating, "
+                  "the top issues and their remediation.")
     out = ollama_client.ask(
-        REPORTER_SYSTEM, "Write the brief.",
+        REPORTER_SYSTEM, instr,
         untrusted="\n".join(digest), untrusted_label="service-profiles",
         model=model, num_predict=num_predict + 256)
     return {"agent": "reporter", **out}
@@ -196,13 +207,25 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
                     _write(run_dir, f"critic.{s}.json", crits[s])
     manifest["agents"]["critics"] = crits
 
-    # 4. reporter
+    # 4. deterministic security scan (no LLM) — folded into the brief
+    sec_report: dict = {}
+    try:
+        sec_report = security_agent.deterministic_report()
+        manifest["security"] = {"risk_rating": sec_report.get("risk_rating"),
+                                "totals": sec_report.get("totals"),
+                                "n_findings": sec_report.get("n_findings")}
+        _write(run_dir, "security.json", sec_report)
+    except Exception as e:  # noqa: BLE001
+        manifest["errors"].append(f"security: {type(e).__name__}: {e}")
+
+    # 5. reporter
     try:
         ok_profs = [p for p in profs.values() if "error" not in p]
         manifest["agents"]["reporter"] = reporter(
             ok_profs,
             heuristic={s: {"project": inv["services"][s].get("project")}
                        for s in services},
+            security=sec_report or None,
             model=model, num_predict=np)
     except Exception as e:  # noqa: BLE001
         manifest["errors"].append(f"reporter: {type(e).__name__}: {e}")
@@ -221,6 +244,8 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
              f"elapsed: {manifest['elapsed_s']}s quick={quick}", ""]
     rep = (manifest["agents"].get("reporter") or {}).get("content", "")
     brief.append(rep or "_reporter produced no output_")
+    if sec_report:
+        brief += ["", "---", "", security_agent.render_markdown(sec_report)]
     with open(os.path.join(run_dir, "BRIEF.md"), "w") as f:
         f.write("\n".join(brief))
     return {"run_id": run_id, "run_dir": run_dir, **manifest}

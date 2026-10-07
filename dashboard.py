@@ -23,6 +23,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from iforensics import config, store, infer, agents as ag, ollama_client
+from iforensics import security_agent
 
 app = FastAPI(title="Intelligence Forensics Dashboard", version="0.2.0")
 app.mount("/static", StaticFiles(directory=os.path.join(config.BASE_DIR, "static")), name="static")
@@ -35,7 +36,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <link rel="stylesheet" href="/static/app.css"></head><body>
 <header><h1>&#x1f575; Intelligence Forensics</h1><span class=sub id=hdr>loading&hellip;</span></header>
 <nav id=tabs>
-<button data-t=overview class=on>Overview</button><button data-t=live>Live tap</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=mesh>Mesh</button><button data-t=evidence>Evidence</button><button data-t=design>Design</button>
+<button data-t=overview class=on>Overview</button><button data-t=live>Live tap</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=mesh>Mesh</button><button data-t=evidence>Evidence</button><button data-t=security>Security</button><button data-t=design>Design</button>
 </nav><main>
 <section id=s-overview class=on><div class=grid id=stats></div><div class=card><h3>Latest brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=brief class=md>loading&hellip;</div></div>
 <div class=card><h3>Run investigation</h3><div class=row>
@@ -80,6 +81,13 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <section id=s-mesh><div class=card><table id=t-mesh><thead><tr><th>node</th><th>online</th><th>hw</th><th>llm/1h</th><th>services</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-evidence><div class=card><div class=row><input id=filt-ev placeholder="filter files&hellip;"><button class=act data-x=t-ev data-name=evidence-CSV>CSV</button><button class=act data-x=t-ev data-name=evidence-JSON>JSON</button><span class=mut id=ev-msg></span></div><table id=t-ev><thead><tr><th>file</th><th>size</th></tr></thead><tbody></tbody></table></div>
 <div class=card><h3>Preview <span class=mut id=ev-name style="font-weight:normal"></span></h3><div class=row><a id=ev-dl class=act download href="#">Download</a><span class=mut id=ev-info></span></div><pre id=ev-view>click a file&hellip;</pre></div></section>
+<section id=s-security><div class=card><div class=row>
+<button class=act id=b-sec-scan>Run security scan (deterministic + LLM)</button>
+<span class=mut id=sec-msg></span><span class=mut id=sec-stored></span></div>
+<div class=grid id=sec-stats></div>
+<h3>Dashboard exposure</h3><div id=sec-exp class=mut>loading&hellip;</div>
+<h3>Secret / PII survivors</h3><table id=t-sec-secrets><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th></tr></thead><tbody></tbody></table>
+</div></section>
 <section id=s-design><div class=row><div class=card style="min-width:230px"><h3>Documents</h3><div id=design-rail class=mut>loading&hellip;</div></div>
 <div class=card style="flex:1"><h3 id=design-title>Design &amp; architecture</h3><div class=mut id=design-meta></div><div id=design-doc class=mut>pick a document&hellip;</div></div></div></section>
 </main>
@@ -500,6 +508,27 @@ def evidence_file(name: str, download: int = 0):
     binary = b"\x00" in raw
     return {"name": name, "size": os.path.getsize(fp), "truncated": truncated,
             "binary": binary, "text": "" if binary else raw.decode("utf-8", "replace")}
+
+
+@app.get("/api/security")
+def security_report():
+    """Deterministic leak/exposure scan + the last persisted advisor assessment."""
+    report = security_agent.deterministic_report(app=app)
+    stored = None
+    p = os.path.join(config.EVIDENCE_DIR, "security.json")
+    if os.path.isfile(p):
+        try:
+            with open(p) as fh:
+                stored = json.load(fh)
+        except (OSError, ValueError):
+            stored = None
+    return {"report": report, "stored": stored}
+
+
+@app.post("/api/security/scan")
+def security_scan(model: str | None = None):
+    """Run the deterministic scan plus the LLM security advisor; persist artifacts."""
+    return security_agent.run_security(app=app, model=model, use_llm=True)
 
 
 @app.get("/api/ollama")
