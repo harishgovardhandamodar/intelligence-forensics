@@ -39,3 +39,24 @@ def test_live_and_timeseries_paths_registered():
               "/api/stats/timeseries",
               "/api/overview", "/api/services", "/api/evidence"):
         assert p in paths, p
+
+def test_evidence_file_preview_download_and_containment(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    monkeypatch.setattr(dashboard.config, "EVIDENCE_DIR", str(tmp_path))
+    (tmp_path / "a.txt").write_text("hello evidence")
+    (tmp_path / "b.bin").write_bytes(b"\x00\x01\x02")
+    (tmp_path / "sub").mkdir()
+    (tmp_path / "sub" / "c.txt").write_text("nested")
+    c = TestClient(dashboard.app)
+
+    r = c.get("/api/evidence/file", params={"name": "a.txt"})
+    assert r.status_code == 200 and r.json()["text"] == "hello evidence"
+    assert c.get("/api/evidence/file", params={"name": "b.bin"}).json()["binary"] is True
+    assert c.get("/api/evidence/file", params={"name": "sub/c.txt"}).json()["text"] == "nested"
+
+    r = c.get("/api/evidence/file", params={"name": "a.txt", "download": 1})
+    assert r.status_code == 200 and b"hello evidence" in r.content
+    assert "attachment" in r.headers.get("content-disposition", "")
+
+    for bad in ("../secret", "/etc/passwd", "missing.txt", "", "a/../../etc/passwd"):
+        assert c.get("/api/evidence/file", params={"name": bad}).status_code == 404

@@ -20,7 +20,7 @@ async function load(){
  }catch(e){$('hdr').textContent='overview failed: '+e;$('stats').innerHTML=`<div class="card warn">overview failed: ${escH(e)}</div>`;}
  await sec('#t-svc tbody',async()=>{
   const sv=await j('/api/services');
-  $('t-svc').querySelector('tbody').innerHTML=sv.services.map(s=>`<tr><td><code>${escH(s.service)}</code></td><td>${escH(s.requests)}</td><td>${escH(s.total_tokens)}</td><td class="mut">${Object.entries(s.models).map(([m,c])=>escH(m).split(':')[0]+'&times;'+escH(c)).join('<br>')}</td><td><b>${escH(s.project||'')}</b><br><span class="mut">${escH((s.pipeline_summary||'').slice(0,140))}</span></td><td>${scoreCell(s.score,s.grade)}<br><span class="mut" title="vibe index: thin prompt-wrapper vs engineered system">&#x26a1;${escH(s.vibe)} ${escH(s.vibe_label)}</span></td></tr>`).join('');});
+  $('t-svc').querySelector('tbody').innerHTML=sv.services.map(s=>`<tr><td><code>${escH(s.service)}</code></td><td>${escH(s.requests)}</td><td>${escH(s.total_tokens)}</td><td class="mut">${Object.entries(s.models).map(([m,c])=>escH(m).split(':')[0]+'&times;'+escH(c)).join('<br>')}</td><td><b>${escH(s.project||'')}</b><br><span class="mut">${escH((s.pipeline_summary||'').slice(0,140))}</span></td><td>${scoreCell(s.score,s.grade)}<br><span class="mut" title="vibe index: thin prompt-wrapper vs engineered system">&#x26a1;${escH(s.vibe)} ${escH(s.vibe_label)}</span></td></tr>`).join('');wireTable('#t-svc','#filt-svc');});
  const rc=await j('/api/reconstructions');
  $('sel-recon').innerHTML=rc.map(r=>`<option value="${escA(r.service)}">${escH(r.service)}</option>`).join('');
  const showRecon=async()=>{const s=$('sel-recon').value;if(!s)return;const d=await j('/api/reconstructions/'+encodeURIComponent(s));const files=Object.keys(d.files);$('sel-file').innerHTML=files.map(f=>`<option value="${escA(f)}">${escH(f)}</option>`).join('');$('recon-view').textContent=d.files[files[0]]||'';};
@@ -56,15 +56,17 @@ instructions:
   $('t-runs').querySelector('tbody').innerHTML=runs.map(r=>`<tr><td><a href="#" data-run="${escA(r.run_id)}">${escH(r.run_id)}</a></td><td class="mut">${escH(r.model||'')}</td><td class="mut">${escH((r.services||[]).join(', ').slice(0,80))}</td><td>${escH(r.elapsed_s??'?')}s</td><td>${escH(r.errors??0)}</td></tr>`).join('')||'<tr><td class="mut">no runs yet</td></tr>';
   document.querySelectorAll('[data-run]').forEach(a=>a.onclick=e=>{e.preventDefault();showRun(a.dataset.run);});
   loadTrend();
-  try{const b=await j('/api/runs');if(b.length){const d=await j('/api/runs/'+b[0].run_id);$('brief').textContent=(d.brief||'').slice(0,3000);}else{const inv=await j('/api/investigation');$('brief').textContent=(inv.readme||'no brief yet — launch an agentic run').slice(0,3000);}}catch(e){$('brief').textContent='unavailable';}
+  try{const b=await j('/api/runs');let md;if(b.length){const d=await j('/api/runs/'+b[0].run_id);md=d.brief||'';}else{const inv=await j('/api/investigation');md=inv.readme||'no brief yet — launch an agentic run';}$('brief').innerHTML=renderMarkdown(md.slice(0,6000));renderMermaid($('brief'));}catch(e){$('brief').innerHTML=`<span class="warn">brief unavailable: ${escH(e)}</span>`;}
   try{
    const m=await j('/api/fox/live');const peers=(m.mesh&&(m.mesh.peers||[]))||[];
    $('t-mesh').querySelector('tbody').innerHTML=peers.map(p=>{const h=p.health||{};return `<tr><td><code>${escH(p.machine||p.node_id)}</code></td><td class="${p.online?'ok':'warn'}">${escH(p.online)}</td><td>${escH((p.hardware||{}).kind||'?')}</td><td>${escH(h.llm_requests_1h??'?')}</td><td class="mut">${escH((h.services||[]).map(s=>s.name).join(', ').slice(0,120))}</td></tr>`}).join('')||'<tr><td class="mut">no peers</td></tr>';
   }catch(e){$('t-mesh').querySelector('tbody').innerHTML=`<tr><td class="warn">mesh failed: ${escH(e)}</td></tr>`;}
   try{
    const ev=await j('/api/evidence');
-   $('t-ev').querySelector('tbody').innerHTML=ev.files.map(f=>`<tr><td><code>${escH(f.name)}</code></td><td class="mut">${escH(f.size_mb)} MB</td></tr>`).join('');
-  }catch(e){$('t-ev').querySelector('tbody').innerHTML=`<tr><td class="warn">evidence failed: ${escH(e)}</td></tr>`;}
+   $('t-ev').querySelector('tbody').innerHTML=ev.files.map(f=>`<tr data-name="${escA(f.name)}" data-size="${escA(f.size_mb)}"><td><code>${escH(f.name)}</code></td><td class="mut">${escH(f.size_mb)} MB</td></tr>`).join('')||trowState(2,'no evidence files');
+   $('t-ev').querySelectorAll('tbody tr[data-name]').forEach(r=>r.addEventListener('click',()=>showEvidence(r.dataset.name,r.dataset.size)));
+   wireTable('#t-ev','#filt-ev');
+  }catch(e){$('t-ev').querySelector('tbody').innerHTML=trowState(2,'evidence failed: '+e,'warn');}
   loadDesignRail();
  }
 const drawProgChart=steps=>{
@@ -84,7 +86,7 @@ const drawProgChart=steps=>{
  document.querySelectorAll('[data-cstep]').forEach(c=>c.onclick=()=>window._showProgStep&&window._showProgStep(+c.dataset.cstep));
 };
 const showRun=async id=>{
- try{const d=await j('/api/runs/'+id);$('run-brief').textContent=(d.brief||'').slice(0,6000);}catch(e){$('run-brief').textContent='brief failed: '+e;}
+ try{const d=await j('/api/runs/'+id);$('run-brief').innerHTML=renderMarkdown((d.brief||'').slice(0,8000));renderMermaid($('run-brief'));}catch(e){$('run-brief').innerHTML=`<span class="warn">brief failed: ${escH(e)}</span>`;}
  try{const g=await j('/api/runs/'+id+'/graph');renderRunGraph(g);}catch(e){$('run-dag').textContent='graph failed: '+e;}
 };
 const renderRunGraph=g=>{
@@ -167,6 +169,20 @@ const renderMermaid=async root=>{
   }catch(e){}
  }
 };
+/* ---- generic table sort/filter/export ---- */
+const cellText=(tr,i)=>{const td=tr.children[i];return td?td.textContent.trim():'';};
+const sortTable=(table,col,dir)=>{const tb=table.tBodies[0];const rows=[...tb.rows].filter(r=>!r.querySelector('td[colspan]'));
+ rows.sort((a,b)=>{const x=cellText(a,col),y=cellText(b,col);const nx=parseFloat(x.replace(/[^\d.\-]/g,'')),ny=parseFloat(y.replace(/[^\d.\-]/g,''));const both=!isNaN(nx)&&!isNaN(ny)&&/\d/.test(x)&&/\d/.test(y);const c=both?nx-ny:x.localeCompare(y);return dir<0?-c:c;});
+ rows.forEach(r=>tb.appendChild(r));};
+const enhanceTable=table=>{if(!table||table.dataset.enh)return;table.dataset.enh='1';
+ table.querySelectorAll('thead th').forEach((th,i)=>{th.style.cursor='pointer';th.title='click to sort';th.addEventListener('click',()=>{const dir=(th.dataset.dir==='asc')?-1:1;th.dataset.dir=dir===1?'asc':'desc';table.querySelectorAll('thead th').forEach(o=>{if(o!==th)delete o.dataset.dir;});sortTable(table,i,dir);});});};
+const filterTable=(table,q)=>{const f=q.toLowerCase();[...table.tBodies[0].rows].forEach(r=>{const t=r.textContent.toLowerCase();r.style.display=(!f||t.includes(f))?'':'none';});};
+const exportTable=(table,name,fmt)=>{const head=[...table.tHead.rows[0].cells].map(c=>c.textContent.trim());const body=[...table.tBodies[0].rows].filter(r=>r.style.display!=='none').map(r=>[...r.cells].map(c=>c.textContent.trim()));let blob,ext;if(fmt==='json'){blob=new Blob([JSON.stringify(body.map(r=>Object.fromEntries(r.map((v,i)=>[head[i]||('col'+i),v]))),null,2)],{type:'application/json'});ext='json';}else{const q=v=>'"'+String(v).replace(/"/g,'""')+'"';blob=new Blob([[head,...body].map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'});ext='csv';}const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${name}.${ext}`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);};
+const wireTable=(tableId,filterId)=>{const t=$(tableId);if(t)enhanceTable(t);const f=$(filterId);if(f&&t)f.addEventListener('input',()=>filterTable(t,f.value));};
+document.querySelectorAll('[data-x]').forEach(b=>b.addEventListener('click',()=>exportTable($(b.dataset.x),b.dataset.name,b.dataset.name.endsWith('JSON')?'json':'csv')));
+/* ---- evidence preview + download ---- */
+const showEvidence=async(name,size)=>{$('ev-name').textContent=name;$('ev-dl').href=`/api/evidence/file?name=${encodeURIComponent(name)}&download=1`;$('ev-view').textContent='loading\u2026';
+ try{const d=await j('/api/evidence/file?name='+encodeURIComponent(name));$('ev-view').textContent=d.binary?'(binary file \u2014 use Download)':(d.text+(d.truncated?'\n\n\u2026 truncated \u2026':''));$('ev-info').textContent=`${(d.size/1024).toFixed(1)} KB${d.truncated?' \u00b7 truncated':''}`;}catch(e){$('ev-view').textContent='preview failed: '+e;}};
 const loadDesignRail=async()=>{try{const idx=await j('/api/design/docs');
  const groups={};idx.docs.forEach(d=>{(groups[d.group]=groups[d.group]||[]).push(d);});
  $('design-rail').innerHTML=Object.entries(groups).map(([g,ds])=>`<div class="mut" style="margin:6px 0 2px">${escH(g)}</div>${ds.map(d=>`<div><a href="#" data-doc="${escA(d.id)}">${escH(d.title)}</a> <span class="mut">${d.available?escH(d.diagrams)+' diagrams':'—'}</span></div>`).join('')}`).join('');

@@ -148,7 +148,7 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 ### P2 — charts & GUI
 - [x] P2.9 Extract `static/app.css` + `static/app.js`; loading/empty/error states; URL-addressable tabs
 - [x] P2.10 Traffic timeline, token volume, latency p50/p95, model mix, heatmap, sparklines; shared tooltip/legend/resize
-- [ ] P2.11 Sortable/filterable tables, CSV/JSON export, evidence preview + download, rendered markdown brief, print stylesheet
+- [x] P2.11 Sortable/filterable tables, CSV/JSON export, evidence preview + download, rendered markdown brief, print stylesheet
 
 ### P3 — security advisor agent
 - [ ] P3.12 Deterministic leak + exposure scanner (D2, D3)

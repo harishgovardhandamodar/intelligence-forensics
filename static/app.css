@@ -56,3 +56,27 @@ nav button:focus-visible,button.act:focus-visible,a:focus-visible{outline:2px so
 .cells{display:flex;flex:1;gap:1px}
 .cell{flex:1;height:13px;border-radius:2px;background:#0a0e14}
 #ts-chart .ln.p95{stroke:#a371f7;stroke-dasharray:3 3}
+/* rendered-markdown briefs (same look as the design viewer) */
+.md h2{font-size:18px;margin:14px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.md h3{font-size:15px;margin:12px 0 6px}
+.md h4{font-size:13px;margin:10px 0 4px}
+.md p{margin:6px 0}.md ul,.md ol{margin:6px 0;padding-left:22px}.md li{margin:2px 0}
+.md blockquote{border-left:3px solid var(--acc);margin:8px 0;padding:4px 10px;color:var(--mut)}
+.md hr{border:0;border-top:1px solid var(--line);margin:12px 0}
+.md table{margin:8px 0}
+tr[data-name]{cursor:pointer}
+tr[data-name]:hover{background:#1f6feb18}
+
+/* print: drop chrome, expand sections, avoid clipping */
+@media print{
+ :root{--bg:#fff;--fg:#111;--mut:#555;--card:#fff;--line:#bbb;--acc:#0645ad}
+ header,nav,#tip{display:none!important}
+ body{background:#fff;color:#111}
+ main{max-width:none;padding:0}
+ section{display:block!important}
+ section:not(.on)::before{content:"— " attr(id) " —";display:block;color:#888;font-size:11px;margin:10px 0 4px}
+ .card{break-inside:avoid;border-color:#bbb}
+ pre,#ev-view,.md,#ts-chart{max-height:none!important;overflow:visible!important}
+ a{color:#0645ad;text-decoration:underline}
+ button,.act,input,select{display:none!important}
+}

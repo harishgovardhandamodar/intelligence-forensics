@@ -17,7 +17,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -37,13 +37,13 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <nav id=tabs>
 <button data-t=overview class=on>Overview</button><button data-t=live>Live tap</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button><button data-t=mesh>Mesh</button><button data-t=evidence>Evidence</button><button data-t=design>Design</button>
 </nav><main>
-<section id=s-overview class=on><div class=grid id=stats></div><div class=card><h3>Latest brief</h3><pre id=brief>loading&hellip;</pre></div>
+<section id=s-overview class=on><div class=grid id=stats></div><div class=card><h3>Latest brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=brief class=md>loading&hellip;</div></div>
 <div class=card><h3>Run investigation</h3><div class=row>
 <button class=act id=b-inv>Re-run heuristic investigation</button>
 <button class=act id=b-agent>Launch agentic run (Qwen 3.8-27B)</button>
 <label class=mut><input type=checkbox id=opt-quick checked> quick (top-3, no critic)</label>
 <span class=mut id=runmsg></span></div></div></section>
-<section id=s-services><div class=card><table id=t-svc><thead><tr><th>service</th><th>reqs</th><th>tokens</th><th>models</th><th>inferred build</th><th>score / vibe</th></tr></thead><tbody></tbody></table></div></section>
+<section id=s-services><div class=card><div class=row><input id=filt-svc placeholder="filter services&hellip;"><button class=act data-x=t-svc data-name=services-CSV>CSV</button><button class=act data-x=t-svc data-name=services-JSON>JSON</button><span class=mut id=svc-msg></span></div><table id=t-svc><thead><tr><th>service</th><th>reqs</th><th>tokens</th><th>models</th><th>inferred build</th><th>score / vibe</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-live><div class=card><h3>Tap <span class=mut id=live-state style="font-weight:normal"></span></h3>
 <div class=row><button class=act id=b-live-start>Start tap</button><button class=act id=b-live-stop>Stop</button>
 <label class=mut>every <input id=inp-live-int type=number value=5 min=1 max=60 style="width:56px">s</label>
@@ -76,9 +76,10 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <h3>Critic gaps</h3><div id=run-gaps></div>
 <h3>Evidence quotes <span class=mut style="font-weight:normal">— prompt lines the profiler cited</span></h3><div id=run-quotes></div></div>
 <div class=card><h3>Across runs <span class=mut style="font-weight:normal">— profiler confidence per service, newest first</span></h3><table id=t-trend><thead><tr><th>service</th><th>trend</th></tr></thead><tbody></tbody></table></div>
-<div class=card><h3>Brief</h3><pre id=run-brief>click a run&hellip;</pre></div></section>
+<div class=card><h3>Brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=run-brief class=md>click a run&hellip;</div></div></section>
 <section id=s-mesh><div class=card><table id=t-mesh><thead><tr><th>node</th><th>online</th><th>hw</th><th>llm/1h</th><th>services</th></tr></thead><tbody></tbody></table></div></section>
-<section id=s-evidence><div class=card><table id=t-ev><thead><tr><th>file</th><th>size</th></tr></thead><tbody></tbody></table></div></section>
+<section id=s-evidence><div class=card><div class=row><input id=filt-ev placeholder="filter files&hellip;"><button class=act data-x=t-ev data-name=evidence-CSV>CSV</button><button class=act data-x=t-ev data-name=evidence-JSON>JSON</button><span class=mut id=ev-msg></span></div><table id=t-ev><thead><tr><th>file</th><th>size</th></tr></thead><tbody></tbody></table></div>
+<div class=card><h3>Preview <span class=mut id=ev-name style="font-weight:normal"></span></h3><div class=row><a id=ev-dl class=act download href="#">Download</a><span class=mut id=ev-info></span></div><pre id=ev-view>click a file&hellip;</pre></div></section>
 <section id=s-design><div class=row><div class=card style="min-width:230px"><h3>Documents</h3><div id=design-rail class=mut>loading&hellip;</div></div>
 <div class=card style="flex:1"><h3 id=design-title>Design &amp; architecture</h3><div class=mut id=design-meta></div><div id=design-doc class=mut>pick a document&hellip;</div></div></div></section>
 </main>
@@ -478,6 +479,27 @@ def evidence():
                 files.append({"name": os.path.relpath(fp, config.EVIDENCE_DIR),
                               "size_mb": round(sz, 2)})
     return {"files": sorted(files, key=lambda f: f["name"], reverse=True)[:100]}
+
+
+@app.get("/api/evidence/file")
+def evidence_file(name: str, download: int = 0):
+    """Preview (text, capped) or download one evidence file. Containment-checked."""
+    if not name or os.path.isabs(name) or ".." in name.split("/"):
+        raise HTTPException(404, "bad name")
+    fp = os.path.realpath(os.path.join(config.EVIDENCE_DIR, name))
+    if not _within(fp, config.EVIDENCE_DIR) or not os.path.isfile(fp):
+        raise HTTPException(404, "not found")
+    if download:
+        return FileResponse(fp, filename=os.path.basename(fp),
+                            media_type="application/octet-stream")
+    cap = 262144
+    with open(fp, "rb") as fh:
+        raw = fh.read(cap + 1)
+    truncated = len(raw) > cap
+    raw = raw[:cap]
+    binary = b"\x00" in raw
+    return {"name": name, "size": os.path.getsize(fp), "truncated": truncated,
+            "binary": binary, "text": "" if binary else raw.decode("utf-8", "replace")}
 
 
 @app.get("/api/ollama")
