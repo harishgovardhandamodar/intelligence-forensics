@@ -3,7 +3,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 const TABS=[...document.querySelectorAll('#tabs button')].map(b=>b.dataset.t);
 const trowState=(cols,msg,cls='mut')=>`<tr><td class="${cls}" colspan="${cols}">${escH(msg)}</td></tr>`;
-const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='sim')loadSimUsers();document.title='Intelligence Forensics — '+name;};
+const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='sim'){loadSimUsers();loadSimScenarios();}document.title='Intelligence Forensics — '+name;};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 window.addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 window.addEventListener('popstate',()=>activateTab(location.hash.slice(1),false));
@@ -603,6 +603,29 @@ const _fl=$('filt-ledger');if(_fl)_fl.oninput=renderLedgerRows;
 const _sd=$('b-sim-demo');if(_sd)_sd.onclick=async()=>{try{await pj('/api/sim/demo');loadSimUsers();}catch(e){const s=$('sim-sum');if(s)s.textContent='demo failed: '+e;}};
 const _sr=$('b-sim-reset');if(_sr)_sr.onclick=async()=>{try{await pj('/api/sim/reset');loadSimUsers();const fc=$('sim-fields');if(fc)fc.innerHTML='';const c=$('sim-curve');if(c){c.className='mut';c.textContent='pick a user…';}}catch(e){}};
 const _sp=$('b-sim-report');if(_sp)_sp.onclick=loadSimReport;
+const _sr2=$('b-sim-run');if(_sr2)_sr2.onclick=runSim;
+async function runSim(){
+ const m=$('sim-runmsg'),o=$('sim-runout');
+ if(m)m.textContent='running…';
+ try{
+  const body={scenario:($('sel-sim-sc')&&$('sel-sim-sc').value)||'all',
+   style:($('sel-sim-style')&&$('sel-sim-style').value)||'regular',
+   dlp_mode:($('sel-sim-dlp')&&$('sel-sim-dlp').value)||'off'};
+  const d=await pj('/api/sim/run',body);
+  const rows=Object.entries(d.results||{}).map(([k,v])=>v.error?`<div>${escH(k)}: <span class="warn">${escH(v.error)}</span></div>`:`<div>${escH(k)}: <b>${escH(v.report.recovered)}/${escH(v.report.n_fields)} recovered</b> <span class="mut">mean ${escH(v.report.mean_accuracy)} · ${escH(v.n_turns)} turns</span></div>`).join('');
+  if(o)o.innerHTML=rows||'<span class="mut">nothing ran</span>';
+  if(m)m.textContent='done';
+  const sel=$('sel-sim');if(sel)sel.dataset.filled='';
+  loadSimUsers();
+ }catch(e){if(m)m.textContent='run failed: '+e;}
+}
+async function loadSimScenarios(){
+ const el=$('sim-scenarios');if(!el)return;
+ try{const d=await j('/api/sim/scenarios');
+  el.innerHTML=(d.scenarios||[]).map(s=>`<div class=card><h3>${escH(s.title)} <span class="mut" style="font-weight:normal">${escH(s.id)}</span></h3><div>${escH(s.blurb)}</div><div class="mut">fields: ${(s.fields||[]).map(escH).join(', ')}</div><div class=diagram-wrap><pre class=mermaid>${escH(s.diagram)}</pre></div></div>`).join('')||'<span class="mut">no scenarios</span>';
+  renderMermaid(el);
+ }catch(e){el.textContent='scenarios failed: '+e;}
+}
 const _sd2=$('sel-sim-dlp');if(_sd2)_sd2.onchange=async()=>{try{await pj('/api/sim/dlp',{mode:_sd2.value});loadSimUsers();}catch(e){const s=$('sim-sum');if(s)s.textContent='dlp failed: '+e;}};
 initTheme();
 load();

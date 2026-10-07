@@ -70,7 +70,10 @@ function loadApp() {
     history: { pushState() {} },
     fetch: (u) => Promise.resolve({
       json: () => Promise.resolve(
-        String(u).includes("/api/reconstructions") || String(u).includes("/api/runs") ? [] : {}),
+        String(u).includes("/api/reconstructions") || String(u).includes("/api/runs") ? []
+        : String(u).includes("/api/sim/scenarios") ? { scenarios: [] }
+        : String(u).includes("/api/sim/run") ? { results: {} }
+        : {}),
     }),
     addEventListener: () => {},
     removeEventListener: () => {},
@@ -84,7 +87,8 @@ function loadApp() {
     + "\n;globalThis.__t = {escH, escA, fmtN, spark, trowState, safeHref,"
     + " renderMarkdown, drawTopo, drawKnowledge, renderFindings, renderChain,"
     + " loadLedger, filterLedger, drawSimCurve, loadSimUsers, loadSimReport,"
-    + " secAnalyticsHTML, scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme};\n";
+    + " runSim, loadSimScenarios, secAnalyticsHTML,"
+    + " scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme};\n";
   vm.createContext(sandbox);
   vm.runInContext(src, sandbox, { filename: "app.js" });
   return { t: sandbox.__t, el };
@@ -299,4 +303,16 @@ test("secAnalyticsHTML degrades without projects", () => {
   const html = t.secAnalyticsHTML({ totals: {}, secrets: [] });
   assert.match(html, /Spotlight/);
   assert.doesNotMatch(html, /Top projects/);
+});
+
+test("runSim renders per-scenario summaries", async () => {
+  await t.runSim();
+  const html = el("sim-runout").innerHTML;
+  assert.match(html, /nothing ran/);
+  assert.match(el("sim-runmsg").textContent, /done/);
+});
+
+test("loadSimScenarios renders diagram blocks", async () => {
+  await t.loadSimScenarios();
+  assert.match(el("sim-scenarios").innerHTML, /no scenarios/);
 });

@@ -43,6 +43,7 @@ POST_LIMITS = {
     "/api/reports/run": (10, 60),
     "/api/live/start": (30, 60),
     "/api/live/stop": (30, 60),
+    "/api/sim/run": (10, 300),
     "/api/sim/ingest": (1000, 300),
     "/api/sim/attack": (60, 60),
     "/api/sim/begin": (60, 60),
@@ -148,7 +149,9 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 </div></section>
 <section id=s-design><div class=row><div class=card style="min-width:230px"><h3>Documents</h3><div id=design-rail class=mut>loading&hellip;</div></div>
 <div class=card style="flex:1"><h3 id=design-title>Design &amp; architecture</h3><div class=mut id=design-meta></div><div id=design-doc class=mut>pick a document&hellip;</div></div></div></section>
-<section id=s-sim><div class=card><div class=row><h3>Embedding-reconstruction sim</h3><span class=mut id=sim-sum></span><span style="flex:1"></span><button class=act id=b-sim-demo>Load demo data</button><button class=act id=b-sim-reset>Reset</button></div><div class=mut>Progressive masked disclosure → cosine clustering → position-wise assembly. Run <code>python sim/run.py --all</code> for the full client, or inspect results here.</div><div class=row><span class=mut>DLP</span><select id=sel-sim-dlp><option value=off>off</option><option value=audit>audit</option><option value=redact>redact</option><option value=block>block</option></select><span class=mut id=sim-dlp-sum></span></div><div class=row><span class=mut>user</span><select id=sel-sim></select><button class=act id=b-sim-report>Report</button></div><div id=sim-curve class=mut>pick a user&hellip;</div><div id=sim-fields class=mut></div><div id=sim-est class=mut></div></div></section>
+<section id=s-sim><div class=card><div class=row><h3>Embedding-reconstruction sim</h3><span class=mut id=sim-sum></span><span style="flex:1"></span><button class=act id=b-sim-demo>Load demo data</button><button class=act id=b-sim-reset>Reset</button></div><div class=mut>Progressive masked disclosure → cosine clustering → position-wise assembly. Run <code>python sim/run.py --all</code> for the full client, or inspect results here.</div><div class=row><span class=mut>DLP</span><select id=sel-sim-dlp><option value=off>off</option><option value=audit>audit</option><option value=redact>redact</option><option value=block>block</option></select><span class=mut id=sim-dlp-sum></span></div><div class=row><span class=mut>user</span><select id=sel-sim></select><button class=act id=b-sim-report>Report</button></div><div id=sim-curve class=mut>pick a user&hellip;</div><div id=sim-fields class=mut></div><div id=sim-est class=mut></div></div>
+<div class=card><div class=row><h3>Run scenarios</h3><span class=mut id=sim-runmsg></span></div><div class=row><select id=sel-sim-sc><option value=all>all scenarios</option><option value=chatbot_health>chatbot_health</option><option value=chatbot_financial>chatbot_financial</option><option value=coding_api_keys>coding_api_keys</option><option value=coding_secrets>coding_secrets</option></select><select id=sel-sim-style><option value=regular>regular</option><option value=one-off>one-off</option><option value=vibe>vibe</option></select><button class=act id=b-sim-run>Run</button></div><div id=sim-runout class=mut></div></div>
+<div class=card><h3>Scenarios</h3><div class=mut>What each experiment leaks, step by step.</div><div id=sim-scenarios class=mut>loading&hellip;</div></div></section>
 </main>
 <div id=tip class=tip></div>
 <script src="/static/app.js" defer></script></body></html>
@@ -510,53 +513,12 @@ def sim_attack(req: SimAttack):
 @app.get("/api/sim/report")
 def sim_report(user_id: str):
     """Accuracy report: assembled secrets vs registered ground truth."""
-    from iforensics.sim import analysis as sim_analysis
-    from iforensics.sim import attacks as sim_attacks
+    from iforensics.sim import reporting as sim_reporting
     from iforensics.sim import state as sim_state
-    st = sim_state.STATE
-    truth = st.get_truth(user_id)
-    if not truth:
+    try:
+        return sim_reporting.build_report(sim_state.STATE, user_id)
+    except sim_reporting.UnknownUser:
         raise HTTPException(404, "no ground truth for user (POST /api/sim/begin)")
-    items = st.store.get_all(filtr={"user_id": user_id})
-    texts, _vecs = st.store.texts_vectors(filtr={"user_id": user_id})
-    res = sim_attacks.progressive_attack(texts, _vecs)
-    # structure path: carrier-independent assemblies (bare secret-shaped
-    # spans, so positional scoring applies directly)
-    struct = sim_attacks.structure_attack(texts)
-    by_field: dict[str, str] = {}
-    best_score: dict[str, float] = {}
-    for s in struct["secrets"]:
-        for field, tv in truth.items():
-            r = sim_analysis.char_accuracy(s["assembled"], tv)
-            if r["accuracy"] > best_score.get(field, 0):
-                best_score[field] = r["accuracy"]
-                by_field[field] = s["assembled"]
-    rep = sim_analysis.field_report(truth, by_field, sim_analysis.window_accuracy)
-    for field, tv in truth.items():
-        rep["fields"][field]["direct_exposure"] = \
-            any(tv in t for t in texts) if tv else False
-    curves = {}
-    for field, tv in truth.items():
-        sched = sorted({(it["metadata"].get("step", 0), it["metadata"].get("mask", ""))
-                        for it in items
-                        if it["metadata"].get("mask")
-                        and it["metadata"].get("field", field) == field})
-        curves[field] = sim_analysis.progression_curve(
-            tv, [m for _, m in sched], sim_attacks.assemble_fragments)
-    rep["curves"] = curves
-    rep["user_id"] = user_id
-    rep["backend"] = st.backend_note
-    rep["clusters"] = res["n_clusters"]
-    from iforensics.sim import plausibility as sim_plaus
-    rep["plausibility"] = sim_plaus.assess()
-    from iforensics.sim import estimate as sim_estimate
-    rep["estimates"] = sim_estimate.estimate_exposure(texts)
-    rep["dlp"] = st.get_policy()
-    rep["reconstructed"] = [
-        {"assembled": s["assembled"], "coverage": s["coverage"],
-         "occurrences": s["occurrences"]}
-        for s in struct["secrets"][:10]]
-    return rep
 
 
 @app.post("/api/sim/reset")
@@ -628,6 +590,43 @@ def sim_demo():
                                    "field": field}, mask=qp["mask"], step=i)
     return {"ok": True, "users": [u for u, _, _ in demo],
             "backend": st.backend_note}
+
+
+@app.get("/api/sim/scenarios")
+def sim_scenarios():
+    """Scenario catalogue with per-scenario mermaid diagrams (no secrets)."""
+    from iforensics.sim import runner as sim_runner
+    return {"scenarios": sim_runner.describe()}
+
+
+class SimRun(BaseModel):
+    scenario: str = "all"
+    n: int = 60
+    seed: int = 42
+    style: str = "regular"
+    dlp_mode: str = "off"
+    threshold: float = 0.6
+
+
+@app.post("/api/sim/run")
+def sim_run(req: SimRun):
+    """Trigger scenarios server-side (the Sim tab's Run button)."""
+    from iforensics.sim import runner as sim_runner
+    names = sim_runner.available() if req.scenario == "all" else [req.scenario]
+    if req.scenario != "all" and req.scenario not in sim_runner.available():
+        raise HTTPException(400, f"unknown scenario: {req.scenario!r}")
+    if req.style not in ("one-off", "regular", "vibe"):
+        raise HTTPException(400, "style must be one-off|regular|vibe")
+    out = {}
+    for name in names:
+        try:
+            out[name] = sim_runner.run_scenario(
+                name, n=max(1, min(200, req.n)), seed=req.seed,
+                threshold=req.threshold, style=req.style,
+                dlp_mode=req.dlp_mode)
+        except Exception as e:  # noqa: BLE001 — one scenario must not kill the batch
+            out[name] = {"error": f"{type(e).__name__}: {e}"}
+    return {"results": out}
 
 
 @app.get("/api/findings")

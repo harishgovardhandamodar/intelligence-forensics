@@ -238,3 +238,8 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 - [x] P10.2 Swarm `sim_reconstruct` tasks via GPU containers + ledger trail
 - [x] P10.3 Ground-truth-free leakage estimator + coding styles
       (one-off/regular/vibe) + plausibility assessment
+
+### P11 — sim trigger + scenario diagrams in tab
+- [x] P11.1 Server-side runner (`sim/runner.py`, shared report builder)
+- [x] P11.2 `/api/sim/run` trigger + `/api/sim/scenarios` catalogue
+- [x] P11.3 Sim tab run controls + per-scenario mermaid diagrams

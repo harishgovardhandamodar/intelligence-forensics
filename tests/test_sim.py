@@ -312,3 +312,47 @@ def test_plausibility_table_marks_gating():
     assert len(gates) == 1 and gates[0]["action"] == "attacker reads the vector store"
     assert "verdict" in out and all(
         a["plausibility"] in ("high", "medium", "low") for a in out["actions"])
+
+
+def test_runner_describe_has_diagrams():
+    from iforensics.sim import runner as sim_runner
+    descs = sim_runner.describe()
+    assert {d["id"] for d in descs} == {"chatbot_health", "chatbot_financial",
+                                        "coding_api_keys", "coding_secrets"}
+    for d in descs:
+        assert d["title"] and d["fields"]
+        assert d["diagram"].startswith("flowchart ")
+        assert "```" not in d["diagram"]  # raw source, fences added by UI
+
+
+def test_runner_executes_scenario_in_process():
+    from iforensics.sim import runner as sim_runner
+    out = sim_runner.run_scenario("chatbot_health", n=12, seed=7)
+    assert out["user_id"] == "u-health"
+    assert out["report"]["recovered"] == 2
+    assert out["report"]["mean_accuracy"] == 1.0
+    assert "ssn" in out["membership"]
+
+
+def test_runner_rejects_unknown_scenario():
+    import pytest
+    from iforensics.sim import runner as sim_runner
+    with pytest.raises(ValueError):
+        sim_runner.run_scenario("nope")
+
+
+def test_sim_run_and_scenarios_endpoints():
+    c = _sim_client()
+    c.post("/api/sim/reset")
+    s = c.get("/api/sim/scenarios")
+    assert s.status_code == 200 and len(s.json()["scenarios"]) == 4
+    assert c.post("/api/sim/run", json={"scenario": "nope"}).status_code == 400
+    assert c.post("/api/sim/run",
+                  json={"scenario": "chatbot_health", "style": "yolo"}
+                  ).status_code == 400
+    r = c.post("/api/sim/run",
+               json={"scenario": "chatbot_health", "n": 12, "seed": 7})
+    assert r.status_code == 200
+    body = r.json()["results"]["chatbot_health"]
+    assert body["report"]["recovered"] == 2
+    c.post("/api/sim/reset")
