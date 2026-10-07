@@ -6,6 +6,7 @@ Usage:
   python cli.py build [--only quai-radar] [--limit 5000]
   python cli.py fingerprint --service quai-radar [--limit 500]
   python cli.py agent-run [--quick] [--model qwen3.8:27b] [--only quai-radar] [--limit 5000]
+  python cli.py report [--limit 5000] [--every 3600]
   python cli.py dashboard [--port 8211]
 """
 import argparse
@@ -175,6 +176,44 @@ def cmd_progression(args) -> int:
     return 0
 
 
+def cmd_report(args) -> int:
+    """Unified report: heuristic + agentic + scores + critic gaps + security,
+    provenance block + SHA-256 of the source DB, versioned with a diff."""
+    import time as _time
+    from iforensics import ollama_client, unified_report
+    db_path = _latest_db_path()
+    rows = store.load_requests(db_path, limit=args.limit) if db_path else []
+    if not rows:
+        print("[!] no rows available", file=sys.stderr)
+        return 2
+
+    def one() -> dict:
+        out = unified_report.run_report(rows=rows, db_path=db_path, model=ollama_client.MODEL)
+        d = out["bundle"].get("diff") or {}
+        print(f"[+] report {out['paths']['id']} -> {out['paths']['markdown']}")
+        print(f"    html {out['paths']['html']}")
+        if d.get("first_run"):
+            print("    first run — no previous version")
+        else:
+            for k in ("services_added", "services_removed"):
+                if d.get(k):
+                    print(f"    {k}: {', '.join(d[k])}")
+            for c in d.get("score_changes", []):
+                print(f"    score {c['service']}: {c['from']} -> {c['to']}")
+        return out
+
+    one()
+    if args.every:
+        print(f"[*] scheduling every {args.every}s (Ctrl-C to stop)")
+        try:
+            while True:
+                _time.sleep(args.every)
+                one()
+        except KeyboardInterrupt:
+            print("\n[*] stopped")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(prog="iforensics")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -211,6 +250,11 @@ def main() -> int:
     f.add_argument("--mode", default="cumulative", choices=["cumulative", "window"])
     f.add_argument("--limit", type=int, default=5000)
     f.set_defaults(fn=cmd_progression)
+    r = sub.add_parser("report", help="unified versioned report (P4.16/P4.17)")
+    r.add_argument("--limit", type=int, default=5000)
+    r.add_argument("--every", type=int, default=0,
+                   help="repeat every N seconds (scheduled runs); 0 = run once")
+    r.set_defaults(fn=cmd_report)
     g = sub.add_parser("live-tail",
                        help="sniff fox :8210 live (queue IN, completed OUT, model SYS) to stdout")
     g.add_argument("--interval", type=float, default=5.0)

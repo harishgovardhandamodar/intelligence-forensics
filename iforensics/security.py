@@ -206,7 +206,7 @@ def git_tracked_under(root: str, subpath: str) -> list[str]:
 
 
 _SIDE_EFFECTING = {"/api/investigate", "/api/live/start", "/api/live/stop",
-                   "/api/runs", "/api/security/scan"}
+                   "/api/runs", "/api/security/scan", "/api/reports/run"}
 
 
 def audit_exposure(app) -> list[dict]:

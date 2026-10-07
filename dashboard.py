@@ -42,8 +42,10 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=card><h3>Run investigation</h3><div class=row>
 <button class=act id=b-inv>Re-run heuristic investigation</button>
 <button class=act id=b-agent>Launch agentic run (Qwen 3.8-27B)</button>
+<button class=act id=b-report>Generate unified report</button>
 <label class=mut><input type=checkbox id=opt-quick checked> quick (top-3, no critic)</label>
-<span class=mut id=runmsg></span></div></div></section>
+<span class=mut id=runmsg></span></div>
+<div class=mut id=report-list></div></div></section>
 <section id=s-services><div class=card><div class=row><input id=filt-svc placeholder="filter services&hellip;"><button class=act data-x=t-svc data-name=services-CSV>CSV</button><button class=act data-x=t-svc data-name=services-JSON>JSON</button><span class=mut id=svc-msg></span></div><table id=t-svc><thead><tr><th>service</th><th>reqs</th><th>tokens</th><th>models</th><th>inferred build</th><th>score / vibe</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-live><div class=card><h3>Tap <span class=mut id=live-state style="font-weight:normal"></span></h3>
 <div class=row><button class=act id=b-live-start>Start tap</button><button class=act id=b-live-stop>Stop</button>
@@ -204,6 +206,26 @@ def investigate():
     path = os.path.join(config.EVIDENCE_DIR, "INVESTIGATION.md")
     report_mod.write(md, path)
     return {"report": path, "requests": inv["n_requests"], "services": inv["n_services"]}
+
+
+@app.get("/api/reports")
+def reports_list():
+    """Versioned unified reports (newest first)."""
+    from iforensics import unified_report
+    return {"reports": list(reversed(unified_report.load_index()))}
+
+
+@app.post("/api/reports/run")
+def reports_run():
+    """Assemble heuristic + agentic + scores + critic gaps + security + provenance,
+    diff against the previous run and persist md/html/json."""
+    from iforensics import unified_report
+    rows = _service_rows()
+    out = unified_report.run_report(rows=rows or None, model=ollama_client.MODEL)
+    entry = out["paths"]["entry"]
+    return {"id": out["paths"]["id"], "entry": entry,
+            "diff": out["bundle"].get("diff", {}), "markdown": entry["markdown"],
+            "html": entry["html"]}
 
 
 @app.get("/api/reconstructions")

@@ -67,6 +67,7 @@ instructions:
    $('t-ev').querySelectorAll('tbody tr[data-name]').forEach(r=>r.addEventListener('click',()=>showEvidence(r.dataset.name,r.dataset.size)));
    wireTable('#t-ev','#filt-ev');
   }catch(e){$('t-ev').querySelector('tbody').innerHTML=trowState(2,'evidence failed: '+e,'warn');}
+  loadReports();
   loadDesignRail();
  }
 const drawProgChart=steps=>{
@@ -350,7 +351,14 @@ $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;con
   loadLive();
  }catch(e){$('live-recon-msg').textContent='failed: '+e;}};
 setInterval(()=>{const s=$('s-live');if(s&&s.classList.contains('on')){loadLive();const a=$('chk-tsauto');if(a&&a.checked)loadTs();}},4000);
+const loadReports=async()=>{
+ try{
+  const d=await j('/api/reports'),rl=$('report-list');if(!rl)return;
+  rl.innerHTML=(d.reports||[]).slice(0,5).map(r=>`<div><b>${escH(r.id)}</b> · risk ${escH(r.risk||'?')} · ${escH(r.n_findings??'?')} findings · ${escH(r.n_services??'?')} svcs · <a href="/api/evidence/file?name=${encodeURIComponent('reports/'+r.id+'/report.html')}&download=1">html</a> · <a href="/api/evidence/file?name=${encodeURIComponent('reports/'+r.id+'/report.md')}">md</a></div>`).join('')||'<span class=mut>no reports yet</span>';
+ }catch(e){const rl=$('report-list');if(rl)rl.textContent='reports failed: '+e;}
+};
 $('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';try{const r=await pj('/api/investigate');$('runmsg').textContent=r.report||JSON.stringify(r);load();}catch(e){$('runmsg').textContent='failed: '+e;}};
+$('b-report').onclick=async()=>{$('runmsg').textContent='generating unified report…';try{const r=await pj('/api/reports/run');const d=r.diff||{};$('runmsg').textContent=`report ${r.id} (db-changed=${d.db_changed??'?'}${(d.services_added||[]).length?' +'+d.services_added.join(','):''}) — see Reports below`;loadReports();}catch(e){$('runmsg').textContent='report failed: '+e;}};
 $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';}catch(e){$('runmsg').textContent='launch failed: '+e;}};
 const _sb=$('b-sec-scan');if(_sb)_sb.onclick=secScan;
 load();

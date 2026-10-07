@@ -157,8 +157,8 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 - [x] P3.15 Trust-boundary assertions (D4) + per-service risk score (D5)
 
 ### P4 — reporting
-- [ ] P4.16 Unified report generator: heuristic + agentic + scores + critic gaps + security findings, provenance block, SHA-256 of source DB
-- [ ] P4.17 Versioned reports + "changes since last run" diff; HTML export; scheduled runs
+- [x] P4.16 Unified report generator: heuristic + agentic + scores + critic gaps + security findings, provenance block, SHA-256 of source DB
+- [x] P4.17 Versioned reports + "changes since last run" diff; HTML export; scheduled runs
 
 ### Verification
 - [ ] Run the full test suite, boot the dashboard, smoke-test every API
