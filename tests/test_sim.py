@@ -356,3 +356,21 @@ def test_sim_run_and_scenarios_endpoints():
     body = r.json()["results"]["chatbot_health"]
     assert body["report"]["recovered"] == 2
     c.post("/api/sim/reset")
+
+
+def test_scenario_builders_importable():
+    import importlib
+    from iforensics.sim import runner as sim_runner
+    for dotted in sim_runner.BUILDERS.values():
+        assert importlib.import_module(dotted) is not None
+
+
+def test_docker_image_ships_sim_client():
+    import os
+    from iforensics import config
+    with open(os.path.join(config.BASE_DIR, "Dockerfile")) as f:
+        text = f.read()
+    # the in-tab runner imports sim.scenarios.* inside the container —
+    # forgetting the COPY line is exactly the ModuleNotFoundError seen live
+    assert "COPY sim/ ./sim/" in text
+    assert os.path.isfile(os.path.join(config.BASE_DIR, "sim", "__init__.py"))
