@@ -1,0 +1,26 @@
+# Agentic forensic brief
+run: 20261007_162423 model: qwen3.8:27b
+elapsed: 26.4s quick=True
+
+# Executive Brief: Multi-Agent Mesh Intelligence
+
+**Date:** Current Cycle
+**Subject:** Cross-Service Capability Analysis & Reconstruction Targets
+
+## 1. Node Capabilities
+*   **agentic-knowledge-mapper:** Constructs a **risk assessment engine** for LLM systems. It ingests product/model briefs to enumerate failure modes (sycophancy, prompt injection) and emits structured **risk registers** with exposure tiers.
+*   **quai-radar:** Operates an **intelligence dashboard** for the Quai Network. It synthesizes live market data (QUAI/QI) and blockchain news into a **knowledge graph**, generating daily research briefs on SOAP dynamics and market implications.
+*   **hive-research-gpu:** Functions as an **academic synthesis assistant** focused on multi-agent systems and RL. It processes paper contexts to produce **cited summaries**, identify knowledge gaps, and formulate refined research queries.
+
+## 2. Shared Topics & Convergence
+*   **Multi-Agent Systems (MAS):** Central to `hive-research-gpu` (research focus) and `agentic-knowledge-mapper` (risk assessment target).
+*   **Structured Knowledge Extraction:** All three nodes transform unstructured inputs (news, papers, briefs) into structured outputs (KG facts, risk registers, cited claims).
+*   **LLM Safety & Robustness:** `agentic-knowledge-mapper` explicitly models vulnerabilities; `hive-research-gpu` provides the theoretical foundation (RL/MAS) for these systems.
+
+## 3. Single Most Valuable Reconstruction Target
+**Target:** `agentic-knowledge-mapper`
+
+**Rationale:** This node is the **control plane** for the mesh. While `quai-radar` provides market context and `hive-research-gpu` provides theoretical depth, `agentic-knowledge-mapper` is the only component that actively **quantifies risk** and defines **exposure tiers**. Reconstructing its logic allows for:
+1.  **Proactive Defense:** Identifying prompt injection/sycophancy vectors before deployment.
+2.  **Unified Risk Framework:** Applying its risk register structure to the outputs of the other two nodes (e.g., assessing the reliability of `quai-radar`’s LLM-generated briefs).
+3.  **Operational Integrity:** It is the sole node focused on *failure modes*, making it critical for ensuring the stability of the entire multi-agent ecosystem.

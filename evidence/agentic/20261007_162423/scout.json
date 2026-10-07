@@ -1,0 +1,48 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.1M toks) with multi-model orchestration (Qwen, Gemma, Nomic) suggests complex agentic workflows or potential prompt-injection/debate loops.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) focused on a single model (Qwen) for extraction tasks; high token-per-request ratio indicates heavy context processing, potential for data exfiltration or sensitive info leakage.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed models (Llama, Qwen, Nomic) for research summarization; lower risk but worth checking for unauthorized access to proprietary papers.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model and multiple model types; unclassified traffic is a red flag for shadow IT or misconfigured clients.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume and tokens; likely benign educational use, low forensic priority.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely health check or test, negligible risk.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard infrastructure warmup, negligible risk.\"\n    }\n  ]\n}",
+ "prompt_tokens": 456,
+ "completion_tokens": 430,
+ "ms": 8940.6,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "High volume (1.2k reqs, 2.1M toks) with multi-model orchestration (Qwen, Gemma, Nomic) suggests complex agentic workflows or potential prompt-injection/debate loops."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "High volume (1.1k reqs, 1.8M toks) focused on a single model (Qwen) for extraction tasks; high token-per-request ratio indicates heavy context processing, potential for data exfiltration or sensitive info leakage."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Moderate volume with mixed models (Llama, Qwen, Nomic) for research summarization; lower risk but worth checking for unauthorized access to proprietary papers."
+   },
+   {
+    "rank": 4,
+    "service": "gateway-unknown",
+    "reason": "Low volume but includes an 'unknown' model and multiple model types; unclassified traffic is a red flag for shadow IT or misconfigured clients."
+   },
+   {
+    "rank": 5,
+    "service": "kid-learning-lab",
+    "reason": "Low volume and tokens; likely benign educational use, low forensic priority."
+   },
+   {
+    "rank": 6,
+    "service": "probe",
+    "reason": "Single request, zero tokens; likely health check or test, negligible risk."
+   },
+   {
+    "rank": 7,
+    "service": "warmup",
+    "reason": "Single request, zero tokens; standard infrastructure warmup, negligible risk."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"High volume (1.2k reqs, 2.1M toks) with multi-model orchestration (Qwen, Gemma, Nomic) suggests complex agentic workflows or potential prompt-injection/debate loops.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High volume (1.1k reqs, 1.8M toks) focused on a single model (Qwen) for extraction tasks; high token-per-request ratio indicates heavy context processing, potential for data exfiltration or sensitive info leakage.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Moderate volume with mixed models (Llama, Qwen, Nomic) for research summarization; lower risk but worth checking for unauthorized access to proprietary papers.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but includes an 'unknown' model and multiple model types; unclassified traffic is a red flag for shadow IT or misconfigured clients.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"kid-learning-lab\",\n      \"reason\": \"Low volume and tokens; likely benign educational use, low forensic priority.\"\n    },\n    {\n      \"rank\": 6,\n      \"service\": \"probe\",\n      \"reason\": \"Single request, zero tokens; likely health check or test, negligible risk.\"\n    },\n    {\n      \"rank\": 7,\n      \"service\": \"warmup\",\n      \"reason\": \"Single request, zero tokens; standard infrastructure warmup, negligible risk.\"\n    }\n  ]\n}"
+}
