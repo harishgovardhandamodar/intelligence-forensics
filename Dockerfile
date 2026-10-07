@@ -12,6 +12,9 @@ COPY iforensics/ ./iforensics/
 COPY dashboard.py cli.py ./
 COPY design/ ./design/
 COPY static/ ./static/
+# Shipped so the trust-boundary self-audit (T1/T5/T7) sees the same config
+# inside the container as on the host. No secrets in either file.
+COPY docker-compose.yml README.md ./
 
 RUN mkdir -p /app/evidence /app/reconstructions
 
