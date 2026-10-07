@@ -325,13 +325,19 @@ def test_runner_describe_has_diagrams():
         assert "```" not in d["diagram"]  # raw source, fences added by UI
 
 
-def test_runner_executes_scenario_in_process():
+def test_runner_executes_scenario_in_process(tmp_path, monkeypatch):
+    from iforensics import config
     from iforensics.sim import runner as sim_runner
+    monkeypatch.setattr(config, "EVIDENCE_DIR", str(tmp_path))
     out = sim_runner.run_scenario("chatbot_health", n=12, seed=7)
     assert out["user_id"] == "u-health"
     assert out["report"]["recovered"] == 2
     assert out["report"]["mean_accuracy"] == 1.0
     assert "ssn" in out["membership"]
+    assert "run_id" in out
+    import os
+    assert os.path.isfile(os.path.join(
+        str(tmp_path), "sim-reports", out["run_id"], "chatbot_health.json"))
 
 
 def test_runner_rejects_unknown_scenario():
@@ -374,3 +380,95 @@ def test_docker_image_ships_sim_client():
     # forgetting the COPY line is exactly the ModuleNotFoundError seen live
     assert "COPY sim/ ./sim/" in text
     assert os.path.isfile(os.path.join(config.BASE_DIR, "sim", "__init__.py"))
+
+
+def test_dossier_bands_findings_and_timeline():
+    from iforensics.sim import dossier as dos
+    results = {
+        "chatbot_health": {
+            "user_id": "u-health", "n_turns": 12, "style": "regular",
+            "attack": {"n_clusters": 2, "mean_cohesion": 0.9},
+            "membership": {},
+            "report": {"recovered": 1, "n_fields": 2, "mean_accuracy": 0.5,
+                       "dlp": {"mode": "off", "interceptions": 0},
+                       "estimates": {"exposure": 1.0, "n_groups": 2},
+                       "fields": {
+                           "ssn": {"accuracy": 1.0, "matched": 9, "total": 9,
+                                   "recovered": True, "direct_exposure": True,
+                                   "curve": []},
+                           "bp": {"accuracy": 0.0, "matched": 0, "total": 6,
+                                  "recovered": False, "direct_exposure": False,
+                                  "curve": []}},
+                       "reconstructed": [
+                           {"assembled": "123-45-6789", "coverage": 1.0,
+                            "occurrences": 3}]},
+        },
+        "broken": {"error": "ValueError: nope"},
+    }
+    entries = [
+        {"seq": 1, "actor": "orchestrator", "action": "run.start",
+         "task_id": "", "artifact_sha256": "", "detail": "x"},
+        {"seq": 2, "actor": "sim:chatbot_health", "action": "task.complete",
+         "task_id": "r-chatbot_health", "artifact_sha256": "ab" * 32,
+         "detail": "recovered=1/2"},
+    ]
+    d = dos.build_dossier("r1", results, entries,
+                          {"ok": True, "checked": 2, "failed_at": None})
+    assert [f["band"] for f in d["findings"]] == ["critical", "low"]
+    assert d["findings"][0]["reconstructed"] == "123-45-6789"
+    assert d["scenarios"]["broken"] == {"error": "ValueError: nope"}
+    assert len(d["timeline"]) == 2 and d["ledger"] == {
+        "ok": True, "checked": 2, "failed_at": None}
+    md = dos.dossier_markdown(d)
+    assert "§0 Request" in md and "§3 Ledger timeline" in md
+    assert "123-45-6789" in md and "chain OK" in md
+
+
+def test_dossier_attributes_assemblies_per_field():
+    from iforensics.sim import dossier as dos
+    results = {
+        "chatbot_health": {
+            "user_id": "u-health", "n_turns": 12, "style": "regular",
+            "attack": {}, "membership": {},
+            "truth": {"ssn": "123-45-6789", "bp": "140/90"},
+            "report": {"recovered": 2, "n_fields": 2, "mean_accuracy": 1.0,
+                       "dlp": {}, "estimates": {},
+                       "fields": {
+                           "ssn": {"accuracy": 1.0, "matched": 9, "total": 9,
+                                   "recovered": True, "direct_exposure": True,
+                                   "curve": []},
+                           "bp": {"accuracy": 1.0, "matched": 6, "total": 6,
+                                  "recovered": True, "direct_exposure": True,
+                                  "curve": []}},
+                       "reconstructed": [
+                           {"assembled": "123-45-6789", "coverage": 1.0,
+                            "occurrences": 3},
+                           {"assembled": "140/90", "coverage": 1.0,
+                            "occurrences": 3}]},
+        },
+    }
+    d = dos.build_dossier("r2", results, [],
+                          {"ok": True, "checked": 0, "failed_at": None})
+    by_field = {f["field"]: f["reconstructed"] for f in d["findings"]}
+    assert by_field == {"ssn": "123-45-6789", "bp": "140/90"}
+
+
+def test_sim_batch_run_id_and_dossier_endpoints(tmp_path, monkeypatch):
+    from iforensics import config
+    monkeypatch.setattr(config, "EVIDENCE_DIR", str(tmp_path))
+    c = _sim_client()
+    r = c.post("/api/sim/run", json={"scenario": "chatbot_health",
+                                     "n": 6, "seed": 7})
+    assert r.status_code == 200
+    run_id = r.json()["run_id"]
+    assert run_id.startswith("sim-")
+    d = c.get("/api/sim/dossier", params={"run_id": run_id})
+    assert d.status_code == 200
+    body = d.json()
+    assert body["ledger"]["ok"] is True
+    assert any(f["field"] == "ssn" for f in body["findings"])
+    md = c.get("/api/sim/dossier.md", params={"run_id": run_id})
+    assert md.status_code == 200 and "Sim dossier" in md.text
+    runs = c.get("/api/sim/runs").json()["runs"]
+    assert run_id in runs
+    assert c.get("/api/sim/dossier", params={"run_id": "nope"}).status_code == 404

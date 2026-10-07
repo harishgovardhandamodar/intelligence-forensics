@@ -93,14 +93,32 @@ def _builder(name: str):
     return mod.build
 
 
+def _log(run_id: str, actor: str, action: str, task_id: str = "",
+         artifact: str = "", detail: str = "") -> None:
+    """Ledger event that must never break a sim run."""
+    try:
+        from .. import ledger as ledger_mod
+        ledger_mod.append(run_id, actor, action, task_id=task_id,
+                          artifact=artifact, detail=detail)
+    except Exception:  # noqa: BLE001
+        pass
+
+
 def run_scenario(name: str, n: int = 60, seed: int = 42,
                  threshold: float = 0.6, style: str = "regular",
-                 dlp_mode: str = "off", out_dir: str | None = None) -> dict:
+                 dlp_mode: str = "off", out_dir: str | None = None,
+                 run_id: str | None = None,
+                 log_complete: bool = True) -> dict:
     """Execute one scenario server-side; same result shape as the client."""
     import json
     import os
+    import time
     from . import state as sim_state
     st = sim_state.STATE
+    if run_id is None:
+        run_id = f"sim-{time.strftime('%Y%m%d_%H%M%S')}"
+    _log(run_id, "orchestrator", "run.start",
+         detail=f"scenario={name} n={n} seed={seed} style={style} dlp={dlp_mode}")
     sc = _builder(name)(seed=seed, n=n, style=style)
     user_id, truth = sc["user_id"], sc["truth"]
     st.reset()
@@ -126,11 +144,26 @@ def run_scenario(name: str, n: int = 60, seed: int = 42,
                          "likely_member": hit["likely_member"]}
     result = {"scenario": name, "user_id": user_id,
               "n_turns": len(sc["turns"]), "style": sc.get("style", "regular"),
+              "run_id": run_id, "truth": truth,
               "attack": {"n_clusters": attack["n_clusters"],
                          "mean_cohesion": attack["mean_cohesion"]},
               "report": report, "membership": probes}
-    if out_dir:
-        os.makedirs(out_dir, exist_ok=True)
-        with open(os.path.join(out_dir, f"{name}.json"), "w") as f:
-            json.dump(result, f, indent=1)
+    rdir = out_dir or os.path.join(_reports_root(), run_id)
+    os.makedirs(rdir, exist_ok=True)
+    rpath = os.path.join(rdir, f"{name}.json")
+    with open(rpath, "w") as f:
+        json.dump(result, f, indent=1)
+    _log(run_id, f"sim:{name}", "task.complete", task_id=f"{run_id}-{name}",
+         artifact=rpath,
+         detail=f"recovered={report['recovered']}/{report['n_fields']} "
+                f"mean={report['mean_accuracy']}")
+    if out_dir is None and log_complete:
+        _log(run_id, "orchestrator", "run.complete",
+             detail=f"scenario={name} user={user_id}")
     return result
+
+
+def _reports_root() -> str:
+    import os
+    from .. import config
+    return os.path.join(config.EVIDENCE_DIR, "sim-reports")

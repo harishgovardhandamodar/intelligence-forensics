@@ -157,7 +157,8 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=card style="flex:1"><h3 id=design-title>Design &amp; architecture</h3><div class=mut id=design-meta></div><div id=design-doc class=mut>pick a document&hellip;</div></div></div></section>
 <section id=s-sim><div class=card><div class=row><h3>Embedding-reconstruction sim</h3><span class=mut id=sim-sum></span><span style="flex:1"></span><button class=act id=b-sim-demo>Load demo data</button><button class=act id=b-sim-reset>Reset</button></div><div class=mut>Progressive masked disclosure → cosine clustering → position-wise assembly. Run <code>python sim/run.py --all</code> for the full client, or inspect results here.</div><div class=row><span class=mut>DLP</span><select id=sel-sim-dlp><option value=off>off</option><option value=audit>audit</option><option value=redact>redact</option><option value=block>block</option></select><span class=mut id=sim-dlp-sum></span></div><div class=row><span class=mut>user</span><select id=sel-sim></select><button class=act id=b-sim-report>Report</button></div><div id=sim-curve class=mut>pick a user&hellip;</div><div id=sim-fields class=mut></div><div id=sim-est class=mut></div></div>
 <div class=card><div class=row><h3>Run scenarios</h3><span class=mut id=sim-runmsg></span></div><div class=row><select id=sel-sim-sc><option value=all>all scenarios</option><option value=chatbot_health>chatbot_health</option><option value=chatbot_financial>chatbot_financial</option><option value=coding_api_keys>coding_api_keys</option><option value=coding_secrets>coding_secrets</option></select><select id=sel-sim-style><option value=regular>regular</option><option value=one-off>one-off</option><option value=vibe>vibe</option></select><button class=act id=b-sim-run>Run</button></div><div id=sim-runout class=mut></div></div>
-<div class=card><h3>Scenarios</h3><div class=mut>What each experiment leaks, step by step.</div><div id=sim-scenarios class=mut>loading&hellip;</div></div></section>
+<div class=card><h3>Scenarios</h3><div class=mut>What each experiment leaks, step by step.</div><div id=sim-scenarios class=mut>loading&hellip;</div></div>
+<div class=card><div class=row><h3>Run dossier</h3><span class=mut id=sim-dosmsg></span></div><div class=row><span class=mut>run</span><select id=sel-sim-run></select><button class=act id=b-sim-dos>Open dossier</button><a class=mut id=sim-dos-md href="#">markdown</a></div><div id=sim-dos-find class=mut></div><div id=sim-dos-doc class=md></div><div id=sim-dos-tl class=mut></div></div></section>
 </main>
 </div>
 <div id=tip class=tip></div>
@@ -626,16 +627,79 @@ def sim_run(req: SimRun):
         raise HTTPException(400, f"unknown scenario: {req.scenario!r}")
     if req.style not in ("one-off", "regular", "vibe"):
         raise HTTPException(400, "style must be one-off|regular|vibe")
+    import time as _time
+    batch_id = f"sim-{_time.strftime('%Y%m%d_%H%M%S')}"
+    try:
+        from iforensics.sim.runner import _log as _sim_log
+        _sim_log(batch_id, "orchestrator", "run.start",
+                 detail=f"scenarios={','.join(names)} n={req.n} "
+                        f"style={req.style} dlp={req.dlp_mode}")
+    except Exception:  # noqa: BLE001
+        pass
     out = {}
     for name in names:
         try:
             out[name] = sim_runner.run_scenario(
                 name, n=max(1, min(200, req.n)), seed=req.seed,
                 threshold=req.threshold, style=req.style,
-                dlp_mode=req.dlp_mode)
+                dlp_mode=req.dlp_mode, run_id=batch_id, log_complete=False)
         except Exception as e:  # noqa: BLE001 — one scenario must not kill the batch
             out[name] = {"error": f"{type(e).__name__}: {e}"}
-    return {"results": out}
+    try:
+        from iforensics.sim.runner import _log as _sim_log2
+        _sim_log2(batch_id, "orchestrator", "run.complete",
+                  detail=f"scenarios={len(out)}")
+    except Exception:  # noqa: BLE001
+        pass
+    return {"run_id": batch_id, "results": out}
+
+
+@app.get("/api/sim/runs")
+def sim_runs():
+    """Persisted sim run ids, newest first."""
+    import os
+    from iforensics.sim.runner import _reports_root
+    root = _reports_root()
+    try:
+        ids = sorted((d for d in os.listdir(root)
+                      if os.path.isdir(os.path.join(root, d))), reverse=True)
+    except OSError:
+        ids = []
+    return {"runs": ids}
+
+
+@app.get("/api/sim/dossier")
+def sim_dossier(run_id: str):
+    """Detailed per-run dossier: request, findings, scores, ledger timeline."""
+    import json
+    import os
+    from iforensics import ledger as ledger_mod
+    from iforensics.sim import dossier as dossier_mod
+    from iforensics.sim.runner import _reports_root
+    rdir = os.path.join(_reports_root(), run_id)
+    if not os.path.isdir(rdir):
+        raise HTTPException(404, "unknown sim run")
+    results = {}
+    try:
+        for fn in sorted(os.listdir(rdir)):
+            if fn.endswith(".json"):
+                with open(os.path.join(rdir, fn)) as f:
+                    results[os.path.splitext(fn)[0]] = json.load(f)
+    except OSError:
+        raise HTTPException(404, "unknown sim run")
+    entries = ledger_mod.read(run_id)
+    ver = ledger_mod.verify(run_id)
+    return dossier_mod.build_dossier(run_id, results, entries, ver)
+
+
+@app.get("/api/sim/dossier.md")
+def sim_dossier_md(run_id: str):
+    """The dossier rendered as Markdown (for export / print)."""
+    from fastapi.responses import PlainTextResponse
+    from iforensics.sim import dossier as dossier_mod
+    d = sim_dossier(run_id)
+    return PlainTextResponse(dossier_mod.dossier_markdown(d),
+                             media_type="text/markdown")
 
 
 @app.get("/api/findings")

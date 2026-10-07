@@ -3,7 +3,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 const TABS=[...document.querySelectorAll('#tabs button')].map(b=>b.dataset.t);
 const trowState=(cols,msg,cls='mut')=>`<tr><td class="${cls}" colspan="${cols}">${escH(msg)}</td></tr>`;
-const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='sim'){loadSimUsers();loadSimScenarios();}document.title='Intelligence Forensics — '+name;};
+const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='sim'){loadSimUsers();loadSimScenarios();loadSimRuns();}document.title='Intelligence Forensics — '+name;};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 window.addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 window.addEventListener('popstate',()=>activateTab(location.hash.slice(1),false));
@@ -604,6 +604,7 @@ const _fl=$('filt-ledger');if(_fl)_fl.oninput=renderLedgerRows;
 const _sd=$('b-sim-demo');if(_sd)_sd.onclick=async()=>{try{await pj('/api/sim/demo');loadSimUsers();}catch(e){const s=$('sim-sum');if(s)s.textContent='demo failed: '+e;}};
 const _sr=$('b-sim-reset');if(_sr)_sr.onclick=async()=>{try{await pj('/api/sim/reset');loadSimUsers();const fc=$('sim-fields');if(fc)fc.innerHTML='';const c=$('sim-curve');if(c){c.className='mut';c.textContent='pick a user…';}}catch(e){}};
 const _sp=$('b-sim-report');if(_sp)_sp.onclick=loadSimReport;
+const _sdos=$('b-sim-dos');if(_sdos)_sdos.onclick=loadSimDossier;
 const _sr2=$('b-sim-run');if(_sr2)_sr2.onclick=runSim;
 async function runSim(){
  const m=$('sim-runmsg'),o=$('sim-runout');
@@ -618,8 +619,28 @@ async function runSim(){
   if(m)m.textContent='done';
   showNotif('simulation batch complete','ok');
   const sel=$('sel-sim');if(sel)sel.dataset.filled='';
-  loadSimUsers();
+  loadSimUsers();loadSimRuns(d.run_id);
  }catch(e){if(m)m.textContent='run failed: '+e;showNotif('simulation failed','err');}
+}
+async function loadSimRuns(preset){
+ const sel=$('sel-sim-run');if(!sel)return;
+ try{const d=await j('/api/sim/runs');
+  sel.innerHTML=(d.runs||[]).map(r=>`<option value="${escA(r)}">${escH(r)}</option>`).join('')||'<option value="">no runs yet</option>';
+  if(preset)sel.value=preset;
+ }catch(e){const m=$('sim-dosmsg');if(m)m.textContent='runs failed: '+e;}
+}
+async function loadSimDossier(){
+ const sel=$('sel-sim-run'),rid=sel&&sel.value;
+ const dm=$('sim-dosmsg'),df=$('sim-dos-find'),dd=$('sim-dos-doc'),dt=$('sim-dos-tl');
+ if(!rid){if(dm)dm.textContent='pick a run';return;}
+ try{
+  const d=await j('/api/sim/dossier?run_id='+encodeURIComponent(rid));
+  if(dm)dm.textContent=`${d.findings.length} findings · chain ${d.ledger.ok?'OK':'BROKEN'}`;
+  const md=$('sim-dos-md');if(md)md.href='/api/sim/dossier.md?run_id='+encodeURIComponent(rid);
+  if(df)df.innerHTML=(d.findings||[]).map(f=>`<div>${pill(f.band)} <code>${escH(f.field)}</code> <span class="mut">${escH(f.scenario)} · ${escH(f.accuracy)}${f.direct_exposure?' · in log verbatim':''}</span><div class="mut">${escH(f.reconstructed||'')}</div></div>`).join('')||'<span class="mut">no findings</span>';
+  if(dd)dd.innerHTML='';// full markdown available via the markdown link (keeps the tab fast)
+  if(dt)dt.innerHTML=`<h3>Ledger timeline</h3>`+(d.timeline||[]).map(e=>`<div class="ev"><span class="dot"></span><div><div><span class="mut">#${escH(e.seq)}</span> <code>${escH(e.actor)}</code> ${escH(e.action)} <span class="mut">${escH(e.task_id)}</span></div>${e.detail?`<div class="mut">${escH(e.detail)}</div>`:''}</div></div>`).join('')||'<span class="mut">no entries</span>';
+ }catch(e){if(dm)dm.textContent='dossier failed: '+e;}
 }
 async function loadSimScenarios(){
  const el=$('sim-scenarios');if(!el)return;

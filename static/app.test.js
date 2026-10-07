@@ -73,6 +73,13 @@ function loadApp() {
         String(u).includes("/api/reconstructions") || String(u).includes("/api/runs") ? []
         : String(u).includes("/api/sim/scenarios") ? { scenarios: [] }
         : String(u).includes("/api/sim/run") ? { results: {} }
+        : String(u).includes("/api/sim/dossier") ? {
+            findings: [{ band: "critical", field: "ssn", scenario: "chatbot_health",
+                         accuracy: 1.0, direct_exposure: true,
+                         reconstructed: "123-45-6789" }],
+            timeline: [{ seq: 1, actor: "orchestrator", action: "run.start",
+                         task_id: "", artifact_sha256: "", detail: "" }],
+            ledger: { ok: true, checked: 1, failed_at: null } }
         : {}),
     }),
     addEventListener: () => {},
@@ -89,6 +96,7 @@ function loadApp() {
     + "\n;globalThis.__t = {escH, escA, fmtN, spark, trowState, safeHref,"
     + " renderMarkdown, drawTopo, drawKnowledge, renderFindings, renderChain,"
     + " loadLedger, filterLedger, drawSimCurve, loadSimUsers, loadSimReport,"
+    + " loadSimDossier, loadSimRuns,"
     + " runSim, loadSimScenarios, secAnalyticsHTML,"
     + " scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme,"
     + " showNotif, svcDetailHTML, openSvcOverlay, closeOverlay};\n";
@@ -349,4 +357,13 @@ test("overlay opens on service and closes on backdrop/Esc", () => {
   t.openSvcOverlay("nope");
   assert.match(el("overlay-body").innerHTML, /unknown service/);
   t.closeOverlay();
+});
+
+test("loadSimDossier renders findings and ledger timeline", async () => {
+  el("sel-sim-run").value = "r1";
+  await t.loadSimDossier();
+  assert.match(el("sim-dos-find").innerHTML, /123-45-6789/);
+  assert.match(el("sim-dos-find").innerHTML, /verbatim/);
+  assert.match(el("sim-dos-tl").innerHTML, /run\.start/);
+  assert.match(el("sim-dosmsg").textContent, /1 findings/);
 });
