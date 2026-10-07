@@ -94,19 +94,30 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <section id=s-live><div class=card><h3>Tap <span class=mut id=live-state style="font-weight:normal"></span></h3>
 <div class=row><button class=act id=b-live-start>Start tap</button><button class=act id=b-live-stop>Stop</button>
 <label class=mut>every <input id=inp-live-int type=number value=5 min=1 max=60 style="width:56px">s</label>
-<span class=mut>API-level sniff of fox :8210 — queue IN, completed OUT, model load SYS. Raw pcap needs the <code>pcap</code> compose profile (see README).</span></div></div>
-<div class=card><h3>Rates <span class=mut style="font-weight:normal">— live window</span></h3><table id=t-rates><thead><tr><th>service</th><th>req</th><th>tokens</th><th>req/min</th><th>tok/min</th></tr></thead><tbody><tr><td class=mut colspan=5>tap not running</td></tr></tbody></table></div>
-<div class=card><h3>Live reconstruction <span class=mut style="font-weight:normal">— recent history + live rows since tap started</span></h3>
-<div class=row><select id=sel-live></select><select id=sel-lmode><option value=cumulative>cumulative</option><option value=window>window</option></select>
-<button class=act id=b-live-recon>Reconstruct live</button><span class=mut id=live-recon-msg></span></div>
-<table id=t-liveprog><thead><tr><th>step</th><th>score</th><th>queries</th><th>inferred build</th><th>Δ vs prev</th></tr></thead><tbody></tbody></table></div>
+<span class=mut>API-level sniff of fox :8210 — queue IN, completed OUT, model load SYS. Raw pcap needs the <code>pcap</code> compose profile (see README).</span></div><div class=mut id=live-extra></div></div>
+<div class=card><div class=subtabs>
+<button data-ls=feed class=on>Feed</button><button data-ls=traffic>Traffic</button><button data-ls=recon>Reconstruct</button>
+</div>
+<div class=lpane id=lp-feed>
+<div class=row><span class=mut>show</span><select id=sel-feed-dir><option value="">IN + OUT + SYS</option><option value=in>IN only</option><option value=out>OUT only</option><option value=sys>SYS only</option></select><span class=mut id=feed-count></span></div>
 <div class=card><h3>Feed <span class=mut style="font-weight:normal">— newest first, auto-refresh</span></h3><table id=t-feed><thead><tr><th>time</th><th>dir</th><th>service</th><th>model</th><th>detail</th></tr></thead><tbody><tr><td class=mut colspan=5>tap not running</td></tr></tbody></table></div>
+</div>
+<div class=lpane id=lp-traffic style="display:none">
+<div class=card><h3>Rates <span class=mut style="font-weight:normal">— live window</span></h3><table id=t-rates><thead><tr><th>service</th><th>req</th><th>tokens</th><th>req/min</th><th>tok/min</th></tr></thead><tbody><tr><td class=mut colspan=5>tap not running</td></tr></tbody></table></div>
 <details class="card coll" open><summary><h3>Traffic <span class=mut style="font-weight:normal">— requests &amp; tokens per bucket</span></h3><span class=chev>›</span></summary><div class=coll-body>
 <div class=row><span class=mut>bucket</span><select id=sel-tsbucket><option value=1m>1m</option><option value=5m selected>5m</option><option value=15m>15m</option><option value=1h>1h</option></select>
 <span class=mut>window</span><select id=sel-tswindow><option value=15m>15m</option><option value=1h selected>1h</option><option value=6h>6h</option><option value=24h>24h</option></select>
 <label class=mut><input type=checkbox id=chk-tsauto checked> auto</label><span class=mut id=ts-msg></span></div>
 <div id=ts-chart class="mut loading">loading&hellip;</div><div id=ts-legend class=mut></div>
-<div id=ts-models class=mut></div><div id=ts-heatmap class=mut></div></div></details></section>
+<div id=ts-models class=mut></div><div id=ts-heatmap class=mut></div></div></details>
+</div>
+<div class=lpane id=lp-recon style="display:none">
+<div class=card><h3>Live reconstruction <span class=mut style="font-weight:normal">— recent history + live rows since tap started</span></h3>
+<div class=row><select id=sel-live></select><select id=sel-lmode><option value=cumulative>cumulative</option><option value=window>window</option></select>
+<button class=act id=b-live-recon>Reconstruct live</button><span class=mut id=live-recon-msg></span></div>
+<table id=t-liveprog><thead><tr><th>step</th><th>score</th><th>queries</th><th>inferred build</th><th>Δ vs prev</th></tr></thead><tbody></tbody></table></div>
+</div>
+</div></section>
 <section id=s-timeline><div class=card><div class=row><h3>Chain of events</h3><span class=mut id=chain-sum></span></div><div class=row><span class=mut>service</span><select id=sel-chain><option value="">all</option></select><span class=mut>limit</span><select id=sel-chain-n><option>50</option><option selected>100</option><option>200</option></select><button class=act id=b-chain>Reload</button></div><div class=mut>IN arrivals linked to OUT completions by queue id — queue-wait visible inline.</div><div id=chain class=mut>loading&hellip;</div></div></section>
 <section id=s-recon><div class=card><div class=row><select id=sel-recon></select><select id=sel-file></select></div><pre id=recon-view>pick a reconstruction&hellip;</pre></div>
 <div class=card><h3>Partial &amp; progressive reconstruction <span class=mut style="font-weight:normal">— same service, re-profiled as Fox queries accumulate</span></h3>

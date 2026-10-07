@@ -101,7 +101,8 @@ function loadApp() {
     + " scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme,"
     + " showNotif, svcDetailHTML, openSvcOverlay, closeOverlay,"
     + " buildIntelRows, switchRunSub, agentLogBlock,"
-    + " renderRunPanes, renderRunLogs, renderRunClaims, renderRunVerdict};\n";
+    + " renderRunPanes, renderRunLogs, renderRunClaims, renderRunVerdict,"
+    + " switchLiveSub, filterFeed, renderFeed, renderFeedRows};\n";
   vm.createContext(sandbox);
   vm.runInContext(src, sandbox, { filename: "app.js" });
   return { t: sandbox.__t, el };
@@ -421,4 +422,35 @@ test("renderRunClaims lists unproven services and brief issues", () => {
   assert.match(h, /proven 1\/2/);
   assert.match(h, /no usable profiler result/);
   assert.match(h, /reporter produced no text/);
+});
+
+test("switchLiveSub shows one live pane at a time", () => {
+  t.switchLiveSub("traffic");
+  assert.equal(el("lp-traffic").style.display, "");
+  for (const k of ["feed", "recon"])
+    assert.equal(el("lp-" + k).style.display, "none");
+  t.switchLiveSub("feed");
+  assert.equal(el("lp-feed").style.display, "");
+});
+
+test("filterFeed matches direction case-insensitively", () => {
+  const evs = [
+    { dir: "in", service: "a" }, { dir: "out", service: "b" },
+    { dir: "sys", service: "ollama" },
+  ];
+  assert.equal(t.filterFeed(evs, "").length, 3);
+  assert.deepEqual(t.filterFeed(evs, "OUT").map((e) => e.service), ["b"]);
+  assert.deepEqual(t.filterFeed(evs, "zzz"), []);
+});
+
+test("renderFeed dedupes by seq and renders newest first", () => {
+  const mk = (seq, dir) => ({ seq, dir, service: "s", t: 1000 + seq,
+    model: "m", prompt_head: "hi", prompt_tokens: 1, completion_tokens: 1 });
+  t.renderFeed([mk(2, "out"), mk(1, "in")]);
+  t.renderFeed([mk(2, "out"), mk(3, "sys")]);
+  const html = el("t-feed").querySelector("tbody").innerHTML;
+  const outs = (html.match(/<tr>/g) || []).length;
+  assert.equal(outs, 3);
+  assert.ok(html.indexOf("SYS") !== -1 || html.indexOf("sys") !== -1);
+  assert.match(el("feed-count").textContent, /3 buffered/);
 });

@@ -453,9 +453,30 @@ const liveDir=d=>d==='in'?'<span style="color:#58a6ff">IN</span>':d==='out'?'<sp
 const liveTime=t=>new Date(t*1000).toTimeString().slice(0,8);
 const liveEmpty='<tr><td class="mut" colspan=5>no events yet — waiting for traffic</td></tr>';
 const liveRow=e=>`<tr><td class="mut">${escH(liveTime(e.t))}</td><td>${liveDir(e.dir)}</td><td><code>${escH(e.service)}</code></td><td class="mut">${escH((e.model||'').split(':')[0])}</td><td class="mut">${escH((e.prompt_head||'').slice(0,120))}${e.queue_ms!=null?` <span class="mut">· queued ${escH(Math.round(e.queue_ms))}ms</span>`:''} <span class="mut">· ${escH((e.prompt_tokens||0)+(e.completion_tokens||0))} tok</span></td></tr>`;
+let feedCache=[];
+const feedDirFilter=()=>($('sel-feed-dir')&&$('sel-feed-dir').value)||'';
+const filterFeed=(evs,q)=>{const f=(q||'').toLowerCase().trim();if(!f)return evs;return evs.filter(e=>(e.dir||'').toLowerCase()===f);};
+function renderFeedRows(){
+ const tb=liveTbody();if(!tb)return;
+ const rows=filterFeed(feedCache,feedDirFilter()).slice(0,120);
+ tb.innerHTML=rows.map(liveRow).join('')||liveEmpty;
+ const c=$('feed-count');if(c)c.textContent=`${rows.length} shown · ${feedCache.length} buffered`;
+}
+const renderFeed=evs=>{
+ if(evs&&evs.length){
+  const seen=new Set(feedCache.map(e=>e.seq));
+  for(const e of evs)if(e.seq==null||!seen.has(e.seq)){feedCache.push(e);if(e.seq!=null)seen.add(e.seq);}
+  feedCache.sort((a,b)=>(b.seq||0)-(a.seq||0));
+  feedCache=feedCache.slice(0,500);
+ }
+ renderFeedRows();
+};
+const switchLiveSub=v=>{
+ document.querySelectorAll('[data-ls]').forEach(b=>b.classList.toggle('on',b.dataset.ls===v));
+ ['feed','traffic','recon'].forEach(k=>{const p=$('lp-'+k);if(p)p.style.display=k===v?'':'none';});
+};
 let liveES=null, liveLastSeq=0;
 const liveTbody=()=>$('t-feed').querySelector('tbody');
-const renderFeed=evs=>{const tb=liveTbody();if(!evs.length)return;if(tb.querySelectorAll('tr').length===1&&tb.textContent.indexOf('no events')>=0)tb.innerHTML='';tb.insertAdjacentHTML('afterbegin',evs.map(liveRow).join(''));const rows=tb.querySelectorAll('tr');for(let i=rows.length-1;i>=120;i--)rows[i].remove();};
 function startLiveStream(){if(liveES||!window.EventSource)return;liveES=new EventSource(`/api/live/stream?since_id=${liveLastSeq}`);liveES.onmessage=ev=>{let e;try{e=JSON.parse(ev.data)}catch(_){return}if(!e.seq||e.seq<=liveLastSeq)return;liveLastSeq=e.seq;renderFeed([e]);};liveES.onerror=()=>{if(liveES){liveES.close();liveES=null;}};}
 function stopLiveStream(){if(liveES){liveES.close();liveES=null;}}
 
@@ -615,15 +636,20 @@ const loadLive=async()=>{
  if(st.stale)bits.push('stale '+(st.poll_age_s||'?')+'s since poll');
   if(st.possible_loss)bits.push('⚠ page overflow, older completions missed');
   (st.alerts||[]).slice(-3).forEach(a=>bits.push(`⚠ ${a.kind}${a.service?' '+a.service:''}: ${a.detail}`));
- if(st.running){$('live-state').innerHTML=`<span class="${stateCls}">● ${escH(bits[0])}</span>`+bits.slice(1).map(b=>' · <span class="mut">'+escH(b)+'</span>').join('');}
- else{$('live-state').textContent='○ stopped';}
- if(!st.running){stopLiveStream();}
- if(!st.running)return;
- try{const f=await j('/api/live/feed?limit=40');
-  liveTbody().innerHTML=f.events.map(liveRow).join('')||liveEmpty;
-  liveLastSeq=f.last_seq||liveLastSeq;
-  startLiveStream();
- }catch(e){}
+  const qx=[];
+  if(st.inflight_pending!=null)qx.push(`queue ${st.inflight_pending} in flight · ${st.queue_joined||0} joined`);
+  if(st.webhooks&&st.webhooks.configured)qx.push(`webhooks ${st.webhooks.configured} · last ${st.webhooks.last?(st.webhooks.last.ok?'ok':'FAILED'): 'never fired'}`);
+  const qe=$('live-extra');if(qe)qe.innerHTML=qx.map(b=>`<span class="mut">${escH(b)}</span>`).join(' · ')||'';
+  if(st.running){$('live-state').innerHTML=`<span class="${stateCls}">● ${escH(bits[0])}</span>`+bits.slice(1).map(b=>' · <span class="mut">'+escH(b)+'</span>').join('');}
+  else{$('live-state').textContent='○ stopped';}
+  if(!st.running){stopLiveStream();}
+  if(!st.running)return;
+  try{const f=await j('/api/live/feed?limit=40');
+   feedCache=(f.events||[]).slice(0,500);
+   renderFeedRows();
+   liveLastSeq=f.last_seq||liveLastSeq;
+   startLiveStream();
+  }catch(e){}
  try{const r=await j('/api/live/rates?window_s=300');
   $('t-rates').querySelector('tbody').innerHTML=r.services.map(s=>`<tr><td><code>${escH(s.service)}</code></td><td>${escH(s.req)}</td><td>${escH(s.tokens)}</td><td>${escH(s.req_per_min)}</td><td>${escH(s.tok_per_min)}</td></tr>`).join('')||'<tr><td class="mut" colspan=5>no completed requests in window</td></tr>';
  }catch(e){}
@@ -633,8 +659,10 @@ const loadLive=async()=>{
   if(cur)$('sel-live').value=cur;
  }catch(e){}
 };
-$('b-live-start').onclick=async()=>{const i=+$('inp-live-int').value||5;try{await pj('/api/live/start',{interval_s:i});}catch(e){}loadLive();};
-$('b-live-stop').onclick=async()=>{try{await pj('/api/live/stop');}catch(e){}loadLive();};
+$('b-live-start').onclick=async()=>{const i=+$('inp-live-int').value||5;try{await pj('/api/live/start',{interval_s:i});showNotif('tap started','ok');}catch(e){showNotif('tap start failed','err');}loadLive();};
+$('b-live-stop').onclick=async()=>{try{await pj('/api/live/stop');showNotif('tap stopped','ok');}catch(e){showNotif('tap stop failed','err');}loadLive();};
+const _sfd=$('sel-feed-dir');if(_sfd)_sfd.onchange=renderFeedRows;
+document.querySelectorAll('[data-ls]').forEach(b=>b.addEventListener('click',()=>switchLiveSub(b.dataset.ls)));
 $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;const mode=$('sel-lmode').value;$('live-recon-msg').textContent='reconstructing…';
  try{
   try{const st=await j('/api/live/status');if(!st.running)await pj('/api/live/start');}catch(e){}
