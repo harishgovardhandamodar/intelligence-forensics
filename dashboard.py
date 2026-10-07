@@ -119,10 +119,16 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <section id=s-agents><div class=card><table id=t-runs><thead><tr><th>run</th><th>model</th><th>services</th><th>elapsed</th><th>errors</th></tr></thead><tbody></tbody></table></div>
 <div class=card><h3>Reconstruction graph <span class=mut id=rg-title style="font-weight:normal"></span></h3>
 <div id=run-dag class=mut>click a run above&hellip;</div>
-<h3>Agent cost <span class=mut style="font-weight:normal">— tokens + wall time per agent (local model: $0.00)</span></h3><div id=run-cost></div>
-<h3>Confidence &amp; agreement <span class=mut style="font-weight:normal">— LLM profiler vs heuristic rules</span></h3><table id=t-conf><thead><tr><th>service</th><th>confidence</th><th>heuristic says</th><th>LLM says</th><th>agree</th></tr></thead><tbody></tbody></table>
-<h3>Critic gaps</h3><div id=run-gaps></div>
-<h3>Evidence quotes <span class=mut style="font-weight:normal">— prompt lines the profiler cited</span></h3><div id=run-quotes></div></div>
+<h3>Agent cost <span class=mut style="font-weight:normal">— tokens + wall time per agent (local model: $0.00)</span></h3><div id=run-cost></div></div>
+<div class=card><div class=subtabs>
+<button data-rs=intel class=on>Collected intel</button><button data-rs=logs>Agent logs</button><button data-rs=findings>Findings</button><button data-rs=scores>Scores</button><button data-rs=verdict>Security verdict</button>
+</div>
+<div class=rpane id=rp-intel><div id=run-intel class=mut>click a run above&hellip;</div><h3>Evidence quotes <span class=mut style="font-weight:normal">— prompt lines the profiler cited</span></h3><div id=run-quotes></div></div>
+<div class=rpane id=rp-logs style="display:none"><div id=run-logs class=mut>click a run above&hellip;</div></div>
+<div class=rpane id=rp-findings style="display:none"><h3>Critic gaps</h3><div id=run-gaps></div><div id=run-claims></div></div>
+<div class=rpane id=rp-scores style="display:none"><table id=t-conf><thead><tr><th>service</th><th>confidence</th><th>heuristic says</th><th>LLM says</th><th>agree</th></tr></thead><tbody></tbody></table></div>
+<div class=rpane id=rp-verdict style="display:none"><div class=mut>click a run above&hellip;</div></div>
+</div>
 <div class=card><h3>Across runs <span class=mut style="font-weight:normal">— profiler confidence per service, newest first</span></h3><table id=t-trend><thead><tr><th>service</th><th>trend</th></tr></thead><tbody></tbody></table></div>
 <div class=card><h3>Brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=run-brief class=md>click a run&hellip;</div></div></section>
 <section id=s-ledger><div class=card><div class=row><h3>Action ledger</h3><span class=mut id=ledger-verdict></span></div><div class=row><span class=mut>run</span><select id=sel-ledger></select><button class=act id=b-ledger>Reload</button><input id=filt-ledger placeholder="filter task/actor/action&hellip;"><span class=mut>every action, hash-chained — tampering breaks verification at the exact entry</span></div><table id=t-ledger><thead><tr><th>seq</th><th>actor</th><th>action</th><th>task</th><th>artifact sha</th></tr></thead><tbody></tbody></table></div><div class=card><div class=row><h3>Task queue</h3><span class=mut id=queue-sum></span></div><table id=t-queue><thead><tr><th>state</th><th>depth</th></tr></thead><tbody></tbody></table></div></section>

@@ -150,5 +150,17 @@
  "sim-20261007_220538": {
   "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_220538.jsonl",
   "updated_at": 1791403538.3414469
+ },
+ "sim-20261007_221447": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_221447.jsonl",
+  "updated_at": 1791404087.8706598
+ },
+ "sim-20261007_221509": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_221509.jsonl",
+  "updated_at": 1791404109.3205984
+ },
+ "sim-20261007_221543": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_221543.jsonl",
+  "updated_at": 1791404143.2995594
  }
 }

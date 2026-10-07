@@ -91,8 +91,68 @@ const drawProgChart=steps=>{
  document.querySelectorAll('[data-cstep]').forEach(c=>c.onclick=()=>window._showProgStep&&window._showProgStep(+c.dataset.cstep));
 };
 const showRun=async id=>{
- try{const d=await j('/api/runs/'+id);$('run-brief').innerHTML=renderMarkdown((d.brief||'').slice(0,8000));renderMermaid($('run-brief'));}catch(e){$('run-brief').innerHTML=`<span class="warn">brief failed: ${escH(e)}</span>`;}
+ try{const d=await j('/api/runs/'+id);$('run-brief').innerHTML=renderMarkdown((d.brief||'').slice(0,8000));renderMermaid($('run-brief'));renderRunPanes(d);}catch(e){$('run-brief').innerHTML=`<span class="warn">brief failed: ${escH(e)}</span>`;}
  try{const g=await j('/api/runs/'+id+'/graph');renderRunGraph(g);}catch(e){$('run-dag').textContent='graph failed: '+e;}
+ try{const v=await j('/api/runs/'+id+'/validation');renderRunClaims(v);}catch(e){const c=$('run-claims');if(c)c.innerHTML=`<span class="warn">validation failed: ${escH(e)}</span>`;}
+};
+const buildIntelRows=m=>{
+ const h=(m&&m.heuristic_investigation)||{};
+ return Object.keys(h).map(s=>{const p=h[s]||{},ev=p.evidence||{};
+  return {service:s,project:p.project||'',requests:p.requests??'?',tokens:p.total_tokens??'?',
+   models:Object.keys(p.models||{}),templates:(ev.templates||[]).length,
+   instructions:(ev.instructions||[]).length,heads:(ev.sample_heads||[]).length};});
+};
+const renderRunPanes=d=>{
+ const rows=buildIntelRows(d);
+ const el=$('run-intel');
+ if(el)el.innerHTML=rows.length?`<table><thead><tr><th>service</th><th>reqs</th><th>tokens</th><th>models</th><th>templates</th><th>instructions</th><th>sample heads</th></tr></thead><tbody>${rows.map(r=>`<tr><td><code>${escH(r.service)}</code><br><span class="mut">${escH(r.project)}</span></td><td>${escH(r.requests)}</td><td>${escH(r.tokens)}</td><td class="mut">${r.models.map(escH).join('<br>')||'—'}</td><td>${escH(r.templates)}</td><td>${escH(r.instructions)}</td><td>${escH(r.heads)}</td></tr>`).join('')}</tbody></table>`:'<span class="mut">no heuristic data</span>';
+ renderRunLogs(d);
+ renderRunVerdict(d);
+};
+const agentLogBlock=(title,payload,meta)=>{
+ const body=payload==null?'<span class="mut">—</span>'
+  :typeof payload==='string'?`<pre>${escH(payload.slice(0,3000))}</pre>`
+  :`<pre>${escH(JSON.stringify(payload,null,1).slice(0,3000))}</pre>`;
+ return `<details class="card coll"><summary><b>${escH(title)}</b>${meta?` <span class="mut">${escH(meta)}</span>`:''}<span class=chev>›</span></summary><div class=coll-body>${body}</div></details>`;
+};
+const renderRunLogs=d=>{
+ const el=$('run-logs');if(!el)return;
+ const a=(d&&d.agents)||{};
+ const profs=a.profilers||{},crits=a.critics||{};
+ let html=agentLogBlock('scout',a.scout&&(a.scout.content||a.scout.parsed||a.scout),
+  a.scout?`${((a.scout.prompt_tokens||0)+(a.scout.completion_tokens||0))} tok · ${((a.scout.ms||0)/1000).toFixed(1)}s`:'');
+ for(const s of Object.keys(profs))html+=agentLogBlock('profiler:'+s,profs[s].parsed||profs[s].content||profs[s],
+  `${((profs[s].prompt_tokens||0)+(profs[s].completion_tokens||0))} tok`);
+ for(const s of Object.keys(crits))html+=agentLogBlock('critic:'+s,crits[s].content||crits[s],
+  crits[s].ms?`${(crits[s].ms/1000).toFixed(1)}s`:'');
+ const rep=a.reporter||{};
+ html+=agentLogBlock('reporter',rep.content||rep,'brief');
+ el.innerHTML=html||'<span class="mut">no agent output recorded</span>';
+};
+const renderRunClaims=v=>{
+ const el=$('run-claims');if(!el)return;
+ const s=v.summary||{},svcs=v.services||{};
+ const unproven=Object.keys(svcs).filter(k=>!svcs[k].proven);
+ let html=`<div class="mut">proven ${escH(s.proven??'?')}/${escH(s.n_services??'?')} · contested ${escH(s.contested??0)}</div>`;
+ html+=unproven.map(k=>`<div class="ev-block"><b>${escH(k)}</b> — unproven<span class="ev-src">${escH(((svcs[k]||{}).issues||[]).join('; ').slice(0,220))}</span></div>`).join('');
+ html+=(v.brief_issues||[]).map(b=>`<div class="ev-block"><b>brief</b><span class="ev-src">${escH(String(b).slice(0,220))}</span></div>`).join('');
+ el.innerHTML=html;
+};
+const renderRunVerdict=d=>{
+ const el=$('rp-verdict');if(!el)return;
+ const s=d.security;
+ if(!s){el.innerHTML='<span class="mut">no security scan recorded for this run</span>';return;}
+ const tot=s.totals||{};
+ el.innerHTML=`<div class="kpis">`
+  +`<div class="stat"><div class="v">${escH(s.risk_rating||'?')}</div><div class="k">risk rating</div></div>`
+  +`<div class="stat"><div class="v">${escH(s.n_findings??'?')}</div><div class="k">findings</div></div>`
+  +`</div><div class="mut">severity mix: `
+  +['critical','high','medium','low'].map(k=>`${k} ${tot[k]||0}`).join(' · ')
+  +` — <a href="#security">open the Security tab</a> for evidence and remediation</div>`;
+};
+const switchRunSub=v=>{
+ document.querySelectorAll('[data-rs]').forEach(b=>b.classList.toggle('on',b.dataset.rs===v));
+ ['intel','logs','findings','scores','verdict'].forEach(k=>{const p=$('rp-'+k);if(p)p.style.display=k===v?'':'none';});
 };
 const renderRunGraph=g=>{
  $('rg-title').textContent=`${g.run_id} · ${g.model}${g.quick?' · quick':''} · ${g.elapsed_s}s · ${g.totals.agents_ok} ok/${g.totals.agents_error} err · ${g.totals.prompt_tokens+g.totals.completion_tokens} tok · $0.00 local`;
@@ -595,6 +655,7 @@ $('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';try{cons
 $('b-report').onclick=async()=>{$('runmsg').textContent='generating unified report…';try{const r=await pj('/api/reports/run');const d=r.diff||{};$('runmsg').textContent=`report ${r.id} (db-changed=${d.db_changed??'?'}${(d.services_added||[]).length?' +'+d.services_added.join(','):''}) — see Reports below`;showNotif('unified report '+r.id,'ok');loadReports();}catch(e){$('runmsg').textContent='report failed: '+e;showNotif('report failed','err');}};
 $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});if(r.detail){$('runmsg').textContent=r.detail+' — wait for a run to finish';showNotif(r.detail,'warn');}else{$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';showNotif('agentic run launched','ok');}}catch(e){$('runmsg').textContent='launch failed: '+e;showNotif('launch failed','err');}};
 const _sb=$('b-sec-scan');if(_sb)_sb.onclick=secScan;
+document.querySelectorAll('[data-rs]').forEach(b=>b.addEventListener('click',()=>switchRunSub(b.dataset.rs)));
 const _ss=$('sel-secscope');if(_ss)_ss.onchange=loadSecurity;
 const _sv=$('sel-secview');if(_sv)_sv.onchange=()=>{secView=_sv.value;renderSecView();};
 const _sf=$('sel-find');if(_sf)_sf.onchange=renderFindRows;

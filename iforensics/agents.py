@@ -360,6 +360,8 @@ def run_deep_investigation(rows: list[dict], model: str | None = None,
     manifest["heuristic_investigation"] = {
         s: {"project": inv["services"][s].get("project"),
             "requests": inv["services"][s].get("requests"),
+            "total_tokens": inv["services"][s].get("total_tokens"),
+            "models": inv["services"][s].get("models", {}),
             # groundable source text for claims validation (P5.21):
             # evidence quotes must appear here (normalized substring).
             "evidence": {

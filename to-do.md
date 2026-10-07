@@ -252,3 +252,7 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
       tab select, settings)
 - [x] P12.3 Fixes found live: carrier-only paraphrase, known-wins assembly,
       span charsets (_ +/=), RFC-reserved TLD exemption in T2
+
+### P13 — AKM-style agentic runs sub-tabs (gui-akm branch)
+- [x] P13.1 Collected intel / Agent logs / Findings / Scores / Security verdict
+      sub-tabs over one investigation (manifest + graph + validation)

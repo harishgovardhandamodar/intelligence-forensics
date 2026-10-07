@@ -99,7 +99,9 @@ function loadApp() {
     + " loadSimDossier, loadSimRuns,"
     + " runSim, loadSimScenarios, secAnalyticsHTML,"
     + " scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme,"
-    + " showNotif, svcDetailHTML, openSvcOverlay, closeOverlay};\n";
+    + " showNotif, svcDetailHTML, openSvcOverlay, closeOverlay,"
+    + " buildIntelRows, switchRunSub, agentLogBlock,"
+    + " renderRunPanes, renderRunLogs, renderRunClaims, renderRunVerdict};\n";
   vm.createContext(sandbox);
   vm.runInContext(src, sandbox, { filename: "app.js" });
   return { t: sandbox.__t, el };
@@ -366,4 +368,57 @@ test("loadSimDossier renders findings and ledger timeline", async () => {
   assert.match(el("sim-dos-find").innerHTML, /verbatim/);
   assert.match(el("sim-dos-tl").innerHTML, /run\.start/);
   assert.match(el("sim-dosmsg").textContent, /1 findings/);
+});
+
+test("buildIntelRows shapes collected intel, tolerates gaps", () => {
+  const rows = t.buildIntelRows({ heuristic_investigation: {
+    "svc-a": { project: "p", requests: 3, total_tokens: 100,
+      models: { m: 3 }, evidence: { templates: ["t1"], instructions: [],
+      sample_heads: ["h1", "h2"] } },
+    "svc-b": {},
+  }});
+  assert.equal(rows.length, 2);
+  assert.equal(JSON.stringify(rows[0]), JSON.stringify({ service: "svc-a",
+    project: "p", requests: 3, tokens: 100, models: ["m"], templates: 1,
+    instructions: 0, heads: 2 }));
+  assert.equal(rows[1].tokens, "?");
+  assert.equal(t.buildIntelRows({}).length, 0);
+  assert.equal(t.buildIntelRows(null).length, 0);
+});
+
+test("switchRunSub shows one pane at a time", () => {
+  t.switchRunSub("logs");
+  assert.equal(el("rp-logs").style.display, "");
+  for (const k of ["intel", "findings", "scores", "verdict"])
+    assert.equal(el("rp-" + k).style.display, "none");
+  t.switchRunSub("intel");
+  assert.equal(el("rp-intel").style.display, "");
+});
+
+test("agentLogBlock escapes, truncates and labels", () => {
+  const h = t.agentLogBlock("profiler:s", { a: 1 }, "5 tok");
+  assert.match(h, /profiler:s/);
+  assert.match(h, /5 tok/);
+  const evil = t.agentLogBlock("<b>", "<script>alert(1)</script>", null);
+  assert.doesNotMatch(evil, /<script>/);
+  assert.match(t.agentLogBlock("x", null, null), /—/);
+});
+
+test("renderRunVerdict handles missing and present scans", () => {
+  t.renderRunVerdict({});
+  assert.match(el("rp-verdict").innerHTML, /no security scan/);
+  t.renderRunVerdict({ security: { risk_rating: "high", n_findings: 4,
+    totals: { high: 4 } } });
+  assert.match(el("rp-verdict").innerHTML, /high/);
+});
+
+test("renderRunClaims lists unproven services and brief issues", () => {
+  t.renderRunClaims({ summary: { proven: 1, n_services: 2, contested: 0 },
+    services: { a: { proven: true, issues: [] },
+      b: { proven: false, issues: ["no usable profiler result"] } },
+    brief_issues: ["reporter produced no text"] });
+  const h = el("run-claims").innerHTML;
+  assert.match(h, /proven 1\/2/);
+  assert.match(h, /no usable profiler result/);
+  assert.match(h, /reporter produced no text/);
 });

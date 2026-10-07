@@ -120,6 +120,15 @@ tr[data-svc]:hover{background:#1f6feb18}
 /* severity pills + critical (partners .ok/.warn/.mut) */
 .crit{color:var(--red,#f85149)}
 .pill{display:inline-block;min-width:52px;text-align:center;padding:1px 8px;border:1px solid currentColor;border-radius:999px;font-size:12px}
+/* run sub-tabs: five views over one investigation (AKM assessment-pane pattern) */
+.subtabs{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:4px}
+.subtabs button{background:none;color:var(--fg);border:0;border-bottom:3px solid transparent;padding:7px 12px;cursor:pointer;font-size:13px}
+.subtabs button:hover{background:var(--bg3)}
+.subtabs button.on{border-bottom-color:var(--acc);color:var(--acc);font-weight:600}
+/* evidence blocks: quoted material with accent rail */
+.ev-block{background:var(--bg2);border-left:3px solid var(--acc);border-radius:6px;padding:8px 10px;margin:6px 0}
+.ev-quote{font-style:italic;color:var(--text);line-height:1.5}
+.ev-src{display:block;margin-top:3px;font-size:11px;color:var(--text2)}
 /* chain-of-events timeline */
 .ev{display:flex;gap:10px;position:relative;padding:7px 0 7px 2px}
 .ev+.ev{border-top:1px dashed var(--line)}

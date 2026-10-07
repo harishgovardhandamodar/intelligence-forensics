@@ -62,6 +62,10 @@ def test_run_emits_ledger_trail(monkeypatch, tmp_path):
             assert len(e["artifact_sha256"]) == 64
     out = led.verify(run_id, base_dir=str(tmp_path / "ledger"))
     assert out["ok"] is True
+    # heuristic section carries collectible intel for the runs sub-tabs
+    heur = res["heuristic_investigation"]["svc-a"]
+    assert heur["requests"] == 1 and "total_tokens" in heur
+    assert isinstance(heur["models"], dict) and "evidence" in heur
 
 
 def test_ledger_never_breaks_run(monkeypatch, tmp_path):
