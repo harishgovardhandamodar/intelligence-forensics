@@ -226,3 +226,9 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
       with progression chart
 - [x] P8.3 Client `sim/`: 4 scenarios, runner CLI, settings.yaml (stdlib only)
 - [x] P8.4 Compose `milvus` profile, docs, tests, verify
+
+### P9 — workspace-wide security scan (parent folder, all subfolders)
+- [x] P9.1 Workspace scope: allowlisted `app|workspace` roots (never raw paths)
+- [x] P9.2 Triage: fixture flags, permission scoping, world-readable-secret
+      escalation, per-project rollup, scope-aware report + persist
+- [x] P9.3 Security tab: scope select, projects table, finding flags

@@ -61,18 +61,107 @@ def _risk_from_totals(totals: dict) -> str:
 
 
 def deterministic_report(base_dir: str | None = None, app=None,
-                         subpaths: list[str] | None = None) -> dict:
-    """Run the no-LLM scan and attach a rating + per-finding remediation."""
-    base = base_dir or config.BASE_DIR
-    if subpaths is None:
+                         subpaths: list[str] | None = None,
+                         scope: str = "app") -> dict:
+    """Run the no-LLM scan and attach a rating + per-finding remediation.
+
+    scope="app" scans this repo's evidence/reconstructions (default);
+    scope="workspace" scans the whole parent workspace tree. Anything else
+    raises ValueError (the dashboard allowlists these two only — never a
+    raw path).
+    """
+    base = _resolve_scope(scope, base_dir)
+    if subpaths is None and scope == "app":
         subpaths = [os.path.relpath(config.EVIDENCE_DIR, base), "reconstructions"]
         subpaths = [s for s in subpaths if os.path.isdir(os.path.join(base, s))]
     report = security.run(base, subpaths=subpaths, app=app)
+    report["scope"] = scope
     report["risk_rating"] = _risk_from_totals(report.get("totals", {}))
     for group in ("secrets", "injections", "permissions", "exposure"):
         for f in report.get(group, []):
             f.setdefault("remediation", remediation_for(f.get("kind", "")))
             f.setdefault("status", "open")
+    if scope == "workspace":
+        triage_workspace(report)
+    return report
+
+
+def _resolve_scope(scope: str, base_dir: str | None = None) -> str:
+    """Map a scope name to a scan root. Unknown scopes raise (no raw paths)."""
+    if scope == "app":
+        return base_dir or config.BASE_DIR
+    if scope == "workspace":
+        if base_dir is not None:
+            return base_dir
+        return os.path.dirname(os.path.abspath(config.BASE_DIR))
+    raise ValueError(f"unknown scan scope: {scope!r}")
+
+
+_FIXTURE_HINTS = ("test", "tests", "doc", "docs", "example", "examples",
+                  "fixture", "fixtures", "mock", "mocks", "sample", "samples")
+
+
+def _likely_fixture(source: str) -> bool:
+    """Path-based triage hint: test/docs/example trees hold intentional secrets."""
+    parts = (source or "").lower().replace("\\", "/").split("/")
+    return any(part in _FIXTURE_HINTS for part in parts)
+
+
+_SENSITIVE_NAMES = ("key", "keys", "secret", "secrets", "token", "tokens",
+                    "credential", "credentials", "passwd", "password", ".env",
+                    ".pem")
+
+
+def triage_workspace(report: dict) -> dict:
+    """Make a whole-workspace report triageable (mutates + returns it).
+
+    - flags likely fixtures (test/docs/example paths) so real leaks stand out
+    - drops permission noise: keeps only files that are sensitive by name or
+      that actually contain a secret hit — and escalates those to critical
+    - rolls findings up per top-level project directory
+    """
+    secret_paths = set()
+    for group in ("secrets", "injections"):
+        for f in report.get(group, []) or []:
+            src = f.get("source", "")
+            if _likely_fixture(src):
+                f["likely_fixture"] = True
+            if src:
+                secret_paths.add(src)
+    kept_perms = []
+    for f in report.get("permissions") or []:
+        src = (f.get("source") or "")
+        low = src.lower()
+        sensitive_name = any(h in os.path.basename(low) for h in _SENSITIVE_NAMES)
+        if src in secret_paths:
+            f["severity"] = "critical"
+            f["kind"] = "world_readable_secret"
+            f["remediation"] = ("chmod 0600 immediately and rotate the exposed "
+                                "secret — it is readable on disk")
+            kept_perms.append(f)
+        elif sensitive_name:
+            kept_perms.append(f)
+    report["permissions"] = kept_perms
+    totals = {s: 0 for s in ("critical", "high", "medium", "low")}
+    for group in ("secrets", "injections", "permissions", "exposure"):
+        for f in report.get(group) or []:
+            if f.get("severity") in totals:
+                totals[f["severity"]] += 1
+    report["totals"] = {k: v for k, v in totals.items() if v}
+    report["risk_rating"] = _risk_from_totals(report["totals"])
+    report["n_findings"] = sum(totals.values())
+    projects: dict[str, dict] = {}
+    for group in ("secrets", "injections", "permissions", "exposure"):
+        for f in report.get(group) or []:
+            top = (f.get("source") or "").split("/", 1)[0] or "(root)"
+            p = projects.setdefault(top, {"project": top, "critical": 0,
+                                          "high": 0, "medium": 0, "low": 0,
+                                          "total": 0})
+            sev = f.get("severity")
+            if sev in p:
+                p[sev] += 1
+            p["total"] += 1
+    report["projects"] = sorted(projects.values(), key=lambda p: -p["total"])
     return report
 
 
@@ -113,7 +202,7 @@ def render_markdown(report: dict, assessment: dict | None = None) -> str:
     rating = a.get("risk_rating") or report.get("risk_rating", "low")
     lines = [f"# Security posture — {rating.upper()}", "",
              f"_generated {time.strftime('%Y-%m-%d %H:%M:%S')} · "
-             f"deterministic scan of evidence/reconstructions_", ""]
+             f"deterministic scan of {report.get('root', report.get('scope', ''))}_", ""]
     if a.get("summary"):
         lines += ["## Summary", "", str(a["summary"]), ""]
     totals = report.get("totals") or {}
@@ -125,6 +214,14 @@ def render_markdown(report: dict, assessment: dict | None = None) -> str:
     if not totals:
         lines.append("| (none) | 0 |")
     lines.append("")
+    if report.get("projects"):
+        lines += ["## Findings by project", "",
+                  "| project | critical | high | medium | low | total |",
+                  "|---|---|---|---|---|---|"]
+        for p in report["projects"][:30]:
+            lines.append(f"| {p['project']} | {p['critical']} | {p['high']} | "
+                         f"{p['medium']} | {p['low']} | {p['total']} |")
+        lines.append("")
     if a.get("findings"):
         lines += ["## Advisor findings", "",
                   "| severity | title | status | remediation |",
@@ -159,14 +256,15 @@ def render_markdown(report: dict, assessment: dict | None = None) -> str:
 
 
 def persist(report: dict, assessment: dict | None = None,
-            out_dir: str | None = None) -> dict:
+           out_dir: str | None = None, scope: str = "app") -> dict:
     out_dir = out_dir or config.EVIDENCE_DIR
     os.makedirs(out_dir, exist_ok=True)
     payload = {"generated_at": time.time(), "report": report,
                "assessment": (assessment or {}).get("parsed", {}),
                "assessment_raw": (assessment or {}).get("raw", "")}
-    json_path = os.path.join(out_dir, "security.json")
-    md_path = os.path.join(out_dir, "SECURITY.md")
+    suffix = "" if scope == "app" else f"-{scope}"
+    json_path = os.path.join(out_dir, f"security{suffix}.json")
+    md_path = os.path.join(out_dir, f"SECURITY{suffix.upper()}.md")
     with open(json_path, "w") as fh:
         json.dump(payload, fh, indent=1, default=str)
     with open(md_path, "w") as fh:
@@ -178,15 +276,17 @@ def persist(report: dict, assessment: dict | None = None,
 
 def run_security(base_dir: str | None = None, app=None, model: str | None = None,
                  use_llm: bool = True, out_dir: str | None = None,
-                 subpaths: list[str] | None = None) -> dict:
+                 subpaths: list[str] | None = None,
+                 scope: str = "app") -> dict:
     """Deterministic scan (+ optional LLM advice), persisted to evidence/."""
-    report = deterministic_report(base_dir=base_dir, app=app, subpaths=subpaths)
+    report = deterministic_report(base_dir=base_dir, app=app, subpaths=subpaths,
+                                  scope=scope)
     assessment: dict = {}
     if use_llm:
         try:
             assessment = advise(report, model=model)
         except Exception as e:  # noqa: BLE001 — advisory optional; scan still persists
             assessment = {"parsed": {}, "raw": "", "error": f"{type(e).__name__}: {e}"}
-    paths = persist(report, assessment, out_dir=out_dir)
+    paths = persist(report, assessment, out_dir=out_dir, scope=scope)
     return {"report": report, "assessment": assessment.get("parsed", {}),
             "paths": paths, "risk_rating": paths["risk_rating"]}

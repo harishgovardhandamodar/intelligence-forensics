@@ -175,3 +175,13 @@ def test_runs_lists_pending_first_and_caps_launches(monkeypatch):
     r = c.post("/api/runs", json={})
     assert r.status_code == 429
     assert "busy" in r.json()["detail"]
+
+
+def test_security_scope_allowlist():
+    from fastapi.testclient import TestClient
+    c = TestClient(dashboard.app)
+    assert c.get("/api/security", params={"scope": "../../etc"}).status_code == 400
+    assert c.post("/api/security/scan", json={"scope": "/"}).status_code == 400
+    r = c.get("/api/security", params={"scope": "app"})
+    assert r.status_code == 200
+    assert r.json()["report"]["scope"] == "app"

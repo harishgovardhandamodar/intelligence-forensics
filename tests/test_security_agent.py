@@ -86,3 +86,55 @@ def test_run_security_survives_llm_failure(tmp_path, monkeypatch):
     out = sa.run_security(base_dir=str(tmp_path), subpaths=["evidence"],
                           use_llm=True, out_dir=str(tmp_path / "evidence"))
     assert out["report"]["risk_rating"] == "critical"
+
+def test_scope_allowlist_rejects_raw_paths():
+    import pytest
+    with pytest.raises(ValueError):
+        sa._resolve_scope("../../etc")
+    with pytest.raises(ValueError):
+        sa._resolve_scope("")
+    assert sa._resolve_scope("app").endswith("intelligence-forensics")
+    assert sa._resolve_scope("workspace").endswith("codebase")
+
+
+def test_workspace_triage_flags_escalates_and_rolls_up():
+    rep = {"secrets": [
+        {"kind": "aws_access_key", "severity": "critical",
+         "source": "proj-a/tests/test_x.py", "line": 3, "match": "AKIA…LE"},
+        {"kind": "api_key_assignment", "severity": "high",
+         "source": "proj-a/.env", "line": 1, "match": "x"},
+        {"kind": "email", "severity": "medium",
+         "source": "proj-b/README.md", "line": 9, "match": "a@b.c"}],
+        "injections": [],
+        "permissions": [
+            {"kind": "world_readable", "severity": "medium",
+             "source": "proj-a/.env", "mode": "0644"},
+            {"kind": "world_readable", "severity": "medium",
+             "source": "proj-b/notes.txt", "mode": "0644"},
+            {"kind": "world_readable", "severity": "medium",
+             "source": "proj-b/README.md", "mode": "0644"}],
+        "exposure": []}
+    out = sa.triage_workspace(rep)
+    by_src = {(f.get("source"), f.get("kind")): f
+              for g in ("secrets", "permissions") for f in out[g]}
+    assert by_src[("proj-a/tests/test_x.py", "aws_access_key")]["likely_fixture"] is True
+    assert "likely_fixture" not in by_src[("proj-a/.env", "api_key_assignment")]
+    esc = by_src[("proj-a/.env", "world_readable_secret")]
+    assert esc["severity"] == "critical" and "rotate" in esc["remediation"]
+    # plain-text notes without secrets drop out of permission noise,
+    # but the README holds a flagged email so its perm escalates too
+    assert all(f["source"] != "proj-b/notes.txt" for f in out["permissions"])
+    assert len(out["permissions"]) == 2  # escalated .env + escalated README
+    assert by_src[("proj-b/README.md", "world_readable_secret")]["severity"] == "critical"
+    projs = {p["project"]: p for p in out["projects"]}
+    assert projs["proj-a"]["total"] == 3
+    assert projs["proj-b"]["total"] == 2
+    assert out["n_findings"] == sum(out["totals"].values()) == 5
+
+
+def test_workspace_report_marks_scope(tmp_path):
+    r = sa.deterministic_report(base_dir=str(tmp_path), subpaths=[],
+                                scope="workspace")
+    assert r["scope"] == "workspace"
+    assert "projects" in r
+    assert r["root"] == str(tmp_path)

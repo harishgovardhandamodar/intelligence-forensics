@@ -456,17 +456,19 @@ let tsRz;addEventListener('resize',()=>{clearTimeout(tsRz);tsRz=setTimeout(drawT
 const SEC_CLS=s=>(s==='critical'||s==='high')?'warn':(s==='medium'?'':'mut');
 function renderSecurity(resp){
  const r=resp.report||{},st=resp.stored;
- $('sec-msg').textContent=`scan: ${r.n_findings||0} findings, risk ${r.risk_rating||'low'}`;
+ $('sec-msg').textContent=`scan (${r.scope||'app'}): ${r.n_findings||0} findings, risk ${r.risk_rating||'low'}`;
  const tot=r.totals||{};
  $('sec-stats').innerHTML=['critical','high','medium','low'].map(k=>`<div class="card stat"><div class="v ${SEC_CLS(k)}">${tot[k]||0}</div><div class="k">${k}</div></div>`).join('');
- $('sec-exp').innerHTML=(r.exposure||[]).map(f=>`<div style="margin:4px 0"><b class="${SEC_CLS(f.severity)}">${escH(f.kind)}</b> <span class=mut>${escH(f.source)}</span> — ${escH(f.detail||'')}</div>`).join('')||'<span class="mut">no exposure issues</span>';
- $('t-sec-secrets').querySelector('tbody').innerHTML=(r.secrets||[]).slice(0,200).map(f=>`<tr><td>${escH(f.kind)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.severity)}</td><td class=mut>${escH(f.source)}:${escH(f.line)}</td><td><code>${escH(f.match)}</code></td></tr>`).join('')||trowState(4,'no secret/PII survivors','ok');
+ const flag=f=>[(f.likely_fixture?'fixture?':null),(f.kind==='world_readable_secret'?'exposed!':null)].filter(Boolean).join(' ');
+ $('t-sec-secrets').querySelector('tbody').innerHTML=(r.secrets||[]).slice(0,200).map(f=>`<tr><td>${escH(f.kind)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.severity)}</td><td class=mut>${escH(f.source)}:${escH(f.line)}</td><td><code>${escH(f.match)}</code></td><td class=mut>${escH(flag(f))}</td></tr>`).join('')||trowState(5,'no secret/PII survivors','ok');
  $('sec-inject').innerHTML=(r.injections||[]).slice(0,200).map(f=>`<tr><td>${escH(f.kind)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.severity)}</td><td class=mut>${escH(f.source)}:${escH(f.line)}</td><td><code>${escH(f.snippet||f.match)}</code></td></tr>`).join('')||trowState(4,'no injection patterns','ok');
  $('sec-perm').innerHTML=(r.permissions||[]).slice(0,200).map(f=>`<tr><td>${escH(f.source)}</td><td class="${SEC_CLS(f.severity)}">${escH(f.mode)}</td><td>${escH(f.severity)}</td></tr>`).join('')||trowState(3,'no permission issues');
  const tr=r.tracked_evidence||{};
  $('sec-tracked').textContent=(st&&st.assessment&&st.assessment.risk_rating)?`LLM assessment: ${st.assessment.risk_rating}`:'';
  $('sec-stored').innerHTML=st?`<div class=mut>last scan ${new Date((st.generated_at||0)*1000).toLocaleString()} — ${escH((st.assessment||{}).summary||'(no LLM summary)')}</div>`:'<span class=mut>no stored security.json yet</span>';
  wireTable('#t-sec-secrets',null);
+ const pt=$('t-sec-proj')&&$('t-sec-proj').querySelector('tbody');
+ if(pt)pt.innerHTML=(r.projects||[]).slice(0,30).map(p=>`<tr><td><code>${escH(p.project)}</code></td><td class="${SEC_CLS('critical')}">${escH(p.critical)}</td><td>${escH(p.high)}</td><td>${escH(p.medium)}</td><td class=mut>${escH(p.low)}</td><td><b>${escH(p.total)}</b></td></tr>`).join('')||trowState(6,'no project breakdown');
 }
 const TRUST_CLS=s=>(s==='fail'?'warn':(s==='warn'?'':'ok'));
 function renderTrust(resp){
@@ -488,14 +490,16 @@ function renderRisk(resp){
  wireTable('#t-sec-risk',null);
 }
 function loadSecurity(){
+ const scope=($('sel-secscope')&&$('sel-secscope').value)||'app';
  $('sec-msg').textContent='loading…';
- j('/api/security').then(renderSecurity).catch(e=>{$('sec-msg').textContent='security failed: '+e;});
+ j('/api/security?scope='+encodeURIComponent(scope)).then(renderSecurity).catch(e=>{$('sec-msg').textContent='security failed: '+e;});
  j('/api/trust').then(renderTrust).catch(()=>{});
  j('/api/risk').then(renderRisk).catch(()=>{});
 }
 function secScan(){
  $('sec-msg').textContent='scanning (deterministic + LLM)…';
- pj('/api/security/scan').then(()=>loadSecurity()).catch(e=>{$('sec-msg').textContent='scan failed: '+e;});
+ const scope=($('sel-secscope')&&$('sel-secscope').value)||'app';
+ pj('/api/security/scan',{scope}).then(()=>loadSecurity()).catch(e=>{$('sec-msg').textContent='scan failed: '+e;});
 }
 const loadLive=async()=>{
  let st={running:false};
@@ -547,6 +551,7 @@ $('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';try{cons
 $('b-report').onclick=async()=>{$('runmsg').textContent='generating unified report…';try{const r=await pj('/api/reports/run');const d=r.diff||{};$('runmsg').textContent=`report ${r.id} (db-changed=${d.db_changed??'?'}${(d.services_added||[]).length?' +'+d.services_added.join(','):''}) — see Reports below`;loadReports();}catch(e){$('runmsg').textContent='report failed: '+e;}};
 $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});if(r.detail){$('runmsg').textContent=r.detail+' — wait for a run to finish';}else{$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';}}catch(e){$('runmsg').textContent='launch failed: '+e;}};
 const _sb=$('b-sec-scan');if(_sb)_sb.onclick=secScan;
+const _ss=$('sel-secscope');if(_ss)_ss.onchange=loadSecurity;
 const _sf=$('sel-find');if(_sf)_sf.onchange=renderFindRows;
 const _bc=$('b-chain');if(_bc)_bc.onclick=loadChain;
 const _bl=$('b-ledger');if(_bl)_bl.onclick=()=>loadLedger();

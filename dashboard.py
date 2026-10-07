@@ -123,11 +123,13 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=card><h3>Preview <span class=mut id=ev-name style="font-weight:normal"></span></h3><div class=row><a id=ev-dl class=act download href="#">Download</a><span class=mut id=ev-info></span></div><pre id=ev-view>click a file&hellip;</pre></div></section>
 <section id=s-security><div class=card><div class=row>
 <button class=act id=b-sec-scan>Run security scan (deterministic + LLM)</button>
+<select id=sel-secscope><option value=app>this app</option><option value=workspace>parent workspace (all subfolders)</option></select>
 <span class=mut id=sec-msg></span></div>
 <div class=mut id=sec-stored></div><div class=mut id=sec-tracked></div>
 <div class="grid stats" id=sec-stats></div>
+<h3>Findings by project</h3><table class=tbl id=t-sec-proj><thead><tr><th>project</th><th>crit</th><th>high</th><th>med</th><th>low</th><th>total</th></tr></thead><tbody></tbody></table>
 <h3>Dashboard exposure</h3><div id=sec-exp class=mut>loading&hellip;</div>
-<h3>Secret / PII survivors</h3><table class=tbl id=t-sec-secrets><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th></tr></thead><tbody></tbody></table>
+<h3>Secret / PII survivors</h3><table class=tbl id=t-sec-secrets><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th><th>flags</th></tr></thead><tbody></tbody></table>
 <h3>Prompt-injection attempts</h3><table class=tbl><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th></tr></thead><tbody id=sec-inject></tbody></table>
 <h3>Over-permissive files</h3><table class=tbl><thead><tr><th>file</th><th>mode</th><th>sev</th></tr></thead><tbody id=sec-perm></tbody></table>
 </div>
@@ -873,11 +875,15 @@ def evidence_file(name: str, download: int = 0):
 
 
 @app.get("/api/security")
-def security_report():
+def security_report(scope: str = "app"):
     """Deterministic leak/exposure scan + the last persisted advisor assessment."""
-    report = security_agent.deterministic_report(app=app)
+    if scope not in ("app", "workspace"):
+        raise HTTPException(400, "scope must be app|workspace")
+    report = security_agent.deterministic_report(
+        app=app, scope=scope)
     stored = None
-    p = os.path.join(config.EVIDENCE_DIR, "security.json")
+    suffix = "" if scope == "app" else "-workspace"
+    p = os.path.join(config.EVIDENCE_DIR, f"security{suffix}.json")
     if os.path.isfile(p):
         try:
             with open(p) as fh:
@@ -887,10 +893,20 @@ def security_report():
     return {"report": report, "stored": stored}
 
 
+class ScanReq(BaseModel):
+    model: str | None = None
+    scope: str = "app"
+
+
 @app.post("/api/security/scan")
-def security_scan(model: str | None = None):
+def security_scan(req: ScanReq | None = None):
     """Run the deterministic scan plus the LLM security advisor; persist artifacts."""
-    return security_agent.run_security(app=app, model=model, use_llm=True)
+    scope = (req.scope if req else "app") or "app"
+    if scope not in ("app", "workspace"):
+        raise HTTPException(400, "scope must be app|workspace")
+    model = req.model if req else None
+    return security_agent.run_security(app=app, model=model, use_llm=True,
+                                       scope=scope)
 
 
 @app.get("/api/trust")
