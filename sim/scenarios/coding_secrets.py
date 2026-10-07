@@ -13,7 +13,7 @@ def build(seed: int = 42, n: int = 60):
     per = max(1, n // len(FIELDS))
     for i, (field, base) in enumerate(FIELDS):
         t, tr = build_turns(USER_ID, "coding_secrets", base, field, seed + i,
-                            n=per)
+                            n=per, complete=False, noise_every=5)
         turns.extend(t)
         truth.update(tr)
     return {"user_id": USER_ID, "scenario": "coding_secrets",

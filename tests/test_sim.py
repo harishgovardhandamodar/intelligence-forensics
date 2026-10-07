@@ -159,3 +159,50 @@ def test_sim_demo_and_validation():
     assert c.post("/api/sim/ingest", json={"prompt": ""}).status_code == 400
     assert c.post("/api/sim/begin", json={"user_id": ""}).status_code == 400
     c.post("/api/sim/reset")
+
+
+def test_structure_attack_survives_paraphrase():
+    texts = [
+        "What is my blood pressure trend? Ref: ***-**-6789",
+        "bp reading was 123-**-**** per your last message",
+        "Could you tell me the pattern? recorded as ***-45-6789, thanks",
+        "Deploy the kubernetes manifest with terraform replicas",
+        "My other value is 999-99-9999 ok?",
+    ]
+    out = att.structure_attack(texts)
+    top = out["secrets"][0]
+    assert top["assembled"] == "123-45-6789" and top["coverage"] == 1.0
+    assert top["occurrences"] == 3
+    others = [s["assembled"] for s in out["secrets"][1:]]
+    assert "999-99-9999" in others  # conflicting secret stays separate
+
+
+def test_structure_attack_conflicting_values_split():
+    texts = ["key A is ABCD-1234 ok?", "key B is ABCD-5678 ok?"]
+    out = att.structure_attack(texts)
+    assert out["n_groups"] == 2
+    assert {s["assembled"] for s in out["secrets"]} == {"ABCD-1234", "ABCD-5678"}
+
+
+def test_candidate_membership_beats_carrier_noise():
+    e = emb.HashEmbedder()
+    texts = ["What is my trend? Ref: ***-**-6789",
+             "bp reading was 123-**-**** lately",
+             "Deploy the kubernetes manifest"]
+    hit = att.membership_candidate("123-45-6789", texts, e.embed_one)
+    miss = att.membership_candidate("000-00-0000", texts, e.embed_one)
+    assert hit["likely_member"] and hit["max_score"] >= 0.5
+    assert not miss["likely_member"] and miss["max_score"] < hit["max_score"]
+
+
+def test_partial_schedule_plateaus():
+    sched = queries_mod.mask_schedule("123-45-6789", 3, complete=False)
+    assert all(s[-1] == "*" for s in sched)  # final slot never revealed
+    out = att.assemble_fragments(sched)
+    assert out["assembled"] == "123-45-678"
+    # positional accuracy against truth plateaus below 1.0: the honest regime
+    r = anal.char_accuracy(out["assembled"], "123-45-6789")
+    assert r == {"accuracy": 0.889, "matched": 8, "total": 9,
+                 "recovered": False}
+    full = queries_mod.mask_schedule("123-45-6789", 3, complete=True)
+    assert att.assemble_fragments(full)["coverage"] == 1.0

@@ -481,9 +481,9 @@ def sim_attack(req: SimAttack):
     if req.kind == "membership":
         if not req.value:
             raise HTTPException(400, "value required for membership")
-        with st.lock:
-            cand = st.embedder.embed_one(req.value)
-        return sim_attacks.membership_score(cand, vecs)
+        texts_m = st.store.get_all(filtr)
+        return sim_attacks.membership_candidate(
+            req.value, [t["text"] for t in texts_m], st.embedder.embed_one)
     raise HTTPException(400, f"unknown attack kind: {req.kind!r}")
 
 
@@ -500,18 +500,17 @@ def sim_report(user_id: str):
     items = st.store.get_all(filtr={"user_id": user_id})
     texts, _vecs = st.store.texts_vectors(filtr={"user_id": user_id})
     res = sim_attacks.progressive_attack(texts, _vecs)
-    # attribute each cluster's assembly to the field whose truth it matches best
+    # structure path: carrier-independent assemblies (bare secret-shaped
+    # spans, so positional scoring applies directly)
+    struct = sim_attacks.structure_attack(texts)
     by_field: dict[str, str] = {}
     best_score: dict[str, float] = {}
-    for c in res["clusters"]:
-        best, score = "", 0.0
+    for s in struct["secrets"]:
         for field, tv in truth.items():
-            r = sim_analysis.window_accuracy(c["assembled"], tv)
-            if r["accuracy"] > score:
-                best, score = field, r["accuracy"]
-        if best and score > best_score.get(best, 0):
-            best_score[best] = score
-            by_field[best] = c["assembled"]
+            r = sim_analysis.char_accuracy(s["assembled"], tv)
+            if r["accuracy"] > best_score.get(field, 0):
+                best_score[field] = r["accuracy"]
+                by_field[field] = s["assembled"]
     rep = sim_analysis.field_report(truth, by_field, sim_analysis.window_accuracy)
     curves = {}
     for field, tv in truth.items():
@@ -525,6 +524,10 @@ def sim_report(user_id: str):
     rep["user_id"] = user_id
     rep["backend"] = st.backend_note
     rep["clusters"] = res["n_clusters"]
+    rep["reconstructed"] = [
+        {"assembled": s["assembled"], "coverage": s["coverage"],
+         "occurrences": s["occurrences"]}
+        for s in struct["secrets"][:10]]
     return rep
 
 

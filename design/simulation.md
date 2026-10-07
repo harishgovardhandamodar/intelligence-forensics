@@ -35,16 +35,26 @@ The client knows the secrets; the server only ever sees masked texts and
 embeddings. The attack runs server-side on vectors + texts alone — the same
 information a real log holder has.
 
-## Disclosure mechanics
+## Disclosure mechanics: two complementary paths
+
+Carrier clustering (cosine over full texts) groups near-identical
+repetitions; it fragments as soon as carriers are paraphrased (measured
+0.08–0.16 across rewordings — near-unrelated). The robust path is
+structural:
 
 ```mermaid
 flowchart LR
-    Q1["query 1<br/>***-**-6789"] --> C["cosine cluster<br/>same user, sim ≥ 0.6"]
-    Q2["query 2<br/>123-**-****"] --> C
-    Q3["query 3<br/>123-45-6789"] --> C
-    C --> A["position-wise merge<br/>every known char wins"]
-    A --> S["123-45-6789<br/>coverage 1.0"]
+    Q1["different carriers<br/>same masked secret"] --> X["extract secret-shaped spans"]
+    X --> G["merge by shape +<br/>known-char agreement"]
+    G --> A["position-wise assembly<br/>every known char wins"]
+    A --> S["full value + coverage"]
 ```
+
+Masks of one value share a shape (`###-##-####` covers `***-**-6789`,
+`123-**-****` and the bare secret); conflicting values split into separate
+groups even at identical shape. Membership probes compare the candidate
+against extracted spans, not whole sentences, so carrier wording drops out
+(logged secrets ~0.56–0.75, unseen ~0.0).
 
 Each query alone reveals little; together they reveal everything. The
 progression curve (accuracy vs number of queries) is the chart that matters:
@@ -53,16 +63,20 @@ fast repetition burns a secret.
 
 ## What the results mean
 
-- **8/8 fields recovered at 1.0** across all four scenarios is expected, not
-  surprising: the final step of every schedule discloses the full value.
-  The finding is the *curve*, not the endpoint — accuracy climbs steeply
-  within 2–3 repetitions.
-- **Membership inference** separates logged secrets (~0.56–0.74) from unseen
-  values (~0.0–0.05) with wide margin on the hash backend.
+- **Complete-disclosure regimes recover at 1.0 through paraphrase and
+  distractor noise** (health, finance, api-keys): the structural path is
+  unaffected by carrier rewording that defeats pure cosine clustering.
+- **Partial regimes plateau below 1.0** (`coding_secrets`, final slot never
+  disclosed: 0.93/0.97) — the curve levels off instead of completing, which
+  is the measurable payoff of never logging the full value.
+- **Membership inference** separates logged secrets (~0.56–0.75, higher when
+  stored verbatim) from unseen values (~0.0) with wide margin.
+- The finding is the *curve slope*, not the endpoint: accuracy climbs
+  steeply within 2–3 repetitions in every regime.
 - **Mitigations this setup can test**: per-user retention limits (fewer stored
-  pairs = flatter curve), mask normalization before embedding (destroys the
-  positional signal), query dedup (collapses the cluster), and embedding
-  encryption at rest (raises the bar from read to break).
+  pairs = flatter curve), never logging the full value (partial regime —
+  measured plateau), mask normalization before embedding (destroys the
+  positional signal), and embedding encryption at rest.
 
 ## Honest limits
 

@@ -13,7 +13,7 @@ def build(seed: int = 42, n: int = 60):
     per = max(1, n // len(FIELDS))
     for field, base in FIELDS:
         t, tr = build_turns(USER_ID, "coding_api_keys", base, field, seed,
-                            n=per)
+                            n=per, noise_every=6)
         turns.extend(t)
         truth.update(tr)
     return {"user_id": USER_ID, "scenario": "coding_api_keys",

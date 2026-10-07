@@ -284,7 +284,8 @@ async function loadSimReport(){
  if(!uid){if(fc)fc.innerHTML='<span class="mut">pick a user</span>';return;}
  try{const r=await j('/api/sim/report?user_id='+encodeURIComponent(uid));
   drawSimCurve(r.curves||{});
-  if(fc)fc.innerHTML=`<div class="mut">${escH(r.recovered)}/${escH(r.n_fields)} fields recovered · mean accuracy ${escH(r.mean_accuracy)} · ${escH(r.clusters)} clusters</div>`+Object.entries(r.fields||{}).map(([f,v])=>`<div>${pill(v.recovered?'high':'low')} <code>${escH(f)}</code> <span class="mut">${escH(v.accuracy)} (${escH(v.matched)}/${escH(v.total)} chars)${v.recovered?' — RECOVERED':''}</span></div>`).join('');
+  if(fc)fc.innerHTML=`<div class="mut">${escH(r.recovered)}/${escH(r.n_fields)} fields recovered · mean accuracy ${escH(r.mean_accuracy)} · ${escH(r.clusters)} clusters</div>`+Object.entries(r.fields||{}).map(([f,v])=>`<div>${pill(v.recovered?'high':'low')} <code>${escH(f)}</code> <span class="mut">${escH(v.accuracy)} (${escH(v.matched)}/${escH(v.total)} chars)${v.recovered?' — RECOVERED':''}</span></div>`).join('')
+   +((r.reconstructed||[]).length?`<div class="mut" style="margin-top:6px">reconstructed values (carrier-independent assembly):</div>`+(r.reconstructed||[]).slice(0,6).map(s=>`<div><code>${escH(s.assembled)}</code> <span class="mut">coverage ${escH(s.coverage)} · ${escH(s.occurrences)} occurrences</span></div>`).join(''):'');
  }catch(e){if(fc)fc.textContent='report failed: '+e;}
 }
 function initTheme(){

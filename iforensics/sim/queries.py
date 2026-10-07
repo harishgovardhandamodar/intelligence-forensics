@@ -21,30 +21,36 @@ FILLERS = ["Please help me with this: ", "Quick question — ", "Hi, ",
            "Following up on my last message. "]
 
 
-def mask_schedule(value: str, steps: int = 3) -> list[str]:
+def mask_schedule(value: str, steps: int = 3,
+                  complete: bool = True) -> list[str]:
     """Reveal schedule for a value: thirds disclosed progressively.
 
     Non-alphanumeric separators stay visible (they carry no secret); every
-    step keeps previously revealed characters.
+    step keeps previously revealed characters. With complete=False the final
+    alphanumeric slot stays masked forever — the partial-recovery regime,
+    where the curve plateaus below 1.0.
     """
     slots = [i for i, ch in enumerate(value) if ch.isalnum()]
     if not slots or steps < 1:
         return ["".join(MASK if c.isalnum() else c for c in value)]
     out, revealed = [], set()
     thirds = [slots[i::steps] for i in range(steps)]
+    hold = set() if complete else {slots[-1]}
     for step in range(steps):
         revealed.update(thirds[step])
-        out.append("".join(c if (not c.isalnum() or i in revealed) else MASK
+        shown = revealed - hold
+        out.append("".join(c if (not c.isalnum() or i in shown) else MASK
                            for i, c in enumerate(value)))
     return out
 
 
 def build_progressive(base_prompt: str, secret_value: str,
-                      steps: int = 3) -> list[dict]:
+                      steps: int = 3, complete: bool = True) -> list[dict]:
     """Prompt/mask pairs whose masks assemble to the full value."""
     return [{"prompt": f"{base_prompt} Ref: {mask}",
              "mask": mask, "step": i}
-            for i, mask in enumerate(mask_schedule(secret_value, steps))]
+            for i, mask in enumerate(mask_schedule(secret_value, steps,
+                                                   complete))]
 
 
 def near_duplicates(text: str, seed: int | None = None) -> list[str]:
