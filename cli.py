@@ -289,6 +289,7 @@ ROLE_KINDS = {
     "gather": ["gather"],
     "security": ["security"],
     "ops": ["prune"],
+    "sim": ["sim_reconstruct"],
     "any": None,
 }
 
@@ -328,6 +329,17 @@ def _swarm_execute(kind: str, payload: dict, model: str, task_id: str = "adhoc",
         rep = security_agent.deterministic_report()
         return {"risk_rating": rep.get("risk_rating"),
                 "n_findings": rep.get("n_findings"), "totals": rep.get("totals")}
+    if kind == "sim_reconstruct":
+        from iforensics.sim import attacks as sim_att
+        from iforensics.sim.embeddings import HashEmbedder
+        texts = (payload.get("texts") or [])[:200]
+        struct = sim_att.structure_attack(texts)
+        emb = HashEmbedder()
+        memb = {}
+        for c in (payload.get("candidates") or [])[:20]:
+            memb[c] = sim_att.membership_candidate(c, texts, emb.embed_one)
+        return {"n_groups": struct["n_groups"],
+                "secrets": struct["secrets"][:10], "membership": memb}
     if kind == "prune":
         from iforensics import ledger as ledger_mod
         from iforensics import retention as ret_mod

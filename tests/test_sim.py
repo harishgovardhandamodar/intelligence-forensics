@@ -206,3 +206,109 @@ def test_partial_schedule_plateaus():
                  "recovered": False}
     full = queries_mod.mask_schedule("123-45-6789", 3, complete=True)
     assert att.assemble_fragments(full)["coverage"] == 1.0
+
+
+def test_dlp_scan_modes_and_journal():
+    from iforensics.sim import dlp
+    hits = dlp.scan("My SSN is 123-45-6789 ok?")
+    assert any(h["kind"] == "ssn" for h in hits)
+    assert dlp.scan("plain friendly text") == []
+    import pytest
+    with pytest.raises(ValueError):
+        dlp.Policy("explode")
+    assert dlp.Policy("off").inspect("sk-test-abc", "q")["blocked"] is False
+    p = dlp.Policy("block")
+    out = p.inspect("key AKIAIOSFODNN7EXAMPLE here", "q")
+    assert out["blocked"] is True and out["text"] == ""
+    r = dlp.Policy("redact").inspect("SSN 123-45-6789 noted", "q")
+    assert r["blocked"] is False and "[REDACTED:ssn]" in r["text"]
+    assert "123-45-6789" not in r["text"]
+    a = dlp.Policy("audit").inspect("SSN 123-45-6789 noted", "q")
+    assert a["text"].startswith("SSN") and len(a["findings"]) == 1
+    s = p.summary()
+    assert s["mode"] == "block" and s["interceptions"] == 1
+
+
+def test_gateway_enforces_dlp():
+    from iforensics.sim import dlp
+    from iforensics.sim import embeddings as emb
+    st = store_mod.NumpyStore()
+    gw = gwmod.MockGateway(st, emb.HashEmbedder())
+    pol = dlp.Policy("block")
+    out = gw.process_query("My SSN is 123-45-6789 ok?", {"user_id": "u"},
+                           dlp=pol)
+    assert out["blocked"] is True
+    assert "blocked" in out["response"].lower()
+    assert len(st) == 2  # refusal record stored, flagged
+    red = dlp.Policy("redact")
+    out2 = gw.process_query("My SSN is 123-45-6789 ok?", {"user_id": "u"},
+                            dlp=red)
+    assert out2["blocked"] is False
+    assert "123-45-6789" not in out2["response"]
+
+
+def test_estimate_without_truth():
+    from iforensics.sim import estimate as est
+    texts = ["Ref: ***-**-6789 here", "Ref: 123-**-**** there",
+             "plain carrier words only"]
+    out = est.estimate_exposure(texts)
+    assert out["exposure"] == 1.0
+    assert out["groups"][0]["confidence"] > 0
+    empty = est.estimate_exposure(["nothing secret here at all"])
+    assert empty["exposure"] == 0.0
+
+
+def test_worker_sim_reconstruct_kind():
+    import cli
+    out = cli._swarm_execute("sim_reconstruct",
+                             {"texts": ["Ref: ***-**-6789", "Ref: 123-45-6789"],
+                              "candidates": ["123-45-6789"]}, "m")
+    assert out["n_groups"] >= 1
+    assert out["membership"]["123-45-6789"]["likely_member"] is True
+
+
+def test_sim_dlp_endpoints():
+    c = _sim_client()
+    c.post("/api/sim/reset")
+    assert c.get("/api/sim/dlp").json()["mode"] == "off"
+    assert c.post("/api/sim/dlp", json={"mode": "explode"}).status_code == 400
+    assert c.post("/api/sim/dlp", json={"mode": "redact"}).status_code == 200
+    c.post("/api/sim/begin", json={"user_id": "u9", "truth": {"ssn": "1"}})
+    c.post("/api/sim/ingest", json={"prompt": "SSN 123-45-6789 here",
+                                    "metadata": {"user_id": "u9"}})
+    rep = c.get("/api/sim/report", params={"user_id": "u9"}).json()
+    assert rep["dlp"]["mode"] == "redact"
+    assert rep["dlp"]["interceptions"] >= 1
+    assert "estimates" in rep and "reconstructed" in rep
+    c.post("/api/sim/dlp", json={"mode": "off"})
+    c.post("/api/sim/reset")
+
+
+def test_coding_styles_shapes():
+    import sys
+    sys.path.insert(0, ".")
+    from sim.scenarios import coding_api_keys as cak
+    import pytest
+    with pytest.raises(ValueError):
+        cak.build(style="yolo")
+    one = cak.build(seed=1, n=60, style="one-off")
+    assert len(one["turns"]) == 3
+    assert set(one["truth"]) == {"api_key", "aws_key"}
+    reg = cak.build(seed=1, n=12, style="regular")
+    assert len(reg["turns"]) == 12
+    vibe = cak.build(seed=1, n=20, style="vibe")
+    assert len(vibe["turns"]) == 20
+    full_vals = [v for v in vibe["truth"].values()]
+    full_hits = sum(1 for t in vibe["turns"]
+                    if any(v in t["prompt"] for v in full_vals))
+    assert full_hits >= 8  # vibe pastes full secrets often
+
+
+def test_plausibility_table_marks_gating():
+    from iforensics.sim import plausibility as plaus
+    out = plaus.assess()
+    assert len(out["actions"]) == 8
+    gates = [a for a in out["actions"] if a.get("gating")]
+    assert len(gates) == 1 and gates[0]["action"] == "attacker reads the vector store"
+    assert "verdict" in out and all(
+        a["plausibility"] in ("high", "medium", "low") for a in out["actions"])

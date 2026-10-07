@@ -38,7 +38,7 @@ def _post(server: str, path: str, body: dict):
 
 
 def run_scenario(server: str, name: str, n: int, seed: int, threshold: float,
-                 out_dir: str) -> dict:
+                 out_dir: str, style: str = "regular") -> dict:
     from sim.scenarios import chatbot_financial, chatbot_health, coding_api_keys, coding_secrets
     builders = {"chatbot_health": chatbot_health.build,
                 "chatbot_financial": chatbot_financial.build,
@@ -46,9 +46,10 @@ def run_scenario(server: str, name: str, n: int, seed: int, threshold: float,
                 "coding_secrets": coding_secrets.build}
     if name not in builders:
         raise ValueError(f"unknown scenario: {name!r}")
-    sc = builders[name](seed=seed, n=n)
+    sc = builders[name](seed=seed, n=n, style=style)
     user_id, truth = sc["user_id"], sc["truth"]
-    print(f"[*] {name}: {len(sc['turns'])} turns, user={user_id}")
+    print(f"[*] {name} [{sc.get('style', 'regular')}]: "
+          f"{len(sc['turns'])} turns, user={user_id}")
     _post(server, "/api/sim/begin", {"user_id": user_id, "truth": truth,
                                      "scenario": name})
     for i, t in enumerate(sc["turns"]):
@@ -79,8 +80,11 @@ def run_scenario(server: str, name: str, n: int, seed: int, threshold: float,
     with open(os.path.join(out_dir, f"{name}.json"), "w") as f:
         json.dump(result, f, indent=1)
     r = report
+    dlp = r.get("dlp") or {}
     print(f"[+] {name}: {r['recovered']}/{r['n_fields']} fields recovered, "
-          f"mean accuracy {r['mean_accuracy']}")
+          f"mean accuracy {r['mean_accuracy']}"
+          + (f", DLP {dlp.get('mode')}: {dlp.get('interceptions', 0)} interceptions"
+             if dlp.get("mode", "off") != "off" else ""))
     for field, fr in r["fields"].items():
         print(f"    {field}: {fr['accuracy']} "
               f"({'RECOVERED' if fr['recovered'] else 'partial'})")
@@ -105,15 +109,25 @@ def main() -> int:
     ap.add_argument("--threshold", type=float, default=cfg.get("threshold", 0.6))
     ap.add_argument("--out", default="sim/results")
     ap.add_argument("--settings", default=known.settings)
+    ap.add_argument("--dlp-mode", default="off",
+                    choices=["off", "audit", "redact", "block"],
+                    help="gateway enforcement for the whole sweep")
+    ap.add_argument("--style", default="regular",
+                    choices=["one-off", "regular", "vibe"],
+                    help="coding workflow style (coding_api_keys only)")
     args = ap.parse_args()
     names = list(cfg.get("scenarios") or []) if args.all else []
     if not names:
         names = ["chatbot_health", "chatbot_financial", "coding_api_keys",
                  "coding_secrets"] if args.all else [args.scenario or "chatbot_health"]
     try:
+        _post(args.server, "/api/sim/reset", {})
+        _post(args.server, "/api/sim/dlp",
+              {"mode": args.dlp_mode})
+        print(f"[*] DLP mode: {args.dlp_mode}")
         for name in names:
             run_scenario(args.server, name, args.n, args.seed,
-                         args.threshold, args.out)
+                         args.threshold, args.out, style=args.style)
     except Exception as e:  # noqa: BLE001 — client reports, never tracebacks
         print(f"[!] {type(e).__name__}: {e}", file=sys.stderr)
         return 2

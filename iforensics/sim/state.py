@@ -29,6 +29,8 @@ class SimState:
             self.store = NumpyStore(dim=dim)
             self.gateway = MockGateway(self.store, self.embedder)
             self.truth: dict[str, dict] = {}
+            from .dlp import Policy
+            self.policy = Policy("off")
             self.backend_note = "numpy"
         return {"ok": True, "dim": dim}
 
@@ -55,6 +57,18 @@ class SimState:
     def truth_users(self) -> list[str]:
         with self.lock:
             return sorted(self.truth)
+
+    def set_policy(self, mode: str, actions: dict | None = None) -> dict:
+        from .dlp import Policy
+        with self.lock:
+            self.policy = Policy(mode, actions)
+            return {"mode": mode, "actions": dict(actions or {})}
+
+    def get_policy(self) -> dict:
+        with self.lock:
+            summary = self.policy.summary()
+            summary["actions"] = dict(self.policy.actions)
+            return summary
 
 
 STATE = SimState()

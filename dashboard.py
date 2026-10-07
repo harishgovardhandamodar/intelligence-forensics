@@ -148,7 +148,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 </div></section>
 <section id=s-design><div class=row><div class=card style="min-width:230px"><h3>Documents</h3><div id=design-rail class=mut>loading&hellip;</div></div>
 <div class=card style="flex:1"><h3 id=design-title>Design &amp; architecture</h3><div class=mut id=design-meta></div><div id=design-doc class=mut>pick a document&hellip;</div></div></div></section>
-<section id=s-sim><div class=card><div class=row><h3>Embedding-reconstruction sim</h3><span class=mut id=sim-sum></span><span style="flex:1"></span><button class=act id=b-sim-demo>Load demo data</button><button class=act id=b-sim-reset>Reset</button></div><div class=mut>Progressive masked disclosure → cosine clustering → position-wise assembly. Run <code>python sim/run.py --all</code> for the full client, or inspect results here.</div><div class=row><span class=mut>user</span><select id=sel-sim></select><button class=act id=b-sim-report>Report</button></div><div id=sim-curve class=mut>pick a user&hellip;</div><div id=sim-fields class=mut></div></div></section>
+<section id=s-sim><div class=card><div class=row><h3>Embedding-reconstruction sim</h3><span class=mut id=sim-sum></span><span style="flex:1"></span><button class=act id=b-sim-demo>Load demo data</button><button class=act id=b-sim-reset>Reset</button></div><div class=mut>Progressive masked disclosure → cosine clustering → position-wise assembly. Run <code>python sim/run.py --all</code> for the full client, or inspect results here.</div><div class=row><span class=mut>DLP</span><select id=sel-sim-dlp><option value=off>off</option><option value=audit>audit</option><option value=redact>redact</option><option value=block>block</option></select><span class=mut id=sim-dlp-sum></span></div><div class=row><span class=mut>user</span><select id=sel-sim></select><button class=act id=b-sim-report>Report</button></div><div id=sim-curve class=mut>pick a user&hellip;</div><div id=sim-fields class=mut></div><div id=sim-est class=mut></div></div></section>
 </main>
 <div id=tip class=tip></div>
 <script src="/static/app.js" defer></script></body></html>
@@ -435,6 +435,7 @@ class SimAttack(BaseModel):
     field: str = ""
     value: str = ""
     threshold: float = 0.7
+    swarm: bool = False
 
 
 @app.post("/api/sim/begin")
@@ -457,7 +458,8 @@ def sim_ingest(req: SimIngest):
     st = sim_state.STATE
     with st.lock:
         out = st.gateway.process_query(req.prompt, req.metadata or {},
-                                       mask=req.mask, step=req.step)
+                                       mask=req.mask, step=req.step,
+                                       dlp=st.policy)
     return {"ids": out["ids"], "response": out["response"],
             "backend": st.backend_note, "stored": len(st.store)}
 
@@ -470,6 +472,24 @@ def sim_attack(req: SimAttack):
     st = sim_state.STATE
     filtr = {"user_id": req.user_id} if req.user_id else None
     texts, vecs = st.store.texts_vectors(filtr)
+    if req.kind == "progressive" and req.swarm:
+        import time as _time
+        from iforensics import ledger as ledger_mod
+        from iforensics import swarm as swarm_mod
+        run = f"sim-{req.user_id or 'all'}-{int(_time.time())}"
+        task = swarm_mod.enqueue("sim_reconstruct", {"texts": texts[:200]},
+                                 run_id=run)
+        try:
+            ledger_mod.append(run, "orchestrator", "task.issued",
+                              task_id=task["task_id"])
+        except Exception:  # noqa: BLE001
+            pass
+        res = swarm_mod.collect_results([task["task_id"]], timeout_s=180.0)
+        if task["task_id"] in res["done"]:
+            out = dict(res["done"][task["task_id"]])
+            out["source"] = "swarm"
+            return out
+        raise HTTPException(504, "swarm worker timeout: no reconstruction collected")
     if req.kind == "progressive":
         return sim_attacks.progressive_attack(texts, vecs, req.threshold)
     if req.kind == "near_duplicates":
@@ -512,6 +532,9 @@ def sim_report(user_id: str):
                 best_score[field] = r["accuracy"]
                 by_field[field] = s["assembled"]
     rep = sim_analysis.field_report(truth, by_field, sim_analysis.window_accuracy)
+    for field, tv in truth.items():
+        rep["fields"][field]["direct_exposure"] = \
+            any(tv in t for t in texts) if tv else False
     curves = {}
     for field, tv in truth.items():
         sched = sorted({(it["metadata"].get("step", 0), it["metadata"].get("mask", ""))
@@ -524,6 +547,11 @@ def sim_report(user_id: str):
     rep["user_id"] = user_id
     rep["backend"] = st.backend_note
     rep["clusters"] = res["n_clusters"]
+    from iforensics.sim import plausibility as sim_plaus
+    rep["plausibility"] = sim_plaus.assess()
+    from iforensics.sim import estimate as sim_estimate
+    rep["estimates"] = sim_estimate.estimate_exposure(texts)
+    rep["dlp"] = st.get_policy()
     rep["reconstructed"] = [
         {"assembled": s["assembled"], "coverage": s["coverage"],
          "occurrences": s["occurrences"]}
@@ -537,6 +565,28 @@ def sim_reset():
     from iforensics.sim import state as sim_state
     return {"cleared": sim_state.STATE.reset()["ok"],
             "backend": sim_state.STATE.backend_note}
+
+
+class SimDLP(BaseModel):
+    mode: str = "off"
+    actions: dict = {}
+
+
+@app.get("/api/sim/dlp")
+def sim_dlp_get():
+    """Current DLP policy + interception journal summary."""
+    from iforensics.sim import state as sim_state
+    return sim_state.STATE.get_policy()
+
+
+@app.post("/api/sim/dlp")
+def sim_dlp_set(req: SimDLP):
+    """Set enforcement (off|audit|redact|block) with optional per-kind actions."""
+    from iforensics.sim import state as sim_state
+    try:
+        return sim_state.STATE.set_policy(req.mode, req.actions or {})
+    except ValueError as e:
+        raise HTTPException(400, str(e))
 
 
 @app.get("/api/sim/users")

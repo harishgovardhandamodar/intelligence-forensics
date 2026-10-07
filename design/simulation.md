@@ -69,14 +69,28 @@ fast repetition burns a secret.
 - **Partial regimes plateau below 1.0** (`coding_secrets`, final slot never
   disclosed: 0.93/0.97) — the curve levels off instead of completing, which
   is the measurable payoff of never logging the full value.
+- **Coding styles compared** (`coding_api_keys --style …`, live): one-off
+  (3 turns, direct read), regular (progressive assembly over paraphrase),
+  vibe (immediate — full secret pasted in turn 1). All reach 1.0, and every
+  field carries `direct_exposure: true`: whenever the bare value hits the
+  log even once, no assembly is needed — anyone with read access just reads
+  it. The attack machinery only matters for *partial* disclosures.
 - **Membership inference** separates logged secrets (~0.56–0.75, higher when
   stored verbatim) from unseen values (~0.0) with wide margin.
-- The finding is the *curve slope*, not the endpoint: accuracy climbs
-  steeply within 2–3 repetitions in every regime.
+- **Plausibility** (`/api/sim/report` → `plausibility`): each chain step
+  graded high/medium/low. Bottom line: the chain is plausible end-to-end
+  for any operator who already logs prompts beside embeddings — the only
+  exotic step is obtaining read access. Pure vector-only inversion remains
+  the hard case this demo does NOT claim.
 - **Mitigations this setup can test**: per-user retention limits (fewer stored
   pairs = flatter curve), never logging the full value (partial regime —
-  measured plateau), mask normalization before embedding (destroys the
-  positional signal), and embedding encryption at rest.
+  measured plateau), active DLP (`off|audit|redact|block`, measured: redact
+  drops 6/8 fields to 2/8 recovered, with short-numeric-PII coverage gaps),
+  and embedding encryption at rest.
+- **Reconstruction runs on the agent swarm too**: `sim_reconstruct` worker
+  kind + `POST /api/sim/attack {"swarm": true}` dispatches per-user
+  structure attacks to GPU containers with ledger entries; the estimator
+  (`exposure` score, no ground truth) predicts leakage from structure alone.
 
 ## Honest limits
 

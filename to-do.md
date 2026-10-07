@@ -232,3 +232,9 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 - [x] P9.2 Triage: fixture flags, permission scoping, world-readable-secret
       escalation, per-project rollup, scope-aware report + persist
 - [x] P9.3 Security tab: scope select, projects table, finding flags
+
+### P10 — sim hardening: DLP, swarm reconstruction, estimation, styles
+- [x] P10.1 Active DLP (off/audit/redact/block) with interception journal
+- [x] P10.2 Swarm `sim_reconstruct` tasks via GPU containers + ledger trail
+- [x] P10.3 Ground-truth-free leakage estimator + coding styles
+      (one-off/regular/vibe) + plausibility assessment

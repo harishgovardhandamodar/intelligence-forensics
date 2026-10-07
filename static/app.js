@@ -276,7 +276,11 @@ function drawSimCurve(curves){
 async function loadSimUsers(){
  const sel=$('sel-sim');if(!sel)return;
  try{const d=await j('/api/sim/users');sel.innerHTML=(d.users||[]).map(u=>`<option value="${escA(u.user_id)}">${escH(u.user_id)} (${escH(u.pairs)} pairs)</option>`).join('')||'<option value="">no users — load demo or run sim/run.py</option>';
-  const s=$('sim-sum');if(s)s.textContent=`backend: ${(d.backend||'?')}`;}catch(e){const s=$('sim-sum');if(s)s.textContent='sim failed: '+e;}
+  const s=$('sim-sum');if(s)s.textContent=`backend: ${(d.backend||'?')}`;
+  const dlp=await j('/api/sim/dlp').catch(()=>null);
+  const ds=$('sim-dlp-sum'),dd=$('sel-sim-dlp');
+  if(dlp&&ds)ds.textContent=`${dlp.mode}: ${dlp.interceptions||0} interceptions`;
+  if(dlp&&dd)dd.value=dlp.mode;}catch(e){const s=$('sim-sum');if(s)s.textContent='sim failed: '+e;}
 }
 async function loadSimReport(){
  const sel=$('sel-sim'),uid=sel&&sel.value;
@@ -284,8 +288,10 @@ async function loadSimReport(){
  if(!uid){if(fc)fc.innerHTML='<span class="mut">pick a user</span>';return;}
  try{const r=await j('/api/sim/report?user_id='+encodeURIComponent(uid));
   drawSimCurve(r.curves||{});
-  if(fc)fc.innerHTML=`<div class="mut">${escH(r.recovered)}/${escH(r.n_fields)} fields recovered · mean accuracy ${escH(r.mean_accuracy)} · ${escH(r.clusters)} clusters</div>`+Object.entries(r.fields||{}).map(([f,v])=>`<div>${pill(v.recovered?'high':'low')} <code>${escH(f)}</code> <span class="mut">${escH(v.accuracy)} (${escH(v.matched)}/${escH(v.total)} chars)${v.recovered?' — RECOVERED':''}</span></div>`).join('')
+  if(fc)fc.innerHTML=`<div class="mut">${escH(r.recovered)}/${escH(r.n_fields)} fields recovered · mean accuracy ${escH(r.mean_accuracy)} · ${escH(r.clusters)} clusters</div>`+Object.entries(r.fields||{}).map(([f,v])=>`<div>${pill(v.recovered?'high':'low')} <code>${escH(f)}</code> <span class="mut">${escH(v.accuracy)} (${escH(v.matched)}/${escH(v.total)} chars)${v.recovered?' — RECOVERED':''}${v.direct_exposure?' · in log verbatim':''}</span></div>`).join('')
    +((r.reconstructed||[]).length?`<div class="mut" style="margin-top:6px">reconstructed values (carrier-independent assembly):</div>`+(r.reconstructed||[]).slice(0,6).map(s=>`<div><code>${escH(s.assembled)}</code> <span class="mut">coverage ${escH(s.coverage)} · ${escH(s.occurrences)} occurrences</span></div>`).join(''):'');
+  const ee=$('sim-est');
+  if(ee){const est=r.estimates||{};ee.innerHTML=`<div class="mut">exposure estimate (no ground truth): <b>${escH(est.exposure??'?')}</b> across ${escH(est.n_groups??0)} candidate groups</div>`;}
  }catch(e){if(fc)fc.textContent='report failed: '+e;}
 }
 function initTheme(){
@@ -597,6 +603,7 @@ const _fl=$('filt-ledger');if(_fl)_fl.oninput=renderLedgerRows;
 const _sd=$('b-sim-demo');if(_sd)_sd.onclick=async()=>{try{await pj('/api/sim/demo');loadSimUsers();}catch(e){const s=$('sim-sum');if(s)s.textContent='demo failed: '+e;}};
 const _sr=$('b-sim-reset');if(_sr)_sr.onclick=async()=>{try{await pj('/api/sim/reset');loadSimUsers();const fc=$('sim-fields');if(fc)fc.innerHTML='';const c=$('sim-curve');if(c){c.className='mut';c.textContent='pick a user…';}}catch(e){}};
 const _sp=$('b-sim-report');if(_sp)_sp.onclick=loadSimReport;
+const _sd2=$('sel-sim-dlp');if(_sd2)_sd2.onchange=async()=>{try{await pj('/api/sim/dlp',{mode:_sd2.value});loadSimUsers();}catch(e){const s=$('sim-sum');if(s)s.textContent='dlp failed: '+e;}};
 initTheme();
 load();
 activateTab(location.hash.slice(1)||'overview',false);

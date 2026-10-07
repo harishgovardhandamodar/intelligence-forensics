@@ -8,7 +8,7 @@ FIELDS = [
 ]
 
 
-def build(seed: int = 42, n: int = 60):
+def build(seed: int = 42, n: int = 60, style: str = "regular"):
     turns, truth = [], {}
     per = max(1, n // len(FIELDS))
     for field, base in FIELDS:

@@ -29,11 +29,45 @@ class MockGateway:
         return RESPONSE_TEMPLATES[step % len(RESPONSE_TEMPLATES)].format(ref=ref)
 
     def process_query(self, prompt: str, metadata: dict,
-                      mask: str = "", step: int = 0) -> dict:
-        """Store query + response embeddings; return response and ids."""
-        response = self.respond(prompt, mask, step)
-        vectors = self.embedder.embed([prompt, response])
+                      mask: str = "", step: int = 0,
+                      dlp=None) -> dict:
+        """Store query + response embeddings; return response and ids.
+
+        With a DLP policy, both texts pass enforcement first: blocked turns
+        store only a refusal record (flagged), redacted turns store the
+        substituted text. The interceptions themselves are the measurement.
+        """
+        pin = dlp.inspect(prompt, "prompt") if dlp else None
+        if pin and pin["blocked"]:
+            return self._store_blocked(pin, metadata, step)
+        prompt_text = pin["text"] if pin else prompt
+        response = self.respond(prompt_text, mask, step)
+        rin = dlp.inspect(response, "response") if dlp else None
+        if rin and rin["blocked"]:
+            response = "Request blocked by data-loss-prevention policy."
+            meta = {**metadata, "blocked": True, "type": "response",
+                    "step": step, "mask": mask}
+            ids = self.store.add([prompt_text, response],
+                                 self.embedder.embed([prompt_text, response]),
+                                 [{**metadata, "type": "query", "step": step,
+                                   "mask": mask}, meta])
+            return {"response": response, "ids": ids, "blocked": True,
+                    "interceptions": len(rin["findings"])}
+        if rin and rin["findings"]:
+            response = rin["text"]
+        return self._store(prompt_text, response, metadata, mask, step, False)
+
+    def _store(self, prompt_text, response, metadata, mask, step, blocked):
+        vectors = self.embedder.embed([prompt_text, response])
         meta_q = {**metadata, "type": "query", "step": step, "mask": mask}
-        meta_r = {**metadata, "type": "response", "step": step, "mask": mask}
-        ids = self.store.add([prompt, response], vectors, [meta_q, meta_r])
-        return {"response": response, "ids": ids, "ts": time.time()}
+        meta_r = {**metadata, "type": "response", "step": step, "mask": mask,
+                  "blocked": blocked}
+        import time
+        ids = self.store.add([prompt_text, response], vectors, [meta_q, meta_r])
+        return {"response": response, "ids": ids, "ts": time.time(),
+                "blocked": blocked}
+
+    def _store_blocked(self, pin: dict, metadata: dict, step: int) -> dict:
+        return self._store(pin["text"], "Request blocked by "
+                         "data-loss-prevention policy.",
+                           metadata, "", step, True)
