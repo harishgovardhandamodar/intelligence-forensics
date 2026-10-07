@@ -17,6 +17,7 @@ import json
 import os
 import threading
 import time
+import urllib.request
 from collections import deque, Counter
 
 from . import config, fox_client, store
@@ -42,6 +43,12 @@ ALERT_VOL_FACTOR = 3.0
 ALERT_COOLDOWN_S = 600.0
 ALERT_WARMUP_S = 60.0
 MAX_ALERTS = 100
+
+
+def _webhook_urls() -> list[str]:
+    """Alert webhook endpoints (P7, thread 3): comma-separated $IF_ALERT_WEBHOOK."""
+    return [u.strip() for u in os.environ.get("IF_ALERT_WEBHOOK", "").split(",")
+            if u.strip()]
 
 
 class _BoundedIdSet:
@@ -237,6 +244,7 @@ class LiveTap(threading.Thread):
         self.resumed_from: dict | None = None
         self.errors: list[str] = []
         self.alerts: deque = deque(maxlen=MAX_ALERTS)
+        self._webhook_last: dict | None = None
         self._known_services: set = set()
         self._alert_cooldown: dict = {}
         self._poll_out_counts: deque = deque(maxlen=20)
@@ -292,7 +300,29 @@ class LiveTap(threading.Thread):
         alert = {"t": now, "kind": kind, "severity": severity,
                  "service": service or "", "detail": detail}
         self.alerts.append(alert)
+        urls = _webhook_urls()
+        if urls:
+            threading.Thread(target=self._deliver_webhooks,
+                             args=(urls, alert), daemon=True).start()
         return alert
+
+    def _deliver_webhooks(self, urls: list[str], alert: dict) -> None:
+        """Best-effort POST per URL; failures are recorded, never raised."""
+        for url in urls:
+            try:
+                body = json.dumps({"alert": alert}, default=str).encode()
+                req = urllib.request.Request(
+                    url, data=body,
+                    headers={"Content-Type": "application/json"},
+                    method="POST")
+                with urllib.request.urlopen(req, timeout=5) as r:
+                    res = {"ok": 200 <= r.status < 300, "code": r.status,
+                           "error": None}
+            except Exception as e:  # noqa: BLE001
+                res = {"ok": False, "code": None,
+                       "error": f"{type(e).__name__}: {e}"}
+            with self._lock:
+                self._webhook_last = {"url": url, "at": time.time(), **res}
 
     def evaluate_alerts(self, now: float | None = None,
                         current_out: int | None = None) -> list[dict]:
@@ -513,6 +543,7 @@ class LiveTap(threading.Thread):
             n = len(self.events)
             recent = list(self.events)[-500:]
             alerts = list(self.alerts)[-10:]
+            webhook_last = dict(self._webhook_last) if self._webhook_last else None
         by_svc = Counter(e["service"] for e in recent)
         since = (now - self.last_poll_at) if self.last_poll_at else None
         stale_after = self.interval_s * STALE_INTERVALS
@@ -533,6 +564,8 @@ class LiveTap(threading.Thread):
                 "resumed_from": self.resumed_from,
                 "persisted": self.log.stats() if self.log else None,
                 "alerts": alerts, "n_alerts": len(self.alerts),
+                "webhooks": {"configured": len(_webhook_urls()),
+                             "last": webhook_last},
                 "recent_errors": self.errors[-5:]}
 
 

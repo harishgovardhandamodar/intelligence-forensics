@@ -45,6 +45,10 @@ services:
   swarm-worker:
     profiles: [swarm]
     build: .
+    # Run as the host user: worker-created files (queue results, ledger
+    # entries) must stay writable by host-side processes sharing ./evidence.
+    # Root-owned files on this volume previously broke host ledger appends.
+    user: "${UID:-1000}:${GID:-1000}"
     environment:
       - FOX_URL=http://host.docker.internal:8210
       - OLLAMA_URL=http://host.docker.internal:11434
@@ -69,6 +73,7 @@ services:
   swarm-gather:
     profiles: [swarm]
     build: .
+    user: "${UID:-1000}:${GID:-1000}"
     environment:
       - FOX_URL=http://host.docker.internal:8210
       - OLLAMA_URL=http://host.docker.internal:11434

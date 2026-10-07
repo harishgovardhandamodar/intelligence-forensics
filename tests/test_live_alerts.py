@@ -1,4 +1,6 @@
 """Unit tests for tap anomaly alerts (P5.18)."""
+import json
+import threading
 import time
 
 from iforensics import live as live_mod
@@ -119,3 +121,65 @@ def test_poll_once_raises_overflow_and_eviction(monkeypatch):
     kinds = {a["kind"] for a in t.alerts}
     assert "page_overflow" in kinds
     assert "model_evicted" in kinds
+
+
+def _sink_server(received):
+    import http.server
+
+    class H(http.server.BaseHTTPRequestHandler):
+        def do_POST(self):
+            n = int(self.headers.get("Content-Length", 0))
+            received.append(json.loads(self.rfile.read(n)))
+            self.send_response(200)
+            self.end_headers()
+
+        def log_message(self, *a):
+            pass
+
+    srv = http.server.HTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv
+
+
+def test_webhook_delivers_alert_payload(monkeypatch):
+    received = []
+    srv = _sink_server(received)
+    monkeypatch.setenv("IF_ALERT_WEBHOOK",
+                       f"http://127.0.0.1:{srv.server_address[1]}/hook")
+    t = _tap()
+    a = t._raise_alert("test_kind", "high", "svc", "boom")
+    assert a is not None
+    for _ in range(100):
+        if received:
+            break
+        time.sleep(0.05)
+    assert len(received) == 1
+    assert received[0]["alert"]["kind"] == "test_kind"
+    assert received[0]["alert"]["service"] == "svc"
+    st = t.status()
+    assert st["webhooks"]["configured"] == 1
+    assert st["webhooks"]["last"]["ok"] is True
+    assert st["webhooks"]["last"]["code"] == 200
+    srv.shutdown()
+
+
+def test_webhook_failure_recorded_never_raised(monkeypatch):
+    monkeypatch.setenv("IF_ALERT_WEBHOOK", "http://127.0.0.1:1/closed")
+    t = _tap()
+    t._raise_alert("test_fail", "medium", "", "x")  # must not raise
+    for _ in range(100):
+        if t._webhook_last is not None:
+            break
+        time.sleep(0.05)
+    assert t._webhook_last is not None
+    assert t._webhook_last["ok"] is False
+    assert t._webhook_last["error"]
+    assert t.status()["webhooks"]["configured"] == 1
+
+
+def test_no_webhook_configured_no_delivery(monkeypatch):
+    monkeypatch.delenv("IF_ALERT_WEBHOOK", raising=False)
+    t = _tap()
+    assert t._raise_alert("test_quiet", "low", "", "x") is not None
+    assert t._webhook_last is None
+    assert t.status()["webhooks"] == {"configured": 0, "last": None}

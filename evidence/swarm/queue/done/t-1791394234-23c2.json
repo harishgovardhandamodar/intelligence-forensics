@@ -1,0 +1,90 @@
+{
+ "task_id": "t-1791394234-23c2",
+ "run_id": "live2",
+ "kind": "profile",
+ "payload": {
+  "service": "warmup",
+  "profile": {
+   "service": "warmup",
+   "requests": 1,
+   "total_tokens": 0,
+   "avg_tokens": 0.0,
+   "models": {
+    "nomic-embed-text:latest": 1
+   },
+   "query_types": {
+    "(none)": 1
+   },
+   "requestors": {
+    "user": 1
+   },
+   "statuses": {
+    "upstream_error": 1
+   },
+   "cadence_median_s": 0,
+   "time_range": [
+    1790236907.6843507,
+    1790236907.6843507
+   ],
+   "project": "warmup workload (unclassified)",
+   "pipeline_summary": "prompts -> LLM -> unknown sink (needs more samples)",
+   "pipeline": [
+    "capture_prompt",
+    "llm.call(model)",
+    "unknown_sink"
+   ],
+   "rule_hits": 0,
+   "schema_hints": [],
+   "instructions": [],
+   "fingerprint": {
+    "n_prompts": 1,
+    "n_clusters": 1,
+    "top_signatures": [
+     {
+      "sig": "Reply with exactly: warm",
+      "count": 1
+     }
+    ],
+    "templates": [
+     {
+      "count": 1,
+      "template": "Reply with exactly: warm",
+      "example_head": "Reply with exactly: warm"
+     }
+    ]
+   },
+   "sample_heads": [
+    "Reply with exactly: warm"
+   ]
+  },
+  "num_predict": 512
+ },
+ "created_at": 1791394234.5142636,
+ "attempts": 1,
+ "claimed_by": "any:afc49ab78ae3:1",
+ "claimed_at": 1791394234.9135182,
+ "result": {
+  "service": "warmup",
+  "parsed": {
+   "project": "warmup",
+   "what_building": "A service designed to execute a minimal, single-token generation request to initialize or verify the LLM inference stack. It uses a specific embedding model for a trivial prompt to ensure the backend is responsive without processing complex data.",
+   "pipeline": [
+    "capture_prompt",
+    "llm.call(model)",
+    "unknown_sink"
+   ],
+   "inputs": "Static prompt string: 'Reply with exactly: warm'",
+   "outputs": "String: 'warm'",
+   "confidence": 0.95,
+   "evidence_quotes": [
+    "service: warmup",
+    "models: {'nomic-embed-text:latest': 1}",
+    "Reply with exactly: warm",
+    "heuristic guess: warmup workload (unclassified)"
+   ]
+  },
+  "prompt_tokens": 328,
+  "completion_tokens": 190
+ },
+ "completed_at": 1791394241.8001852
+}

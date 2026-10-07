@@ -1,0 +1,35 @@
+{
+ "agent": "profiler",
+ "service": "quai-radar",
+ "parsed": {
+  "project": "Quai Network Intelligence Dashboard & Knowledge Graph",
+  "what_building": "A service that ingests external research and news feeds to extract structured facts into a knowledge graph specific to the Quai Network. It also generates daily research briefs summarizing implications for the QUAI/QI ecosystem.",
+  "pipeline": [
+   "ingest_feed",
+   "build_kg_prompt",
+   "llm_extract",
+   "parse_facts",
+   "upsert_graph",
+   "generate_daily_brief"
+  ],
+  "inputs": [
+   "title",
+   "content",
+   "digest"
+  ],
+  "outputs": [
+   "structured_facts",
+   "knowledge_graph_nodes",
+   "daily_research_brief"
+  ],
+  "confidence": 0.95,
+  "evidence_quotes": [
+   "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.",
+   "You are Fox writing the daily research brief for the Quai Network intelligence dashboard.",
+   "## Implications for QUAI/QI",
+   "schema hints: ['brief', 'digest', 'implications for quai', 'knowledge graph', 'schema', 'structured facts', 'what to watch']"
+  ]
+ },
+ "prompt_tokens": 677,
+ "completion_tokens": 289
+}

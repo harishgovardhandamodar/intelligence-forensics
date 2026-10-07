@@ -1,0 +1,14 @@
+{
+ "live1": {
+  "path": "/app/evidence/ledger/live1.jsonl",
+  "updated_at": 1791394212.8844457
+ },
+ "live2": {
+  "path": "/app/evidence/ledger/live2.jsonl",
+  "updated_at": 1791394241.8006794
+ },
+ "20261007_193228": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/20261007_193228.jsonl",
+  "updated_at": 1791394365.6561525
+ }
+}

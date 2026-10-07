@@ -1,0 +1,131 @@
+{
+ "run_id": "20261007_193228",
+ "model": "qwen3.8:27b",
+ "quick": true,
+ "services": [
+  "quai-radar"
+ ],
+ "agents": {
+  "scout": {
+   "agent": "scout",
+   "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage including embedding and LLMs, suggesting complex agentic workflows or potential data exfiltration via embeddings.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High token volume relative to request count (avg ~940 toks/req) indicates heavy context usage, potentially sensitive blockchain data processing.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Mixed model usage (embedding + small LLM + large LLM) suggests a pipeline that could be used for obfuscation or multi-stage processing of research data.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but unclassified; minimal tokens suggest probing or low-fidelity traffic, lower priority than high-volume services.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Explicitly labeled as self-test with negligible volume; likely benign internal health checks.\"\n    }\n  ]\n}",
+   "prompt_tokens": 417,
+   "completion_tokens": 312,
+   "ms": 3876.8,
+   "model": "qwen3.8:27b",
+   "parsed": {
+    "rankings": [
+     {
+      "rank": 1,
+      "service": "agentic-knowledge-mapper",
+      "reason": "Highest volume (1.2k reqs, 2.2M toks) and multi-model usage including embedding and LLMs, suggesting complex agentic workflows or potential data exfiltration via embeddings."
+     },
+     {
+      "rank": 2,
+      "service": "quai-radar",
+      "reason": "High token volume relative to request count (avg ~940 toks/req) indicates heavy context usage, potentially sensitive blockchain data processing."
+     },
+     {
+      "rank": 3,
+      "service": "hive-research-gpu",
+      "reason": "Mixed model usage (embedding + small LLM + large LLM) suggests a pipeline that could be used for obfuscation or multi-stage processing of research data."
+     },
+     {
+      "rank": 4,
+      "service": "gateway-unknown",
+      "reason": "Low volume but unclassified; minimal tokens suggest probing or low-fidelity traffic, lower priority than high-volume services."
+     },
+     {
+      "rank": 5,
+      "service": "live-selftest",
+      "reason": "Explicitly labeled as self-test with negligible volume; likely benign internal health checks."
+     }
+    ]
+   },
+   "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage including embedding and LLMs, suggesting complex agentic workflows or potential data exfiltration via embeddings.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High token volume relative to request count (avg ~940 toks/req) indicates heavy context usage, potentially sensitive blockchain data processing.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Mixed model usage (embedding + small LLM + large LLM) suggests a pipeline that could be used for obfuscation or multi-stage processing of research data.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but unclassified; minimal tokens suggest probing or low-fidelity traffic, lower priority than high-volume services.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Explicitly labeled as self-test with negligible volume; likely benign internal health checks.\"\n    }\n  ]\n}"
+  },
+  "profilers": {
+   "quai-radar": {
+    "agent": "profiler",
+    "service": "quai-radar",
+    "parsed": {
+     "project": "Quai Network Intelligence Dashboard & Knowledge Graph",
+     "what_building": "A service that ingests external research and news feeds to extract structured facts into a knowledge graph specific to the Quai Network. It also generates daily research briefs summarizing implications for the QUAI/QI ecosystem.",
+     "pipeline": [
+      "ingest_feed",
+      "build_kg_prompt",
+      "llm_extract",
+      "parse_facts",
+      "upsert_graph",
+      "generate_daily_brief"
+     ],
+     "inputs": [
+      "title",
+      "content",
+      "digest"
+     ],
+     "outputs": [
+      "structured_facts",
+      "knowledge_graph_nodes",
+      "daily_research_brief"
+     ],
+     "confidence": 0.95,
+     "evidence_quotes": [
+      "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.",
+      "You are Fox writing the daily research brief for the Quai Network intelligence dashboard.",
+      "## Implications for QUAI/QI",
+      "schema hints: ['brief', 'digest', 'implications for quai', 'knowledge graph', 'schema', 'structured facts', 'what to watch']"
+     ]
+    },
+    "prompt_tokens": 677,
+    "completion_tokens": 289
+   }
+  },
+  "critics": {},
+  "reporter": {
+   "agent": "reporter",
+   "content": "## Executive Brief: Quai Network Intelligence Mesh\n\n**Node Functionality**\nThe primary node, `quai-radar`, operates as a specialized intelligence engine. It ingests external research and news feeds, utilizing LLM-driven extraction to populate a domain-specific knowledge graph for the Quai Network. The pipeline transforms raw text into structured facts and generates daily strategic briefs for the QUAI/QI ecosystem.\n\n**Shared Topics & Mesh Dynamics**\nCurrent telemetry indicates a heavy focus on **blockchain research analysis** and **ecosystem implication tracking**. The service acts as the central truth-source for the mesh, converting unstructured external data into actionable graph nodes. The high volume of tracked evidence suggests this node is the primary consumer of external threat and opportunity signals, feeding downstream decision-making processes.\n\n**Reconstruction Target**\n**Priority Target:** The `llm_extract` and `parse_facts` stages.\n**Rationale:** With 111 high-severity findings, the extraction logic is the critical failure point. Reconstructing the prompt engineering and fact-parsing logic is essential to isolate whether high-risk data is being ingested maliciously or if the extraction process is misclassifying benign data as high-risk. This node holds the highest confidence (0.95) in its output, making it the single most valuable asset for validating the integrity of the entire knowledge graph.\n\n## Security Posture\n\n**Risk Rating:** **HIGH**\n**Metrics:** 111 High / 80 Medium / 1 Low severity findings.\n\n**Top Issues & Remediation**\n1.  **Extraction Integrity:** The high count of severe findings in the `llm_extract` stage suggests potential prompt injection or data poisoning.\n    *   *Remediation:* Implement strict input sanitization before LLM processing and add output validation checks to reject anomalous fact structures.\n2.  **Graph Pollution:** Unverified facts are being upserted into the knowledge graph.\n    *   *Remediation:* Introduce a human-in-the-loop or secondary verification step for high-confidence facts before they are persisted to the graph.\n3.  **Evidence Tracking:** 66 tracked evidence items indicate a backlog of unreviewed high-risk data.\n    *   *Remediation:* Prioritize the review of the 111 high-severity items to determine if they represent actual threats or false positives in the extraction logic.",
+   "prompt_tokens": 374,
+   "completion_tokens": 501,
+   "ms": 6993.4,
+   "model": "qwen3.8:27b"
+  }
+ },
+ "errors": [],
+ "security": {
+  "risk_rating": "high",
+  "totals": {
+   "low": 1,
+   "medium": 80,
+   "high": 111
+  },
+  "n_findings": 192
+ },
+ "elapsed_s": 17.0,
+ "heuristic_investigation": {
+  "quai-radar": {
+   "project": "blockchain-news knowledge-graph extractor",
+   "requests": 482,
+   "evidence": {
+    "templates": [
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts.\n\nTITLE: {{title}}\n\nCONTENT: {{content}}",
+     "You are Fox writing the daily research brief for the Quai Network intelligence dashboard. Based ONLY on the digest below (what's new in the research landscape, news, market and the swarm-protocol regime/gates), write a concise brief with:\n## What's new\n## Implications for QUAI/QI\n## What to watch\nBe",
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check."
+    ],
+    "instructions": [
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check.",
+     "TITLE: Fundamental CRB-Rate Tradeoff of Rydberg Atomic Receivers fo",
+     "TITLE: Keeping the interaction structure explicit: comment on ''Gra",
+     "TITLE: Disentangling Paradigm, Identifier, and Decoding in Generati",
+     "TITLE: RIS-Assisted Reliability Maximization for URLLC in Upper Mid",
+     "TITLE: Rapid Fredholm stabilization of the Kuramoto--Sivashinsky eq"
+    ],
+    "sample_heads": [
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check.",
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts. |  | TITLE: Fundamental CRB-Rate Tradeoff of Rydberg Atomic Receivers fo |  | CONTENT: | I",
+     "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts. |  | TITLE: Keeping the interaction structure explicit: comment on ''Gra |  | CONTENT: | P"
+    ]
+   }
+  }
+ }
+}

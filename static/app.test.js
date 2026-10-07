@@ -83,7 +83,7 @@ function loadApp() {
   const src = fs.readFileSync(path.join(__dirname, "app.js"), "utf8")
     + "\n;globalThis.__t = {escH, escA, fmtN, spark, trowState, safeHref,"
     + " renderMarkdown, drawTopo, drawKnowledge, renderFindings, renderChain,"
-    + " loadLedger, scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme};\n";
+    + " loadLedger, filterLedger, scoreCell, gcls, inlineMd, SEV_CLS, pill, toggleTheme};\n";
   vm.createContext(sandbox);
   vm.runInContext(src, sandbox, { filename: "app.js" });
   return { t: sandbox.__t, el };
@@ -235,4 +235,16 @@ test("findings ledger refs link to the ledger", () => {
 test("loadLedger preselects a deep-linked run", async () => {
   await t.loadLedger("r9");
   assert.equal(el("sel-ledger").value, "r9");
+});
+
+test("filterLedger matches task/actor/action, empty query passes through", () => {
+  const es = [
+    { seq: 1, actor: "orchestrator", action: "run.start", task_id: "" },
+    { seq: 2, actor: "profiler:s", action: "task.complete", task_id: "t-1" },
+  ];
+  assert.equal(t.filterLedger(es, ""), es);
+  assert.deepEqual(t.filterLedger(es, "t-1").map((e) => e.seq), [2]);
+  assert.deepEqual(t.filterLedger(es, "PROFILER").map((e) => e.seq), [2]);
+  assert.deepEqual(t.filterLedger(es, "run.start").map((e) => e.seq), [1]);
+  assert.deepEqual(t.filterLedger(es, "zzz"), []);
 });

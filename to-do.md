@@ -203,5 +203,11 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
       orchestrator collects with timeout and carries on)
 - [x] P7.34 Findings→ledger deep links (claims findings cite the run;
       Ledger tab preselects run/task from findings clicks)
+- [x] P7.35 Live multi-worker verification: GPU passthrough proof, container
+      profiler + full swarm agent-run against live fox/Ollama; worker
+      `user:` directive (root-owned shared-volume files broke host writes)
+- [x] P7.36 Ledger task-level filtering (client-side task/actor/action filter)
+- [x] P7.37 Alert webhooks: `IF_ALERT_WEBHOOK` POST on every raised alert,
+      delivery status in tap `status()`
 - [ ] P7.31 Surface: `/api/swarm/ledger` + Ledger tab, `ledger verify` CLI,
       human-approval entries for prune/export

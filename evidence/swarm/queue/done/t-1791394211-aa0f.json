@@ -1,0 +1,20 @@
+{
+ "task_id": "t-1791394211-aa0f",
+ "run_id": "live1",
+ "kind": "gather",
+ "payload": {
+  "source": "llm_queue"
+ },
+ "created_at": 1791394211.566311,
+ "attempts": 1,
+ "claimed_by": "gather:297aa20c73af:1",
+ "claimed_at": 1791394212.8362553,
+ "result": {
+  "source": "llm_queue",
+  "ok": true,
+  "artifact": "/app/evidence/swarm/results/t-1791394211-aa0f.json",
+  "error": null,
+  "elapsed_s": 0.04
+ },
+ "completed_at": 1791394212.884166
+}

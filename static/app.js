@@ -227,6 +227,14 @@ async function loadKnowledge(){
  const el=$('kg');if(el){el.className='mut loading';el.textContent='loading…';}
  try{drawKnowledge(await j('/api/knowledge'));}catch(e){if(el){el.className='warn';el.textContent='graph failed: '+e;}}
 }
+const filterLedger=(entries,q)=>{const f=(q||'').toLowerCase().trim();if(!f)return entries;return entries.filter(e=>`${e.task_id||''} ${e.actor||''} ${e.action||''}`.toLowerCase().includes(f));};
+let ledgerCache=[];
+function renderLedgerRows(){
+ const tb=$('t-ledger')&&$('t-ledger').querySelector('tbody');if(!tb)return;
+ const q=$('filt-ledger')&&$('filt-ledger').value;
+ const rows=filterLedger(ledgerCache,q).slice(-200);
+ tb.innerHTML=rows.map(e=>`<tr><td class="mut">${escH(e.seq)}</td><td><code>${escH(e.actor)}</code></td><td>${escH(e.action)}</td><td class="mut">${escH(e.task_id||'—')}</td><td class="mut"><code>${escH((e.artifact_sha256||'').slice(0,12))}</code></td></tr>`).join('')||trowState(5,'no matching entries');
+}
 async function loadLedger(preset){
  const tb=$('t-ledger')&&$('t-ledger').querySelector('tbody');
  const v=$('ledger-verdict');
@@ -240,7 +248,8 @@ async function loadLedger(preset){
   if(!rid){if(tb)tb.innerHTML=trowState(5,'no ledger runs yet');return;}
   const [d,ver]=await Promise.all([j('/api/swarm/ledger?run_id='+encodeURIComponent(rid)),j('/api/swarm/verify?run_id='+encodeURIComponent(rid))]);
   if(v){v.textContent=ver.ok?`chain OK — ${ver.checked} entries`:`BROKEN at seq ${ver.failed_at} (${ver.reason})`;v.className=ver.ok?'ok':'warn';}
-  if(tb)tb.innerHTML=(d.entries||[]).slice(-200).map(e=>`<tr><td class="mut">${escH(e.seq)}</td><td><code>${escH(e.actor)}</code></td><td>${escH(e.action)}</td><td class="mut">${escH(e.task_id||'—')}</td><td class="mut"><code>${escH((e.artifact_sha256||'').slice(0,12))}</code></td></tr>`).join('')||trowState(5,'empty ledger');
+  ledgerCache=d.entries||[];
+  renderLedgerRows();
  }catch(e){if(v){v.textContent='ledger failed: '+e;v.className='warn';}}
  try{const q=await j('/api/swarm/queue');const qs=$('queue-sum');if(qs)qs.textContent=`${q.pending||0} pending · ${q.claimed||0} claimed · ${q.done||0} done · ${q.failed||0} failed`;
   const qt=$('t-queue')&&$('t-queue').querySelector('tbody');
@@ -509,7 +518,8 @@ $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$(
 const _sb=$('b-sec-scan');if(_sb)_sb.onclick=secScan;
 const _sf=$('sel-find');if(_sf)_sf.onchange=renderFindRows;
 const _bc=$('b-chain');if(_bc)_bc.onclick=loadChain;
-const _bl=$('b-ledger');if(_bl)_bl.onclick=loadLedger;
+const _bl=$('b-ledger');if(_bl)_bl.onclick=()=>loadLedger();
+const _fl=$('filt-ledger');if(_fl)_fl.oninput=renderLedgerRows;
 initTheme();
 load();
 activateTab(location.hash.slice(1)||'overview',false);

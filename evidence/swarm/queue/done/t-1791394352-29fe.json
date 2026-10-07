@@ -1,0 +1,144 @@
+{
+ "task_id": "t-1791394352-29fe",
+ "run_id": "20261007_193228",
+ "kind": "profile",
+ "payload": {
+  "service": "quai-radar",
+  "profile": {
+   "service": "quai-radar",
+   "requests": 482,
+   "total_tokens": 452948,
+   "avg_tokens": 939.7,
+   "models": {
+    "qwen3.8:latest": 482
+   },
+   "query_types": {
+    "chart/price": 328,
+    "(none)": 152,
+    "research": 2
+   },
+   "requestors": {
+    "user": 482
+   },
+   "statuses": {
+    "complete": 482
+   },
+   "cadence_median_s": 1627.4,
+   "time_range": [
+    1790596917.2426033,
+    1791379686.7772367
+   ],
+   "project": "blockchain-news knowledge-graph extractor",
+   "pipeline_summary": "ingests news items (title+content) -> LLM extracts structured KG facts -> writes graph nodes/edges",
+   "pipeline": [
+    "ingest_feed",
+    "build_kg_prompt(title, content)",
+    "llm.extract(model)",
+    "parse_facts",
+    "upsert_graph"
+   ],
+   "rule_hits": 4,
+   "schema_hints": [
+    "brief",
+    "digest",
+    "implications for quai",
+    "knowledge graph",
+    "schema",
+    "structured facts",
+    "what to watch"
+   ],
+   "instructions": [
+    "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check.",
+    "TITLE: Fundamental CRB-Rate Tradeoff of Rydberg Atomic Receivers fo",
+    "TITLE: Keeping the interaction structure explicit: comment on ''Gra",
+    "TITLE: Disentangling Paradigm, Identifier, and Decoding in Generati",
+    "TITLE: RIS-Assisted Reliability Maximization for URLLC in Upper Mid",
+    "TITLE: Rapid Fredholm stabilization of the Kuramoto--Sivashinsky eq",
+    "TITLE: \u2018Old money\u2019 has stronger Bitcoin \u2018diamond hands,\u2019 says BingX",
+    "TITLE: Wall Street wealth creation model is unsustainable for most",
+    "TITLE: Trump-backed WLFI plans USD1 payments for online businesses",
+    "TITLE: Crypto card access doesn\u2019t match global demand, Tangem says"
+   ],
+   "fingerprint": {
+    "n_prompts": 482,
+    "n_clusters": 3,
+    "top_signatures": [
+     {
+      "sig": "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everyth",
+      "count": 478
+     },
+     {
+      "sig": "You are Fox writing the daily research brief for the Quai Network intelligence dashboard. Based ONLY on the digest below",
+      "count": 3
+     },
+     {
+      "sig": "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap che",
+      "count": 1
+     }
+    ],
+    "templates": [
+     {
+      "count": 478,
+      "template": "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts.\n\nTITLE: {{title}}\n\nCONTENT: {{content}}",
+      "example_head": "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts.\n\nTITLE: Fundamental CRB-Rate Tradeoff of Rydberg Atomic Receivers fo\n\nCONTENT:\nI"
+     },
+     {
+      "count": 3,
+      "template": "You are Fox writing the daily research brief for the Quai Network intelligence dashboard. Based ONLY on the digest below (what's new in the research landscape, news, market and the swarm-protocol regime/gates), write a concise brief with:\n## What's new\n## Implications for QUAI/QI\n## What to watch\nBe",
+      "example_head": "You are Fox writing the daily research brief for the Quai Network intelligence dashboard. Based ONLY on the digest below (what's new in the research landscape, news, market and the swarm-protocol regime/gates), write a concise brief with:\n## What's new\n## Implications for QUAI/QI\n## What to watch\nBe"
+     },
+     {
+      "count": 1,
+      "template": "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check.",
+      "example_head": "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check."
+     }
+    ]
+   },
+   "sample_heads": [
+    "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Live tap check.",
+    "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts. |  | TITLE: Fundamental CRB-Rate Tradeoff of Rydberg Atomic Receivers fo |  | CONTENT: | I",
+    "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph. Base everything ONLY on the item's title and content. Do not repeat the schema back \u2014 produce the actual facts. |  | TITLE: Keeping the interaction structure explicit: comment on ''Gra |  | CONTENT: | P"
+   ]
+  },
+  "num_predict": 256
+ },
+ "created_at": 1791394352.5668979,
+ "attempts": 1,
+ "claimed_by": "any:3bd5ac595d89:1",
+ "claimed_at": 1791394353.7587652,
+ "result": {
+  "service": "quai-radar",
+  "parsed": {
+   "project": "Quai Network Intelligence Dashboard & Knowledge Graph",
+   "what_building": "A service that ingests external research and news feeds to extract structured facts into a knowledge graph specific to the Quai Network. It also generates daily research briefs summarizing implications for the QUAI/QI ecosystem.",
+   "pipeline": [
+    "ingest_feed",
+    "build_kg_prompt",
+    "llm_extract",
+    "parse_facts",
+    "upsert_graph",
+    "generate_daily_brief"
+   ],
+   "inputs": [
+    "title",
+    "content",
+    "digest"
+   ],
+   "outputs": [
+    "structured_facts",
+    "knowledge_graph_nodes",
+    "daily_research_brief"
+   ],
+   "confidence": 0.95,
+   "evidence_quotes": [
+    "You are a blockchain research analyst. Extract structured facts about the item below for a knowledge graph.",
+    "You are Fox writing the daily research brief for the Quai Network intelligence dashboard.",
+    "## Implications for QUAI/QI",
+    "schema hints: ['brief', 'digest', 'implications for quai', 'knowledge graph', 'schema', 'structured facts', 'what to watch']"
+   ]
+  },
+  "prompt_tokens": 677,
+  "completion_tokens": 289
+ },
+ "completed_at": 1791394357.0429585
+}

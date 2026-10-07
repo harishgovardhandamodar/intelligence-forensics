@@ -1,0 +1,38 @@
+{
+ "agent": "scout",
+ "content": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage including embedding and LLMs, suggesting complex agentic workflows or potential data exfiltration via embeddings.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High token volume relative to request count (avg ~940 toks/req) indicates heavy context usage, potentially sensitive blockchain data processing.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Mixed model usage (embedding + small LLM + large LLM) suggests a pipeline that could be used for obfuscation or multi-stage processing of research data.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but unclassified; minimal tokens suggest probing or low-fidelity traffic, lower priority than high-volume services.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Explicitly labeled as self-test with negligible volume; likely benign internal health checks.\"\n    }\n  ]\n}",
+ "prompt_tokens": 417,
+ "completion_tokens": 312,
+ "ms": 3876.8,
+ "model": "qwen3.8:27b",
+ "parsed": {
+  "rankings": [
+   {
+    "rank": 1,
+    "service": "agentic-knowledge-mapper",
+    "reason": "Highest volume (1.2k reqs, 2.2M toks) and multi-model usage including embedding and LLMs, suggesting complex agentic workflows or potential data exfiltration via embeddings."
+   },
+   {
+    "rank": 2,
+    "service": "quai-radar",
+    "reason": "High token volume relative to request count (avg ~940 toks/req) indicates heavy context usage, potentially sensitive blockchain data processing."
+   },
+   {
+    "rank": 3,
+    "service": "hive-research-gpu",
+    "reason": "Mixed model usage (embedding + small LLM + large LLM) suggests a pipeline that could be used for obfuscation or multi-stage processing of research data."
+   },
+   {
+    "rank": 4,
+    "service": "gateway-unknown",
+    "reason": "Low volume but unclassified; minimal tokens suggest probing or low-fidelity traffic, lower priority than high-volume services."
+   },
+   {
+    "rank": 5,
+    "service": "live-selftest",
+    "reason": "Explicitly labeled as self-test with negligible volume; likely benign internal health checks."
+   }
+  ]
+ },
+ "raw": "{\n  \"rankings\": [\n    {\n      \"rank\": 1,\n      \"service\": \"agentic-knowledge-mapper\",\n      \"reason\": \"Highest volume (1.2k reqs, 2.2M toks) and multi-model usage including embedding and LLMs, suggesting complex agentic workflows or potential data exfiltration via embeddings.\"\n    },\n    {\n      \"rank\": 2,\n      \"service\": \"quai-radar\",\n      \"reason\": \"High token volume relative to request count (avg ~940 toks/req) indicates heavy context usage, potentially sensitive blockchain data processing.\"\n    },\n    {\n      \"rank\": 3,\n      \"service\": \"hive-research-gpu\",\n      \"reason\": \"Mixed model usage (embedding + small LLM + large LLM) suggests a pipeline that could be used for obfuscation or multi-stage processing of research data.\"\n    },\n    {\n      \"rank\": 4,\n      \"service\": \"gateway-unknown\",\n      \"reason\": \"Low volume but unclassified; minimal tokens suggest probing or low-fidelity traffic, lower priority than high-volume services.\"\n    },\n    {\n      \"rank\": 5,\n      \"service\": \"live-selftest\",\n      \"reason\": \"Explicitly labeled as self-test with negligible volume; likely benign internal health checks.\"\n    }\n  ]\n}"
+}
