@@ -209,6 +209,27 @@ def index():
     return PAGE
 
 
+def _static_version() -> str:
+    """Content hash of the JS/CSS bundle — cache-busts app.js/app.css.
+
+    Without this, browsers keep running a stale bundle against fresh HTML:
+    new tabs render while their behavior (and new panes) silently never load.
+    """
+    import hashlib
+    h = hashlib.sha256()
+    for name in ("static/app.js", "static/app.css"):
+        try:
+            with open(os.path.join(config.BASE_DIR, name), "rb") as f:
+                h.update(f.read())
+        except OSError:
+            h.update(name.encode())
+    return h.hexdigest()[:8]
+
+
+PAGE = PAGE.replace("/static/app.js", "/static/app.js?v=" + _static_version())
+PAGE = PAGE.replace("/static/app.css", "/static/app.css?v=" + _static_version())
+
+
 @app.get("/api/overview")
 def overview():
     rows = _service_rows(limit=5000)
