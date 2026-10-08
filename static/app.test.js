@@ -104,6 +104,7 @@ function loadApp() {
     + " renderRunPanes, renderRunLogs, renderRunClaims, renderRunVerdict,"
     + " switchLiveSub, filterFeed, renderFeed, renderFeedRows,"
     + " showDetail, wireOverlay, rowClickHandler, SCORE_HELP,"
+    + " isVisible, renderMermaid, renderDesignIfVisible, renderBriefMermaids,"
     + " detailFindings, detailLedger, detailMesh, detailRisk, detailTrust,"
     + " detailRates, detailConf, detailTrend, detailChain, detailFeed,"
     + " detailProj, detailProgStep};\n";
@@ -545,4 +546,32 @@ test("detailProgStep explains score, vibe and delta", () => {
   const bare = t.detailProgStep({ step: 1 });
   assert.equal(bare.title, "progression step 1");
   assert.match(JSON.stringify(bare), /stable/);
+});
+
+test("renderMermaid defers on hidden containers instead of failing", async () => {
+  assert.equal(t.isVisible(undefined), false);
+  assert.equal(t.isVisible({}), false);
+  assert.equal(t.isVisible({ offsetWidth: 300 }), true);
+  const empty = { querySelectorAll: () => [] };
+  assert.equal(await t.renderMermaid(empty), "empty");
+  const hidden = { querySelectorAll: () => [{}] };
+  assert.equal(await t.renderMermaid(hidden), "hidden");
+});
+
+test("renderDesignIfVisible skips rendered docs and empty selection", async () => {
+  const dd = el("design-doc");
+  dd.dataset.mmDone = "1";
+  dd.textContent = "sentinel";
+  await t.renderDesignIfVisible();
+  assert.equal(dd.textContent, "sentinel");
+  dd.dataset.mmDone = "";
+  await t.renderDesignIfVisible(); // curDesignDoc empty -> no-op, no throw
+});
+
+test("renderBriefMermaids renders from stashed source without refetch", async () => {
+  const b = el("brief");
+  b.dataset.mmDone = "";
+  await t.renderBriefMermaids();
+  assert.match(b.innerHTML, /no brief yet/);
+  assert.equal(b.dataset.mmDone || "", ""); // no diagrams -> not marked done
 });

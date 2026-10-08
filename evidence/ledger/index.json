@@ -190,5 +190,13 @@
  "sim-20261007_231905": {
   "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261007_231905.jsonl",
   "updated_at": 1791407945.6121445
+ },
+ "sim-20261007_214208": {
+  "path": "/app/evidence/ledger/sim-20261007_214208.jsonl",
+  "updated_at": 1791409332.1638072
+ },
+ "sim-20261008_120802": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261008_120802.jsonl",
+  "updated_at": 1791454082.2154915
  }
 }

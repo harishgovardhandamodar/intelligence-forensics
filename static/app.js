@@ -3,7 +3,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 const TABS=[...document.querySelectorAll('#tabs button')].map(b=>b.dataset.t);
 const trowState=(cols,msg,cls='mut')=>`<tr><td class="${cls}" colspan="${cols}">${escH(msg)}</td></tr>`;
-const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='sim'){loadSimUsers();loadSimScenarios();loadSimRuns();}document.title='Intelligence Forensics — '+name;};
+const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='design')renderDesignIfVisible();if(name==='overview')renderBriefMermaids();if(name==='sim'){loadSimUsers();loadSimScenarios();loadSimRuns();}document.title='Intelligence Forensics — '+name;};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 window.addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 window.addEventListener('popstate',()=>activateTab(location.hash.slice(1),false));
@@ -59,7 +59,7 @@ instructions:
    :`<tr><td><a href="#" data-run="${escA(r.run_id)}">${escH(r.run_id)}</a></td><td class="mut">${escH(r.model||'')}</td><td class="mut">${escH((r.services||[]).join(', ').slice(0,80))}</td><td>${escH(r.elapsed_s??'?')}s</td><td>${escH(r.errors??0)}</td></tr>`).join('')||'<tr><td class="mut">no runs yet</td></tr>';
   document.querySelectorAll('[data-run]').forEach(a=>a.onclick=e=>{e.preventDefault();showRun(a.dataset.run);});
   loadTrend();
-  try{const b=(await j('/api/runs')).filter(r=>r.status!=='running');let md;if(b.length){const d=await j('/api/runs/'+b[0].run_id);md=d.brief||'';}else{const inv=await j('/api/investigation');md=inv.readme||'no brief yet — launch an agentic run';}$('brief').innerHTML=renderMarkdown(md.slice(0,6000));renderMermaid($('brief'));}catch(e){$('brief').innerHTML=`<span class="warn">brief unavailable: ${escH(e)}</span>`;}
+  try{const b=(await j('/api/runs')).filter(r=>r.status!=='running');let md;if(b.length){const d=await j('/api/runs/'+b[0].run_id);md=d.brief||'';}else{const inv=await j('/api/investigation');md=inv.readme||'no brief yet — launch an agentic run';}briefMD=md.slice(0,6000);$('brief').innerHTML=renderMarkdown(briefMD);renderBriefMermaids();}catch(e){$('brief').innerHTML=`<span class="warn">brief unavailable: ${escH(e)}</span>`;}
   try{
    const m=await j('/api/fox/live');const peers=(m.mesh&&(m.mesh.peers||[]))||[];
    meshCache=peers;
@@ -410,22 +410,25 @@ const renderMarkdown=md=>{
  return html;
 };
 const MERMAID_SRC=['/static/mermaid.min.js','https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js'];
+const isVisible=el=>{try{return !!(el&&(el.offsetWidth||el.offsetHeight||(el.getClientRects&&el.getClientRects().length)));}catch(_){return true;}};
 const renderMermaid=async root=>{
  const nodes=root.querySelectorAll('pre.mermaid');
- if(!nodes.length)return;
+ if(!nodes.length)return 'empty';
+ if(!isVisible(root))return 'hidden';
  const fail=(n,e)=>{try{console.error('mermaid failed:',e);}catch(_){}
   const d=document.createElement('div');d.className='warn';
   d.textContent='diagram failed to render: '+((e&&e.message)||e||'parse error')+' — source kept below';
   n.replaceWith(d);};
  const run=async()=>{try{window.mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:'dark',themeVariables:{darkMode:true,background:'#0a0e14',primaryColor:'#1f6feb',primaryTextColor:'#e6edf3',lineColor:'#8b949e',textColor:'#e6edf3'}});}catch(e){}
   for(const n of nodes){try{await window.mermaid.run({nodes:[n],suppressErrors:false});}catch(e){fail(n,e);}}};
- if(window.mermaid&&window.mermaid.run){try{await run();return;}catch(e){}}
- for(const src of MERMAID_SRC){
-  try{
-   await new Promise((res,rej)=>{if(document.querySelector(`script[data-mm="${src}"]`))return res();const s=document.createElement('script');s.dataset.mm=src;s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});
-   if(window.mermaid&&window.mermaid.run){await run();return;}
-  }catch(e){}
- }
+  if(window.mermaid&&window.mermaid.run){try{await run();return 'done';}catch(e){return 'error';}}
+  for(const src of MERMAID_SRC){
+   try{
+    await new Promise((res,rej)=>{if(document.querySelector(`script[data-mm="${src}"]`))return res();const s=document.createElement('script');s.dataset.mm=src;s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+    if(window.mermaid&&window.mermaid.run){await run();return 'done';}
+   }catch(e){}
+  }
+  return 'error';
 };
 /* ---- generic table sort/filter/export ---- */
 const cellText=(tr,i)=>{const td=tr.children[i];return td?td.textContent.trim():'';};
@@ -449,10 +452,22 @@ const loadDesignRail=async()=>{try{const idx=await j('/api/design/docs');
  if(first)showDesignDoc(first.id);
 }catch(e){$('design-rail').textContent='design index failed: '+e;}};
 const showDesignDoc=async id=>{try{const d=await j('/api/design/docs/'+id);
+ curDesignDoc=id;
  $('design-title').textContent=d.title;$('design-meta').textContent=`${d.group} · ${d.diagrams} diagrams`;
  document.querySelectorAll('[data-doc]').forEach(x=>x.classList.toggle('on',x.dataset.doc===id));
- $('design-doc').innerHTML=renderMarkdown(d.markdown);renderMermaid($('design-doc'));
+ $('design-doc').innerHTML=renderMarkdown(d.markdown);
+ const st=await renderMermaid($('design-doc'));
+ const dd=$('design-doc');if(dd)dd.dataset.mmDone=st==='done'?'1':'';
 }catch(e){$('design-doc').textContent='doc failed: '+e;}};
+let curDesignDoc='';
+let briefMD='';
+const renderBriefMermaids=async()=>{const b=$('brief');if(!b||!briefMD)return;
+ if(b.dataset.mmDone==='1')return;
+ b.innerHTML=renderMarkdown(briefMD);
+ const st=await renderMermaid(b);
+ if(st==='done')b.dataset.mmDone='1';};
+const renderDesignIfVisible=()=>{const dd=$('design-doc');
+ if(dd&&dd.dataset.mmDone!=='1'&&curDesignDoc)showDesignDoc(curDesignDoc);};
 const liveDir=d=>d==='in'?'<span style="color:#58a6ff">IN</span>':d==='out'?'<span class=ok>OUT</span>':'<span class=warn>SYS</span>';
 const liveTime=t=>new Date(t*1000).toTimeString().slice(0,8);
 const liveEmpty='<tr><td class="mut" colspan=5>no events yet — waiting for traffic</td></tr>';

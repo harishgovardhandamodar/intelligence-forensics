@@ -1,0 +1,239 @@
+{
+ "scenario": "devops_deploy",
+ "user_id": "u-devops",
+ "n_turns": 60,
+ "style": "regular",
+ "run_id": "sim-20261007_214208",
+ "truth": {
+  "deploy_token": "ghp_test_qzmDwMtmTz8vrbCS6GZLiph4",
+  "ssh_key": "ssh-ed25519 CMSYAbl/ckAdyiXJx77cgI4wtekMQ+QxSXk4EGtLSl3jz81+Mjp8o=tMo7sqsVxh test.invalid",
+  "slack_webhook": "https://hooks.example.invalid/services/T00000000/B00000000/UAJI0WEW3Q5HC6ILUDHHFGUF"
+ },
+ "attack": {
+  "n_clusters": 10,
+  "mean_cohesion": 0.882
+ },
+ "report": {
+  "fields": {
+   "deploy_token": {
+    "accuracy": 1.0,
+    "matched": 31,
+    "total": 31,
+    "recovered": true,
+    "direct_exposure": true
+   },
+   "ssh_key": {
+    "accuracy": 0.864,
+    "matched": 70,
+    "total": 81,
+    "recovered": false,
+    "direct_exposure": true
+   },
+   "slack_webhook": {
+    "accuracy": 0.149,
+    "matched": 11,
+    "total": 74,
+    "recovered": false,
+    "direct_exposure": true
+   }
+  },
+  "n_fields": 3,
+  "recovered": 1,
+  "mean_accuracy": 0.671,
+  "curves": {
+   "deploy_token": [
+    {
+     "queries": 1,
+     "accuracy": 0.355,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.677,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "ssh_key": [
+    {
+     "queries": 1,
+     "accuracy": 0.333,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "slack_webhook": [
+    {
+     "queries": 1,
+     "accuracy": 0.338,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.676,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ]
+  },
+  "user_id": "u-devops",
+  "backend": "numpy",
+  "clusters": 10,
+  "plausibility": {
+   "actions": [
+    {
+     "action": "gateway logs prompts",
+     "plausibility": "high",
+     "why": "Abuse monitoring, debugging and analytics routinely retain prompt text; most hosted LLM APIs do this by default."
+    },
+    {
+     "action": "embeddings stored per query/response",
+     "plausibility": "high",
+     "why": "Retrieval caches, semantic analytics and eval pipelines persist vectors beside the texts that produced them."
+    },
+    {
+     "action": "users paste secrets into prompts",
+     "plausibility": "high",
+     "why": "Vibe-coding workflows paste keys/tokens into debug prompts repeatedly; support tickets do the same for PII."
+    },
+    {
+     "action": "progressive masked disclosure across repeats",
+     "plausibility": "medium",
+     "why": "Users self-redact then relent when asked to clarify, or the same secret recurs across sessions with different masking habits."
+    },
+    {
+     "action": "attacker reads the vector store",
+     "plausibility": "medium",
+     "why": "This is THE gating assumption: it needs a breach, a misconfigured store, or an insider. Without read access none of the below applies.",
+     "gating": true
+    },
+    {
+     "action": "reconstruction from stored texts + vectors",
+     "plausibility": "high",
+     "why": "Given read access, masked variants cluster by similarity and assemble position-wise \u2014 demonstrated live in this sim.",
+     "demonstrated": true
+    },
+    {
+     "action": "pure embedding inversion (vectors only, no texts)",
+     "plausibility": "low",
+     "why": "Exact recovery from vectors alone is active research and far harder than this demo, which exploits the stored texts beside the vectors. Do not cite this sim for that claim."
+    },
+    {
+     "action": "DLP redaction stops the attack",
+     "plausibility": "medium",
+     "why": "Measured: redaction drops recovery 6/8 fields to 2/8, but short numeric PII outside the pattern set still passes. Coverage, not presence, is the residual risk.",
+     "demonstrated": true
+    }
+   ],
+   "verdict": "The attack chain is plausible end-to-end for any operator who already logs prompts beside embeddings: the only exotic step is obtaining read access, and that is a security-incident assumption, not a research one. Pure vector-only inversion remains the hard case this demo does NOT claim."
+  },
+  "estimates": {
+   "groups": [
+    {
+     "shape": "###_####_########################",
+     "occurrences": 40,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "//#####.#######.#######/########/#########/#########/########################",
+     "occurrences": 40,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "###-####### #######/#####################+#################+#####=########## ####.#######",
+     "occurrences": 28,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "#####",
+     "occurrences": 28,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "###-####### #######/#####################+#################+#####=##########",
+     "occurrences": 12,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    }
+   ],
+   "n_groups": 5,
+   "exposure": 1.0
+  },
+  "dlp": {
+   "mode": "off",
+   "interceptions": 0,
+   "by_action": {},
+   "actions": {}
+  },
+  "reconstructed": [
+   {
+    "assembled": "ghp_test_qzmDwMtmTz8vrbCS6GZLiph4",
+    "coverage": 1.0,
+    "occurrences": 40
+   },
+   {
+    "assembled": "//hooks.example.invalid/services/T00000000/B00000000/UAJI0WEW3Q5HC6ILUDHHFGUF",
+    "coverage": 1.0,
+    "occurrences": 40
+   },
+   {
+    "assembled": "ss*-ed*55*9 C*SY*bl/*kA*yi*Jx*7c*I4*te*MQ+*xS*k4*Gt*Sl*jz*1+M*p8*=tM*7s*sV*h t*st.*nv*li*",
+    "coverage": 1.0,
+    "occurrences": 28
+   },
+   {
+    "assembled": "ht*ps",
+    "coverage": 1.0,
+    "occurrences": 28
+   },
+   {
+    "assembled": "ssh-ed25519 CMSYAbl/ckAdyiXJx77cgI4wtekMQ+QxSXk4EGtLSl3jz81+Mjp8o=tMo7sqsVxh",
+    "coverage": 1.0,
+    "occurrences": 12
+   }
+  ]
+ },
+ "membership": {
+  "deploy_token": {
+   "true_score": 1.0,
+   "fresh_score": 0.2023,
+   "likely_member": true
+  },
+  "ssh_key": {
+   "true_score": 0.9516,
+   "fresh_score": 0.2023,
+   "likely_member": true
+  },
+  "slack_webhook": {
+   "true_score": 0.9877,
+   "fresh_score": 0.2023,
+   "likely_member": true
+  }
+ }
+}
