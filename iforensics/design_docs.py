@@ -49,6 +49,10 @@ _DOCS: list[dict[str, str]] = [
      "title": "Reconstruction — stateless inference",
      "group": "Data & assurance", "kind": "surfaces · residual stores · amplification",
      "answers": "What a stateless provider still keeps, and what pooling it recovers"},
+    {"id": "live-reconstruction", "file": "09-live-reconstruction.md",
+     "title": "Live reconstruction — tap-driven co-serving",
+     "group": "Data & assurance", "kind": "tap · co-serve · unscored live report",
+     "answers": "How live Fox traffic feeds the residual surfaces, and why it is never scored"},
 ]
 
 _FENCE_RE = re.compile(r"^\s*```(\w*)\s*$")

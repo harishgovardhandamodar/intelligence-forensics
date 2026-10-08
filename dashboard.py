@@ -56,6 +56,7 @@ POST_LIMITS = {
     "/api/recon/consume": (60, 60),
     "/api/recon/harvest-live": (60, 60),
     "/api/recon/coserve": (30, 60),
+    "/api/recon/coserve-auto": (30, 60),
     "/api/recon/reset": (30, 60),
 }
 _POST_HITS: dict[str, deque] = {}
@@ -129,6 +130,9 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
  <div class=card><div class=row><h3>Live traffic · co-serve Fox services</h3><span class=mut id=lres-harvmsg></span><span style="flex:1"></span><select id=lsel-live-user></select><button class=act id=b-lres-coserve>Co-serve live into surfaces</button><button class=act2 id=b-lres-harvest>Harvest only</button></div>
  <div class=mut><b>Co-serve</b> runs each new tap OUT event through the same eight retention policies the simulations use, under a per-service user (<code>u-live-&lt;service&gt;</code>) — live services then appear in the inspector and per-surface counts below, and their rows also land in the collection. <b>Harvest only</b> skips the surfaces and writes the vector collection. Live traffic carries no ground truth, so no accuracy is claimed — only what each surface kept.</div>
  <div class=mut id=lres-harvout>tap not running — start the tap first, then co-serve.</div></div>
+ <div class=card><div class=row><h3>Live reconstruction <span class=mut style="font-weight:normal">retention + linkage + candidate shapes — never scored</span></h3><span style="flex:1"></span><span class=mut id=lres-auto-state></span><button class=act2 id=b-lres-auto>Auto co-serve</button><button class=act id=b-lres-lrec>Reconstruct live</button></div>
+ <div class=mut>While the tap runs, every poll automatically co-serves new Fox completions into the residual surfaces, so this view stays warm. Truth registration is refused for live users — this shows what each surface kept, family linkage, and candidate secret shapes, with no accuracy claimed.</div>
+ <div id=lres-live-out class=mut>no live reconstruction yet — start the tap, then Reconstruct live.</div></div>
  <div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14 · live traffic view</span></h3><span class=mut id=lres-sum></span><span style="flex:1"></span><button class=act id=b-lres-reset>Reset residuals</button></div>
 <div class=mut>Eight residual surfaces of a provider that advertises <i>stateless inference</i> &mdash; observability logs, token meters, vectors, caches, training staging, infrastructure leftovers, human support tooling &mdash; plus the repeated-near-query amplifier that pools them across every turn. The client app is <code>recon_client/</code>; every number below is computed server-side, because the log holder is the party being measured.</div>
 <div class=row><span class=mut>scenario</span><select id=lsel-res-sc></select><span class=mut>turns</span><input id=linp-res-n value=48 style="width:54px"><span class=mut>seed</span><input id=linp-res-seed value=42 style="width:64px"><button class=act id=b-lres-run>Run session</button><span class=mut id=lres-runmsg></span></div>
@@ -884,11 +888,18 @@ def recon_surfaces():
 
 @app.post("/api/recon/begin")
 def recon_begin(req: ReconBegin):
-    """Register a synthetic user's ground truth (reserved-space values only)."""
+    """Register a synthetic user's ground truth (reserved-space values only).
+
+    Live users are refused: live Fox traffic carries no ground truth, so
+    scoring it would be fabrication. Live reconstruction is retention-only.
+    """
     from iforensics.sim import reconstruction as recon
     if not req.user_id:
         raise HTTPException(400, "user_id required")
-    recon.STATE.register_truth(req.user_id, req.truth or {})
+    try:
+        recon.STATE.register_truth(req.user_id, req.truth or {})
+    except ValueError as e:
+        raise HTTPException(400, str(e))
     return {"ok": True, "user_id": req.user_id,
             "fields": sorted((req.truth or {}).keys())}
 
@@ -1067,6 +1078,40 @@ def recon_live_users():
     return {"users": recon.live_users(recon.STATE)}
 
 
+class ReconCoserveAuto(BaseModel):
+    on: bool = True
+
+
+@app.post("/api/recon/coserve-auto")
+def recon_coserve_auto(req: ReconCoserveAuto):
+    """Toggle tap-driven co-serving (each poll feeds the surfaces)."""
+    from iforensics import live as live_mod
+    return {"coserve": live_mod.set_coserve(req.on)}
+
+
+@app.get("/api/recon/live-report")
+def recon_live_report(service: str = "", user_id: str = ""):
+    """Unscored live reconstruction for one co-served service.
+
+    Retention per surface + linkage + candidate shapes. No accuracy keys
+    exist in the response by design — live traffic has no ground truth.
+    """
+    from iforensics.sim import reconstruction as recon
+    uid = (user_id or "").strip()
+    if not uid and service.strip():
+        uid = recon.live_user_for(service.strip())
+    if not uid:
+        raise HTTPException(400, "service or user_id required")
+    if not uid.startswith(recon.LIVE_PREFIX):
+        raise HTTPException(400,
+                            "live reconstruction is retention-only: "
+                            "user_id must be a co-served live user")
+    try:
+        return recon.live_report(recon.STATE, uid)
+    except recon.UnknownUser:
+        raise HTTPException(404, f"no co-served rows for {uid!r} yet")
+
+
 @app.post("/api/recon/consume")
 def recon_consume(req: ReconConsume):
     """Phase two of the strategy: read the collection back and attack it.
@@ -1082,6 +1127,12 @@ def recon_consume(req: ReconConsume):
         raise HTTPException(404, "collection is empty — run a session first")
     truth = recon.STATE.get_truth(uid)
     if req.attack and not truth:
+        if uid.startswith(recon.LIVE_PREFIX):
+            raise HTTPException(
+                404, f"no ground truth for {uid!r} — live users are "
+                     "retention-only (truth registration is refused for "
+                     "them); consume with attack:false to read the rows "
+                     "back unscored")
         raise HTTPException(404,
                             f"no ground truth for {uid!r} — POST /api/recon/begin")
     return col.consume(uid, truth=truth, attack=req.attack)
@@ -1173,13 +1224,19 @@ def runs_compare(limit: int = 5):
 
 class LiveStartReq(BaseModel):
     interval_s: float = 5.0
+    coserve: bool = True
 
 
 @app.post("/api/live/start")
 def live_start(req: LiveStartReq):
-    """Attach the live tap to fox :8210 (queue + request deltas + model loads)."""
+    """Attach the live tap to fox :8210 (queue + request deltas + model loads).
+
+    Co-serving is on by default: every poll also feeds new completions into
+    the residual surfaces, so live reconstruction is always warm.
+    """
     from iforensics import live as live_mod
-    return live_mod.start(max(1.0, min(60.0, req.interval_s or 5.0)))
+    return live_mod.start(max(1.0, min(60.0, req.interval_s or 5.0)),
+                          coserve=req.coserve)
 
 
 @app.post("/api/live/stop")

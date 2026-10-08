@@ -312,3 +312,16 @@ Plan: `to-do-insider-recon-instructions.md` (all 8 phases + repo mapping).
       `docs/{surfaces,honesty,ethics_gates}.md`; package README
 - [x] P16.6 Framework test mirror (20 tests) + full suite green (253 total);
       CLI verified live against the dashboard, ledger verifies cleanly
+
+### P17 — live reconstruction on tap + docs (Design & Architecture)
+- [x] P17.1 Tap-driven co-serve: `poll_once` feeds fresh OUT events into
+      `coserve_events` behind a flag (default on at tap start, never breaks
+      the tap); `POST /api/recon/coserve-auto` toggles; status reports
+      `{on, ingested, skipped, polls}`
+- [x] P17.2 `GET /api/recon/live-report` (retention + linkage + candidate
+      shapes, no accuracy keys by construction); truth refused for
+      `u-live-*` (engine `ValueError` → HTTP 400); consume falls back to
+      unscored read-back for live users; `recon/live.py` framework layer
+- [x] P17.3 Design & Architecture: new `design/09-live-reconstruction.md`
+      (3 diagrams: flow, ethics gate, UI wiring) registered in the Design
+      tab index; README routes + live/framework sections; this entry

@@ -1,0 +1,571 @@
+{
+ "run_id": "recon-20261008_200945",
+ "scenario": "stateless_chat",
+ "user_id": "u-recon-chat",
+ "n_turns": 12,
+ "retained": {
+  "logging": 25,
+  "billing": 12,
+  "embeddings": 12,
+  "cache": 22,
+  "infrastructure": 14,
+  "training": 5,
+  "human_ops": 2
+ },
+ "report": {
+  "user_id": "u-recon-chat",
+  "n_turns": 12,
+  "n_records": 81,
+  "n_fields": 2,
+  "fields_truth_keys": [
+   "bp",
+   "ssn"
+  ],
+  "surfaces": [
+   {
+    "id": "logging",
+    "n": 1,
+    "title": "Explicit logging & observability",
+    "role": "store",
+    "retains": "prompt heads for every request, full prompt when the safety or error sampler flags it, completion text",
+    "records": 25,
+    "text_records": 25,
+    "accuracy": 0.211,
+    "recovered_fields": 0,
+    "fields": {
+     "ssn": {
+      "accuracy": 0.222,
+      "matched": 2,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "9**-**-*7**"
+     },
+     "bp": {
+      "accuracy": 0.2,
+      "matched": 1,
+      "total": 5,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "9**-**-*7**"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "billing",
+    "n": 2,
+    "title": "Token billing & usage metering",
+    "role": "store",
+    "retains": "input/output token counts, byte length, prompt SHA-256 for every request; the full prompt only when a dispute sample is taken",
+    "records": 12,
+    "text_records": 0,
+    "accuracy": 0.0,
+    "recovered_fields": 0,
+    "fields": {
+     "ssn": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "bp": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 5,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "embeddings",
+    "n": 3,
+    "title": "Vector embeddings & retrieval infrastructure",
+    "role": "linker",
+    "retains": "a 384-d query vector per request (semantic cache, RAG, duplicate detection, analytics)",
+    "records": 12,
+    "text_records": 0,
+    "accuracy": 0.0,
+    "recovered_fields": 0,
+    "fields": {
+     "ssn": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "bp": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 5,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     }
+    },
+    "linkage": {
+     "n_vectors": 12,
+     "n_clusters": 2,
+     "n_families": 1,
+     "linked": 11,
+     "linked_ratio": 0.917,
+     "mean_cohesion": 0.994
+    },
+    "note": "vector-only: linkage, no text \u2014 inversion not claimed"
+   },
+   {
+    "id": "cache",
+    "n": 4,
+    "title": "Caching layers",
+    "role": "store",
+    "retains": "exact prompt on a repeat hit, the shared prefix on a prefix hit, and the newest KV snapshot while it lingers in memory",
+    "records": 11,
+    "text_records": 11,
+    "accuracy": 0.889,
+    "recovered_fields": 1,
+    "fields": {
+     "ssn": {
+      "accuracy": 0.778,
+      "matched": 7,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "971-4*-*787"
+     },
+     "bp": {
+      "accuracy": 1.0,
+      "matched": 5,
+      "total": 5,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "119/87"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "training",
+    "n": 5,
+    "title": "Training & evaluation pipelines",
+    "role": "store",
+    "retains": "full prompts sampled for offline eval/red-teaming, plus rows still sitting in the staging table before the deletion job runs",
+    "records": 5,
+    "text_records": 5,
+    "accuracy": 0.889,
+    "recovered_fields": 1,
+    "fields": {
+     "ssn": {
+      "accuracy": 0.778,
+      "matched": 7,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "971-4*-*787"
+     },
+     "bp": {
+      "accuracy": 1.0,
+      "matched": 5,
+      "total": 5,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "119/87"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "infrastructure",
+    "n": 6,
+    "title": "Infrastructure & side residuals",
+    "role": "store",
+    "retains": "trace payload heads on every request, whole messages lingering in a queue, and object-storage snapshot versions",
+    "records": 14,
+    "text_records": 14,
+    "accuracy": 0.411,
+    "recovered_fields": 0,
+    "fields": {
+     "ssn": {
+      "accuracy": 0.222,
+      "matched": 2,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "9**-**-*7**"
+     },
+     "bp": {
+      "accuracy": 0.6,
+      "matched": 3,
+      "total": 5,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "119/**"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "human_ops",
+    "n": 7,
+    "title": "Human & operational access paths",
+    "role": "store",
+    "retains": "the window an employee views in a support tool, and \u2014 when someone pastes it into chat while debugging \u2014 the BARE value, not the mask",
+    "records": 2,
+    "text_records": 2,
+    "accuracy": 0.7,
+    "recovered_fields": 1,
+    "fields": {
+     "ssn": {
+      "accuracy": 1.0,
+      "matched": 9,
+      "total": 9,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "971-45-8787"
+     },
+     "bp": {
+      "accuracy": 0.4,
+      "matched": 2,
+      "total": 5,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "971-45-8787"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   }
+  ],
+  "cumulative": [
+   {
+    "surfaces": [
+     "logging"
+    ],
+    "added": "logging",
+    "records": 25,
+    "accuracy": 0.211,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing"
+    ],
+    "added": "billing",
+    "records": 37,
+    "accuracy": 0.211,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings"
+    ],
+    "added": "embeddings",
+    "records": 49,
+    "accuracy": 0.211,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache"
+    ],
+    "added": "cache",
+    "records": 60,
+    "accuracy": 0.889,
+    "recovered_fields": 1
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training"
+    ],
+    "added": "training",
+    "records": 65,
+    "accuracy": 0.889,
+    "recovered_fields": 1
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training",
+     "infrastructure"
+    ],
+    "added": "infrastructure",
+    "records": 79,
+    "accuracy": 0.889,
+    "recovered_fields": 1
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training",
+     "infrastructure",
+     "human_ops"
+    ],
+    "added": "human_ops",
+    "records": 81,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   }
+  ],
+  "amplification": {
+   "single_query_accuracy": 0.345,
+   "single_query_best": 0.7,
+   "pooled_accuracy": 1.0,
+   "delta": 0.655,
+   "turns_pooled": 12,
+   "verdict": "repetition amplifies: pooling every request beats the average single request"
+  },
+  "pooled": {
+   "fields": {
+    "ssn": {
+     "accuracy": 1.0,
+     "matched": 9,
+     "total": 9,
+     "recovered": true,
+     "direct_exposure": true,
+     "assembled": "971-45-8787"
+    },
+    "bp": {
+     "accuracy": 1.0,
+     "matched": 5,
+     "total": 5,
+     "recovered": true,
+     "direct_exposure": true,
+     "assembled": "119/87"
+    }
+   },
+   "n_fields": 2,
+   "recovered": 2,
+   "mean_accuracy": 1.0,
+   "n_texts": 57,
+   "candidates": [
+    {
+     "assembled": "971-45-8787",
+     "coverage": 1.0,
+     "occurrences": 7,
+     "shape": "###-##-####"
+    },
+    {
+     "assembled": "119/87",
+     "coverage": 1.0,
+     "occurrences": 5,
+     "shape": "###/##"
+    },
+    {
+     "assembled": "971-",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "###-"
+    },
+    {
+     "assembled": "971-4",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "###-#"
+    },
+    {
+     "assembled": "119/",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "###/"
+    },
+    {
+     "assembled": "119/8",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "###/#"
+    }
+   ]
+  },
+  "fields": {
+   "ssn": {
+    "accuracy": 1.0,
+    "matched": 9,
+    "total": 9,
+    "recovered": true,
+    "direct_exposure": true,
+    "assembled": "971-45-8787"
+   },
+   "bp": {
+    "accuracy": 1.0,
+    "matched": 5,
+    "total": 5,
+    "recovered": true,
+    "direct_exposure": true,
+    "assembled": "119/87"
+   }
+  },
+  "recovered": 2,
+  "mean_accuracy": 1.0,
+  "curves": {
+   "ssn": [
+    {
+     "turns": 1,
+     "accuracy": 0.222,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.444,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.778,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 0.778,
+     "recovered": false
+    },
+    {
+     "turns": 6,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 7,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 8,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 9,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 10,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 11,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 12,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "bp": [
+    {
+     "turns": 1,
+     "accuracy": 0.2,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.2,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "turns": 6,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "turns": 7,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "turns": 8,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "turns": 9,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "turns": 10,
+     "accuracy": 0.6,
+     "recovered": false
+    },
+    {
+     "turns": 11,
+     "accuracy": 0.6,
+     "recovered": false
+    },
+    {
+     "turns": 12,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ]
+  },
+  "bottom_line": "cache alone recovers 1/2 fields at 0.889; all seven stores pooled: 1.0 (2 fields); repetition adds +0.655 over the average single request; no text from billing, embeddings.",
+  "backend": "residual-store"
+ },
+ "collection": {
+  "collection": "recon_residuals",
+  "backend": "numpy (no MILVUS_URL)",
+  "strategy": "harvest-now-consume-later",
+  "strategy_label": "harvest now \u00b7 consume / attack later",
+  "dim": 384,
+  "harvested": 68,
+  "consumed": 2,
+  "resident": 68,
+  "users": 1,
+  "by_user": {
+   "u-recon-chat": 68
+  },
+  "last_user": "u-recon-chat",
+  "last_attack": null
+ }
+}

@@ -591,7 +591,7 @@ const renderFeed=evs=>{
 const switchLiveSub=v=>{
   document.querySelectorAll('[data-ls]').forEach(b=>b.classList.toggle('on',b.dataset.ls===v));
   ['feed','traffic','recon','srecon'].forEach(k=>{const p=$('lp-'+k);if(p)p.style.display=k===v?'':'none';});
-  if(v==='srecon'){loadReconTab().then(()=>{mirrorReconToLive();loadLiveUsers();coserveLive(true);}).catch(()=>{});}
+  if(v==='srecon'){loadReconTab().then(()=>{mirrorReconToLive();loadLiveUsers();refreshCoserveState();coserveLive(true);}).catch(()=>{});}
 };
 let liveES=null, liveLastSeq=0;
 const liveTbody=()=>$('t-feed').querySelector('tbody');
@@ -779,6 +779,7 @@ const loadLive=async()=>{
   $('sel-live').innerHTML=sv.services.map(s=>`<option value="${escA(s.service)}">${escH(s.service)}</option>`).join('');
   if(cur)$('sel-live').value=cur;
  }catch(e){}
+ try{maybeRefreshLiveRecon();}catch(_){}
 };
 $('b-live-start').onclick=async()=>{const i=+$('inp-live-int').value||5;try{await pj('/api/live/start',{interval_s:i});showNotif('tap started','ok');}catch(e){showNotif('tap start failed','err');}loadLive();};
 $('b-live-stop').onclick=async()=>{try{await pj('/api/live/stop');showNotif('tap stopped','ok');}catch(e){showNotif('tap stop failed','err');}loadLive();};
@@ -863,10 +864,59 @@ async function coserveLive(auto){
     await loadReconCollection();mirrorReconToLive();
     if(lu&&lu.value)inspectResiduals();
     mirrorReconToLive();
+    liveReconstruct();refreshCoserveState();
     showNotif('live Fox traffic co-served into residual surfaces','ok');
   }catch(e){if(m)m.textContent='co-serve failed: '+e;if(o&&!auto)o.innerHTML=`<span class=warn>co-serve failed: ${escH(String(e))}</span>`;}
 }
 const _lhcos=$('b-lres-coserve');if(_lhcos)_lhcos.onclick=()=>coserveLive(false);
+async function refreshCoserveState(){
+  const b=$('b-lres-auto'),s=$('lres-auto-state');
+  try{
+    const st=await j('/api/live/status');
+    const on=!!(st.coserve&&st.coserve.on);
+    if(b)b.textContent=`Auto co-serve: ${on?'on':'off'}`;
+    if(s)s.textContent=st.running
+      ?`tap running · co-served ${(st.coserve&&st.coserve.ingested)||0} live requests`
+      :'tap not running';
+  }catch(e){}
+}
+async function toggleCoserveAuto(){
+  const m=$('lres-auto-state');
+  try{
+    const st=await j('/api/live/status');
+    const r=await pj('/api/recon/coserve-auto',{on:!(st.coserve&&st.coserve.on)});
+    if(m)m.textContent=`auto co-serve ${(r.coserve&&r.coserve.on)?'on':'off'}`;
+    refreshCoserveState();loadLive();
+  }catch(e){if(m)m.textContent='toggle failed: '+e;}
+}
+async function liveReconstruct(){
+  const o=$('lres-live-out');if(!o)return;
+  const sel=$('lsel-live-user'),uid=sel&&sel.value;
+  if(!uid){o.innerHTML='<span class=mut>no live user yet — co-serve first.</span>';return;}
+  o.innerHTML='<span class=mut>reconstructing…</span>';
+  try{
+    const d=await j('/api/recon/live-report?user_id='+encodeURIComponent(uid));
+    const bars=Object.entries(d.by_surface||{}).map(([s,v])=>{
+      const n=v.records||0;
+      return `<div class=res-amp-row><span class=res-amp-lab>${escH(s)}</span><span class=res-amp-bar><i style="width:${Math.min(100,n*10)}%"></i></span><b>${escH(n)}</b><span class=mut>${escH(v.text_records)} text</span></div>`;}).join('');
+    const lk=d.linkage||{};
+    const cands=(d.candidates||[]).map(c=>`<span class="res-tag">${escH(c.shape)} ×${escH(c.occurrences)}</span>`).join(' ')||'<span class=mut>none</span>';
+    o.innerHTML=`<div class="res-verdict"><b>${escH(d.service)}</b> — ${escH(d.records)} records · ${escH(d.with_text)} with text · ${escH(d.turns)} turns (retention only, unscored)</div>`
+      +bars
+      +`<div class=mut>linkage: ${escH(lk.n_families)} families · linked ${escH(lk.linked_ratio)} · cohesion ${escH(lk.mean_cohesion)}</div>`
+      +`<div class=mut>candidate shapes: ${cands}</div>`
+      +`<div class=mut>${escH(d.caveat)}</div>`;
+  }catch(e){o.innerHTML=`<span class=warn>live reconstruction failed: ${escH(String(e))}</span>`;}
+}
+let _lrecLast=0;
+async function maybeRefreshLiveRecon(){
+  const p=$('lp-srecon');if(!p||p.style.display==='none')return;
+  const now=Date.now();if(now-_lrecLast<10000)return;_lrecLast=now;
+  refreshCoserveState();
+  const sel=$('lsel-live-user');if(sel&&sel.value)liveReconstruct();
+}
+const _lhauto=$('b-lres-auto');if(_lhauto)_lhauto.onclick=toggleCoserveAuto;
+const _lhlrec=$('b-lres-lrec');if(_lhlrec)_lhlrec.onclick=liveReconstruct;
 const _lhls=$('lsel-live-user');if(_lhls)_lhls.onchange=()=>{const u=$('linp-res-user'),r=$('inp-res-user');if(u&&r){u.value=_lhls.value;r.value=_lhls.value;}inspectResiduals();};
 const _lhgrid=$('lres-grid');
 if(_lhgrid){
@@ -1136,8 +1186,9 @@ async function loadReconCollection(){
 async function consumeCollection(){
  const out=$('res-col-out');if(!out)return;
  out.innerHTML='<span class=mut>consuming&hellip;</span>';
+ const uid=($('inp-res-user')&&$('inp-res-user').value)||'';
  try{
-  const d=await pj('/api/recon/consume',{user_id:($('inp-res-user')&&$('inp-res-user').value)||'',attack:true});
+  const d=await pj('/api/recon/consume',{user_id:uid,attack:true});
   if(d&&d.detail){out.innerHTML=`<span class=warn>${escH(d.detail)}</span>`;return;}
   const a=(d&&d.attack)||{};
   const fields=Object.entries(a.fields||{}).map(([f,v])=>`<span class="res-tag ${v.recovered?'on':'off'}">${escH(f)} ${escH(v.accuracy)}</span>`).join(' ');
@@ -1146,8 +1197,21 @@ async function consumeCollection(){
    +`<div class=mut>${escH(d.recovered)}/${escH(d.n_fields)} fields recovered from the collection alone${fields?' &middot; '+fields:''}</div>`;
   showNotif('collection consumed — attack complete','ok');
   await loadReconCollection();
-  }catch(e){out.innerHTML=`<span class=warn>consume failed: ${escH(e)}</span>`;showNotif('consume failed','err');}
-  try{mirrorReconToLive();}catch(_){}
+ }catch(e){
+  const msg=String((e&&e.message)||e);
+  if(/no ground truth/i.test(msg)){
+   // live users can never hold truth (refused at registration) — read back
+   // the harvested rows unscored instead of dead-ending the user
+   try{
+    const d=await pj('/api/recon/consume',{user_id:uid,attack:false});
+    out.innerHTML=`<div class="res-verdict"><b>phase two (read-back, unscored)</b> ${escH(d.user_id)} &mdash; ${escH(d.records)} rows read back from <code>${escH(d.collection)}</code>, ${escH(d.texts)} of them carrying text</div>`
+     +`<div class=mut>live users are retention-only: truth registration is refused for them, so there is nothing to score against — use the inspector below to see what the surfaces kept.</div>`;
+    showNotif('collection read back (unscored — live user)','ok');
+    await loadReconCollection();
+   }catch(e2){out.innerHTML=`<span class=warn>consume failed: ${escH(String((e2&&e2.message)||e2))}</span>`;showNotif('consume failed','err');}
+  }else{out.innerHTML=`<span class=warn>consume failed: ${escH(msg)}</span>`;showNotif('consume failed','err');}
+ }
+ try{mirrorReconToLive();}catch(_){}
 }
 async function inspectResiduals(override){
  const sf=$('sel-res-surface'),ui=$('inp-res-user');

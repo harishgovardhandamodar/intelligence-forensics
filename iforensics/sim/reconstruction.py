@@ -364,6 +364,10 @@ class ReconState:
     # -- registry ---------------------------------------------------------- #
 
     def register_truth(self, user_id: str, fields: dict) -> None:
+        if (user_id or "").startswith(LIVE_PREFIX):
+            raise ValueError(
+                f"live traffic carries no ground truth — refusing truth "
+                f"for {user_id!r} (live users are retention-only, never scored)")
         with self.lock:
             self.truth[user_id] = dict(fields)
 
@@ -1042,3 +1046,44 @@ def coserve_events(events: list[dict]) -> dict:
     return {"ingested": ingested, "skipped": skipped, "services": services,
             "retained": retained,
             "users": [u["user_id"] for u in live_users(STATE)]}
+
+
+def live_report(state: "ReconState", user_id: str) -> dict:
+    """Unscored live reconstruction for one co-served user.
+
+    Retention per surface, embedding linkage, and candidate secret shapes —
+    deliberately no accuracy keys anywhere: live traffic carries no ground
+    truth, so scoring it would be fabrication.
+    """
+    records = state.records_for(user_id)
+    if not records:
+        raise UnknownUser(user_id)
+    by_surface = {}
+    for sid in STORE_IDS:
+        texts = _texts(records, {sid})
+        by_surface[sid] = {
+            "records": sum(1 for r in records if r["surface"] == sid),
+            "text_records": len(texts)}
+    pooled = _texts(records, set(STORE_IDS))
+    struct = attacks.structure_attack(pooled)
+    cands = sorted(struct.get("secrets", []),
+                   key=lambda c: (-c.get("occurrences", 0),
+                                  c.get("shape", "")))[:20]
+    return {
+        "user_id": user_id,
+        "service": (user_id[len(LIVE_PREFIX):]
+                    if user_id.startswith(LIVE_PREFIX) else user_id),
+        "turns": len({r["turn"] for r in records}),
+        "records": len(records),
+        "with_text": len(pooled),
+        "by_surface": by_surface,
+        "linkage": _linkage(records),
+        "candidates": [{"shape": c.get("shape", ""),
+                        "occurrences": c.get("occurrences", 0),
+                        "coverage": c.get("coverage", 0.0),
+                        "assembled": c.get("assembled", "")}
+                       for c in cands],
+        "scored": False,
+        "caveat": ("retention only — live Fox traffic has no registered "
+                   "ground truth, so no accuracy is claimed"),
+    }

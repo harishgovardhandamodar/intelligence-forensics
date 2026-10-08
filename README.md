@@ -138,7 +138,8 @@ set of surfaces can reassemble:
 
 Server routes (`/api/recon/*`, separate state from `/api/sim/*`):
 `surfaces · begin · ingest · residuals · reconstruct · report · run · runs ·
-reset`. The **Sim tab** gains a *Reconstruction* card plus a raw residual
+reset · collection · consume · harvest-live · coserve · coserve-auto ·
+live-users · live-report`. The **Sim tab** gains a *Reconstruction* card plus a raw residual
 inspector. Docs: `design/08-reconstruction-simulation.md` (11 diagrams).
 
 The client app is `recon_client/` — standard library only, no pip install.
@@ -182,6 +183,26 @@ services plus the modelled `reconstructions/stateless-inference/` one, and
 every persisted `recon-*` run. The Ollama probe is **Fox-first**: it asks
 Fox-services `/api/ollama/running` and only falls back to a direct `:11434`
 call, reporting which route answered as `via`.
+
+### Live co-serving + modular framework
+
+P16–P17. While the tap runs, every poll automatically co-serves new Fox
+completions into the same eight retention policies under per-service users
+(`u-live-<service>`) — the Live tap's **Stateless recon** subtab mirrors the
+dedicated tab and stays warm on its own (retention bars, linkage, candidate
+shapes, collection, inspector). Live traffic is **retention-only, never
+scored**: truth registration for `u-live-*` is refused, `live-report`
+carries no accuracy keys by construction, and Consume on a live user falls
+back to an unscored read-back. Docs:
+`design/09-live-reconstruction.md`.
+
+The modular framework lives in `iforensics/sim/recon/` (build plan:
+`to-do-insider-recon-instructions.md`): 18 surface modules (8 engine-backed
++ 11 staged policies), 9 scenario adapters, 3 attack strategies, mitigations
+(retention caps, never-log-full, DLP off/audit/redact/block, cache TTL,
+embedding encryption), a route catalogue, a stdlib-only CLI
+(`python -m iforensics.sim.recon.client.run`), and a hash-chained ledger
+wrapper — all reusing the engine as the single source of truth.
 
 ## Scores & vibe index (`iforensics/score.py`)
 

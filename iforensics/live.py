@@ -408,6 +408,7 @@ class LiveTap(threading.Thread):
     def poll_once(self) -> dict:
         """One tap cycle. Returns counts; never raises."""
         got = {"in": 0, "out": 0, "sys": 0}
+        fresh_out: list[dict] = []
         # OUT: completed requests by id delta
         try:
             res = fox_client.llm_requests(limit=self.req_limit)
@@ -447,10 +448,18 @@ class LiveTap(threading.Thread):
                 ev = _row_to_event(r, "out")
                 self._join_out(ev)
                 self._push(ev)
+                fresh_out.append(ev)
                 got["out"] += 1
                 self.out_seen += 1
         except Exception as e:  # noqa: BLE001
             self.errors.append(f"requests: {type(e).__name__}")
+        if fresh_out:
+            # co-serve new completions into the residual surfaces; the tap
+            # itself must never break because reconstruction did
+            try:
+                _maybe_coserve(fresh_out)
+            except Exception:  # noqa: BLE001
+                pass
         # IN: in-flight queue first-seen
         try:
             q = fox_client.llm_queue()
@@ -566,7 +575,51 @@ class LiveTap(threading.Thread):
                 "alerts": alerts, "n_alerts": len(self.alerts),
                 "webhooks": {"configured": len(_webhook_urls()),
                              "last": webhook_last},
-                "recent_errors": self.errors[-5:]}
+                "recent_errors": self.errors[-5:],
+                "coserve": coserve_status()}
+
+
+# --------------------------------------------------------------------------- #
+# recon co-serving: every poll feeds new completions into the residual
+# surfaces (per-service live users), so live reconstruction is always warm.
+# --------------------------------------------------------------------------- #
+
+_COSERVE = {"on": False, "ingested": 0, "skipped": 0, "polls": 0,
+            "last_at": None}
+_COSERVE_LOCK = threading.Lock()
+
+
+def set_coserve(on: bool) -> dict:
+    """Enable/disable tap-driven co-serving; returns the fresh status."""
+    with _COSERVE_LOCK:
+        _COSERVE["on"] = bool(on)
+    return coserve_status()
+
+
+def coserve_status() -> dict:
+    """Co-serve flag + lifetime counters (never raises, no imports)."""
+    with _COSERVE_LOCK:
+        return dict(_COSERVE)
+
+
+def _maybe_coserve(events: list[dict]) -> dict | None:
+    """Feed one poll's OUT events to the recon engine when enabled.
+
+    Returns the coserve summary, or None when disabled. Import is lazy so
+    the tap module never hard-depends on the simulation package.
+    """
+    with _COSERVE_LOCK:
+        on = _COSERVE["on"]
+    if not on:
+        return None
+    from .sim import reconstruction as recon
+    out = recon.coserve_events(events)
+    with _COSERVE_LOCK:
+        _COSERVE["ingested"] += out.get("ingested", 0)
+        _COSERVE["skipped"] += out.get("skipped", 0)
+        _COSERVE["polls"] += 1
+        _COSERVE["last_at"] = time.time()
+    return out
 
 
 
@@ -590,9 +643,10 @@ _TAP_LOCK = threading.Lock()
 
 
 def start(interval_s: float = 5.0, persist: bool = True,
-          log_dir: str | None = None) -> dict:
+          log_dir: str | None = None, coserve: bool = True) -> dict:
     global _TAP
     with _TAP_LOCK:
+        set_coserve(coserve)
         if _TAP and _TAP.is_alive():
             return {"started": False, "reason": "already running", **_TAP.status()}
         _TAP = LiveTap(interval_s=interval_s, persist=persist, log_dir=log_dir)

@@ -356,3 +356,74 @@ def test_live_subtab_carries_coserve_controls():
     js = open("static/app.js", encoding="utf-8").read()
     assert "coserveLive" in js and "loadLiveUsers" in js
     assert "/api/recon/coserve" in js and "/api/recon/live-users" in js
+
+
+# --------------------------------------------------------------------------- #
+# tap-driven co-serve + unscored live reconstruction
+# --------------------------------------------------------------------------- #
+
+def test_truth_registration_refused_for_live_users():
+    r = client.post("/api/recon/begin",
+                    json={"user_id": "u-live-quai-radar",
+                          "truth": {"ssn": "900-11-2222"}})
+    assert r.status_code == 400
+
+
+def test_live_report_needs_coserved_rows():
+    r = client.get("/api/recon/live-report",
+                   params={"service": "no-such-service"})
+    assert r.status_code == 404
+
+
+def test_live_report_is_retention_only(monkeypatch):
+    from iforensics import live as live_mod
+    monkeypatch.setattr(live_mod, "tap",
+                        lambda: _fake_tap(*_live_events()))
+    client.post("/api/recon/coserve", json={"limit": 50})
+    d = client.get("/api/recon/live-report",
+                   params={"service": "quai-radar"}).json()
+    assert d["scored"] is False and d["records"] > 0
+    assert sorted(d["by_surface"]) == sorted(recon.STORE_IDS)
+
+    def _keys(o):
+        if isinstance(o, dict):
+            for k, v in o.items():
+                yield k
+                yield from _keys(v)
+        elif isinstance(o, list):
+            for v in o:
+                yield from _keys(v)
+    assert "accuracy" not in set(_keys(d))
+    # non-live users are refused: scoring them would be fabrication
+    r = client.get("/api/recon/live-report",
+                   params={"user_id": "u-recon-coding"})
+    assert r.status_code == 400
+
+
+def test_coserve_auto_toggle_reported_in_live_status():
+    from iforensics import live as live_mod
+    try:
+        r = client.post("/api/recon/coserve-auto",
+                        json={"on": True}).json()
+        assert r["coserve"]["on"] is True
+        r = client.post("/api/recon/coserve-auto",
+                        json={"on": False}).json()
+        assert r["coserve"]["on"] is False
+    finally:
+        live_mod.set_coserve(False)
+    assert "/api/recon/coserve-auto" in dashboard.POST_LIMITS
+
+
+def test_consume_attack_refused_for_live_users_but_readback_works(monkeypatch):
+    from iforensics import live as live_mod
+    monkeypatch.setattr(live_mod, "tap",
+                        lambda: _fake_tap(*_live_events()))
+    client.post("/api/recon/coserve", json={"limit": 50})
+    uid = "u-live-quai-radar"
+    r = client.post("/api/recon/consume",
+                    json={"user_id": uid, "attack": True})
+    assert r.status_code == 404
+    assert "retention-only" in r.json()["detail"]
+    d = client.post("/api/recon/consume",
+                    json={"user_id": uid, "attack": False}).json()
+    assert d["records"] > 0 and d["accuracy"] is None
