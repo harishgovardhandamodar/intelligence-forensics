@@ -292,3 +292,23 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
       `/api/ps`; both `live.py` poll sites use it; `/api/ollama` reports
       `via: fox|direct|none`
 - [x] P15.5 `tests/test_recon_collections.py` (13 tests) — suite at 226
+
+### P16 — modular insider-recon framework (`iforensics/sim/recon/`)
+Plan: `to-do-insider-recon-instructions.md` (all 8 phases + repo mapping).
+- [x] P16.0 Package skeleton; `core/secrets.py` (reserved-range validators +
+      TruthRegistry over `sensitive.py`); `core/retention.py` (engine
+      constants re-exported, never copied); `core/surfaces/base.py`
+      (Turn/Residual/SurfacePolicy/EngineSurface)
+- [x] P16.1 Seven engine-backed surface modules (policy card + live reader);
+      eleven staged policy modules with deterministic `retain()` + store
+- [x] P16.2 `core/{assembly,linkage,amplify,metrics}.py` over the engine
+      (unscored candidates without truth; monotone-checked cumulative)
+- [x] P16.3 Nine scenario adapters (3 engine-mapped + 6 generic-builder over
+      engine primitives); `attacks/{progressive,near_dup,membership}.py`
+- [x] P16.4 `api/routes.py` catalogue of all 15 `/api/recon/*` routes;
+      stdlib CLI `client/run.py` (transport only); `ledger/chain.py` wrapper
+- [x] P16.5 `mitigations.py` (caps, never-log-full, DLP off/audit/redact/
+      block, cache TTL, embedding encryption-at-rest + sweep);
+      `docs/{surfaces,honesty,ethics_gates}.md`; package README
+- [x] P16.6 Framework test mirror (20 tests) + full suite green (253 total);
+      CLI verified live against the dashboard, ledger verifies cleanly
