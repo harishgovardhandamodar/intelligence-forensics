@@ -1,4 +1,0 @@
-say hi
-
---- EXAMPLE HEAD ---
-say hi

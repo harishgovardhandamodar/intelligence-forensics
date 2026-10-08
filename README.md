@@ -116,10 +116,10 @@ docker compose up -d --build   # dashboard at :8211 (container `intel-forensics`
 The port binds `0.0.0.0:8211` (same mechanism as fox-services `:8210`), so it
 is reachable off-host with no extra config:
 
-- Tailscale: `http://100.101.3.115:8211` (this host = `axiom`)
-- LAN: `http://192.168.1.173:8211`
+- Tailscale: `http://<ip>:8211` (this host = `axiom`)
+- LAN: `http://<ip>:8211`
 
-From any other tailnet/LAN device: `curl http://100.101.3.115:8211/health`
+From any other tailnet/LAN device: `curl http://<ip>:8211/health`
 should return `{"status":"ok",...}`. If it times out, host `ufw` is filtering
 inbound — one fix: `sudo ufw allow 8211/tcp`. HTTPS alternative:
 `sudo tailscale set --operator=$USER` once, then
@@ -239,7 +239,7 @@ python -m recon_client run            # terminal session + report
 python -m recon_client report         # latest persisted report
 python -m recon_client inspect cache  # raw residual records for one store
 python -m recon_client surfaces       # the eight surfaces + three scenarios
-python -m recon_client --server http://100.101.3.115:8211 health
+python -m recon_client --server http://<ip>:8211 health
 ```
 
 Honesty rules carried over from P8: values are synthetic and drawn from

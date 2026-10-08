@@ -9,6 +9,14 @@ evidence/api_dump_*.json
 # Raw packet captures (UNMASKED prompts — sensitive, never commit)
 evidence/pcaps/
 
+# Real-service reconstructions (live prompts may linger — regenerable via
+# `cli.py build`, never commit). The synthetic stateless-inference scaffold
+# stays tracked; screenshots under docs/ are exempt.
+reconstructions/*
+!reconstructions/stateless-inference/
+# Swarm run artifacts (client IPs, full prompts — regenerable, never commit)
+evidence/swarm/results/
+
 # Local env / editor
 .env
 .venv/

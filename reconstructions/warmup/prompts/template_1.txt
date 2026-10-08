@@ -1,4 +1,0 @@
-Reply with exactly: warm
-
---- EXAMPLE HEAD ---
-Reply with exactly: warm

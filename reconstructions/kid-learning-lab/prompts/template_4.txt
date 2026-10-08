@@ -1,4 +1,0 @@
-hi
-
---- EXAMPLE HEAD ---
-hi

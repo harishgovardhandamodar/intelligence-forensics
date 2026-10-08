@@ -1,4 +1,0 @@
-Brief: {{brief}}
-
---- EXAMPLE HEAD ---
-Brief: Temporal Graph Neural networks too be used in the context of Autoregressive auto encoder network for synthetic data gene | Temporal Graph Neural networks too be used in the context of Autoregressive auto encoder network for synthetic data generation in financial messages in Swift network, to what level of memorization by these network is plausible, what would be the closest reconstruction plausible ? is it possible to use this synthetic data by a party who has major share in data trained 

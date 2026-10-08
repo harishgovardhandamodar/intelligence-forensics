@@ -86,7 +86,7 @@ def test_sast_evaluate_scope_guard():
 
 
 def test_dast_rejects_non_loopback_targets():
-    for bad in ("http://example.com/", "http://100.101.3.115:8211/",
+    for bad in ("http://example.com/", "http://<ip>:8211/",
                 "https://127.0.0.1:8211/"):
         try:
             dast._check_target(bad)

@@ -1,9 +1,9 @@
 services:
   # Access (no auth — tailnet/LAN only, do NOT publish to the internet):
-  #   Tailscale: http://100.101.3.115:8211  (this host = axiom)
-  #   LAN:       http://192.168.1.173:8211
+  #   Tailscale: http://<ip>:8211  (this host = axiom)
+  #   LAN:       http://<ip>:8211
   # From any other tailnet/LAN device, verify with:
-  #   curl http://100.101.3.115:8211/health
+  #   curl http://<ip>:8211/health
   # If that times out, host ufw is filtering inbound — allow it once:
   #   sudo ufw allow 8211/tcp
   # HTTPS alternative (needs sudo once): sudo tailscale set --operator=$USER,

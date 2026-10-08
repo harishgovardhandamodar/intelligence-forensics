@@ -1,7 +1,7 @@
 # reconstruction-simulation client — edit on axiom-dgx, no pip install needed.
 #
 # server: the axiom dashboard that owns the residual stores + reconstruction math
-server: http://100.101.3.115:8211
+server: http://<ip>:8211
 # port:   the local web UI binds here on axiom-dgx
 port: 8311
 # defaults for `python -m recon_client run`
