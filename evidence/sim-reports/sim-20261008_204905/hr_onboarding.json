@@ -1,0 +1,305 @@
+{
+ "scenario": "hr_onboarding",
+ "user_id": "u-hr",
+ "n_turns": 60,
+ "style": "regular",
+ "run_id": "sim-20261008_204905",
+ "truth": {
+  "person_name": "Priya Patel",
+  "home_address": "421 Test Ave Apt 3, Lakeside 29298",
+  "salary": "$60 base",
+  "bank_account": "routing 021TEST375 acct 3161649688"
+ },
+ "attack": {
+  "n_clusters": 7,
+  "mean_cohesion": 0.841
+ },
+ "report": {
+  "fields": {
+   "person_name": {
+    "accuracy": 0.7,
+    "matched": 7,
+    "total": 10,
+    "recovered": false,
+    "direct_exposure": true
+   },
+   "home_address": {
+    "accuracy": 0.37,
+    "matched": 10,
+    "total": 27,
+    "recovered": false,
+    "direct_exposure": true
+   },
+   "salary": {
+    "accuracy": 0.167,
+    "matched": 1,
+    "total": 6,
+    "recovered": false,
+    "direct_exposure": true
+   },
+   "bank_account": {
+    "accuracy": 0.677,
+    "matched": 21,
+    "total": 31,
+    "recovered": false,
+    "direct_exposure": true
+   }
+  },
+  "n_fields": 4,
+  "recovered": 0,
+  "mean_accuracy": 0.478,
+  "curves": {
+   "person_name": [
+    {
+     "queries": 1,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.7,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "home_address": [
+    {
+     "queries": 1,
+     "accuracy": 0.333,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "salary": [
+    {
+     "queries": 1,
+     "accuracy": 0.333,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "bank_account": [
+    {
+     "queries": 1,
+     "accuracy": 0.355,
+     "recovered": false
+    },
+    {
+     "queries": 2,
+     "accuracy": 0.677,
+     "recovered": false
+    },
+    {
+     "queries": 3,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ]
+  },
+  "user_id": "u-hr",
+  "backend": "numpy",
+  "clusters": 7,
+  "plausibility": {
+   "actions": [
+    {
+     "action": "gateway logs prompts",
+     "plausibility": "high",
+     "why": "Abuse monitoring, debugging and analytics routinely retain prompt text; most hosted LLM APIs do this by default."
+    },
+    {
+     "action": "embeddings stored per query/response",
+     "plausibility": "high",
+     "why": "Retrieval caches, semantic analytics and eval pipelines persist vectors beside the texts that produced them."
+    },
+    {
+     "action": "users paste secrets into prompts",
+     "plausibility": "high",
+     "why": "Vibe-coding workflows paste keys/tokens into debug prompts repeatedly; support tickets do the same for PII."
+    },
+    {
+     "action": "progressive masked disclosure across repeats",
+     "plausibility": "medium",
+     "why": "Users self-redact then relent when asked to clarify, or the same secret recurs across sessions with different masking habits."
+    },
+    {
+     "action": "attacker reads the vector store",
+     "plausibility": "medium",
+     "why": "This is THE gating assumption: it needs a breach, a misconfigured store, or an insider. Without read access none of the below applies.",
+     "gating": true
+    },
+    {
+     "action": "reconstruction from stored texts + vectors",
+     "plausibility": "high",
+     "why": "Given read access, masked variants cluster by similarity and assemble position-wise \u2014 demonstrated live in this sim.",
+     "demonstrated": true
+    },
+    {
+     "action": "pure embedding inversion (vectors only, no texts)",
+     "plausibility": "low",
+     "why": "Exact recovery from vectors alone is active research and far harder than this demo, which exploits the stored texts beside the vectors. Do not cite this sim for that claim."
+    },
+    {
+     "action": "DLP redaction stops the attack",
+     "plausibility": "medium",
+     "why": "Measured: redaction drops recovery 6/8 fields to 2/8, but short numeric PII outside the pattern set still passes. Coverage, not presence, is the residual risk.",
+     "demonstrated": true
+    }
+   ],
+   "verdict": "The attack chain is plausible end-to-end for any operator who already logs prompts beside embeddings: the only exotic step is obtaining read access, and that is a security-incident assumption, not a research one. Pure vector-only inversion remains the hard case this demo does NOT claim."
+  },
+  "estimates": {
+   "groups": [
+    {
+     "shape": "##### #####",
+     "occurrences": 20,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "### #### ### ### #",
+     "occurrences": 20,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "######## #####",
+     "occurrences": 20,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "## ####",
+     "occurrences": 20,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "####### ########## #### ##########",
+     "occurrences": 20,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "#####",
+     "occurrences": 10,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "##########",
+     "occurrences": 10,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    },
+    {
+     "shape": "##########",
+     "occurrences": 10,
+     "coverage": 1.0,
+     "confidence": 1.0,
+     "expected": 1.0
+    }
+   ],
+   "n_groups": 8,
+   "exposure": 1.0
+  },
+  "dlp": {
+   "mode": "off",
+   "interceptions": 0,
+   "by_action": {},
+   "actions": {}
+  },
+  "reconstructed": [
+   {
+    "assembled": "Pr*ya *at*l",
+    "coverage": 1.0,
+    "occurrences": 20
+   },
+   {
+    "assembled": "42* Te*t A*e A*t 3",
+    "coverage": 1.0,
+    "occurrences": 20
+   },
+   {
+    "assembled": "*ak*si*e 2*29*",
+    "coverage": 1.0,
+    "occurrences": 20
+   },
+   {
+    "assembled": "60 *as*",
+    "coverage": 1.0,
+    "occurrences": 20
+   },
+   {
+    "assembled": "ro*ti*g 0*1T*ST*75 *cc* 31*16*96*8",
+    "coverage": 1.0,
+    "occurrences": 20
+   },
+   {
+    "assembled": "29298",
+    "coverage": 1.0,
+    "occurrences": 10
+   },
+   {
+    "assembled": "021TEST375",
+    "coverage": 1.0,
+    "occurrences": 10
+   },
+   {
+    "assembled": "3161649688",
+    "coverage": 1.0,
+    "occurrences": 10
+   }
+  ]
+ },
+ "membership": {
+  "person_name": {
+   "true_score": 0.0,
+   "fresh_score": 0.2365,
+   "likely_member": false
+  },
+  "home_address": {
+   "true_score": 0.4364,
+   "fresh_score": 0.2365,
+   "likely_member": false
+  },
+  "salary": {
+   "true_score": 0.3536,
+   "fresh_score": 0.2365,
+   "likely_member": false
+  },
+  "bank_account": {
+   "true_score": 0.619,
+   "fresh_score": 0.2365,
+   "likely_member": true
+  }
+ }
+}

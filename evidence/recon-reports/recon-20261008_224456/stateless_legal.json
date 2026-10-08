@@ -1,0 +1,883 @@
+{
+ "run_id": "recon-20261008_224456",
+ "scenario": "stateless_legal",
+ "user_id": "u-recon-legal",
+ "n_turns": 24,
+ "retained": {
+  "logging": 50,
+  "billing": 25,
+  "embeddings": 24,
+  "cache": 42,
+  "infrastructure": 27,
+  "human_ops": 6,
+  "training": 3
+ },
+ "report": {
+  "user_id": "u-recon-legal",
+  "n_turns": 24,
+  "n_records": 154,
+  "n_fields": 3,
+  "fields_truth_keys": [
+   "company",
+   "deal_value",
+   "person_name"
+  ],
+  "surfaces": [
+   {
+    "id": "logging",
+    "n": 1,
+    "title": "Explicit logging & observability",
+    "role": "store",
+    "retains": "prompt heads for every request, full prompt when the safety or error sampler flags it, completion text",
+    "records": 50,
+    "text_records": 50,
+    "accuracy": 0.19,
+    "recovered_fields": 0,
+    "fields": {
+     "deal_value": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 4,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "company": {
+      "accuracy": 0.571,
+      "matched": 4,
+      "total": 7,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "Ini***h"
+     },
+     "person_name": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "billing",
+    "n": 2,
+    "title": "Token billing & usage metering",
+    "role": "store",
+    "retains": "input/output token counts, byte length, prompt SHA-256 for every request; the full prompt only when a dispute sample is taken",
+    "records": 25,
+    "text_records": 1,
+    "accuracy": 0.0,
+    "recovered_fields": 0,
+    "fields": {
+     "deal_value": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 4,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "company": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 7,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "person_name": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "embeddings",
+    "n": 3,
+    "title": "Vector embeddings & retrieval infrastructure",
+    "role": "linker",
+    "retains": "a 384-d query vector per request (semantic cache, RAG, duplicate detection, analytics)",
+    "records": 24,
+    "text_records": 0,
+    "accuracy": 0.0,
+    "recovered_fields": 0,
+    "fields": {
+     "deal_value": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 4,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "company": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 7,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "person_name": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     }
+    },
+    "linkage": {
+     "n_vectors": 24,
+     "n_clusters": 5,
+     "n_families": 2,
+     "linked": 21,
+     "linked_ratio": 0.875,
+     "mean_cohesion": 0.986
+    },
+    "note": "vector-only: linkage, no text \u2014 inversion not claimed"
+   },
+   {
+    "id": "cache",
+    "n": 4,
+    "title": "Caching layers",
+    "role": "store",
+    "retains": "exact prompt on a repeat hit, the shared prefix on a prefix hit, and the newest KV snapshot while it lingers in memory",
+    "records": 19,
+    "text_records": 19,
+    "accuracy": 0.19,
+    "recovered_fields": 0,
+    "fields": {
+     "deal_value": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 4,
+      "recovered": false,
+      "direct_exposure": true,
+      "assembled": ""
+     },
+     "company": {
+      "accuracy": 0.571,
+      "matched": 4,
+      "total": 7,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "Ini***h"
+     },
+     "person_name": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "training",
+    "n": 5,
+    "title": "Training & evaluation pipelines",
+    "role": "store",
+    "retains": "full prompts sampled for offline eval/red-teaming, plus rows still sitting in the staging table before the deletion job runs",
+    "records": 3,
+    "text_records": 3,
+    "accuracy": 0.095,
+    "recovered_fields": 0,
+    "fields": {
+     "deal_value": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 4,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "company": {
+      "accuracy": 0.286,
+      "matched": 2,
+      "total": 7,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "I*****h"
+     },
+     "person_name": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "infrastructure",
+    "n": 6,
+    "title": "Infrastructure & side residuals",
+    "role": "store",
+    "retains": "trace payload heads on every request, whole messages lingering in a queue, and object-storage snapshot versions",
+    "records": 27,
+    "text_records": 27,
+    "accuracy": 0.413,
+    "recovered_fields": 0,
+    "fields": {
+     "deal_value": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 4,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "company": {
+      "accuracy": 0.571,
+      "matched": 4,
+      "total": 7,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "Ini***h"
+     },
+     "person_name": {
+      "accuracy": 0.667,
+      "matched": 6,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "Rav* **lva"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "human_ops",
+    "n": 7,
+    "title": "Human & operational access paths",
+    "role": "store",
+    "retains": "the window an employee views in a support tool, and \u2014 when someone pastes it into chat while debugging \u2014 the BARE value, not the mask",
+    "records": 6,
+    "text_records": 6,
+    "accuracy": 0.19,
+    "recovered_fields": 0,
+    "fields": {
+     "deal_value": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 4,
+      "recovered": false,
+      "direct_exposure": true,
+      "assembled": ""
+     },
+     "company": {
+      "accuracy": 0.571,
+      "matched": 4,
+      "total": 7,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "Ini***h"
+     },
+     "person_name": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 9,
+      "recovered": false,
+      "direct_exposure": true,
+      "assembled": ""
+     }
+    },
+    "linkage": null,
+    "note": ""
+   }
+  ],
+  "cumulative": [
+   {
+    "surfaces": [
+     "logging"
+    ],
+    "added": "logging",
+    "records": 50,
+    "accuracy": 0.19,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing"
+    ],
+    "added": "billing",
+    "records": 75,
+    "accuracy": 0.19,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings"
+    ],
+    "added": "embeddings",
+    "records": 99,
+    "accuracy": 0.19,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache"
+    ],
+    "added": "cache",
+    "records": 118,
+    "accuracy": 0.19,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training"
+    ],
+    "added": "training",
+    "records": 121,
+    "accuracy": 0.19,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training",
+     "infrastructure"
+    ],
+    "added": "infrastructure",
+    "records": 148,
+    "accuracy": 0.413,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training",
+     "infrastructure",
+     "human_ops"
+    ],
+    "added": "human_ops",
+    "records": 154,
+    "accuracy": 0.413,
+    "recovered_fields": 0
+   }
+  ],
+  "amplification": {
+   "single_query_accuracy": 0.041,
+   "single_query_best": 0.222,
+   "pooled_accuracy": 0.413,
+   "delta": 0.372,
+   "turns_pooled": 24,
+   "verdict": "repetition amplifies: pooling every request beats the average single request"
+  },
+  "pooled": {
+   "fields": {
+    "deal_value": {
+     "accuracy": 0.0,
+     "matched": 0,
+     "total": 4,
+     "recovered": false,
+     "direct_exposure": true,
+     "assembled": ""
+    },
+    "company": {
+     "accuracy": 0.571,
+     "matched": 4,
+     "total": 7,
+     "recovered": false,
+     "direct_exposure": false,
+     "assembled": "Ini***h"
+    },
+    "person_name": {
+     "accuracy": 0.667,
+     "matched": 6,
+     "total": 9,
+     "recovered": false,
+     "direct_exposure": true,
+     "assembled": "Rav* **lva"
+    }
+   },
+   "n_fields": 3,
+   "recovered": 0,
+   "mean_accuracy": 0.413,
+   "n_texts": 106,
+   "candidates": [
+    {
+     "assembled": "Ini***h",
+     "coverage": 1.0,
+     "occurrences": 9,
+     "shape": "#######"
+    },
+    {
+     "assembled": "65.6M",
+     "coverage": 1.0,
+     "occurrences": 6,
+     "shape": "##.##"
+    },
+    {
+     "assembled": "S*lva",
+     "coverage": 1.0,
+     "occurrences": 3,
+     "shape": "#####"
+    },
+    {
+     "assembled": "65.6",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "##.#"
+    },
+    {
+     "assembled": "Rav* **lva",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "#### #####"
+    }
+   ]
+  },
+  "fields": {
+   "deal_value": {
+    "accuracy": 0.0,
+    "matched": 0,
+    "total": 4,
+    "recovered": false,
+    "direct_exposure": true,
+    "assembled": ""
+   },
+   "company": {
+    "accuracy": 0.571,
+    "matched": 4,
+    "total": 7,
+    "recovered": false,
+    "direct_exposure": false,
+    "assembled": "Ini***h"
+   },
+   "person_name": {
+    "accuracy": 0.667,
+    "matched": 6,
+    "total": 9,
+    "recovered": false,
+    "direct_exposure": true,
+    "assembled": "Rav* **lva"
+   }
+  },
+  "recovered": 0,
+  "mean_accuracy": 0.413,
+  "curves": {
+   "deal_value": [
+    {
+     "turns": 1,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 6,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 7,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 8,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 9,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 10,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 11,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 12,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 13,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 14,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 15,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 16,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 17,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 18,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 19,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 20,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 21,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 22,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 23,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 24,
+     "accuracy": 0.0,
+     "recovered": false
+    }
+   ],
+   "company": [
+    {
+     "turns": 1,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 6,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 7,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 8,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 9,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 10,
+     "accuracy": 0.286,
+     "recovered": false
+    },
+    {
+     "turns": 11,
+     "accuracy": 0.286,
+     "recovered": false
+    },
+    {
+     "turns": 12,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 13,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 14,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 15,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 16,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 17,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 18,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 19,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 20,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 21,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 22,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 23,
+     "accuracy": 0.571,
+     "recovered": false
+    },
+    {
+     "turns": 24,
+     "accuracy": 0.571,
+     "recovered": false
+    }
+   ],
+   "person_name": [
+    {
+     "turns": 1,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 6,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 7,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 8,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 9,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 10,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 11,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 12,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 13,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 14,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 15,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 16,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 17,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 18,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 19,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 20,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 21,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 22,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "turns": 23,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "turns": 24,
+     "accuracy": 0.667,
+     "recovered": false
+    }
+   ]
+  },
+  "bottom_line": "infrastructure alone recovers 0/3 fields at 0.413; all seven stores pooled: 0.413 (0 fields); repetition adds +0.372 over the average single request; no text from billing, embeddings.",
+  "backend": "residual-store"
+ },
+ "collection": {
+  "collection": "recon_residuals",
+  "backend": "numpy (no MILVUS_URL)",
+  "strategy": "harvest-now-consume-later",
+  "strategy_label": "harvest now \u00b7 consume / attack later",
+  "dim": 384,
+  "harvested": 523,
+  "consumed": 0,
+  "resident": 523,
+  "users": 4,
+  "by_user": {
+   "u-recon-devops": 133,
+   "u-recon-finance": 128,
+   "u-recon-hr": 133,
+   "u-recon-legal": 129
+  },
+  "last_user": "u-recon-legal",
+  "last_attack": null
+ }
+}

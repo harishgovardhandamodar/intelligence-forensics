@@ -151,6 +151,8 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div><div class=card><h3>Repeated near-query amplification</h3><div class=mut>Judge one request at a time, then pool every request in the session.</div><div id=lres-amp></div></div>
 <div class=card><div class=row><h3>Recovered fields</h3><span class=mut id=lres-fields-sum></span></div><div id=lres-fields></div></div></div>
 </div>
+<div class=card><div class=row><h3>Turn-by-turn recovery <span class=mut style="font-weight:normal">mirrored from the run — use the main tab slider</span></h3><span style="flex:1"></span><span class=mut id=lres-prog-msg></span></div>
+<div id=lres-prog-out class=mut>run or load a session first…</div></div>
 <div class=card><div class=row><h3>Residual collection <span class=mut style="font-weight:normal">harvest now &middot; consume / attack later</span></h3><span style="flex:1"></span><span class=mut id=lres-col-sum></span><button class=act id=b-lres-consume>Consume / attack now</button><button class=act2 id=b-lres-col>Refresh</button></div><div class=mut id=lres-col-meta>loading&hellip;</div><div id=lres-col-out class=mut>phase two has not run yet &mdash; the rows were already harvested on ingest.</div></div>
 <div class=card><div class=row><h3>Residual inspector</h3><span class=mut id=lres-insp-sum></span><span style="flex:1"></span><span class=mut>surface</span><select id=lsel-res-surface></select><span class=mut>user</span><input id=linp-res-user style="width:160px" placeholder="u-recon-…"><button class=act id=b-lres-insp>Inspect</button></div><div class=mut>What one store literally still holds for that user &mdash; no scoring, no assembly, just the retained text and metadata.</div><div id=lres-insp><div class="mut">run a session first&hellip;</div></div></div>
 <div class=card><div class=row><h3>Persisted runs</h3><span class=mut id=lres-runs-sum></span><span style="flex:1"></span><select id=lsel-res-run></select><button class=act id=b-lres-load>Load report</button></div><div id=lres-hist class=mut>loading&hellip;</div></div>
@@ -158,6 +160,9 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 </div></section>
 <section id=s-timeline><div class=card><div class=row><h3>Chain of events</h3><span class=mut id=chain-sum></span></div><div class=row><span class=mut>service</span><select id=sel-chain><option value="">all</option></select><span class=mut>limit</span><select id=sel-chain-n><option>50</option><option selected>100</option><option>200</option></select><span class=mut>link</span><select id=sel-chain-link><option value="">all</option><option value=linked>linked IN→OUT</option><option value=orphan>orphan OUT</option><option value=pending>pending IN</option></select><button class=act id=b-chain>Reload</button></div><div class=mut>IN arrivals linked to OUT completions by queue id — queue-wait visible inline.</div><div id=chain class=mut>loading&hellip;</div></div></section>
 <section id=s-recon><div class=card><div class=row><select id=sel-recon></select><select id=sel-file></select></div><pre id=recon-view>pick a reconstruction&hellip;</pre></div>
+<div class=card id=rx-prog-card style="display:none"><div class=row><h3>Turn-by-turn recovery <span class=mut style="font-weight:normal">residual runs only — what the pool reassembles after each turn</span></h3><span style="flex:1"></span><button class=act2 id=b-rx-play>▶ Play</button><span class=mut id=rx-prog-msg></span></div>
+<div class=row><span class=mut>turn</span><input id=rx-turn type=range min=1 max=48 value=48 style="flex:1"><b id=rx-turn-n class=num>–</b></div>
+<div id=rx-prog-out class=mut>pick a residual run above…</div></div>
 <div class=card><h3>Partial &amp; progressive reconstruction <span class=mut style="font-weight:normal">— same service, re-profiled as Fox queries accumulate</span></h3>
 <div class=row><select id=sel-pmode><option value=cumulative>cumulative (0..k — confidence growth)</option><option value=window>window (slice k alone — partial views)</option></select>
 <label class=mut>steps <input id=inp-pn type=number value=5 min=2 max=12 style="width:56px"></label>
@@ -242,6 +247,9 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div><div class=card><h3>Repeated near-query amplification</h3><div class=mut>Judge one request at a time, then pool every request in the session.</div><div id=res-amp></div></div>
 <div class=card><div class=row><h3>Recovered fields</h3><span class=mut id=res-fields-sum></span></div><div id=res-fields></div></div></div>
 </div>
+<div class=card><div class=row><h3>Turn-by-turn recovery <span class=mut style="font-weight:normal">drag the slider — what the pool reassembles after each turn</span></h3><span style="flex:1"></span><button class=act2 id=b-res-play>▶ Play</button><span class=mut id=res-prog-msg></span></div>
+<div class=row><span class=mut>turn</span><input id=res-turn type=range min=1 max=48 value=48 style="flex:1"><b id=res-turn-n class=num>–</b></div>
+<div id=res-prog-out class=mut>run or load a session first…</div></div>
 <div class=card><div class=row><h3>Residual collection <span class=mut style="font-weight:normal">harvest now &middot; consume / attack later</span></h3><span style="flex:1"></span><span class=mut id=res-col-sum></span><button class=act id=b-res-consume>Consume / attack now</button><button class=act2 id=b-res-col>Refresh</button></div><div class=mut id=res-col-meta>loading&hellip;</div><div id=res-col-out class=mut>phase two has not run yet &mdash; the rows were already harvested on ingest.</div></div>
 <div class=card><div class=row><h3>Residual inspector</h3><span class=mut id=res-insp-sum></span><span style="flex:1"></span><span class=mut>surface</span><select id=sel-res-surface></select><span class=mut>user</span><input id=inp-res-user style="width:160px" placeholder="u-recon-…"><button class=act id=b-res-insp>Inspect</button></div><div class=mut>What one store literally still holds for that user &mdash; no scoring, no assembly, just the retained text and metadata.</div><div id=res-insp><div class="mut">run a session first&hellip;</div></div></div>
 <div class=card><div class=row><h3>Persisted runs</h3><span class=mut id=res-runs-sum></span><span style="flex:1"></span><select id=sel-res-run></select><button class=act id=b-res-load>Load report</button></div><div id=res-hist class=mut>loading&hellip;</div></div>
@@ -965,6 +973,16 @@ def recon_report(user_id: str):
     from iforensics.sim import reconstruction as recon
     try:
         return recon.build_report(recon.STATE, user_id)
+    except recon.UnknownUser:
+        raise HTTPException(404, "no ground truth (POST /api/recon/begin)")
+
+
+@app.get("/api/recon/progression")
+def recon_progression(user_id: str):
+    """Turn-by-turn recovery for the slider widget (cumulative to each turn)."""
+    from iforensics.sim import reconstruction as recon
+    try:
+        return recon.turn_progression(recon.STATE, user_id)
     except recon.UnknownUser:
         raise HTTPException(404, "no ground truth (POST /api/recon/begin)")
 

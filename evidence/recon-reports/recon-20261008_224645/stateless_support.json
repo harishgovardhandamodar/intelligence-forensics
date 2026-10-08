@@ -1,0 +1,1411 @@
+{
+ "run_id": "recon-20261008_224645",
+ "scenario": "stateless_support",
+ "user_id": "u-recon-support",
+ "n_turns": 96,
+ "retained": {
+  "logging": 212,
+  "billing": 109,
+  "embeddings": 96,
+  "cache": 166,
+  "infrastructure": 125,
+  "training": 24,
+  "human_ops": 18
+ },
+ "report": {
+  "user_id": "u-recon-support",
+  "n_turns": 96,
+  "n_records": 655,
+  "n_fields": 2,
+  "fields_truth_keys": [
+   "email",
+   "phone"
+  ],
+  "surfaces": [
+   {
+    "id": "logging",
+    "n": 1,
+    "title": "Explicit logging & observability",
+    "role": "store",
+    "retains": "prompt heads for every request, full prompt when the safety or error sampler flags it, completion text",
+    "records": 212,
+    "text_records": 212,
+    "accuracy": 0.95,
+    "recovered_fields": 1,
+    "fields": {
+     "email": {
+      "accuracy": 1.0,
+      "matched": 21,
+      "total": 21,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "yuki.rossi67@example.com"
+     },
+     "phone": {
+      "accuracy": 0.9,
+      "matched": 9,
+      "total": 10,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "555-11*-3240"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "billing",
+    "n": 2,
+    "title": "Token billing & usage metering",
+    "role": "store",
+    "retains": "input/output token counts, byte length, prompt SHA-256 for every request; the full prompt only when a dispute sample is taken",
+    "records": 109,
+    "text_records": 13,
+    "accuracy": 1.0,
+    "recovered_fields": 2,
+    "fields": {
+     "email": {
+      "accuracy": 1.0,
+      "matched": 21,
+      "total": 21,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "yuki.rossi67@example.com"
+     },
+     "phone": {
+      "accuracy": 1.0,
+      "matched": 10,
+      "total": 10,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "555-115-3240"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "embeddings",
+    "n": 3,
+    "title": "Vector embeddings & retrieval infrastructure",
+    "role": "linker",
+    "retains": "a 384-d query vector per request (semantic cache, RAG, duplicate detection, analytics)",
+    "records": 96,
+    "text_records": 0,
+    "accuracy": 0.0,
+    "recovered_fields": 0,
+    "fields": {
+     "email": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 21,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "phone": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 10,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     }
+    },
+    "linkage": {
+     "n_vectors": 96,
+     "n_clusters": 6,
+     "n_families": 6,
+     "linked": 96,
+     "linked_ratio": 1.0,
+     "mean_cohesion": 0.957
+    },
+    "note": "vector-only: linkage, no text \u2014 inversion not claimed"
+   },
+   {
+    "id": "cache",
+    "n": 4,
+    "title": "Caching layers",
+    "role": "store",
+    "retains": "exact prompt on a repeat hit, the shared prefix on a prefix hit, and the newest KV snapshot while it lingers in memory",
+    "records": 71,
+    "text_records": 71,
+    "accuracy": 0.95,
+    "recovered_fields": 1,
+    "fields": {
+     "email": {
+      "accuracy": 1.0,
+      "matched": 21,
+      "total": 21,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "yuki.rossi67@example.com"
+     },
+     "phone": {
+      "accuracy": 0.9,
+      "matched": 9,
+      "total": 10,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "555-11*-3240"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "training",
+    "n": 5,
+    "title": "Training & evaluation pipelines",
+    "role": "store",
+    "retains": "full prompts sampled for offline eval/red-teaming, plus rows still sitting in the staging table before the deletion job runs",
+    "records": 24,
+    "text_records": 24,
+    "accuracy": 1.0,
+    "recovered_fields": 2,
+    "fields": {
+     "email": {
+      "accuracy": 1.0,
+      "matched": 21,
+      "total": 21,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "yuki.rossi67@example.com"
+     },
+     "phone": {
+      "accuracy": 1.0,
+      "matched": 10,
+      "total": 10,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "555-115-3240"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "infrastructure",
+    "n": 6,
+    "title": "Infrastructure & side residuals",
+    "role": "store",
+    "retains": "trace payload heads on every request, whole messages lingering in a queue, and object-storage snapshot versions",
+    "records": 125,
+    "text_records": 125,
+    "accuracy": 1.0,
+    "recovered_fields": 2,
+    "fields": {
+     "email": {
+      "accuracy": 1.0,
+      "matched": 21,
+      "total": 21,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "yuki.rossi67@example.com"
+     },
+     "phone": {
+      "accuracy": 1.0,
+      "matched": 10,
+      "total": 10,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "555-115-3240"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "human_ops",
+    "n": 7,
+    "title": "Human & operational access paths",
+    "role": "store",
+    "retains": "the window an employee views in a support tool, and \u2014 when someone pastes it into chat while debugging \u2014 the BARE value, not the mask",
+    "records": 18,
+    "text_records": 18,
+    "accuracy": 1.0,
+    "recovered_fields": 2,
+    "fields": {
+     "email": {
+      "accuracy": 1.0,
+      "matched": 21,
+      "total": 21,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "yuki.rossi67@example.com"
+     },
+     "phone": {
+      "accuracy": 1.0,
+      "matched": 10,
+      "total": 10,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "555-115-3240"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   }
+  ],
+  "cumulative": [
+   {
+    "surfaces": [
+     "logging"
+    ],
+    "added": "logging",
+    "records": 212,
+    "accuracy": 0.95,
+    "recovered_fields": 1
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing"
+    ],
+    "added": "billing",
+    "records": 321,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings"
+    ],
+    "added": "embeddings",
+    "records": 417,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache"
+    ],
+    "added": "cache",
+    "records": 488,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training"
+    ],
+    "added": "training",
+    "records": 512,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training",
+     "infrastructure"
+    ],
+    "added": "infrastructure",
+    "records": 637,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training",
+     "infrastructure",
+     "human_ops"
+    ],
+    "added": "human_ops",
+    "records": 655,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   }
+  ],
+  "amplification": {
+   "single_query_accuracy": 0.224,
+   "single_query_best": 0.5,
+   "pooled_accuracy": 1.0,
+   "delta": 0.776,
+   "turns_pooled": 96,
+   "verdict": "repetition amplifies: pooling every request beats the average single request"
+  },
+  "pooled": {
+   "fields": {
+    "email": {
+     "accuracy": 1.0,
+     "matched": 21,
+     "total": 21,
+     "recovered": true,
+     "direct_exposure": true,
+     "assembled": "yuki.rossi67@example.com"
+    },
+    "phone": {
+     "accuracy": 1.0,
+     "matched": 10,
+     "total": 10,
+     "recovered": true,
+     "direct_exposure": true,
+     "assembled": "555-115-3240"
+    }
+   },
+   "n_fields": 2,
+   "recovered": 2,
+   "mean_accuracy": 1.0,
+   "n_texts": 463,
+   "candidates": [
+    {
+     "assembled": "yuki.rossi67@example.com",
+     "coverage": 1.0,
+     "occurrences": 78,
+     "shape": "####.#######@#######.###"
+    },
+    {
+     "assembled": "555-115-3240",
+     "coverage": 1.0,
+     "occurrences": 39,
+     "shape": "###-###-####"
+    },
+    {
+     "assembled": "555-",
+     "coverage": 1.0,
+     "occurrences": 4,
+     "shape": "###-"
+    },
+    {
+     "assembled": "555-1",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "###-#"
+    },
+    {
+     "assembled": "555-11",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "###-##"
+    }
+   ]
+  },
+  "fields": {
+   "email": {
+    "accuracy": 1.0,
+    "matched": 21,
+    "total": 21,
+    "recovered": true,
+    "direct_exposure": true,
+    "assembled": "yuki.rossi67@example.com"
+   },
+   "phone": {
+    "accuracy": 1.0,
+    "matched": 10,
+    "total": 10,
+    "recovered": true,
+    "direct_exposure": true,
+    "assembled": "555-115-3240"
+   }
+  },
+  "recovered": 2,
+  "mean_accuracy": 1.0,
+  "curves": {
+   "email": [
+    {
+     "turns": 1,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.19,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.19,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.714,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 6,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 7,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 8,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 9,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 10,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 11,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 12,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 13,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 14,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 15,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 16,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 17,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 18,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 19,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 20,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 21,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 22,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 23,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 24,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 25,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 26,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 27,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 28,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 29,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 30,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 31,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 32,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 33,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 34,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 35,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 36,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 37,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 38,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 39,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 40,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 41,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 42,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 43,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 44,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 45,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 46,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 47,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 48,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 49,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 50,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 51,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 52,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 53,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 54,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 55,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 56,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 57,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 58,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 59,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 60,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 61,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 62,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 63,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 64,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 65,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 66,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 67,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 68,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 69,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 70,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 71,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 72,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 73,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 74,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 75,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 76,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 77,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 78,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 79,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 80,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 81,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 82,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 83,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 84,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 85,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 86,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 87,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 88,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 89,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 90,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 91,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 92,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 93,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 94,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 95,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 96,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "phone": [
+    {
+     "turns": 1,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 6,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 7,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 8,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 9,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 10,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 11,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 12,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 13,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 14,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 15,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 16,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 17,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 18,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 19,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 20,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 21,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 22,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 23,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 24,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 25,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 26,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 27,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 28,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 29,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 30,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 31,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 32,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 33,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 34,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 35,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 36,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 37,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 38,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 39,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 40,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 41,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 42,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 43,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 44,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 45,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 46,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 47,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 48,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 49,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 50,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 51,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 52,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 53,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 54,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 55,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 56,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 57,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 58,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 59,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "turns": 60,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "turns": 61,
+     "accuracy": 0.4,
+     "recovered": false
+    },
+    {
+     "turns": 62,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 63,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 64,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 65,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 66,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 67,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 68,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 69,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 70,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 71,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 72,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 73,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 74,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 75,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 76,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 77,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 78,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 79,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 80,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 81,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 82,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 83,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 84,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 85,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 86,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 87,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 88,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 89,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 90,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 91,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 92,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 93,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 94,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 95,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 96,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ]
+  },
+  "bottom_line": "billing alone recovers 2/2 fields at 1.0; all seven stores pooled: 1.0 (2 fields); repetition adds +0.776 over the average single request; no text from embeddings.",
+  "backend": "residual-store"
+ },
+ "collection": {
+  "collection": "recon_residuals",
+  "backend": "numpy (no MILVUS_URL)",
+  "strategy": "harvest-now-consume-later",
+  "strategy_label": "harvest now \u00b7 consume / attack later",
+  "dim": 384,
+  "harvested": 3731,
+  "consumed": 0,
+  "resident": 3731,
+  "users": 7,
+  "by_user": {
+   "u-recon-chat": 526,
+   "u-recon-coding": 540,
+   "u-recon-devops": 517,
+   "u-recon-finance": 521,
+   "u-recon-hr": 538,
+   "u-recon-legal": 531,
+   "u-recon-support": 558
+  },
+  "last_user": "u-recon-support",
+  "last_attack": null
+ }
+}

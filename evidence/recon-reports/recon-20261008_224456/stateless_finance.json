@@ -1,0 +1,679 @@
+{
+ "run_id": "recon-20261008_224456",
+ "scenario": "stateless_finance",
+ "user_id": "u-recon-finance",
+ "n_turns": 24,
+ "retained": {
+  "logging": 55,
+  "billing": 25,
+  "embeddings": 24,
+  "cache": 40,
+  "infrastructure": 30,
+  "training": 1,
+  "human_ops": 1
+ },
+ "report": {
+  "user_id": "u-recon-finance",
+  "n_turns": 24,
+  "n_records": 153,
+  "n_fields": 2,
+  "fields_truth_keys": [
+   "account_number",
+   "credit_card"
+  ],
+  "surfaces": [
+   {
+    "id": "logging",
+    "n": 1,
+    "title": "Explicit logging & observability",
+    "role": "store",
+    "retains": "prompt heads for every request, full prompt when the safety or error sampler flags it, completion text",
+    "records": 55,
+    "text_records": 55,
+    "accuracy": 0.938,
+    "recovered_fields": 1,
+    "fields": {
+     "credit_card": {
+      "accuracy": 0.875,
+      "matched": 14,
+      "total": 16,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "4242 1*85 008* 3603"
+     },
+     "account_number": {
+      "accuracy": 1.0,
+      "matched": 12,
+      "total": 12,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "3022-4227-2652"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "billing",
+    "n": 2,
+    "title": "Token billing & usage metering",
+    "role": "store",
+    "retains": "input/output token counts, byte length, prompt SHA-256 for every request; the full prompt only when a dispute sample is taken",
+    "records": 25,
+    "text_records": 1,
+    "accuracy": 0.541,
+    "recovered_fields": 1,
+    "fields": {
+     "credit_card": {
+      "accuracy": 1.0,
+      "matched": 16,
+      "total": 16,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "4242 1385 0080 3603"
+     },
+     "account_number": {
+      "accuracy": 0.083,
+      "matched": 1,
+      "total": 12,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "4242 1385 0080 3603"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "embeddings",
+    "n": 3,
+    "title": "Vector embeddings & retrieval infrastructure",
+    "role": "linker",
+    "retains": "a 384-d query vector per request (semantic cache, RAG, duplicate detection, analytics)",
+    "records": 24,
+    "text_records": 0,
+    "accuracy": 0.0,
+    "recovered_fields": 0,
+    "fields": {
+     "credit_card": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 16,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "account_number": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 12,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     }
+    },
+    "linkage": {
+     "n_vectors": 24,
+     "n_clusters": 4,
+     "n_families": 1,
+     "linked": 21,
+     "linked_ratio": 0.875,
+     "mean_cohesion": 0.795
+    },
+    "note": "vector-only: linkage, no text \u2014 inversion not claimed"
+   },
+   {
+    "id": "cache",
+    "n": 4,
+    "title": "Caching layers",
+    "role": "store",
+    "retains": "exact prompt on a repeat hit, the shared prefix on a prefix hit, and the newest KV snapshot while it lingers in memory",
+    "records": 17,
+    "text_records": 17,
+    "accuracy": 0.781,
+    "recovered_fields": 1,
+    "fields": {
+     "credit_card": {
+      "accuracy": 0.562,
+      "matched": 9,
+      "total": 16,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "424* **85 0*** 360*"
+     },
+     "account_number": {
+      "accuracy": 1.0,
+      "matched": 12,
+      "total": 12,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "3022-4227-2652"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "training",
+    "n": 5,
+    "title": "Training & evaluation pipelines",
+    "role": "store",
+    "retains": "full prompts sampled for offline eval/red-teaming, plus rows still sitting in the staging table before the deletion job runs",
+    "records": 1,
+    "text_records": 1,
+    "accuracy": 0.416,
+    "recovered_fields": 0,
+    "fields": {
+     "credit_card": {
+      "accuracy": 0.75,
+      "matched": 12,
+      "total": 16,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "4242 **85 00** 3603"
+     },
+     "account_number": {
+      "accuracy": 0.083,
+      "matched": 1,
+      "total": 12,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "4242 **85 00** 3603"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "infrastructure",
+    "n": 6,
+    "title": "Infrastructure & side residuals",
+    "role": "store",
+    "retains": "trace payload heads on every request, whole messages lingering in a queue, and object-storage snapshot versions",
+    "records": 30,
+    "text_records": 30,
+    "accuracy": 0.594,
+    "recovered_fields": 1,
+    "fields": {
+     "credit_card": {
+      "accuracy": 0.188,
+      "matched": 3,
+      "total": 16,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "4*** **8* **** 3***"
+     },
+     "account_number": {
+      "accuracy": 1.0,
+      "matched": 12,
+      "total": 12,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "3022-4227-2652"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "human_ops",
+    "n": 7,
+    "title": "Human & operational access paths",
+    "role": "store",
+    "retains": "the window an employee views in a support tool, and \u2014 when someone pastes it into chat while debugging \u2014 the BARE value, not the mask",
+    "records": 1,
+    "text_records": 1,
+    "accuracy": 0.541,
+    "recovered_fields": 1,
+    "fields": {
+     "credit_card": {
+      "accuracy": 1.0,
+      "matched": 16,
+      "total": 16,
+      "recovered": true,
+      "direct_exposure": true,
+      "assembled": "4242 1385 0080 3603"
+     },
+     "account_number": {
+      "accuracy": 0.083,
+      "matched": 1,
+      "total": 12,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "4242 1385 0080 3603"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   }
+  ],
+  "cumulative": [
+   {
+    "surfaces": [
+     "logging"
+    ],
+    "added": "logging",
+    "records": 55,
+    "accuracy": 0.938,
+    "recovered_fields": 1
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing"
+    ],
+    "added": "billing",
+    "records": 80,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings"
+    ],
+    "added": "embeddings",
+    "records": 104,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache"
+    ],
+    "added": "cache",
+    "records": 121,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training"
+    ],
+    "added": "training",
+    "records": 122,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training",
+     "infrastructure"
+    ],
+    "added": "infrastructure",
+    "records": 152,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training",
+     "infrastructure",
+     "human_ops"
+    ],
+    "added": "human_ops",
+    "records": 153,
+    "accuracy": 1.0,
+    "recovered_fields": 2
+   }
+  ],
+  "amplification": {
+   "single_query_accuracy": 0.231,
+   "single_query_best": 0.541,
+   "pooled_accuracy": 1.0,
+   "delta": 0.769,
+   "turns_pooled": 24,
+   "verdict": "repetition amplifies: pooling every request beats the average single request"
+  },
+  "pooled": {
+   "fields": {
+    "credit_card": {
+     "accuracy": 1.0,
+     "matched": 16,
+     "total": 16,
+     "recovered": true,
+     "direct_exposure": true,
+     "assembled": "4242 1385 0080 3603"
+    },
+    "account_number": {
+     "accuracy": 1.0,
+     "matched": 12,
+     "total": 12,
+     "recovered": true,
+     "direct_exposure": true,
+     "assembled": "3022-4227-2652"
+    }
+   },
+   "n_fields": 2,
+   "recovered": 2,
+   "mean_accuracy": 1.0,
+   "n_texts": 105,
+   "candidates": [
+    {
+     "assembled": "4242 1385 0080 3603",
+     "coverage": 1.0,
+     "occurrences": 13,
+     "shape": "#### #### #### ####"
+    },
+    {
+     "assembled": "3022-4227-2652",
+     "coverage": 1.0,
+     "occurrences": 10,
+     "shape": "####-####-####"
+    },
+    {
+     "assembled": "3022-",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "####-"
+    },
+    {
+     "assembled": "3022-4",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "####-#"
+    }
+   ]
+  },
+  "fields": {
+   "credit_card": {
+    "accuracy": 1.0,
+    "matched": 16,
+    "total": 16,
+    "recovered": true,
+    "direct_exposure": true,
+    "assembled": "4242 1385 0080 3603"
+   },
+   "account_number": {
+    "accuracy": 1.0,
+    "matched": 12,
+    "total": 12,
+    "recovered": true,
+    "direct_exposure": true,
+    "assembled": "3022-4227-2652"
+   }
+  },
+  "recovered": 2,
+  "mean_accuracy": 1.0,
+  "curves": {
+   "credit_card": [
+    {
+     "turns": 1,
+     "accuracy": 0.188,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.188,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.562,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.562,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 0.562,
+     "recovered": false
+    },
+    {
+     "turns": 6,
+     "accuracy": 0.562,
+     "recovered": false
+    },
+    {
+     "turns": 7,
+     "accuracy": 0.562,
+     "recovered": false
+    },
+    {
+     "turns": 8,
+     "accuracy": 0.562,
+     "recovered": false
+    },
+    {
+     "turns": 9,
+     "accuracy": 0.562,
+     "recovered": false
+    },
+    {
+     "turns": 10,
+     "accuracy": 0.562,
+     "recovered": false
+    },
+    {
+     "turns": 11,
+     "accuracy": 0.75,
+     "recovered": false
+    },
+    {
+     "turns": 12,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 13,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 14,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 15,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 16,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 17,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 18,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 19,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 20,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 21,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 22,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 23,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 24,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ],
+   "account_number": [
+    {
+     "turns": 1,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 6,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 7,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 8,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 9,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 10,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 11,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 12,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 13,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 14,
+     "accuracy": 0.083,
+     "recovered": false
+    },
+    {
+     "turns": 15,
+     "accuracy": 0.167,
+     "recovered": false
+    },
+    {
+     "turns": 16,
+     "accuracy": 0.167,
+     "recovered": false
+    },
+    {
+     "turns": 17,
+     "accuracy": 0.167,
+     "recovered": false
+    },
+    {
+     "turns": 18,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "turns": 19,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "turns": 20,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "turns": 21,
+     "accuracy": 0.667,
+     "recovered": false
+    },
+    {
+     "turns": 22,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 23,
+     "accuracy": 1.0,
+     "recovered": true
+    },
+    {
+     "turns": 24,
+     "accuracy": 1.0,
+     "recovered": true
+    }
+   ]
+  },
+  "bottom_line": "logging alone recovers 1/2 fields at 0.938; all seven stores pooled: 1.0 (2 fields); repetition adds +0.769 over the average single request; no text from embeddings.",
+  "backend": "residual-store"
+ },
+ "collection": {
+  "collection": "recon_residuals",
+  "backend": "numpy (no MILVUS_URL)",
+  "strategy": "harvest-now-consume-later",
+  "strategy_label": "harvest now \u00b7 consume / attack later",
+  "dim": 384,
+  "harvested": 128,
+  "consumed": 0,
+  "resident": 128,
+  "users": 1,
+  "by_user": {
+   "u-recon-finance": 128
+  },
+  "last_user": "u-recon-finance",
+  "last_attack": null
+ }
+}

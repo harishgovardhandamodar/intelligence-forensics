@@ -42,7 +42,7 @@ def test_catalogue_lists_eight_surfaces():
     assert roles.count("store") == 6 and roles.count("linker") == 1
     assert roles.count("analysis") == 1
     assert [s["role"] for s in d["surfaces"] if s["id"] == "amplification"] == ["analysis"]
-    assert len(d["scenarios"]) == 3
+    assert len(d["scenarios"]) == 10
     assert set(d["store_ids"]) == set(recon.STORE_IDS)
     assert d["rates"]["ops_paste"] < d["rates"]["logging_flagged"] < 1.0
     for s in d["surfaces"]:
@@ -50,9 +50,10 @@ def test_catalogue_lists_eight_surfaces():
         assert "-->" in s["diagram"] and s["diagram"].count("\n") >= 2
 
 
-def test_scenarios_are_three_and_use_reserved_values():
+def test_scenarios_use_reserved_values():
+    assert len(recon.SCENARIOS) == 10
     for sc in recon.SCENARIOS.values():
-        assert len(sc["fields"]) == 2 and len(sc["carriers"]) >= 3
+        assert 1 <= len(sc["fields"]) <= 3 and len(sc["carriers"]) >= 3
     for sid in recon.SCENARIOS:
         sess = recon.build_session(sid, seed=42, n=24)
         truth = sess["truth"]
@@ -66,6 +67,40 @@ def test_scenarios_are_three_and_use_reserved_values():
                 assert v.endswith("example.com")
             elif f == "phone":
                 assert v.startswith("555")
+
+
+def test_aux_settlement_lines_ride_every_carrier():
+    sess = recon.build_session("stateless_aux_settlement", seed=42, n=12)
+    content = [t for t in sess["turns"] if t["field"]]
+    assert content
+    assert all(t["prompt"].startswith("SETL TX-") for t in content)
+    txs = {t["prompt"].split(" ", 2)[1] for t in content}
+    assert len(txs) > 1, "aux tx ids must vary across turns"
+    assert set(sess["truth"]) == {"credit_card", "account_number"}
+
+
+def test_aux_history_opens_with_settled_full_disclosures():
+    sess = recon.build_session("stateless_aux_history", seed=42, n=16)
+    assert set(sess["truth"]) == {"credit_card"}
+    full = sess["truth"]["credit_card"]
+    hist = [t for t in sess["turns"] if t["field"]][:4]
+    assert len(hist) == 4 and all(
+        t["mask"] == full and full in t["prompt"] for t in hist)
+    assert all(t["prompt"].startswith("SETL TX-") for t in hist)
+    # archive first, live session after: later turns go back to masks
+    later = [t for t in sess["turns"] if t["field"]][4:]
+    assert any(t["mask"] != full for t in later)
+
+
+def test_exploit_resend_plants_verbatim_pairs():
+    sess = recon.build_session("stateless_exploit_cache", seed=42, n=12)
+    prompts = [t["prompt"] for t in sess["turns"] if t["field"]]
+    pairs = sum(1 for a, b in zip(prompts, prompts[1:]) if a == b)
+    assert pairs >= len(prompts) // 2 - 1
+    base = recon.build_session("stateless_coding", seed=42, n=12)
+    base_prompts = [t["prompt"] for t in base["turns"] if t["field"]]
+    base_pairs = sum(1 for a, b in zip(base_prompts, base_prompts[1:]) if a == b)
+    assert pairs > base_pairs
 
 
 # --------------------------------------------------------------------------- #
@@ -125,6 +160,45 @@ def test_secret_sits_after_the_head_windows():
 # --------------------------------------------------------------------------- #
 # API flow
 # --------------------------------------------------------------------------- #
+
+def test_turn_progression_scores_every_turn():
+    res = recon.run_session("stateless_chat", seed=42, n=24)
+    uid = res["user_id"]
+    prog = recon.turn_progression(recon.STATE, uid)
+    assert prog["n_turns"] > 0
+    assert len(prog["steps"]) == prog["n_turns"]
+    accs = [s["accuracy"] for s in prog["steps"]]
+    assert accs == sorted(accs), "cumulative pool never shrinks"
+    assert accs[-1] == res["report"]["mean_accuracy"]
+    first, last = prog["steps"][0], prog["steps"][-1]
+    assert set(first["fields"]) == {"ssn", "bp"}
+    assert first["texts"] <= last["texts"]
+    assert last["recovered"] == res["report"]["recovered"]
+    for s in prog["steps"]:
+        assert set(s) >= {"turn", "texts", "accuracy", "recovered",
+                          "fields", "new_surfaces", "newly_recovered"}
+    try:
+        recon.turn_progression(recon.STATE, "u-nobody-here")
+    except recon.UnknownUser:
+        pass
+    else:  # pragma: no cover
+        raise AssertionError("progression scored a user with no truth")
+
+
+def test_progression_endpoint_and_widget_ids():
+    res = recon.run_session("stateless_coding", seed=42, n=24)
+    uid = res["user_id"]
+    d = client.get("/api/recon/progression",
+                   params={"user_id": uid}).json()
+    assert d["n_turns"] > 0 and len(d["steps"]) == d["n_turns"]
+    assert client.get("/api/recon/progression",
+                      params={"user_id": "u-nobody-here"}).status_code == 404
+    for eid in ("res-turn", "b-res-play", "res-prog-msg", "res-turn-n",
+                "res-prog-out", "lres-prog-msg", "lres-prog-out",
+                "rx-prog-card", "rx-turn", "b-rx-play", "rx-prog-msg",
+                "rx-turn-n", "rx-prog-out"):
+        assert f"id={eid}" in dashboard.PAGE, eid
+
 
 def test_full_flow_begin_ingest_reconstruct_report():
     truth = {"api_key": "sk-test-000000000000", "db_password": "s3cret" * 3}

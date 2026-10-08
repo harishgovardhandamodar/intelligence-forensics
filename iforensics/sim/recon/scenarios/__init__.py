@@ -14,6 +14,13 @@ ENGINE_MAP = {
     "health": "stateless_chat",
     "coding_api_keys": "stateless_coding",
     "support_tickets": "stateless_support",
+    "finance": "stateless_finance",
+    "hr_onboarding": "stateless_hr",
+    "devops_deploy": "stateless_devops",
+    "legal_contracts": "stateless_legal",
+    "aux_settlement": "stateless_aux_settlement",
+    "aux_history": "stateless_aux_history",
+    "exploit_cache": "stateless_exploit_cache",
 }
 
 

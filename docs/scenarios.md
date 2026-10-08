@@ -204,6 +204,84 @@ flowchart LR
     S8 --> OPS["support views<br/>dominate recovery"]
 ```
 
+### stateless_finance — billing disputes (`u-recon-finance`: credit_card, account_number)
+
+```mermaid
+flowchart LR
+    B["dispute threads"] --> S8["8 surfaces"]
+    S8 --> DSP["dispute sampling<br/>keeps PANs whole"]
+    S8 --> MET["meters keep<br/>hashes only"]
+```
+
+### stateless_hr — onboarding packets (`u-recon-hr`: person_name, home_address, salary)
+
+```mermaid
+flowchart LR
+    H["intake forms x3 fields"] --> S8["8 surfaces"]
+    S8 --> WIN["support windows<br/>merge names + addresses"]
+    S8 --> FUL["full-text stores<br/>needed for salary"]
+```
+
+### stateless_devops — failing pipelines (`u-recon-devops`: deploy_token, ssh_key, slack_webhook)
+
+```mermaid
+flowchart LR
+    P["pipeline threads"] --> S8["8 surfaces"]
+    S8 --> TRC["traces echo<br/>first 120 chars"]
+    S8 --> QUE["over-TTL queues<br/>keep whole threads"]
+```
+
+### stateless_legal — redlines (`u-recon-legal`: deal_value, company, person_name)
+```mermaid
+flowchart LR
+    R["clause review"] --> S8["8 surfaces"]
+    S8 --> HD["heads see<br/>almost nothing"]
+    S8 --> SNP["snapshots carry<br/>the session"]
+```
+
+### stateless_aux_settlement — peer-bank settlement files (`u-recon-aux_settlement`: credit_card, account_number)
+
+Bank B (the insider) receives settlement files from peer Bank A. Every
+carrier opens with a plaintext settlement line (tx id, peer, merchant,
+amount) while the customer PAN stays masked. The aux lines fill truncated
+stores and join fragments — but also push the secret further from the head
+cutoff, so heads score lower here than in the finance baseline while
+full-text samplers hold.
+
+```mermaid
+flowchart LR
+    L["SETL line<br/>tx + peer + merchant"] --> C["carrier + masked PAN"]
+    C --> HD["heads: aux fills<br/>secret pushed out"]
+    C --> FT["full-text stores:<br/>more join material"]
+```
+
+### stateless_aux_history — settled-history bootstrap (`u-recon-aux_history`: credit_card)
+
+Bank B opens with its archive: settled past transactions on the same card,
+disclosed in full, before the live masked session starts. Measures how
+little live traffic is needed once an aux set exists — expect near-instant
+saturation.
+
+```mermaid
+flowchart LR
+    A["archive: full PANs<br/>varied merchants"] --> S8["8 surfaces"]
+    S8 --> SAT["saturates in<br/>a handful of turns"]
+    L["live masked session"] --> S8
+```
+
+### stateless_exploit_cache — cache-planting exploit (`u-recon-exploit_cache`: api_key, db_password)
+
+The insider re-sends every fresh prompt verbatim to force exact cache
+hits. Cache becomes the strongest surface while breadth narrows to whatever
+was repeated — maximum retention concentration, minimum coverage breadth.
+
+```mermaid
+flowchart LR
+    F["fresh prompt"] --> R["verbatim resend"]
+    R --> HIT["exact cache hit<br/>every turn"]
+    F --> NAR["breadth narrows<br/>to repeats"]
+```
+
 ## Reproduce any scenario
 
 ```bash

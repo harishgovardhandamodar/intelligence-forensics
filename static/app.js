@@ -24,7 +24,7 @@ async function load(){
    $('t-svc').querySelector('tbody').innerHTML=sv.services.map(s=>`<tr data-svc="${escA(s.service)}"><td><code>${escH(s.service)}</code></td><td>${escH(s.requests)}</td><td>${escH(s.total_tokens)}</td><td class="mut">${Object.entries(s.models).map(([m,c])=>escH(m).split(':')[0]+'&times;'+escH(c)).join('<br>')}</td><td><b>${escH(s.project||'')}</b><br><span class="mut">${escH((s.pipeline_summary||'').slice(0,140))}</span></td><td>${scoreCell(s.score,s.grade)}<br><span class="mut" title="vibe index: thin prompt-wrapper vs engineered system">&#x26a1;${escH(s.vibe)} ${escH(s.vibe_label)}</span></td></tr>`).join('');wireTable('#t-svc','#filt-svc');});
  const rc=await j('/api/reconstructions');
  $('sel-recon').innerHTML=rc.map(r=>`<option value="${escA(r.service)}">${escH(r.service)}${r.kind==='stateless-residual'?'  ·  residual':''}</option>`).join('');
- const showRecon=async()=>{const s=$('sel-recon').value;if(!s)return;const d=await j('/api/reconstructions/'+encodeURIComponent(s));const files=Object.keys(d.files);$('sel-file').innerHTML=files.map(f=>`<option value="${escA(f)}">${escH(f)}</option>`).join('');$('recon-view').textContent=d.files[files[0]]||'';};
+ const showRecon=async()=>{const s=$('sel-recon').value;if(!s)return;const d=await j('/api/reconstructions/'+encodeURIComponent(s));const files=Object.keys(d.files);$('sel-file').innerHTML=files.map(f=>`<option value="${escA(f)}">${escH(f)}</option>`).join('');$('recon-view').textContent=d.files[files[0]]||'';loadReconProg(s);};
  $('sel-recon').onchange=showRecon;$('sel-file').onchange=async()=>{const s=$('sel-recon').value,f=$('sel-file').value;const d=await j(`/api/reconstructions/${encodeURIComponent(s)}/file?path=${encodeURIComponent(f)}`);$('recon-view').textContent=d.content||JSON.stringify(d);};
  if(rc.length)showRecon();
  let progCache=null;
@@ -54,7 +54,7 @@ instructions:
   document.querySelectorAll('[data-step]').forEach(a=>a.onclick=e=>{e.preventDefault();showStep(+a.dataset.step);});
   window._showProgStep=showStep;
   }catch(e){$('prog-msg').textContent='failed: '+e;}};
- $('b-prog').onclick=showProg;$('sel-recon').addEventListener('change',()=>{progCache=null;$('prog-msg').textContent='';});
+ $('b-prog').onclick=showProg;$('sel-recon').addEventListener('change',()=>{progCache=null;$('prog-msg').textContent='';if(rxProgTimer)toggleRxPlay();const c=$('rx-prog-card');if(c)c.style.display='none';});
   const runs=await j('/api/runs').catch(e=>{document.querySelector('#t-runs tbody').innerHTML=`<tr><td class="warn">failed: ${escH(e)}</td></tr>`;return [];});
   $('t-runs').querySelector('tbody').innerHTML=runs.map(r=>r.status==='running'
    ?`<tr><td><code>${escH(r.run_id)}</code> <span class="pill">running ${escH(r.elapsed_s??'?')}s</span></td><td class="mut">${escH(r.model||'')}</td><td class="mut">queued behind Ollama — refresh to update</td><td>—</td><td>—</td></tr>`
@@ -858,7 +858,7 @@ $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;con
    (b-lres-*, lsel-*, linp-*, lres-*). All logic runs against the res-*
    tab; mirrorReconToLive() copies rendered output across so both views
    stay identical without touching every renderer. */
-const RECON_MIRROR_IDS=['res-sum','res-blurb','res-runmsg','res-kpis','res-bottom','res-solo-sum','res-grid','res-cum-sum','res-cum','res-amp','res-fields-sum','res-fields','res-col-sum','res-col-meta','res-col-out','res-insp-sum','res-insp','res-runs-sum','res-hist'];
+const RECON_MIRROR_IDS=['res-sum','res-blurb','res-runmsg','res-kpis','res-bottom','res-solo-sum','res-grid','res-cum-sum','res-cum','res-amp','res-fields-sum','res-fields','res-prog-msg','res-prog-out','res-col-sum','res-col-meta','res-col-out','res-insp-sum','res-insp','res-runs-sum','res-hist'];
 function mirrorReconToLive(){
   for(const id of RECON_MIRROR_IDS){
     const a=$(id);if(!a)continue;
@@ -1214,6 +1214,7 @@ function renderRecon(r,meta){
   </div>`;
  }).join('')||'<div class="mut">no fields</div>';
   if(meta&&meta.user_id){const u=$('inp-res-user');if(u&&!u.value)u.value=meta.user_id;}
+  loadProgression(meta&&meta.user_id);
   try{mirrorReconToLive();}catch(_){}
 }
 async function runRecon(){
@@ -1352,7 +1353,9 @@ const _brs=$('b-res-reset');if(_brs)_brs.onclick=async()=>{
   const i=$('res-insp-sum');if(i)i.textContent='';
   await loadReconRuns();
   await loadReconCollection();
-  const co=$('res-col-out');if(co)co.innerHTML='<div class="mut">collection cleared — run a session to harvest again.</div>';
+   const co=$('res-col-out');if(co)co.innerHTML='<div class="mut">collection cleared — run a session to harvest again.</div>';
+   resProg=null;if(resProgTimer)toggleProgPlay();
+   const po=$('res-prog-out');if(po)po.innerHTML='<div class="mut">run or load a session first…</div>';
    showNotif('residual stores cleared','ok');
    try{mirrorReconToLive();}catch(_){}
   }catch(e){showNotif('reset failed','err');}
@@ -1367,6 +1370,96 @@ if(_brg){
  });
  _brg.addEventListener('toggle',e=>{const d=e.target;if(d&&d.tagName==='DETAILS'&&d.open)renderMermaid(d);},true);
 }
+/* ---- turn-by-turn recovery slider: what the pool reassembles per turn ---- */
+let resProg=null,resProgTimer=0;
+async function loadProgression(uid){
+ const out=$('res-prog-out'),msg=$('res-prog-msg');
+ if(!uid){if(out)out.innerHTML='<div class="mut">run or load a session first…</div>';return;}
+ try{
+  const d=await j('/api/recon/progression?user_id='+encodeURIComponent(uid));
+  if(!d||!Array.isArray(d.steps)||!d.steps.length)throw new Error('no live truth for this user');
+  resProg=d;
+  const sl=$('res-turn');
+  if(sl){sl.max=Math.max(1,d.n_turns);sl.value=d.n_turns;}
+  renderProgStep(d.n_turns);
+  if(msg)msg.textContent=`${d.n_turns} turns scored`;
+ }catch(e){if(out)out.innerHTML=`<div class=warn>progression failed: ${escH(String(e))}</div>`;}
+ try{mirrorReconToLive();}catch(_){}
+}
+function renderProgStep(t){
+ const out=$('res-prog-out');if(!out||!resProg)return;
+ const steps=resProg.steps||[];
+ const s=[...steps].reverse().find(x=>x.turn<=t)||steps[0];
+ if(!s)return;
+ const tn=$('res-turn-n');if(tn)tn.textContent=s.turn;
+ out.innerHTML=progStepHTML(s);
+ try{mirrorReconToLive();}catch(_){}
+}
+function progStepHTML(s){
+ const newbies=(s.newly_recovered||[]).map(f=>` <span class="res-tag on">new: ${escH(f)}</span>`).join('');
+ return `<div class=res-amp-row><span class=res-amp-lab>pooled @ turn ${escH(s.turn)}</span><span class=res-amp-bar><i class=full style="width:${Math.round((s.accuracy||0)*100)}%"></i></span><b>${escH(s.accuracy)}</b></div>`
+  +`<div class=mut>${escH(s.recovered)} fields recovered · ${escH(s.texts)} texts pooled${newbies}</div>`
+  +Object.entries(s.fields||{}).map(([f,v])=>{
+   const pct=Math.round(((v.matched||0)/Math.max(1,v.total||1))*100);
+   return `<div class=res-field><div class=res-field-head><code>${escH(f)}</code><span class="res-tag ${v.recovered?'on':''}">${v.recovered?'recovered':'partial'}</span>${(s.newly_recovered||[]).includes(f)?'<span class="res-tag on">new</span>':''}</div><div class=res-s-meter><i style="width:${pct}%"></i></div><div class=res-field-meta>${escH(v.accuracy)} accuracy · ${escH(v.matched)}/${escH(v.total)} chars</div>${v.assembled?`<div class=res-field-asm>${escH(v.assembled)}</div>`:''}</div>`;}).join('')
+  +`<div class=mut>new text this turn from: ${(s.new_surfaces||[]).map(escH).join(', ')||'—'}</div>`;
+}
+function toggleProgPlay(){
+ const b=$('b-res-play');
+ if(resProgTimer){clearInterval(resProgTimer);resProgTimer=0;if(b)b.textContent='▶ Play';return;}
+ if(!resProg||!(resProg.steps||[]).length)return;
+ if(b)b.textContent='⏸ Pause';
+ resProgTimer=setInterval(()=>{
+  const sl=$('res-turn');if(!sl){toggleProgPlay();return;}
+  const v=parseInt(sl.value||'1',10)+1;
+  if(v>parseInt(sl.max||'1',10)){toggleProgPlay();return;}
+  sl.value=v;renderProgStep(v);
+ },600);
+}
+const _rsl=$('res-turn');if(_rsl)_rsl.oninput=()=>{if(resProgTimer)toggleProgPlay();renderProgStep(parseInt(_rsl.value||'1',10));};
+const _rpl=$('b-res-play');if(_rpl)_rpl.onclick=toggleProgPlay;
+/* ---- reconstructions tab: turn slider for persisted residual runs ---- */
+let rxProg=null,rxProgTimer=0;
+async function loadReconProg(runId){
+ const card=$('rx-prog-card'),out=$('rx-prog-out'),msg=$('rx-prog-msg');
+ if(!runId||!runId.startsWith('recon-')){if(card)card.style.display='none';return;}
+ if(card)card.style.display='';
+ if(out)out.innerHTML='<div class="mut">scoring turns…</div>';
+ try{
+  const data=await j('/api/recon/run?run_id='+encodeURIComponent(runId));
+  const key=Object.keys(data||{})[0],p=key?data[key]:null;
+  if(!p||!p.user_id)throw new Error('empty run file');
+  const d=await j('/api/recon/progression?user_id='+encodeURIComponent(p.user_id));
+  if(!d||!Array.isArray(d.steps)||!d.steps.length)throw new Error('no live truth for this run');
+  rxProg=d;
+  const sl=$('rx-turn');
+  if(sl){sl.max=Math.max(1,d.n_turns);sl.value=d.n_turns;}
+  renderRxProgStep(d.n_turns);
+  if(msg)msg.textContent=`${d.n_turns} turns · ${p.user_id}`;
+ }catch(e){if(out)out.innerHTML=`<div class=warn>no live truth for this run (it predates the last restart) — re-run the session in the Stateless recon tab to replay it turn by turn.</div>`;}
+}
+function renderRxProgStep(t){
+ const out=$('rx-prog-out');if(!out||!rxProg)return;
+ const steps=rxProg.steps||[];
+ const s=[...steps].reverse().find(x=>x.turn<=t)||steps[0];
+ if(!s)return;
+ const tn=$('rx-turn-n');if(tn)tn.textContent=s.turn;
+ out.innerHTML=progStepHTML(s);
+}
+function toggleRxPlay(){
+ const b=$('b-rx-play');
+ if(rxProgTimer){clearInterval(rxProgTimer);rxProgTimer=0;if(b)b.textContent='▶ Play';return;}
+ if(!rxProg||!(rxProg.steps||[]).length)return;
+ if(b)b.textContent='⏸ Pause';
+ rxProgTimer=setInterval(()=>{
+  const sl=$('rx-turn');if(!sl){toggleRxPlay();return;}
+  const v=parseInt(sl.value||'1',10)+1;
+  if(v>parseInt(sl.max||'1',10)){toggleRxPlay();return;}
+  sl.value=v;renderRxProgStep(v);
+ },600);
+}
+const _xsl=$('rx-turn');if(_xsl)_xsl.oninput=()=>{if(rxProgTimer)toggleRxPlay();renderRxProgStep(parseInt(_xsl.value||'1',10));};
+const _xpl=$('b-rx-play');if(_xpl)_xpl.onclick=toggleRxPlay;
 /* ---- AKM shell: toasts, service overlay (append-only; all data paths intact) ---- */
 let svcCache=[];
 let notifTimer=0;

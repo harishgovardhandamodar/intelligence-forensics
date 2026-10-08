@@ -1,0 +1,104 @@
+{
+ "sparse_n12": [
+  {
+   "scenario": "stateless_chat",
+   "turns": 12,
+   "records": 81,
+   "pooled": 1.0,
+   "recovered": "2/2"
+  },
+  {
+   "scenario": "stateless_coding",
+   "turns": 12,
+   "records": 83,
+   "pooled": 0.933,
+   "recovered": "1/2"
+  },
+  {
+   "scenario": "stateless_devops",
+   "turns": 12,
+   "records": 81,
+   "pooled": 0.418,
+   "recovered": "0/3"
+  },
+  {
+   "scenario": "stateless_finance",
+   "turns": 12,
+   "records": 83,
+   "pooled": 0.698,
+   "recovered": "0/2"
+  },
+  {
+   "scenario": "stateless_hr",
+   "turns": 12,
+   "records": 82,
+   "pooled": 0.14,
+   "recovered": "0/3"
+  },
+  {
+   "scenario": "stateless_legal",
+   "turns": 12,
+   "records": 82,
+   "pooled": 0.413,
+   "recovered": "0/3"
+  },
+  {
+   "scenario": "stateless_support",
+   "turns": 12,
+   "records": 80,
+   "pooled": 0.95,
+   "recovered": "1/2"
+  }
+ ],
+ "dense_n96": [
+  {
+   "scenario": "stateless_chat",
+   "turns": 96,
+   "records": 623,
+   "pooled": 1.0,
+   "recovered": "2/2"
+  },
+  {
+   "scenario": "stateless_coding",
+   "turns": 96,
+   "records": 637,
+   "pooled": 1.0,
+   "recovered": "2/2"
+  },
+  {
+   "scenario": "stateless_devops",
+   "turns": 96,
+   "records": 614,
+   "pooled": 0.667,
+   "recovered": "1/3"
+  },
+  {
+   "scenario": "stateless_finance",
+   "turns": 96,
+   "records": 618,
+   "pooled": 1.0,
+   "recovered": "2/2"
+  },
+  {
+   "scenario": "stateless_hr",
+   "turns": 96,
+   "records": 635,
+   "pooled": 0.313,
+   "recovered": "0/3"
+  },
+  {
+   "scenario": "stateless_legal",
+   "turns": 96,
+   "records": 628,
+   "pooled": 0.508,
+   "recovered": "0/3"
+  },
+  {
+   "scenario": "stateless_support",
+   "turns": 96,
+   "records": 655,
+   "pooled": 1.0,
+   "recovered": "2/2"
+  }
+ ]
+}

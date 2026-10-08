@@ -1,0 +1,894 @@
+{
+ "run_id": "recon-20261008_224456",
+ "scenario": "stateless_devops",
+ "user_id": "u-recon-devops",
+ "n_turns": 24,
+ "retained": {
+  "logging": 54,
+  "billing": 25,
+  "embeddings": 24,
+  "cache": 42,
+  "infrastructure": 30,
+  "human_ops": 2,
+  "training": 4
+ },
+ "report": {
+  "user_id": "u-recon-devops",
+  "n_turns": 24,
+  "n_records": 158,
+  "n_fields": 3,
+  "fields_truth_keys": [
+   "deploy_token",
+   "slack_webhook",
+   "ssh_key"
+  ],
+  "surfaces": [
+   {
+    "id": "logging",
+    "n": 1,
+    "title": "Explicit logging & observability",
+    "role": "store",
+    "retains": "prompt heads for every request, full prompt when the safety or error sampler flags it, completion text",
+    "records": 54,
+    "text_records": 54,
+    "accuracy": 0.439,
+    "recovered_fields": 0,
+    "fields": {
+     "deploy_token": {
+      "accuracy": 0.355,
+      "matched": 11,
+      "total": 31,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "gh*_***t_N****Nl****48****h5****x"
+     },
+     "ssh_key": {
+      "accuracy": 0.866,
+      "matched": 71,
+      "total": 82,
+      "recovered": false,
+      "direct_exposure": true,
+      "assembled": "ssh-ed25519 m65kYrAtV63Ky2PEEpRNpCOYjn+2V8Ys9LghofT/jPUguUdum7+SstoCAQiRepfA"
+     },
+     "slack_webhook": {
+      "accuracy": 0.095,
+      "matched": 7,
+      "total": 74,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "//*ooks.**ampl*.*nval**/serv**es/T0**0000*/*0000**00/2M**W7M3**ZIYU**EJAR**JM"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "billing",
+    "n": 2,
+    "title": "Token billing & usage metering",
+    "role": "store",
+    "retains": "input/output token counts, byte length, prompt SHA-256 for every request; the full prompt only when a dispute sample is taken",
+    "records": 25,
+    "text_records": 1,
+    "accuracy": 0.02,
+    "recovered_fields": 0,
+    "fields": {
+     "deploy_token": {
+      "accuracy": 0.032,
+      "matched": 1,
+      "total": 31,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "//*o***.**a****.*n*****/s*****e*/****0****/*0*****0*/****W*****Z*****E*****J*"
+     },
+     "ssh_key": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 82,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "slack_webhook": {
+      "accuracy": 0.027,
+      "matched": 2,
+      "total": 74,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "//*o***.**a****.*n*****/s*****e*/****0****/*0*****0*/****W*****Z*****E*****J*"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "embeddings",
+    "n": 3,
+    "title": "Vector embeddings & retrieval infrastructure",
+    "role": "linker",
+    "retains": "a 384-d query vector per request (semantic cache, RAG, duplicate detection, analytics)",
+    "records": 24,
+    "text_records": 0,
+    "accuracy": 0.0,
+    "recovered_fields": 0,
+    "fields": {
+     "deploy_token": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 31,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "ssh_key": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 82,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     },
+     "slack_webhook": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 74,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     }
+    },
+    "linkage": {
+     "n_vectors": 24,
+     "n_clusters": 5,
+     "n_families": 2,
+     "linked": 21,
+     "linked_ratio": 0.875,
+     "mean_cohesion": 0.932
+    },
+    "note": "vector-only: linkage, no text \u2014 inversion not claimed"
+   },
+   {
+    "id": "cache",
+    "n": 4,
+    "title": "Caching layers",
+    "role": "store",
+    "retains": "exact prompt on a repeat hit, the shared prefix on a prefix hit, and the newest KV snapshot while it lingers in memory",
+    "records": 19,
+    "text_records": 19,
+    "accuracy": 0.613,
+    "recovered_fields": 0,
+    "fields": {
+     "deploy_token": {
+      "accuracy": 0.839,
+      "matched": 26,
+      "total": 31,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "ghp_te*t_NQvk*Nla0i*48gUe*h5B53*x"
+     },
+     "ssh_key": {
+      "accuracy": 0.866,
+      "matched": 71,
+      "total": 82,
+      "recovered": false,
+      "direct_exposure": true,
+      "assembled": "ssh-ed25519 m65kYrAtV63Ky2PEEpRNpCOYjn+2V8Ys9LghofT/jPUguUdum7+SstoCAQiRepfA"
+     },
+     "slack_webhook": {
+      "accuracy": 0.135,
+      "matched": 10,
+      "total": 74,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "//*ooks.e*ample.*nvali*/servi*es/T00*00000/*00000*00/2M7*W7M37*ZIYUX*EJAR2*JM"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "training",
+    "n": 5,
+    "title": "Training & evaluation pipelines",
+    "role": "store",
+    "retains": "full prompts sampled for offline eval/red-teaming, plus rows still sitting in the staging table before the deletion job runs",
+    "records": 4,
+    "text_records": 4,
+    "accuracy": 0.328,
+    "recovered_fields": 0,
+    "fields": {
+     "deploy_token": {
+      "accuracy": 0.065,
+      "matched": 2,
+      "total": 31,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "//*oo**.**am***.*nv****/se****es/****00***/*00****00/****W7****ZI****EJ****JM"
+     },
+     "ssh_key": {
+      "accuracy": 0.866,
+      "matched": 71,
+      "total": 82,
+      "recovered": false,
+      "direct_exposure": true,
+      "assembled": "ssh-ed25519 m65kYrAtV63Ky2PEEpRNpCOYjn+2V8Ys9LghofT/jPUguUdum7+SstoCAQiRepfA"
+     },
+     "slack_webhook": {
+      "accuracy": 0.054,
+      "matched": 4,
+      "total": 74,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "//*oo**.**am***.*nv****/se****es/****00***/*00****00/****W7****ZI****EJ****JM"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "infrastructure",
+    "n": 6,
+    "title": "Infrastructure & side residuals",
+    "role": "store",
+    "retains": "trace payload heads on every request, whole messages lingering in a queue, and object-storage snapshot versions",
+    "records": 30,
+    "text_records": 30,
+    "accuracy": 0.605,
+    "recovered_fields": 0,
+    "fields": {
+     "deploy_token": {
+      "accuracy": 0.839,
+      "matched": 26,
+      "total": 31,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "ghp_te*t_NQvk*Nla0i*48gUe*h5B53*x"
+     },
+     "ssh_key": {
+      "accuracy": 0.841,
+      "matched": 69,
+      "total": 82,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "ssh-ed*5519 m*5kYrA*V63Ky*PEEpR*pCOYj*+2V8Ys*Lghof*/jPUgu*dum7+S*toCAQ*RepfA *est.in*alid"
+     },
+     "slack_webhook": {
+      "accuracy": 0.135,
+      "matched": 10,
+      "total": 74,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "//*ooks.e*ample.*nvali*/servi*es/T00*00000/*00000*00/2M7*W7M37*ZIYUX*EJAR2*JM"
+     }
+    },
+    "linkage": null,
+    "note": ""
+   },
+   {
+    "id": "human_ops",
+    "n": 7,
+    "title": "Human & operational access paths",
+    "role": "store",
+    "retains": "the window an employee views in a support tool, and \u2014 when someone pastes it into chat while debugging \u2014 the BARE value, not the mask",
+    "records": 2,
+    "text_records": 2,
+    "accuracy": 0.2,
+    "recovered_fields": 0,
+    "fields": {
+     "deploy_token": {
+      "accuracy": 0.355,
+      "matched": 11,
+      "total": 31,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "gh*_***t_N****Nl****48****h5****x"
+     },
+     "ssh_key": {
+      "accuracy": 0.244,
+      "matched": 20,
+      "total": 82,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": "ss*-***55** **5k****V6****PE****pC****+2V****Lg****/jP****du"
+     },
+     "slack_webhook": {
+      "accuracy": 0.0,
+      "matched": 0,
+      "total": 74,
+      "recovered": false,
+      "direct_exposure": false,
+      "assembled": ""
+     }
+    },
+    "linkage": null,
+    "note": ""
+   }
+  ],
+  "cumulative": [
+   {
+    "surfaces": [
+     "logging"
+    ],
+    "added": "logging",
+    "records": 54,
+    "accuracy": 0.439,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing"
+    ],
+    "added": "billing",
+    "records": 79,
+    "accuracy": 0.439,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings"
+    ],
+    "added": "embeddings",
+    "records": 103,
+    "accuracy": 0.439,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache"
+    ],
+    "added": "cache",
+    "records": 122,
+    "accuracy": 0.613,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training"
+    ],
+    "added": "training",
+    "records": 126,
+    "accuracy": 0.613,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training",
+     "infrastructure"
+    ],
+    "added": "infrastructure",
+    "records": 156,
+    "accuracy": 0.613,
+    "recovered_fields": 0
+   },
+   {
+    "surfaces": [
+     "logging",
+     "billing",
+     "embeddings",
+     "cache",
+     "training",
+     "infrastructure",
+     "human_ops"
+    ],
+    "added": "human_ops",
+    "records": 158,
+    "accuracy": 0.613,
+    "recovered_fields": 0
+   }
+  ],
+  "amplification": {
+   "single_query_accuracy": 0.102,
+   "single_query_best": 0.317,
+   "pooled_accuracy": 0.613,
+   "delta": 0.511,
+   "turns_pooled": 24,
+   "verdict": "repetition amplifies: pooling every request beats the average single request"
+  },
+  "pooled": {
+   "fields": {
+    "deploy_token": {
+     "accuracy": 0.839,
+     "matched": 26,
+     "total": 31,
+     "recovered": false,
+     "direct_exposure": false,
+     "assembled": "ghp_te*t_NQvk*Nla0i*48gUe*h5B53*x"
+    },
+    "ssh_key": {
+     "accuracy": 0.866,
+     "matched": 71,
+     "total": 82,
+     "recovered": false,
+     "direct_exposure": true,
+     "assembled": "ssh-ed25519 m65kYrAtV63Ky2PEEpRNpCOYjn+2V8Ys9LghofT/jPUguUdum7+SstoCAQiRepfA"
+    },
+    "slack_webhook": {
+     "accuracy": 0.135,
+     "matched": 10,
+     "total": 74,
+     "recovered": false,
+     "direct_exposure": false,
+     "assembled": "//*ooks.e*ample.*nvali*/servi*es/T00*00000/*00000*00/2M7*W7M37*ZIYUX*EJAR2*JM"
+    }
+   },
+   "n_fields": 3,
+   "recovered": 0,
+   "mean_accuracy": 0.613,
+   "n_texts": 110,
+   "candidates": [
+    {
+     "assembled": "//*ooks.e*ample.*nvali*/servi*es/T00*00000/*00000*00/2M7*W7M37*ZIYUX*EJAR2*JM",
+     "coverage": 1.0,
+     "occurrences": 7,
+     "shape": "//#####.#######.#######/########/#########/#########/########################"
+    },
+    {
+     "assembled": "ghp_te*t_NQvk*Nla0i*48gUe*h5B53*x",
+     "coverage": 1.0,
+     "occurrences": 5,
+     "shape": "###_####_########################"
+    },
+    {
+     "assembled": "ssh-ed*5519 m*5kYrA*V63Ky*PEEpR*pCOYj*+2V8Ys*Lghof*/jPUgu*dum7+S*toCAQ*RepfA *est.in*alid",
+     "coverage": 1.0,
+     "occurrences": 5,
+     "shape": "###-####### ##########################+############/##########+############# ####.#######"
+    },
+    {
+     "assembled": "http*",
+     "coverage": 1.0,
+     "occurrences": 5,
+     "shape": "#####"
+    },
+    {
+     "assembled": "ssh-ed25519 m65kYrAtV63Ky2PEEpRNpCOYjn+2V8Ys9LghofT/jPUguUdum7+SstoCAQiRepfA",
+     "coverage": 1.0,
+     "occurrences": 3,
+     "shape": "###-####### ##########################+############/##########+#############"
+    },
+    {
+     "assembled": "g**_***",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "###_###"
+    },
+    {
+     "assembled": "ss*-***55** **5k****V6****PE****pC****+2V****Lg****/jP****du",
+     "coverage": 1.0,
+     "occurrences": 1,
+     "shape": "###-####### ##########################+############/########"
+    }
+   ]
+  },
+  "fields": {
+   "deploy_token": {
+    "accuracy": 0.839,
+    "matched": 26,
+    "total": 31,
+    "recovered": false,
+    "direct_exposure": false,
+    "assembled": "ghp_te*t_NQvk*Nla0i*48gUe*h5B53*x"
+   },
+   "ssh_key": {
+    "accuracy": 0.866,
+    "matched": 71,
+    "total": 82,
+    "recovered": false,
+    "direct_exposure": true,
+    "assembled": "ssh-ed25519 m65kYrAtV63Ky2PEEpRNpCOYjn+2V8Ys9LghofT/jPUguUdum7+SstoCAQiRepfA"
+   },
+   "slack_webhook": {
+    "accuracy": 0.135,
+    "matched": 10,
+    "total": 74,
+    "recovered": false,
+    "direct_exposure": false,
+    "assembled": "//*ooks.e*ample.*nvali*/servi*es/T00*00000/*00000*00/2M7*W7M37*ZIYUX*EJAR2*JM"
+   }
+  },
+  "recovered": 0,
+  "mean_accuracy": 0.613,
+  "curves": {
+   "deploy_token": [
+    {
+     "turns": 1,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.355,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.355,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.516,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 0.516,
+     "recovered": false
+    },
+    {
+     "turns": 6,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 7,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 8,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 9,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 10,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 11,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 12,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 13,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 14,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 15,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 16,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 17,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 18,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 19,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 20,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 21,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 22,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 23,
+     "accuracy": 0.839,
+     "recovered": false
+    },
+    {
+     "turns": 24,
+     "accuracy": 0.839,
+     "recovered": false
+    }
+   ],
+   "ssh_key": [
+    {
+     "turns": 1,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 6,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 7,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 8,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 9,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 10,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 11,
+     "accuracy": 0.171,
+     "recovered": false
+    },
+    {
+     "turns": 12,
+     "accuracy": 0.512,
+     "recovered": false
+    },
+    {
+     "turns": 13,
+     "accuracy": 0.512,
+     "recovered": false
+    },
+    {
+     "turns": 14,
+     "accuracy": 0.683,
+     "recovered": false
+    },
+    {
+     "turns": 15,
+     "accuracy": 0.841,
+     "recovered": false
+    },
+    {
+     "turns": 16,
+     "accuracy": 0.866,
+     "recovered": false
+    },
+    {
+     "turns": 17,
+     "accuracy": 0.866,
+     "recovered": false
+    },
+    {
+     "turns": 18,
+     "accuracy": 0.866,
+     "recovered": false
+    },
+    {
+     "turns": 19,
+     "accuracy": 0.866,
+     "recovered": false
+    },
+    {
+     "turns": 20,
+     "accuracy": 0.866,
+     "recovered": false
+    },
+    {
+     "turns": 21,
+     "accuracy": 0.866,
+     "recovered": false
+    },
+    {
+     "turns": 22,
+     "accuracy": 0.866,
+     "recovered": false
+    },
+    {
+     "turns": 23,
+     "accuracy": 0.866,
+     "recovered": false
+    },
+    {
+     "turns": 24,
+     "accuracy": 0.866,
+     "recovered": false
+    }
+   ],
+   "slack_webhook": [
+    {
+     "turns": 1,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 2,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 3,
+     "accuracy": 0.0,
+     "recovered": false
+    },
+    {
+     "turns": 4,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 5,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 6,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 7,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 8,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 9,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 10,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 11,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 12,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 13,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 14,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 15,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 16,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 17,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 18,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 19,
+     "accuracy": 0.014,
+     "recovered": false
+    },
+    {
+     "turns": 20,
+     "accuracy": 0.027,
+     "recovered": false
+    },
+    {
+     "turns": 21,
+     "accuracy": 0.027,
+     "recovered": false
+    },
+    {
+     "turns": 22,
+     "accuracy": 0.054,
+     "recovered": false
+    },
+    {
+     "turns": 23,
+     "accuracy": 0.095,
+     "recovered": false
+    },
+    {
+     "turns": 24,
+     "accuracy": 0.135,
+     "recovered": false
+    }
+   ]
+  },
+  "bottom_line": "cache alone recovers 0/3 fields at 0.613; all seven stores pooled: 0.613 (0 fields); repetition adds +0.511 over the average single request; no text from embeddings.",
+  "backend": "residual-store"
+ },
+ "collection": {
+  "collection": "recon_residuals",
+  "backend": "numpy (no MILVUS_URL)",
+  "strategy": "harvest-now-consume-later",
+  "strategy_label": "harvest now \u00b7 consume / attack later",
+  "dim": 384,
+  "harvested": 394,
+  "consumed": 0,
+  "resident": 394,
+  "users": 3,
+  "by_user": {
+   "u-recon-devops": 133,
+   "u-recon-finance": 128,
+   "u-recon-hr": 133
+  },
+  "last_user": "u-recon-devops",
+  "last_attack": null
+ }
+}

@@ -74,6 +74,14 @@ DISTRACTORS = [
     "Show me how to format a date column so it sorts correctly.",
 ]
 
+# Partial transaction-set pools for inter-bank aux scenarios. Fixed lists
+# sampled by deterministic fractions — synthetic names, no real rails.
+_PEER_BANKS = ["Meridian Trust", "First Continental", "Harbor Mutual",
+               "Union Pacific Bank", "Crown Sterling", "Northgate Savings"]
+_MERCHANTS = ["Aurora Grocers", "Beacon Fuel", "Copperline Air",
+              "Driftwood Books", "Ember Electronics", "Foxglove Pharmacy",
+              "Granite Hardware", "Halcyon Hotels"]
+
 SURFACES = [
     {"id": "logging", "n": 1, "role": "store",
      "title": "Explicit logging & observability",
@@ -263,6 +271,149 @@ SCENARIOS = {
             "and let me know whether the refund will go back to the "
             "original payment method or as account credit. I would prefer "
             "the original method if that is still possible at this stage.",
+        ],
+    },
+    "stateless_finance": {
+        "title": "Stateless finance assistant",
+        "blurb": "Billing disputes where the card and account number ride at "
+                 "the end of long threads — dispute sampling keeps them "
+                 "whole while meters keep only hashes.",
+        "fields": ["credit_card", "account_number"],
+        "carriers": [
+            "I was charged twice on my last statement and I need the second "
+            "charge reversed before the cycle closes. Please confirm the "
+            "account details against what you have on file and issue the "
+            "correction without any further delay on my side.",
+            "The payment I scheduled last week has still not posted and a "
+            "late fee appeared that looks wrong to me. I am attaching my "
+            "details again for verification and I would like a supervisor "
+            "to review this case before anything else is charged.",
+            "My card was replaced after a fraud alert and the new one is "
+            "not linked yet, so the autopay failed. Walk me through "
+            "updating the payment method step by step and confirm which "
+            "account the next debit will come from.",
+        ],
+    },
+    "stateless_hr": {
+        "title": "Stateless HR onboarding",
+        "blurb": "New-hire identity packets across three fields — names "
+                 "assemble from support windows while salary figures need "
+                 "full-text stores.",
+        "fields": ["person_name", "home_address", "salary"],
+        "carriers": [
+            "I am completing my onboarding paperwork and I need to confirm "
+            "that my identity details are recorded correctly before my "
+            "start date, otherwise payroll tells me everything gets held "
+            "for another cycle.",
+            "My address changed since I accepted the offer and I want it "
+            "updated everywhere at once, including the benefits enrolment "
+            "forms and the tax withholding documents that go to payroll.",
+            "The offer letter states a compensation band and I want to "
+            "verify the exact figure that was entered, plus where the "
+            "direct deposit should be sent so the first paycheque lands "
+            "in the right account.",
+        ],
+    },
+    "stateless_devops": {
+        "title": "Stateless deploy assistant",
+        "blurb": "Failing pipelines where tokens, keys and webhook URLs are "
+                 "pasted inline — traces echo the first 120 characters "
+                 "while over-TTL queues keep the whole thread.",
+        "fields": ["deploy_token", "ssh_key", "slack_webhook"],
+        "carriers": [
+            "The deploy failed at the migration step again and the logs "
+            "point at authentication, so I am re-running with the full "
+            "configuration inline to see which variable is wrong before I "
+            "page anyone else at this hour.",
+            "Staging connects fine but production refuses the pool, so I "
+            "am comparing both connection strings side by side in this "
+            "thread until the mismatch shows up in plain text.",
+            "The notification hook stopped firing after the workspace "
+            "migration and nobody noticed for a week. Here is the current "
+            "hook configuration exactly as it appears in the integration "
+            "settings page for comparison.",
+        ],
+    },
+    "stateless_legal": {
+        "title": "Stateless contract review",
+        "blurb": "Redline threads where counterparty names, signatories "
+                 "and deal values sit deep inside long clauses — heads see "
+                 "almost nothing, snapshots carry the session.",
+        "fields": ["deal_value", "company", "person_name"],
+        "carriers": [
+            "Please review the attached clause on payment terms and "
+            "confirm that the counterparty details match the term sheet "
+            "before we circulate the next redline package to outside "
+            "counsel for their markup.",
+            "The renewal carries a different value than last year and I "
+            "need a plain-language summary of what changed, who approved "
+            "the change, and which exhibits reference the new figures.",
+            "The signature block lists an authorised signatory I do not "
+            "recognise from the negotiation history. Verify the name "
+            "against the corporate resolution and flag any mismatch "
+            "before this goes out for countersignature.",
+        ],
+    },
+    "stateless_aux_settlement": {
+        "title": "Peer-bank settlement files",
+        "blurb": "Bank B (the insider) receives settlement files from peer "
+                 "Bank A: every carrier opens with a settlement line — tx "
+                 "id, peer, merchant, amount — while the customer PAN stays "
+                 "masked. The aux lines fill truncated stores and join "
+                 "fragments, but also push the secret further from the "
+                 "head cutoff.",
+        "fields": ["credit_card", "account_number"],
+        "aux": {"kind": "settlement"},
+        "carriers": [
+            "Please confirm this entry against the cardholder record and "
+            "flag any mismatch in the masked reference before the batch "
+            "closes for the nightly reconciliation run.",
+            "The acquiring side queries the status of this item, so verify "
+            "the masked value matches what settlement reported and note "
+            "any discrepancy for the exception queue.",
+            "Chargeback review needs the underlying reference completed "
+            "exactly as issued, since the network checks every character "
+            "before it honours the representment.",
+        ],
+    },
+    "stateless_exploit_cache": {
+        "title": "Cache-planting exploit",
+        "blurb": "The insider re-sends every fresh prompt verbatim to "
+                 "force exact cache hits — cache becomes the strongest "
+                 "surface while breadth narrows to whatever was repeated.",
+        "fields": ["api_key", "db_password"],
+        "exploit": "resend",
+        "carriers": [
+            "Confirm that you stored exactly what I just sent, word for "
+            "word, because the deployment script replays this block "
+            "without modification and any drift breaks the handshake "
+            "against the staging gateway.",
+            "Read this configuration back to me precisely as written so "
+            "I can diff it against the copy in the secret store before "
+            "the nightly rotation job picks it up and propagates it.",
+            "I need this exact block cached for the retry loop, which "
+            "fires the identical request on every failure, so acknowledge "
+            "the content verbatim and hold it ready for the next attempt.",
+        ],
+    },
+    "stateless_aux_history": {
+        "title": "Settled-history bootstrap",
+        "blurb": "Bank B opens with its archive: settled past transactions "
+                 "on the same card, disclosed in full, before the live "
+                 "masked session starts. Measures how little live traffic "
+                 "is needed once an aux set exists.",
+        "fields": ["credit_card"],
+        "aux": {"kind": "history"},
+        "carriers": [
+            "New activity on the same card needs the masked reference "
+            "completed from the file — confirm it character by character "
+            "before this authorisation is released to the network.",
+            "A second presentment arrived against the same instrument, so "
+            "reconcile the masked value with the settled record and hold "
+            "the funds until the match is confirmed.",
+            "The cardholder disputes this line item, which means the "
+            "masked reference must be resolved exactly before the "
+            "representment window closes at end of day.",
         ],
     },
 }
@@ -714,6 +865,46 @@ def build_report(state: ReconState, user_id: str) -> dict:
     return report
 
 
+def turn_progression(state: "ReconState", user_id: str) -> dict:
+    """Turn-by-turn recovery: what the pool reassembles after each turn.
+
+    Cumulative scoring over turns ≤ T (all stores), plus which surfaces
+    wrote text at exactly T and which fields flipped to recovered there.
+    Powers the recovery-slider widget. No truth → UnknownUser, same as
+    the report (live users stay unscored).
+    """
+    truth = state.get_truth(user_id)
+    if not truth:
+        raise UnknownUser(user_id)
+    records = state.records_for(user_id)
+    turns = sorted({r["turn"] for r in records})
+    all_stores = set(STORE_IDS)
+    steps = []
+    for t in turns:
+        pool = [r["text"] for r in records
+                if r["turn"] <= t and r["surface"] in all_stores and r["text"]]
+        rep = score_texts(pool, truth)
+        steps.append({
+            "turn": t, "texts": len(pool),
+            "accuracy": rep["mean_accuracy"], "recovered": rep["recovered"],
+            "fields": {
+                f: {"accuracy": v["accuracy"], "recovered": v["recovered"],
+                    "assembled": v.get("assembled", ""),
+                    "matched": v.get("matched", 0),
+                    "total": v.get("total", 0)}
+                for f, v in rep["fields"].items()},
+            "new_surfaces": sorted(
+                {r["surface"] for r in records
+                 if r["turn"] == t and r["text"]
+                 and r["surface"] in all_stores})})
+    seen: set[str] = set()
+    for s in steps:
+        now = {f for f, v in s["fields"].items() if v["recovered"]}
+        s["newly_recovered"] = sorted(now - seen)
+        seen |= now
+    return {"user_id": user_id, "n_turns": len(turns), "steps": steps}
+
+
 def _bottom_line(solo: list[dict], final: dict | None,
                  pooled: dict, single: dict) -> str:
     if not solo:
@@ -839,9 +1030,51 @@ def build_session(scenario: str = "stateless_coding", seed: int = 42,
     truth = {f: sensitive.generate(
         f, seed=stable_seed(seed, scenario, f))["value"]
         for f in spec["fields"]}
+    # auxiliary data: partial transaction sets the peer bank legitimately
+    # holds. Settlement kind prefixes every carrier with a settlement line
+    # (tx id, peer, merchant, amount — all plaintext); history kind opens
+    # with settled past transactions disclosing the full value, modelling
+    # an archive the insider already has. Neither is target truth beyond
+    # the scenario's own fields.
+    aux_spec = spec.get("aux") or {}
+    aux_kind = aux_spec.get("kind")
+
+    def _settle_line(field: str, i: int) -> str:
+        peer = _PEER_BANKS[int(_frac("auxpeer", scenario, field, i)
+                               * len(_PEER_BANKS)) % len(_PEER_BANKS)]
+        merch = _MERCHANTS[int(_frac("auxmerch", scenario, field, i)
+                               * len(_MERCHANTS)) % len(_MERCHANTS)]
+        tx = 100000 + int(_frac("auxtx", scenario, field, i) * 899999)
+        amt = (1 + int(_frac("auxamt", scenario, field, i) * 4999),
+               int(_frac("auxcents", scenario, field, i) * 100))
+        return (f"SETL TX-{tx} {peer} {merch} "
+                f"${amt[0]}.{amt[1]:02d}.")
+
+    def _aux_context(field: str, i: int) -> str:
+        if aux_kind == "settlement":
+            return _settle_line(field, i) + " "
+        return ""
     per = max(1, n // max(1, len(spec["fields"])))
     turns: list[dict] = []
     g = 0
+    # settled-history bootstrap: the archive goes first, full values in
+    # the clear, before the live masked session starts
+    if aux_kind == "history":
+        hist_n = min(8, max(1, n // 4))
+        for j in range(hist_n):
+            if len(turns) >= n:
+                break
+            field = spec["fields"][j % len(spec["fields"])]
+            full = truth[field]
+            carrier = spec["carriers"][j % len(spec["carriers"])]
+            turns.append({
+                "prompt": f"{_settle_line(field, j)} {carrier} "
+                          f"Ref: {full} (settled)",
+                "mask": full, "step": steps - 1, "field": field,
+                "metadata": {"scenario": scenario, "user_id": user_id,
+                             "field": field, "step": steps - 1,
+                             "aux": "settled-history"}})
+            g += 1
     for field in spec["fields"]:
         masks = queries.mask_schedule(truth[field], steps, complete=True)
         last: dict | None = None
@@ -862,12 +1095,19 @@ def build_session(scenario: str = "stateless_coding", seed: int = 42,
                     variants = queries.near_duplicates(
                         carrier, seed=stable_seed(seed, field, i))
                     carrier = variants[i % len(variants)]
-                turn = {"prompt": f"{carrier} Ref: {mask}", "mask": mask,
+                turn = {"prompt": f"{_aux_context(field, i)}{carrier} Ref: {mask}",
+                        "mask": mask,
                         "step": step, "field": field,
                         "metadata": {"scenario": scenario,
                                      "user_id": user_id,
                                      "field": field, "step": step}}
             turns.append(turn)
+            # resend exploit: every fresh prompt is immediately re-sent
+            # verbatim, planting an exact cache hit alongside it
+            if (spec.get("exploit") == "resend" and turn["field"]
+                    and len(turns) < n):
+                turns.append({**turn, "metadata": dict(turn["metadata"])})
+                g += 1
             last = turn
             g += 1
             if g % 6 == 0 and len(turns) < n:

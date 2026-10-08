@@ -192,6 +192,7 @@ tr[data-svc]:hover{background:#1f6feb18}
 .ev-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:10px;align-items:start}
 .ev-grid>.card{margin-bottom:10px}
 @media(max-width:1050px){.ev-grid{grid-template-columns:1fr}}
+input[type=range]{accent-color:var(--acc);padding:6px 0}
 /* stateless-inference residual reconstruction tab (P14) */
 .res-verdict{margin:0 0 10px;padding:9px 12px;border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:8px;background:var(--bg3);font-size:13px;line-height:1.5}
 .res-verdict b{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-right:8px}
