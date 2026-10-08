@@ -75,7 +75,7 @@ async def _post_rate_limit(request, call_next):
 
 PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>Intelligence Forensics</title>
-<link rel="stylesheet" href="/static/app.css"></head><body>
+<link rel="stylesheet" href="/static/app.css?v=08bd3ce9"></head><body>
 <header><h1>&#x1f575; Intelligence Forensics</h1><span class=sub id=hdr>loading&hellip;</span><span style="flex:1"></span><button id=b-theme title="toggle light/dark theme">◐</button></header>
 <div class=layout>
 <aside id=sidebar><nav id=tabs>
@@ -124,22 +124,25 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <button class=act id=b-live-recon>Reconstruct live</button><span class=mut id=live-recon-msg></span></div>
 <table id=t-liveprog><thead><tr><th>step</th><th>score</th><th>queries</th><th>inferred build</th><th>Δ vs prev</th></tr></thead><tbody></tbody></table></div>
 </div>
-<div class=lpane id=lp-srecon style="display:none">
-<div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14 · live traffic view</span></h3><span class=mut id=res-sum></span><span style="flex:1"></span><button class=act id=b-res-reset>Reset residuals</button></div>
+ <div class=lpane id=lp-srecon style="display:none">
+ <div class=card><div class=row><h3>Live traffic harvest</h3><span class=mut id=lres-harvmsg></span><span style="flex:1"></span><button class=act id=b-lres-harvest>Harvest live traffic</button></div>
+ <div class=mut>Pulls the tap buffer (<code>/api/live/feed</code>) into the <code>recon_residuals</code> collection as <code>log_head</code> rows under user <code>live</code> — no ground truth needed. The collection card below then shows live rows, and Consume reads them back.</div>
+ <div class=mut id=lres-harvout>tap not running — start the tap first, then harvest.</div></div>
+ <div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14 · live traffic view</span></h3><span class=mut id=lres-sum></span><span style="flex:1"></span><button class=act id=b-lres-reset>Reset residuals</button></div>
 <div class=mut>Eight residual surfaces of a provider that advertises <i>stateless inference</i> &mdash; observability logs, token meters, vectors, caches, training staging, infrastructure leftovers, human support tooling &mdash; plus the repeated-near-query amplifier that pools them across every turn. The client app is <code>recon_client/</code>; every number below is computed server-side, because the log holder is the party being measured.</div>
-<div class=row><span class=mut>scenario</span><select id=sel-res-sc></select><span class=mut>turns</span><input id=inp-res-n value=48 style="width:54px"><span class=mut>seed</span><input id=inp-res-seed value=42 style="width:64px"><button class=act id=b-res-run>Run session</button><span class=mut id=res-runmsg></span></div>
-<div class=mut id=res-blurb></div></div>
-<div class=kpis id=res-kpis><div class="stat mut">run a session&hellip;</div></div>
-<div class=res-verdict id=res-bottom>Run a session to see which surfaces reassemble the ground truth.</div>
-<div class=card><div class=row><h3>Each surface alone</h3><span class=mut id=res-solo-sum></span><span style="flex:1"></span><span class=mut>click <b>inspect</b> on a card to dump that store's raw records</span></div><div id=res-grid class=res-grid><div class="mut">no report yet</div></div></div>
+<div class=row><span class=mut>scenario</span><select id=lsel-res-sc></select><span class=mut>turns</span><input id=linp-res-n value=48 style="width:54px"><span class=mut>seed</span><input id=linp-res-seed value=42 style="width:64px"><button class=act id=b-lres-run>Run session</button><span class=mut id=lres-runmsg></span></div>
+<div class=mut id=lres-blurb></div></div>
+<div class=kpis id=lres-kpis><div class="stat mut">run a session&hellip;</div></div>
+<div class=res-verdict id=lres-bottom>Run a session to see which surfaces reassemble the ground truth.</div>
+<div class=card><div class=row><h3>Each surface alone</h3><span class=mut id=lres-solo-sum></span><span style="flex:1"></span><span class=mut>click <b>inspect</b> on a card to dump that store's raw records</span></div><div id=lres-grid class=res-grid><div class="mut">no report yet</div></div></div>
 <div class=res-cols>
-<div class=card><div class=row><h3>Cumulative reconstruction</h3><span class=mut id=res-cum-sum></span></div><div class=mut>Add surfaces in order of strength; accuracy can only rise, because the pooled text only ever grows.</div><div id=res-cum></div></div>
-<div><div class=card><h3>Repeated near-query amplification</h3><div class=mut>Judge one request at a time, then pool every request in the session.</div><div id=res-amp></div></div>
-<div class=card><div class=row><h3>Recovered fields</h3><span class=mut id=res-fields-sum></span></div><div id=res-fields></div></div></div>
+<div class=card><div class=row><h3>Cumulative reconstruction</h3><span class=mut id=lres-cum-sum></span></div><div class=mut>Add surfaces in order of strength; accuracy can only rise, because the pooled text only ever grows.</div><div id=lres-cum></div></div>
+<div><div class=card><h3>Repeated near-query amplification</h3><div class=mut>Judge one request at a time, then pool every request in the session.</div><div id=lres-amp></div></div>
+<div class=card><div class=row><h3>Recovered fields</h3><span class=mut id=lres-fields-sum></span></div><div id=lres-fields></div></div></div>
 </div>
-<div class=card><div class=row><h3>Residual collection <span class=mut style="font-weight:normal">harvest now &middot; consume / attack later</span></h3><span style="flex:1"></span><span class=mut id=res-col-sum></span><button class=act id=b-res-consume>Consume / attack now</button><button class=act2 id=b-res-col>Refresh</button></div><div class=mut id=res-col-meta>loading&hellip;</div><div id=res-col-out class=mut>phase two has not run yet &mdash; the rows were already harvested on ingest.</div></div>
-<div class=card><div class=row><h3>Residual inspector</h3><span class=mut id=res-insp-sum></span><span style="flex:1"></span><span class=mut>surface</span><select id=sel-res-surface></select><span class=mut>user</span><input id=inp-res-user style="width:160px" placeholder="u-recon-…"><button class=act id=b-res-insp>Inspect</button></div><div class=mut>What one store literally still holds for that user &mdash; no scoring, no assembly, just the retained text and metadata.</div><div id=res-insp><div class="mut">run a session first&hellip;</div></div></div>
-<div class=card><div class=row><h3>Persisted runs</h3><span class=mut id=res-runs-sum></span><span style="flex:1"></span><select id=sel-res-run></select><button class=act id=b-res-load>Load report</button></div><div id=res-hist class=mut>loading&hellip;</div></div>
+<div class=card><div class=row><h3>Residual collection <span class=mut style="font-weight:normal">harvest now &middot; consume / attack later</span></h3><span style="flex:1"></span><span class=mut id=lres-col-sum></span><button class=act id=b-lres-consume>Consume / attack now</button><button class=act2 id=b-lres-col>Refresh</button></div><div class=mut id=lres-col-meta>loading&hellip;</div><div id=lres-col-out class=mut>phase two has not run yet &mdash; the rows were already harvested on ingest.</div></div>
+<div class=card><div class=row><h3>Residual inspector</h3><span class=mut id=lres-insp-sum></span><span style="flex:1"></span><span class=mut>surface</span><select id=lsel-res-surface></select><span class=mut>user</span><input id=linp-res-user style="width:160px" placeholder="u-recon-…"><button class=act id=b-lres-insp>Inspect</button></div><div class=mut>What one store literally still holds for that user &mdash; no scoring, no assembly, just the retained text and metadata.</div><div id=lres-insp><div class="mut">run a session first&hellip;</div></div></div>
+<div class=card><div class=row><h3>Persisted runs</h3><span class=mut id=lres-runs-sum></span><span style="flex:1"></span><select id=lsel-res-run></select><button class=act id=b-lres-load>Load report</button></div><div id=lres-hist class=mut>loading&hellip;</div></div>
 </div>
 </div></section>
 <section id=s-timeline><div class=card><div class=row><h3>Chain of events</h3><span class=mut id=chain-sum></span></div><div class=row><span class=mut>service</span><select id=sel-chain><option value="">all</option></select><span class=mut>limit</span><select id=sel-chain-n><option>50</option><option selected>100</option><option>200</option></select><button class=act id=b-chain>Reload</button></div><div class=mut>IN arrivals linked to OUT completions by queue id — queue-wait visible inline.</div><div id=chain class=mut>loading&hellip;</div></div></section>
@@ -224,8 +227,10 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div id=notif class=notif role=status></div>
 <div id=overlay><div id=overlay-body></div></div>
 <div id=diag-viewer><div id=diag-controls><span class=mut>diagram viewer</span><button id=diag-zout>−</button><span id=diag-zoom class=mut>100%</span><button id=diag-zin>+</button><button id=diag-zfit>fit</button><button id=diag-prev>←</button><button id=diag-next>→</button><span style="flex:1"></span><button id=diag-close>close (Esc)</button></div><div id=diag-viewer-body></div></div>
-<script src="/static/app.js" defer></script></body></html>
+<script src="/static/app.js?v=08bd3ce9" defer></script></body></html>
 """
+
+
 
 
 def _newest_db() -> str | None:

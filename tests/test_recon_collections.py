@@ -235,3 +235,27 @@ def test_residuals_tab_carries_the_collection_card():
     assert "/api/recon/consume" in dashboard.POST_LIMITS
     js = open("static/app.js", encoding="utf-8").read()
     assert "loadReconCollection" in js and "/api/recon/collection" in js
+
+
+# --------------------------------------------------------------------------- #
+# live subtab mirrors the recon tab and harvests tap traffic
+# --------------------------------------------------------------------------- #
+
+def test_live_srecon_subtab_mirrors_the_recon_tab():
+    sec = dashboard.PAGE.split('id=lp-srecon')[1].split("</div></section>")[0]
+    for eid in ("b-lres-harvest", "lres-harvmsg", "lres-harvout",
+                "lres-kpis", "lres-grid", "lres-cum", "lres-amp",
+                "lres-col-sum", "lres-col-meta", "lres-col-out",
+                "lres-insp", "lres-hist", "b-lres-run", "b-lres-consume",
+                "b-lres-insp", "b-lres-load", "b-lres-reset"):
+        assert f"id={eid}" in sec, eid
+    js = open("static/app.js", encoding="utf-8").read()
+    assert "mirrorReconToLive" in js and "harvestLiveTraffic" in js
+    assert "loadReconTab().then(" in js
+
+
+def test_harvest_live_needs_the_tap_running():
+    r = client.post("/api/recon/harvest-live",
+                    json={"limit": 50, "dry_run": True})
+    assert r.status_code == 409
+    assert "/api/recon/harvest-live" in dashboard.POST_LIMITS

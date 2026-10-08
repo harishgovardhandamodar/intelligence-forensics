@@ -591,7 +591,7 @@ const renderFeed=evs=>{
 const switchLiveSub=v=>{
   document.querySelectorAll('[data-ls]').forEach(b=>b.classList.toggle('on',b.dataset.ls===v));
   ['feed','traffic','recon','srecon'].forEach(k=>{const p=$('lp-'+k);if(p)p.style.display=k===v?'':'none';});
-  if(v==='srecon'){loadReconTab();}
+  if(v==='srecon'){loadReconTab().then(()=>{mirrorReconToLive();harvestLiveTraffic(true);}).catch(()=>{});}
 };
 let liveES=null, liveLastSeq=0;
 const liveTbody=()=>$('t-feed').querySelector('tbody');
@@ -795,30 +795,52 @@ $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;con
  }catch(e){$('live-recon-msg').textContent='failed: '+e;}
 };
 
-async function liveHarvestAll(){
-  const m=$('srecon-live-msg'),o=$('srecon-live-out');if(m)m.textContent='harvesting…';
-  try{const st=await j('/api/live/status');if(!st.running){if(m)m.textContent='tap not running';if(o)o.textContent='start tap first';return;}}
-  catch(e){}
+/* ---- Live stateless-recon: mirror of the P14 tab + live harvest ----
+   The lp-srecon subtab carries the same cards with l-prefixed ids
+   (b-lres-*, lsel-*, linp-*, lres-*). All logic runs against the res-*
+   tab; mirrorReconToLive() copies rendered output across so both views
+   stay identical without touching every renderer. */
+const RECON_MIRROR_IDS=['res-sum','res-blurb','res-runmsg','res-kpis','res-bottom','res-solo-sum','res-grid','res-cum-sum','res-cum','res-amp','res-fields-sum','res-fields','res-col-sum','res-col-meta','res-col-out','res-insp-sum','res-insp','res-runs-sum','res-hist'];
+function mirrorReconToLive(){
+  for(const id of RECON_MIRROR_IDS){
+    const a=$(id);if(!a)continue;
+    const b=$('l'+id);if(!b)continue;
+    b.innerHTML=String(a.innerHTML).replaceAll('id=res-rep','id=lres-rep');
+  }
+  const pairs=[['sel-res-sc','lsel-res-sc'],['sel-res-surface','lsel-res-surface'],['sel-res-run','lsel-res-run'],['inp-res-n','linp-res-n'],['inp-res-seed','linp-res-seed'],['inp-res-user','linp-res-user']];
+  for(const [a,b] of pairs){const x=$(a),y=$(b);if(x&&y)y.value=x.value;}
+}
+function syncLiveInputsToRes(){
+  const pairs=[['lsel-res-sc','sel-res-sc'],['lsel-res-surface','sel-res-surface'],['lsel-res-run','sel-res-run'],['linp-res-n','inp-res-n'],['linp-res-seed','inp-res-seed'],['linp-res-user','inp-res-user']];
+  for(const [a,b] of pairs){const x=$(a),y=$(b);if(x&&y)y.value=x.value;}
+}
+async function harvestLiveTraffic(auto){
+  const m=$('lres-harvmsg'),o=$('lres-harvout');
+  if(m)m.textContent=auto?'checking live traffic…':'harvesting…';
+  let st={running:false};
+  try{st=await j('/api/live/status');}catch(e){if(m)m.textContent='tap status failed: '+e;return;}
+  if(!st.running){if(m)m.textContent='tap not running';if(o)o.textContent='Start the tap (Live tap → Start tap), wait for traffic, then Harvest live traffic.';return;}
   try{
-    const res=await pj('/api/recon/harvest-live',{"limit":500,"dry_run":false});
-    if(o)o.innerHTML='<pre>'+escH(JSON.stringify(res,null,2))+'</pre>';
-    if(m)m.textContent=`harvested ${res.harvested} (users ${res.users})`;
-    loadLive();loadReconCollection();
-  }catch(e){if(m)m.textContent='failed: '+e;}
+    const res=await pj('/api/recon/harvest-live',{limit:500,dry_run:false});
+    const u1=$('inp-res-user'),u2=$('linp-res-user');if(u1)u1.value='live';if(u2)u2.value='live';
+    if(o)o.innerHTML=`harvested <b>${escH(res.harvested)}</b> live rows from <b>${escH(res.events)}</b> tap events (${escH(res.out)} OUT with text) · users now <b>${escH(res.users)}</b> · strategy <code>${escH(res.strategy)}</code>`;
+    if(m)m.textContent=`harvested ${res.harvested} live rows`;
+    await loadReconCollection();mirrorReconToLive();
+    showNotif('live traffic harvested into recon_residuals','ok');
+  }catch(e){if(m)m.textContent='harvest failed: '+e;if(o&&!auto)o.innerHTML=`<span class=warn>harvest failed: ${escH(String(e))}</span>`;}
 }
-async function liveCollection(){
-  const m=$('srecon-live-msg'),o=$('srecon-live-out');
-  try{const c=await j('/api/recon/collection');if(o)o.innerHTML='<pre>'+escH(JSON.stringify(c,null,2))+'</pre>';if(m)m.textContent='collection refreshed';}
-  catch(e){if(m)m.textContent='failed: '+e;}
+const _lhrun=$('b-lres-run');if(_lhrun)_lhrun.onclick=()=>{syncLiveInputsToRes();runRecon();};
+const _lhcol=$('b-lres-col');if(_lhcol)_lhcol.onclick=async()=>{await loadReconCollection();mirrorReconToLive();};
+const _lhcons=$('b-lres-consume');if(_lhcons)_lhcons.onclick=()=>{const x=$('linp-res-user'),y=$('inp-res-user');if(x&&y&&x.value)y.value=x.value;consumeCollection();};
+const _lhinsp=$('b-lres-insp');if(_lhinsp)_lhinsp.onclick=()=>{const x=$('linp-res-user'),y=$('inp-res-user');if(x&&y&&x.value)y.value=x.value;inspectResiduals();};
+const _lhload=$('b-lres-load');if(_lhload)_lhload.onclick=()=>{const s=$('lsel-res-run'),r=$('sel-res-run');if(r&&s)r.value=s.value;loadReconRun(s&&s.value);};
+const _lhreset=$('b-lres-reset');if(_lhreset)_lhreset.onclick=()=>{const b=$('b-res-reset');if(b)b.click();};
+const _lhharv=$('b-lres-harvest');if(_lhharv)_lhharv.onclick=()=>harvestLiveTraffic(false);
+const _lhgrid=$('lres-grid');
+if(_lhgrid){
+  _lhgrid.addEventListener('click',e=>{const b=e.target.closest('[data-res-insp]');if(!b)return;inspectResiduals(b.getAttribute('data-res-insp'));const t=$('lres-insp');if(t&&t.scrollIntoView)t.scrollIntoView({block:'nearest',behavior:'smooth'});});
+  _lhgrid.addEventListener('toggle',e=>{const d=e.target;if(d&&d.tagName==='DETAILS'&&d.open)renderMermaid(d);},true);
 }
-async function liveConsume(){
-  const m=$('srecon-live-msg'),o=$('srecon-live-out');
-  try{const d=await pj('/api/recon/consume',{});if(o)o.innerHTML='<pre>'+escH(JSON.stringify(d,null,2))+'</pre>';if(m)m.textContent=`consumed ${d.records||0}`;}
-  catch(e){if(m)m.textContent='failed: '+e;}
-}
-const _lh=$('b-live-srecon-harvest');if(_lh)_lh.onclick=liveHarvestAll;
-const _lw=$('b-live-srecon-what');if(_lw)_lw.onclick=liveCollection;
-const _lc=$('b-live-srecon-consume');if(_lc)_lc.onclick=liveConsume;
 const loadReports=async()=>{
  try{
   const d=await j('/api/reports'),rl=$('report-list');if(!rl)return;
@@ -905,7 +927,8 @@ async function loadReconCatalogue(){
   if(sf)sf.innerHTML=`<option value="all">all surfaces</option>`+(d.all_ids||[]).map(id=>`<option value="${escA(id)}">${escH(id)}</option>`).join('');
   const s=$('res-sum');
   if(s)s.textContent=`${(d.surfaces||[]).length} surfaces · ${(d.scenarios||[]).length} scenarios · deterministic sample rates`;
- }catch(e){const s=$('res-sum');if(s)s.textContent='catalogue failed: '+e;}
+  }catch(e){const s=$('res-sum');if(s)s.textContent='catalogue failed: '+e;}
+  try{mirrorReconToLive();}catch(_){}
 }
 function drawResCum(cum){
  const el=$('res-cum');if(!el)return;
@@ -1009,7 +1032,8 @@ function renderRecon(r,meta){
    ${val.assembled?`<div class=res-field-asm>${escH(val.assembled)}</div>`:''}
   </div>`;
  }).join('')||'<div class="mut">no fields</div>';
- if(meta&&meta.user_id){const u=$('inp-res-user');if(u&&!u.value)u.value=meta.user_id;}
+  if(meta&&meta.user_id){const u=$('inp-res-user');if(u&&!u.value)u.value=meta.user_id;}
+  try{mirrorReconToLive();}catch(_){}
 }
 async function runRecon(){
  const m=$('res-runmsg'),btn=$('b-res-run');
@@ -1029,7 +1053,7 @@ async function runRecon(){
   await loadReconCollection();
   showNotif('stateless session complete','ok');
  }catch(e){if(m)m.textContent='run failed: '+e;showNotif('stateless session failed','err');}
- finally{if(btn)btn.disabled=false;}
+  finally{if(btn)btn.disabled=false;try{mirrorReconToLive();}catch(_){}}
 }
 async function loadReconRuns(){
  const sel=$('sel-res-run');if(!sel)return;
@@ -1041,7 +1065,8 @@ async function loadReconRuns(){
   if(h)h.innerHTML=resRuns.length
    ?`<span class=mut>newest run is pre-selected; press <b>Load report</b> to re-render any stored report.</span>`
    :`<span class=mut>no persisted runs yet &mdash; run a session above.</span>`;
- }catch(e){const s=$('res-runs-sum');if(s)s.textContent='runs failed: '+e;}
+  }catch(e){const s=$('res-runs-sum');if(s)s.textContent='runs failed: '+e;}
+  try{mirrorReconToLive();}catch(_){}
 }
 async function loadReconRun(rid){
  if(!rid)return false;
@@ -1053,9 +1078,10 @@ async function loadReconRun(rid){
   renderRecon(p.report,resState);
   const u=$('inp-res-user');if(u)u.value=p.user_id||'';
   const sc=$('sel-res-sc');if(sc&&p.scenario)sc.value=p.scenario;
-  const m=$('res-runmsg');if(m)m.textContent=`${p.run_id} · ${p.scenario} · ${p.user_id} · ${p.n_turns} turns (loaded)`;
-  return true;
- }catch(e){const m=$('res-runmsg');if(m)m.textContent='load failed: '+e;return false;}
+   const m=$('res-runmsg');if(m)m.textContent=`${p.run_id} · ${p.scenario} · ${p.user_id} · ${p.n_turns} turns (loaded)`;
+   try{mirrorReconToLive();}catch(_){}
+   return true;
+  }catch(e){const m=$('res-runmsg');if(m)m.textContent='load failed: '+e;try{mirrorReconToLive();}catch(_){}return false;}
 }
 async function loadReconTab(){
  await loadReconCatalogue();
@@ -1072,7 +1098,8 @@ async function loadReconCollection(){
   const by=d.by_user&&Object.keys(d.by_user).length
    ?` · ${Object.entries(d.by_user).map(([k,v])=>`${escH(k)}=${escH(v)}`).join(', ')}`:'';
   m.innerHTML=`collection <code>${escH(d.collection)}</code> · backend <b>${escH(d.backend)}</b> · strategy <code>${escH(d.strategy)}</code> · dim ${escH(d.dim)} · resident <b>${escH(d.resident)}</b> rows across <b>${escH(d.users)}</b> user(s) · consumed ${escH(d.consumed)}×${by}`;
- }catch(e){m.textContent='collection unavailable: '+e;}
+  }catch(e){m.textContent='collection unavailable: '+e;}
+  try{mirrorReconToLive();}catch(_){}
 }
 async function consumeCollection(){
  const out=$('res-col-out');if(!out)return;
@@ -1087,7 +1114,8 @@ async function consumeCollection(){
    +`<div class=mut>${escH(d.recovered)}/${escH(d.n_fields)} fields recovered from the collection alone${fields?' &middot; '+fields:''}</div>`;
   showNotif('collection consumed — attack complete','ok');
   await loadReconCollection();
- }catch(e){out.innerHTML=`<span class=warn>consume failed: ${escH(e)}</span>`;showNotif('consume failed','err');}
+  }catch(e){out.innerHTML=`<span class=warn>consume failed: ${escH(e)}</span>`;showNotif('consume failed','err');}
+  try{mirrorReconToLive();}catch(_){}
 }
 async function inspectResiduals(override){
  const sf=$('sel-res-surface'),ui=$('inp-res-user');
@@ -1109,7 +1137,8 @@ async function inspectResiduals(override){
   out.innerHTML=rows
    ?`<table><thead><tr><th>#</th><th>turn</th><th>surface</th><th>kind</th><th>field</th><th>retained text / metadata</th></tr></thead><tbody>${rows}</tbody></table>`
    :`<div class="mut">nothing retained on that surface</div>`;
- }catch(e){if(out)out.innerHTML=`<div class=warn>inspect failed: ${escH(e)}</div>`;}
+  }catch(e){if(out)out.innerHTML=`<div class=warn>inspect failed: ${escH(e)}</div>`;}
+  try{mirrorReconToLive();}catch(_){}
 }
 const _brn=$('b-res-run');if(_brn)_brn.onclick=runRecon;
 const _brcol=$('b-res-col');if(_brcol)_brcol.onclick=loadReconCollection;
@@ -1129,8 +1158,9 @@ const _brs=$('b-res-reset');if(_brs)_brs.onclick=async()=>{
   await loadReconRuns();
   await loadReconCollection();
   const co=$('res-col-out');if(co)co.innerHTML='<div class="mut">collection cleared — run a session to harvest again.</div>';
-  showNotif('residual stores cleared','ok');
- }catch(e){showNotif('reset failed','err');}
+   showNotif('residual stores cleared','ok');
+   try{mirrorReconToLive();}catch(_){}
+  }catch(e){showNotif('reset failed','err');}
 };
 const _brg=$('res-grid');
 if(_brg){
