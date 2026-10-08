@@ -74,8 +74,21 @@ details.card>.coll-body{padding:0 14px 12px}
 #design-doc blockquote{border-left:3px solid var(--acc);margin:8px 0;padding:4px 10px;color:var(--mut)}
 #design-doc hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 #design-doc table{margin:8px 0}
-.diagram-wrap{background:var(--graph-bg);border:1px solid var(--line);border-radius:8px;padding:10px;margin:10px 0;overflow-x:auto}
+.diagram-wrap{background:var(--graph-bg);border:1px solid var(--line);border-radius:8px;padding:10px;margin:10px 0;overflow-x:auto;position:relative}
 .diagram-wrap pre.mermaid{background:none;padding:0;margin:0;max-height:none;border:0}
+.diag-expand{position:absolute;top:8px;right:8px;background:var(--bg3);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:3px 10px;font-size:12px;cursor:pointer}
+.diag-expand:hover{border-color:var(--acc);color:var(--acc)}
+#diag-viewer{position:fixed;inset:0;background:#000c;display:none;z-index:950;overflow:hidden}
+#diag-viewer.show{display:flex;flex-direction:column}
+#diag-controls{display:flex;gap:6px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--bg2);flex-wrap:wrap}
+#diag-controls button{background:var(--bg3);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:13px}
+#diag-controls button:hover{border-color:var(--acc);color:var(--acc)}
+#diag-zoom{min-width:52px;text-align:right;font-variant-numeric:tabular-nums}
+#diag-viewer-body{flex:1;overflow:hidden;position:relative;padding:12px}
+#diag-viewer-body .diag-canvas{width:100%;height:100%;overflow:hidden;cursor:grab}
+#diag-viewer-body .diag-canvas svg{max-width:none}
+#diag-viewer-body .mut{padding:4px 4px 0}
+.diagram-wrap g.node{cursor:help}
 .code-wrap{background:#00000040;border:1px solid var(--line);border-radius:8px;margin:10px 0}
 .code-lang{font-size:11px;color:var(--mut);padding:4px 10px;border-bottom:1px solid var(--line)}
 #design-rail a.on{font-weight:700}

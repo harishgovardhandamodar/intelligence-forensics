@@ -56,6 +56,8 @@ function loadApp() {
       querySelector: () => el(""),
       querySelectorAll: () => [],
       createElement: () => el(""),
+      addEventListener() {},
+      removeEventListener() {},
       head: el("head"),
       title: "",
       documentElement: { dataset: {} },
@@ -104,6 +106,8 @@ function loadApp() {
     + " renderRunPanes, renderRunLogs, renderRunClaims, renderRunVerdict,"
     + " switchLiveSub, filterFeed, renderFeed, renderFeedRows,"
     + " showDetail, wireOverlay, rowClickHandler, SCORE_HELP,"
+    + " diagZoom, diagText, collectDiagrams, enhanceDiagrams,"
+    + " openDiagramViewer, closeDiagramViewer,"
     + " isVisible, renderMermaid, renderDesignIfVisible, renderBriefMermaids,"
     + " detailFindings, detailLedger, detailMesh, detailRisk, detailTrust,"
     + " detailRates, detailConf, detailTrend, detailChain, detailFeed,"
@@ -574,4 +578,70 @@ test("renderBriefMermaids renders from stashed source without refetch", async ()
   await t.renderBriefMermaids();
   assert.match(b.innerHTML, /no brief yet/);
   assert.equal(b.dataset.mmDone || "", ""); // no diagrams -> not marked done
+});
+
+test("diagZoom clamps 10%..800%", () => {
+  assert.equal(t.diagZoom(1, 1), 1.25);
+  assert.equal(t.diagZoom(1, -1), 0.8);
+  assert.equal(t.diagZoom(8, 1), 8);
+  assert.equal(t.diagZoom(0.1, -1), 0.1);
+  assert.equal(t.diagZoom(7.9, 1), 8);
+});
+
+test("diagText cleans node text and caps length", () => {
+  assert.equal(t.diagText({ textContent: "  a\n  b\tc " }), "a b c");
+  assert.equal(t.diagText({ textContent: "x".repeat(500) }).length, 220);
+  assert.equal(t.diagText(null), "");
+  assert.equal(t.diagText({}), "");
+});
+
+test("collectDiagrams skips wraps without svg", () => {
+  const svg = { tag: "svg" };
+  const root = {
+    querySelectorAll: (sel) => sel === ".diagram-wrap" ? [
+      { querySelector: (s) => (s === "svg" ? svg : null), dataset: {} },
+      { querySelector: () => null, dataset: {} },
+    ] : [],
+  };
+  const out = t.collectDiagrams(root);
+  assert.equal(out.length, 1);
+  assert.equal(out[0].svg, svg);
+  assert.equal(out[0].i, 0);
+});
+
+test("enhanceDiagrams adds one expand button per wrap, idempotent", () => {
+  const added = [];
+  const mkWrap = () => ({ dataset: {},
+    querySelector: () => ({}),
+    appendChild: (b) => added.push(b) });
+  const w1 = mkWrap(), w2 = mkWrap();
+  const root = { querySelectorAll: () => [w1, w2] };
+  const created = [];
+  const realCreate = globalThis.document;
+  t.enhanceDiagrams(root);
+  assert.equal(added.length, 2);
+  assert.equal(added[0].className, "diag-expand");
+  t.enhanceDiagrams(root);
+  assert.equal(added.length, 2);
+  void realCreate;
+});
+
+test("openDiagramViewer renders caption, steps, closes cleanly", () => {
+  const mkSvg = (label) => ({ tag: "svg",
+    cloneNode: () => ({ tag: "svg-clone", label,
+      removeAttribute() {}, style: {},
+      querySelector: () => null }),
+    style: {}, viewBox: null });
+  const mkWrap = (label) => ({ dataset: {},
+    querySelector: (s) => (s === "svg" ? mkSvg(label) : null),
+    appendChild() {} });
+  const root = { querySelectorAll: (s) => s === ".diagram-wrap"
+    ? [mkWrap("a"), mkWrap("b")] : [] };
+  t.openDiagramViewer(root, 0);
+  const body = el("diag-viewer-body");
+  assert.match(body.dataset.caption, /diagram 1 of 2/);
+  t.openDiagramViewer(root, 5); // wraps around
+  assert.match(el("diag-viewer-body").dataset.caption, /diagram 2 of 2/);
+  t.closeDiagramViewer(); // no-throw, hides + clears tips
+  t.openDiagramViewer({ querySelectorAll: () => [] }, 0); // empty: no-op
 });

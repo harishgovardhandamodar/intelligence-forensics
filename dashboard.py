@@ -181,6 +181,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div id=tip class=tip></div>
 <div id=notif class=notif role=status></div>
 <div id=overlay><div id=overlay-body></div></div>
+<div id=diag-viewer><div id=diag-controls><span class=mut>diagram viewer</span><button id=diag-zout>−</button><span id=diag-zoom class=mut>100%</span><button id=diag-zin>+</button><button id=diag-zfit>fit</button><button id=diag-prev>←</button><button id=diag-next>→</button><span style="flex:1"></span><button id=diag-close>close (Esc)</button></div><div id=diag-viewer-body></div></div>
 <script src="/static/app.js" defer></script></body></html>
 """
 

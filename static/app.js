@@ -421,15 +421,111 @@ const renderMermaid=async root=>{
   n.replaceWith(d);};
  const run=async()=>{try{window.mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:'dark',themeVariables:{darkMode:true,background:'#0a0e14',primaryColor:'#1f6feb',primaryTextColor:'#e6edf3',lineColor:'#8b949e',textColor:'#e6edf3'}});}catch(e){}
   for(const n of nodes){try{await window.mermaid.run({nodes:[n],suppressErrors:false});}catch(e){fail(n,e);}}};
-  if(window.mermaid&&window.mermaid.run){try{await run();return 'done';}catch(e){return 'error';}}
+  if(window.mermaid&&window.mermaid.run){try{await run();enhanceDiagrams(root);return 'done';}catch(e){return 'error';}}
   for(const src of MERMAID_SRC){
    try{
     await new Promise((res,rej)=>{if(document.querySelector(`script[data-mm="${src}"]`))return res();const s=document.createElement('script');s.dataset.mm=src;s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});
-    if(window.mermaid&&window.mermaid.run){await run();return 'done';}
+    if(window.mermaid&&window.mermaid.run){await run();enhanceDiagrams(root);return 'done';}
    }catch(e){}
   }
   return 'error';
 };
+/* ---- diagram viewer: expand any mermaid diagram to a full-tab view ---- */
+const diagZoom=(z,delta)=>Math.min(8,Math.max(0.1,+(z*(delta>0?1.25:0.8)).toFixed(3)));
+const diagText=el=>{try{return (el.textContent||'').replace(/\s+/g,' ').trim().slice(0,220);}catch(_){return '';}};
+const collectDiagrams=root=>{
+ const out=[];
+ (root.querySelectorAll('.diagram-wrap')||[]).forEach((w,i)=>{
+  const svg=w.querySelector('svg');
+  if(svg)out.push({wrap:w,svg,i});
+ });
+ return out;
+};
+const enhanceDiagrams=root=>{
+ collectDiagrams(root).forEach(({wrap,i})=>{
+  if(wrap.dataset.dgDone)return;
+  wrap.dataset.dgDone='1';
+  const b=document.createElement('button');
+  b.className='diag-expand';b.textContent='⤢ expand';b.title='open full-tab view';
+  b.addEventListener('click',()=>openDiagramViewer(root,i));
+  wrap.appendChild(b);
+ });
+};
+const _diagTipHost=()=>{document.addEventListener('mousemove',e=>{
+ const t=e.target&&e.target.closest?e.target.closest('.diagram-wrap g.node,.diagram-wrap g.edgeLabel'):null;
+ if(!t||!t.isConnected){hideTip();return;}
+ const txt=diagText(t);
+ if(!txt){hideTip();return;}
+ showTip(escH(txt),e);
+});
+document.addEventListener('mouseleave',hideTip);};
+let diagTipWired=false;
+const wireDiagTips=()=>{if(diagTipWired)return;diagTipWired=true;_diagTipHost();};
+let diagState=null;
+function openDiagramViewer(root,idx){
+ const list=collectDiagrams(root);
+ if(!list.length)return;
+ const host=$('diag-viewer'),body=$('diag-viewer-body');
+ if(!host||!body)return;
+ diagState={list,i:((idx||0)%list.length+list.length)%list.length,z:1,x:0,y:0,fit:true};
+ const render=()=>{
+  const cur=diagState.list[diagState.i];
+  body.innerHTML='';
+  const wrap=document.createElement('div');
+  wrap.className='diag-canvas';
+  const clone=cur.svg.cloneNode(true);
+  clone.removeAttribute('width');clone.removeAttribute('height');
+  clone.style.width='100%';clone.style.height='auto';
+  wrap.appendChild(clone);
+  body.appendChild(wrap);
+  const cap=document.createElement('div');
+  cap.className='mut';
+  cap.textContent=`diagram ${diagState.i+1} of ${diagState.list.length} · ${(clone.viewBox&&clone.viewBox.baseVal&&clone.viewBox.baseVal.width)||'?' } wide`;
+  body.appendChild(cap);
+  body.dataset.caption=cap.textContent;
+  applyDiagView();
+ };
+ const applyDiagView=()=>{
+  const cv=body.querySelector('.diag-canvas svg')||body.querySelector('.diag-canvas');
+  if(!cv)return;
+  if(diagState.fit){cv.style.transform='';}
+  else{cv.style.transform=`translate(${diagState.x}px,${diagState.y}px) scale(${diagState.z})`;cv.style.transformOrigin='0 0';}
+  const z=$('diag-zoom');if(z)z.textContent=Math.round(diagState.z*100)+'%';
+ };
+ diagState.rerender=()=>{diagState.fit=true;diagState.z=1;diagState.x=0;diagState.y=0;render();};
+ diagState.apply=applyDiagView;
+ host.classList.add('show');
+ render();
+ const bar=$('diag-controls');
+ if(bar&&!bar.dataset.wired){
+  bar.dataset.wired='1';
+  const on=(id,fn)=>{const b=$(id);if(b)b.addEventListener('click',fn);};
+  on('diag-zin',()=>{diagState.fit=false;diagState.z=diagZoom(diagState.z,1);diagState.apply();});
+  on('diag-zout',()=>{diagState.fit=false;diagState.z=diagZoom(diagState.z,-1);diagState.apply();});
+  on('diag-zfit',()=>{diagState.fit=true;diagState.z=1;diagState.x=0;diagState.y=0;diagState.apply();});
+  on('diag-prev',()=>{diagState.i=(diagState.i-1+diagState.list.length)%diagState.list.length;diagState.rerender();});
+  on('diag-next',()=>{diagState.i=(diagState.i+1)%diagState.list.length;diagState.rerender();});
+  on('diag-close',closeDiagramViewer);
+ }
+ const cv0=body.querySelector('.diag-canvas');
+ if(cv0&&!cv0.dataset.pan){
+  cv0.dataset.pan='1';
+  let drag=null;
+  body.addEventListener('mousedown',e=>{if(e.target&&e.target.closest&&e.target.closest('.diag-controls'))return;drag={x:e.clientX-diagState.x,y:e.clientY-diagState.y};});
+  body.addEventListener('mousemove',e=>{if(!drag)return;diagState.fit=false;diagState.x=e.clientX-drag.x;diagState.y=e.clientY-drag.y;applyDiagView();});
+  body.addEventListener('mouseup',()=>{drag=null;});
+  body.addEventListener('wheel',e=>{if(!diagState||!host.classList.contains('show'))return;e.preventDefault();diagState.fit=false;diagState.z=diagZoom(diagState.z,e.deltaY<0?1:-1);applyDiagView();},{passive:false});
+ }
+}
+function closeDiagramViewer(){const h=$('diag-viewer');if(h)h.classList.remove('show');diagState=null;hideTip();}
+window.addEventListener('keydown',e=>{
+ if(!diagState)return;
+ if(e.key==='Escape'){closeDiagramViewer();return;}
+ if(e.target&&/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName||''))return;
+ if(e.key==='+'||e.key==='='){diagState.fit=false;diagState.z=diagZoom(diagState.z,1);if(diagState.apply)diagState.apply();}
+ else if(e.key==='-'){diagState.fit=false;diagState.z=diagZoom(diagState.z,-1);if(diagState.apply)diagState.apply();}
+ else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const d=e.key==='ArrowRight'?1:-1;diagState.i=(diagState.i+d+diagState.list.length)%diagState.list.length;if(diagState.rerender)diagState.rerender();}
+});
 /* ---- generic table sort/filter/export ---- */
 const cellText=(tr,i)=>{const td=tr.children[i];return td?td.textContent.trim():'';};
 const sortTable=(table,col,dir)=>{const tb=table.tBodies[0];const rows=[...tb.rows].filter(r=>!r.querySelector('td[colspan]'));
@@ -791,6 +887,7 @@ function openSvcOverlay(name){
 }
 function closeOverlay(){const ov=$('overlay');if(ov)ov.classList.remove('show');}
 const _ov=$('overlay');if(_ov)_ov.addEventListener('click',e=>{if(e.target===_ov)closeOverlay();});
+wireDiagTips();
 window.addEventListener('keydown',e=>{if(e.key==='Escape')closeOverlay();});
 function openSvcOverlayByEvent(e){const r=e.target&&e.target.closest?e.target.closest('[data-svc]'):null;if(r)openSvcOverlay(r.dataset.svc);}
 const _svcT=$('t-svc');if(_svcT)_svcT.addEventListener('click',openSvcOverlayByEvent);
