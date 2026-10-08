@@ -1,4 +1,4 @@
-# Intelligence Forensics — investigator + builder
+# Fox - Intelligence Stack - Forensics — investigator + builder
 
 Reconstructs **what other nodes/services are building** purely by observing
 `../fox-services` logs (LLM gateway telemetry, mesh peers, docker overview).

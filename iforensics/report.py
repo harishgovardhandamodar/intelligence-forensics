@@ -11,7 +11,7 @@ def _ts(t: float) -> str:
 
 
 def render(investigation: dict, mesh: dict | None = None, api_errors: list[str] | None = None) -> str:
-    L: list[str] = ["# Intelligence Forensics — what the mesh is building", ""]
+    L: list[str] = ["# Fox - Intelligence Stack - Forensics — what the mesh is building", ""]
     L.append(f"Requests analyzed: **{investigation.get('n_requests')}** "
              f"across **{investigation.get('n_services')}** services.")
     L.append("")

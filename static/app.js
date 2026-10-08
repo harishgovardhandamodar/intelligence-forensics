@@ -3,7 +3,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 const TABS=[...document.querySelectorAll('#tabs button')].map(b=>b.dataset.t);
 const trowState=(cols,msg,cls='mut')=>`<tr><td class="${cls}" colspan="${cols}">${escH(msg)}</td></tr>`;
-const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='design')renderDesignIfVisible();if(name==='overview')renderBriefMermaids();if(name==='sim'){loadSimUsers();loadSimScenarios();loadSimRuns();}if(name==='residuals'){loadReconTab();}document.title='Intelligence Forensics — '+name;};
+const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='design')renderDesignIfVisible();if(name==='overview')renderBriefMermaids();if(name==='sim'){loadSimUsers();loadSimScenarios();loadSimRuns();}if(name==='residuals'){loadReconTab();}document.title='Fox - Intelligence Stack - Forensics — '+name;};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 window.addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 window.addEventListener('popstate',()=>activateTab(location.hash.slice(1),false));
@@ -222,6 +222,8 @@ function renderFindings(d){
  const sum=d.summary||{};
  const s=$('find-sum');
  if(s)s.textContent=`${sum.total||0} findings`;
+ const cb=$('cnt-find');
+ if(cb){const n=sum.total||0,hot=(sum.by_severity&&sum.by_severity.critical)||0;cb.textContent=n;cb.classList.toggle('hot',hot>0);cb.style.display=n?'':'none';}
  const bars=$('find-bars');
  if(bars){const by=sum.by_severity||{},mx=Math.max(1,...Object.values(by));
   bars.innerHTML=['critical','high','medium','low'].map(k=>{const v=by[k]||0;
@@ -241,19 +243,32 @@ async function loadFindings(){
  const el=$('find-bars');if(el){el.className='mut loading';el.textContent='loading…';}
  try{renderFindings(await j('/api/findings'));}catch(e){if(el){el.className='warn';el.textContent='findings failed: '+e;}}
 }
-const DIR_CLS=d=>d==='in'?'':'ok';
+const chainKind=e=>e.chain?'linked':e.dir==='out'?'orphan':e.dir==='in'?'pending':'sys';
+let chainSummary=null;
 function renderChain(d){
  chainCache=(d.events||[]);
- const sum=d.summary||{};
+ chainSummary=d.summary||{};
+ const sum=chainSummary;
  const s=$('chain-sum');
- if(s)s.textContent=`${sum.n||0} events · ${sum.chains||0} linked chains · ${sum.orphans||0} orphan completions (${sum.live||0} live + ${sum.history||0} history)`;
+ if(s)s.innerHTML=`<span class=pill>${escH(sum.n||0)} events</span> <span class="pill ok">${escH(sum.chains||0)} linked</span> <span class="pill warn">${escH(sum.orphans||0)} orphan</span> <span class=mut>${escH(sum.live||0)} live + ${escH(sum.history||0)} history</span>`;
  const el=$('chain');if(!el)return;
  el.className='';
- el.innerHTML=(d.events||[]).slice().reverse().map(e=>{
+ const filt=($('sel-chain-link')&&$('sel-chain-link').value)||'';
+ const inT={};
+ for(const e of chainCache)if(e.dir==='in'&&e.chain!=null&&inT[e.chain]==null)inT[e.chain]=e.t||0;
+ const rows=(d.events||[]).slice().reverse().filter(e=>!filt||chainKind(e)===filt||(filt==='linked'&&e.chain));
+ el.innerHTML=rows.map(e=>{
+  const kind=chainKind(e);
   const t=new Date((e.t||0)*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const full=new Date((e.t||0)*1000).toLocaleString();
+  let extra='';
+  if(e.dir==='out'&&e.chain!=null&&inT[e.chain]){const dt=(e.t||0)-inT[e.chain];if(dt>=0)extra=` · <span class=ok>Δ ${escH(dt.toFixed(1))}s after IN</span>`;}
   const q=e.queue_ms!=null?` · queue ${escH(e.queue_ms)}ms`:'';
+  const dur=e.duration_ms?` · ${escH((e.duration_ms/1000).toFixed(1))}s run`:'';
   const ch=e.chain?` <span class="pill">chain ${escH(e.chain)}</span>`:'';
-  return `<div class="ev" data-f='${escA(JSON.stringify({t:e.t,dir:e.dir,service:e.service,model:e.model,prompt_head:e.prompt_head,prompt_tokens:e.prompt_tokens,completion_tokens:e.completion_tokens,duration_ms:e.duration_ms,queue_ms:e.queue_ms,status:e.status,chain:e.chain,seq:e.seq}))}'><span class="dot ${DIR_CLS(e.dir)}"></span><div><div><span class="mut">${t}</span> <b>${escH(e.dir.toUpperCase())}</b> <code>${escH(e.service)}</code> <span class="mut">${escH(e.model||'')}</span>${ch}</div><div class="mut">${escH(e.prompt_head||'')} · ${escH(e.prompt_tokens||0)}+${escH(e.completion_tokens||0)} tok${q} · ${escH(e.status||'')}</div></div></div>`;}).join('')||'<span class="mut">no events</span>';
+  const dot=e.dir==='in'?(e.chain?'':'pending'):e.dir==='sys'?'warn':e.chain?'ok':'';
+  const cls=kind==='orphan'?'ev orph':'ev';
+  return `<div class="${cls}" data-f='${escA(JSON.stringify({t:e.t,dir:e.dir,service:e.service,model:e.model,prompt_head:e.prompt_head,prompt_tokens:e.prompt_tokens,completion_tokens:e.completion_tokens,duration_ms:e.duration_ms,queue_ms:e.queue_ms,status:e.status,chain:e.chain,seq:e.seq}))}'><span class="dot ${dot}"></span><div><div><span class="mut" title="${escA(full)}">${t}</span> ${liveDir(e.dir)} <code>${escH(e.service)}</code> <span class="mut">${escH(e.model||'')}</span>${ch}</div><div class="mut">${escH(e.prompt_head||'')} · ${escH(e.prompt_tokens||0)}+${escH(e.completion_tokens||0)} tok${q}${dur}${extra} · ${escH(e.status||'')}</div></div></div>`;}).join('')||'<span class="mut">no events match this filter</span>';
 }
 async function loadChain(){
  const el=$('chain');if(el){el.className='mut loading';el.textContent='loading…';}
@@ -538,6 +553,11 @@ const enhanceTable=table=>{if(!table||table.dataset.enh)return;table.dataset.enh
 const filterTable=(table,q)=>{const f=q.toLowerCase();[...table.tBodies[0].rows].forEach(r=>{const t=r.textContent.toLowerCase();r.style.display=(!f||t.includes(f))?'':'none';});};
 const exportTable=(table,name,fmt)=>{const head=[...table.tHead.rows[0].cells].map(c=>c.textContent.trim());const body=[...table.tBodies[0].rows].filter(r=>r.style.display!=='none').map(r=>[...r.cells].map(c=>c.textContent.trim()));let blob,ext;if(fmt==='json'){blob=new Blob([JSON.stringify(body.map(r=>Object.fromEntries(r.map((v,i)=>[head[i]||('col'+i),v]))),null,2)],{type:'application/json'});ext='json';}else{const q=v=>'"'+String(v).replace(/"/g,'""')+'"';blob=new Blob([[head,...body].map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'});ext='csv';}const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${name}.${ext}`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);};
 const wireTable=(tableId,filterId)=>{const t=$(tableId);if(t)enhanceTable(t);const f=$(filterId);if(f&&t)f.addEventListener('input',()=>filterTable(t,f.value));};
+const enhanceAllTables=(root=document)=>{try{root.querySelectorAll('table').forEach(enhanceTable);}catch(e){}};
+enhanceAllTables();
+if(typeof MutationObserver!=='undefined'&&document.body){
+ try{new MutationObserver(muts=>{for(const m of muts){for(const n of m.addedNodes){if(!n||n.nodeType!==1)continue;if(n.tagName==='TABLE')enhanceTable(n);else if(n.querySelectorAll)n.querySelectorAll('table').forEach(enhanceTable);}}}).observe(document.body,{childList:true,subtree:true});}catch(e){}
+}
 document.querySelectorAll('[data-x]').forEach(b=>b.addEventListener('click',()=>exportTable($(b.dataset.x),b.dataset.name,b.dataset.name.endsWith('JSON')?'json':'csv')));
 /* ---- evidence preview + download ---- */
 const showEvidence=async(name,size)=>{$('ev-name').textContent=name;$('ev-dl').href=`/api/evidence/file?name=${encodeURIComponent(name)}&download=1`;$('ev-view').textContent='loading\u2026';
@@ -566,7 +586,7 @@ const renderBriefMermaids=async()=>{const b=$('brief');if(!b||!briefMD)return;
  if(st==='done')b.dataset.mmDone='1';};
 const renderDesignIfVisible=()=>{const dd=$('design-doc');
  if(dd&&dd.dataset.mmDone!=='1'&&curDesignDoc)showDesignDoc(curDesignDoc);};
-const liveDir=d=>d==='in'?'<span style="color:#58a6ff">IN</span>':d==='out'?'<span class=ok>OUT</span>':'<span class=warn>SYS</span>';
+const liveDir=d=>d==='in'?'<span class="dir dir-in">IN</span>':d==='out'?'<span class="dir dir-out">OUT</span>':'<span class="dir dir-sys">SYS</span>';
 const liveTime=t=>new Date(t*1000).toTimeString().slice(0,8);
 const liveEmpty='<tr><td class="mut" colspan=5>no events yet — waiting for traffic</td></tr>';
 const liveRow=e=>`<tr data-f='${escA(JSON.stringify({t:e.t,dir:e.dir,service:e.service,model:e.model,prompt_head:e.prompt_head,prompt_tokens:e.prompt_tokens,completion_tokens:e.completion_tokens,duration_ms:e.duration_ms,queue_ms:e.queue_ms,status:e.status,seq:e.seq,query_type:e.query_type}))}'><td class="mut">${escH(liveTime(e.t))}</td><td>${liveDir(e.dir)}</td><td><code>${escH(e.service)}</code></td><td class="mut">${escH((e.model||'').split(':')[0])}</td><td class="mut">${escH((e.prompt_head||'').slice(0,120))}${e.queue_ms!=null?` <span class="mut">· queued ${escH(Math.round(e.queue_ms))}ms</span>`:''} <span class="mut">· ${escH((e.prompt_tokens||0)+(e.completion_tokens||0))} tok</span></td></tr>`;
@@ -589,9 +609,11 @@ const renderFeed=evs=>{
  renderFeedRows();
 };
 const switchLiveSub=v=>{
-  document.querySelectorAll('[data-ls]').forEach(b=>b.classList.toggle('on',b.dataset.ls===v));
-  ['feed','traffic','recon','srecon'].forEach(k=>{const p=$('lp-'+k);if(p)p.style.display=k===v?'':'none';});
-  if(v==='srecon'){loadReconTab().then(()=>{mirrorReconToLive();loadLiveUsers();refreshCoserveState();coserveLive(true);}).catch(()=>{});}
+ document.querySelectorAll('[data-ls]').forEach(b=>b.classList.toggle('on',b.dataset.ls===v));
+ ['feed','traffic','recon','srecon'].forEach(k=>{const p=$('lp-'+k);if(p)p.style.display='';});
+ const p=$('lp-'+v);
+ if(p){if(p.scrollIntoView)p.scrollIntoView({block:'nearest',behavior:'smooth'});p.classList.remove('flash');void p.offsetWidth;p.classList.add('flash');}
+ if(v==='srecon'){loadReconTab().then(()=>{mirrorReconToLive();loadLiveUsers();refreshCoserveState();coserveLive(true);}).catch(()=>{});}
 };
 let liveES=null, liveLastSeq=0;
 const liveTbody=()=>$('t-feed').querySelector('tbody');
@@ -762,6 +784,7 @@ const loadLive=async()=>{
   const qe=$('live-extra');if(qe)qe.innerHTML=qx.map(b=>`<span class="mut">${escH(b)}</span>`).join(' · ')||'';
   if(st.running){$('live-state').innerHTML=`<span class="${stateCls}">● ${escH(bits[0])}</span>`+bits.slice(1).map(b=>' · <span class="mut">'+escH(b)+'</span>').join('');}
   else{$('live-state').textContent='○ stopped';}
+  updateLiveDot(st);
   if(!st.running){stopLiveStream();}
   if(!st.running)return;
   try{const f=await j('/api/live/feed?limit=40');
@@ -938,6 +961,7 @@ const _ss=$('sel-secscope');if(_ss)_ss.onchange=loadSecurity;
 const _sv=$('sel-secview');if(_sv)_sv.onchange=()=>{secView=_sv.value;renderSecView();};
 const _sf=$('sel-find');if(_sf)_sf.onchange=renderFindRows;
 const _bc=$('b-chain');if(_bc)_bc.onclick=loadChain;
+const _cl=$('sel-chain-link');if(_cl)_cl.onchange=()=>renderChain({events:chainCache,summary:chainSummary});
 const _bl=$('b-ledger');if(_bl)_bl.onclick=()=>loadLedger();
 const _fl=$('filt-ledger');if(_fl)_fl.oninput=renderLedgerRows;
 const _sd=$('b-sim-demo');if(_sd)_sd.onclick=async()=>{try{await pj('/api/sim/demo');loadSimUsers();}catch(e){const s=$('sim-sum');if(s)s.textContent='demo failed: '+e;}};
@@ -1439,6 +1463,16 @@ const _injT=_inj&&_inj.closest?_inj.closest('table'):null;
 const _prmT=_prm&&_prm.closest?_prm.closest('table'):null;
 if(_injT)_injT.addEventListener('click',rowClickHandler(detailFindings));
 if(_prmT)_prmT.addEventListener('click',rowClickHandler(detailFindings));
+async function refreshNavBadges(){
+ try{const d=await j('/api/findings');const sum=d.summary||{};const cb=$('cnt-find');if(cb){const n=sum.total||0;cb.textContent=n;cb.classList.toggle('hot',((sum.by_severity||{}).critical||0)>0);cb.style.display=n?'':'none';}}catch(e){}
+ try{updateLiveDot(await j('/api/live/status'));}catch(e){}
+}
+function updateLiveDot(st){
+ const d=$('dot-live');if(!d)return;
+ d.classList.toggle('on',!!(st&&st.running&&!st.stale));
+ d.classList.toggle('stale',!!(st&&st.running&&st.stale));
+}
 initTheme();
 load();
+refreshNavBadges();
 activateTab(location.hash.slice(1)||'overview',false);

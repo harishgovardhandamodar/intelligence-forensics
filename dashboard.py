@@ -26,7 +26,7 @@ from pydantic import BaseModel
 from iforensics import config, store, infer, agents as ag, ollama_client
 from iforensics import security_agent
 
-app = FastAPI(title="Intelligence Forensics Dashboard", version="0.2.0")
+app = FastAPI(title="Fox - Intelligence Stack - Forensics", version="0.2.0")
 app.mount("/static", StaticFiles(directory=os.path.join(config.BASE_DIR, "static")), name="static")
 
 # Bump on every deploy — shown in the header so cached pages are detectable.
@@ -76,15 +76,16 @@ async def _post_rate_limit(request, call_next):
     return await call_next(request)
 
 PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
-<title>Intelligence Forensics</title>
+<title>Fox - Intelligence Stack - Forensics</title>
+<meta name=color-scheme content="dark light">
 <link rel="stylesheet" href="/static/app.css?v=08bd3ce9"></head><body>
-<header><h1>&#x1f575; Intelligence Forensics</h1><span class=sub id=hdr>loading&hellip;</span><span style="flex:1"></span><button id=b-theme title="toggle light/dark theme">◐</button></header>
+<header><h1><svg class=foxmark viewBox="0 0 32 32" aria-hidden="true"><path d="M3 2 L11 9 L7 13 Z" fill="#e8832a"/><path d="M29 2 L21 9 L25 13 Z" fill="#e8832a"/><path d="M5.5 5 L10 9.5 L7.5 11.5 Z" fill="#7a3b12"/><path d="M26.5 5 L22 9.5 L24.5 11.5 Z" fill="#7a3b12"/><path d="M7 10 L25 10 L23 21 L16 29 L9 21 Z" fill="#e8832a"/><path d="M9 21 L16 29 L16 22 L10.5 18.5 Z" fill="#f5f0e8"/><path d="M23 21 L16 29 L16 22 L21.5 18.5 Z" fill="#f5f0e8"/><path d="M10.5 15 L15 16.6" stroke="#2b1408" stroke-width="2" stroke-linecap="round"/><path d="M21.5 15 L17 16.6" stroke="#2b1408" stroke-width="2" stroke-linecap="round"/><path d="M14 24.5 L18 24.5 L16 27 Z" fill="#2b1408"/></svg> Fox - Intelligence Stack - Forensics</h1><span class=sub id=hdr>loading&hellip;</span><span style="flex:1"></span><button id=b-theme title="toggle light/dark theme">◐</button></header>
 <div class=layout>
 <aside id=sidebar><nav id=tabs>
 <div class=grp>Investigate</div>
-<button data-t=overview class=on>Overview</button><button data-t=findings>Findings</button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button>
+<button data-t=overview class=on>Overview</button><button data-t=findings>Findings <span class=nbadge id=cnt-find></span></button><button data-t=services>Services</button><button data-t=recon>Reconstructions</button><button data-t=agents>Agentic runs</button>
 <div class=grp>Observe</div>
-<button data-t=live>Live tap</button><button data-t=timeline>Timeline</button><button data-t=mesh>Mesh</button><button data-t=graph>Graph</button>
+<button data-t=live><span class=livedot id=dot-live></span>Live tap</button><button data-t=timeline>Timeline</button><button data-t=mesh>Mesh</button><button data-t=graph>Graph</button>
 <div class=grp>Evidence</div>
 <button data-t=evidence>Evidence</button><button data-t=ledger>Ledger</button>
 <div class=grp>Assure</div>
@@ -106,12 +107,14 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <span class=mut>API-level sniff of fox :8210 — queue IN, completed OUT, model load SYS. Raw pcap needs the <code>pcap</code> compose profile (see README).</span></div><div class=mut id=live-extra></div></div>
 <div class=card><div class=subtabs>
 <button data-ls=feed class=on>Feed</button><button data-ls=traffic>Traffic</button><button data-ls=recon>Reconstruct</button><button data-ls=srecon>Stateless recon</button>
-</div>
+<span class=mut style="align-self:center">all widgets visible — buttons jump to a widget</span>
+</div></div>
+<div class=live-grid>
 <div class=lpane id=lp-feed>
 <div class=row><span class=mut>show</span><select id=sel-feed-dir><option value="">IN + OUT + SYS</option><option value=in>IN only</option><option value=out>OUT only</option><option value=sys>SYS only</option></select><span class=mut id=feed-count></span></div>
 <div class=card><h3>Feed <span class=mut style="font-weight:normal">— newest first, auto-refresh</span></h3><table id=t-feed><thead><tr><th>time</th><th>dir</th><th>service</th><th>model</th><th>detail</th></tr></thead><tbody><tr><td class=mut colspan=5>tap not running</td></tr></tbody></table></div>
 </div>
-<div class=lpane id=lp-traffic style="display:none">
+<div class=lpane id=lp-traffic>
 <div class=card><h3>Rates <span class=mut style="font-weight:normal">— live window</span></h3><table id=t-rates><thead><tr><th>service</th><th>req</th><th>tokens</th><th>req/min</th><th>tok/min</th></tr></thead><tbody><tr><td class=mut colspan=5>tap not running</td></tr></tbody></table></div>
 <details class="card coll" open><summary><h3>Traffic <span class=mut style="font-weight:normal">— requests &amp; tokens per bucket</span></h3><span class=chev>›</span></summary><div class=coll-body>
 <div class=row><span class=mut>bucket</span><select id=sel-tsbucket><option value=1m>1m</option><option value=5m selected>5m</option><option value=15m>15m</option><option value=1h>1h</option></select>
@@ -120,20 +123,20 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div id=ts-chart class="mut loading">loading&hellip;</div><div id=ts-legend class=mut></div>
 <div id=ts-models class=mut></div><div id=ts-heatmap class=mut></div></div></details>
 </div>
-<div class=lpane id=lp-recon style="display:none">
+<div class=lpane id=lp-recon>
 <div class=card><h3>Live reconstruction <span class=mut style="font-weight:normal">— recent history + live rows since tap started</span></h3>
 <div class=row><select id=sel-live></select><select id=sel-lmode><option value=cumulative>cumulative</option><option value=window>window</option></select>
 <button class=act id=b-live-recon>Reconstruct live</button><span class=mut id=live-recon-msg></span></div>
 <table id=t-liveprog><thead><tr><th>step</th><th>score</th><th>queries</th><th>inferred build</th><th>Δ vs prev</th></tr></thead><tbody></tbody></table></div>
 </div>
- <div class=lpane id=lp-srecon style="display:none">
+ <div class=lpane id=lp-srecon>
  <div class=card><div class=row><h3>Live traffic · co-serve Fox services</h3><span class=mut id=lres-harvmsg></span><span style="flex:1"></span><select id=lsel-live-user></select><button class=act id=b-lres-coserve>Co-serve live into surfaces</button><button class=act2 id=b-lres-harvest>Harvest only</button></div>
  <div class=mut><b>Co-serve</b> runs each new tap OUT event through the same eight retention policies the simulations use, under a per-service user (<code>u-live-&lt;service&gt;</code>) — live services then appear in the inspector and per-surface counts below, and their rows also land in the collection. <b>Harvest only</b> skips the surfaces and writes the vector collection. Live traffic carries no ground truth, so no accuracy is claimed — only what each surface kept.</div>
  <div class=mut id=lres-harvout>tap not running — start the tap first, then co-serve.</div></div>
  <div class=card><div class=row><h3>Live reconstruction <span class=mut style="font-weight:normal">retention + linkage + candidate shapes — never scored</span></h3><span style="flex:1"></span><span class=mut id=lres-auto-state></span><button class=act2 id=b-lres-auto>Auto co-serve</button><button class=act id=b-lres-lrec>Reconstruct live</button></div>
  <div class=mut>While the tap runs, every poll automatically co-serves new Fox completions into the residual surfaces, so this view stays warm. Truth registration is refused for live users — this shows what each surface kept, family linkage, and candidate secret shapes, with no accuracy claimed.</div>
  <div id=lres-live-out class=mut>no live reconstruction yet — start the tap, then Reconstruct live.</div></div>
- <div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14 · live traffic view</span></h3><span class=mut id=lres-sum></span><span style="flex:1"></span><button class=act id=b-lres-reset>Reset residuals</button></div>
+ <div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14 · live traffic view</span></h3><span class=mut id=lres-sum></span><span style="flex:1"></span><button class="act danger" id=b-lres-reset>Reset residuals</button></div>
 <div class=mut>Eight residual surfaces of a provider that advertises <i>stateless inference</i> &mdash; observability logs, token meters, vectors, caches, training staging, infrastructure leftovers, human support tooling &mdash; plus the repeated-near-query amplifier that pools them across every turn. The client app is <code>recon_client/</code>; every number below is computed server-side, because the log holder is the party being measured.</div>
 <div class=row><span class=mut>scenario</span><select id=lsel-res-sc></select><span class=mut>turns</span><input id=linp-res-n value=48 style="width:54px"><span class=mut>seed</span><input id=linp-res-seed value=42 style="width:64px"><button class=act id=b-lres-run>Run session</button><span class=mut id=lres-runmsg></span></div>
 <div class=mut id=lres-blurb></div></div>
@@ -150,7 +153,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=card><div class=row><h3>Persisted runs</h3><span class=mut id=lres-runs-sum></span><span style="flex:1"></span><select id=lsel-res-run></select><button class=act id=b-lres-load>Load report</button></div><div id=lres-hist class=mut>loading&hellip;</div></div>
 </div>
 </div></section>
-<section id=s-timeline><div class=card><div class=row><h3>Chain of events</h3><span class=mut id=chain-sum></span></div><div class=row><span class=mut>service</span><select id=sel-chain><option value="">all</option></select><span class=mut>limit</span><select id=sel-chain-n><option>50</option><option selected>100</option><option>200</option></select><button class=act id=b-chain>Reload</button></div><div class=mut>IN arrivals linked to OUT completions by queue id — queue-wait visible inline.</div><div id=chain class=mut>loading&hellip;</div></div></section>
+<section id=s-timeline><div class=card><div class=row><h3>Chain of events</h3><span class=mut id=chain-sum></span></div><div class=row><span class=mut>service</span><select id=sel-chain><option value="">all</option></select><span class=mut>limit</span><select id=sel-chain-n><option>50</option><option selected>100</option><option>200</option></select><span class=mut>link</span><select id=sel-chain-link><option value="">all</option><option value=linked>linked IN→OUT</option><option value=orphan>orphan OUT</option><option value=pending>pending IN</option></select><button class=act id=b-chain>Reload</button></div><div class=mut>IN arrivals linked to OUT completions by queue id — queue-wait visible inline.</div><div id=chain class=mut>loading&hellip;</div></div></section>
 <section id=s-recon><div class=card><div class=row><select id=sel-recon></select><select id=sel-file></select></div><pre id=recon-view>pick a reconstruction&hellip;</pre></div>
 <div class=card><h3>Partial &amp; progressive reconstruction <span class=mut style="font-weight:normal">— same service, re-profiled as Fox queries accumulate</span></h3>
 <div class=row><select id=sel-pmode><option value=cumulative>cumulative (0..k — confidence growth)</option><option value=window>window (slice k alone — partial views)</option></select>
@@ -204,13 +207,13 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 </div></details></section>
 <section id=s-design><div class=row><div class=card style="min-width:230px"><h3>Documents</h3><div id=design-rail class=mut>loading&hellip;</div></div>
 <div class=card style="flex:1"><h3 id=design-title>Design &amp; architecture</h3><div class=mut id=design-meta></div><div id=design-doc class=mut>pick a document&hellip;</div></div></div></section>
-<section id=s-sim><div class=card><div class=row><h3>Embedding-reconstruction sim</h3><span class=mut id=sim-sum></span><span style="flex:1"></span><button class=act id=b-sim-demo>Load demo data</button><button class=act id=b-sim-reset>Reset</button></div><div class=mut>Progressive masked disclosure → cosine clustering → position-wise assembly. Run <code>python sim/run.py --all</code> for the full client, or inspect results here.</div><div class=row><span class=mut>DLP</span><select id=sel-sim-dlp><option value=off>off</option><option value=audit>audit</option><option value=redact>redact</option><option value=block>block</option></select><span class=mut id=sim-dlp-sum></span></div><div class=row><span class=mut>user</span><select id=sel-sim></select><button class=act id=b-sim-report>Report</button></div><div id=sim-curve class=mut>pick a user&hellip;</div><div id=sim-fields class=mut></div><div id=sim-est class=mut></div></div>
+<section id=s-sim><div class=card><div class=row><h3>Embedding-reconstruction sim</h3><span class=mut id=sim-sum></span><span style="flex:1"></span><button class=act id=b-sim-demo>Load demo data</button><button class="act danger" id=b-sim-reset>Reset</button></div><div class=mut>Progressive masked disclosure → cosine clustering → position-wise assembly. Run <code>python sim/run.py --all</code> for the full client, or inspect results here.</div><div class=row><span class=mut>DLP</span><select id=sel-sim-dlp><option value=off>off</option><option value=audit>audit</option><option value=redact>redact</option><option value=block>block</option></select><span class=mut id=sim-dlp-sum></span></div><div class=row><span class=mut>user</span><select id=sel-sim></select><button class=act id=b-sim-report>Report</button></div><div id=sim-curve class=mut>pick a user&hellip;</div><div id=sim-fields class=mut></div><div id=sim-est class=mut></div></div>
 <div class=card><div class=row><h3>Run scenarios</h3><span class=mut id=sim-runmsg></span></div><div class=row><select id=sel-sim-sc><option value=all>all scenarios</option><option value=chatbot_health>chatbot_health</option><option value=chatbot_financial>chatbot_financial</option><option value=coding_api_keys>coding_api_keys</option><option value=coding_secrets>coding_secrets</option><option value=hr_onboarding>hr_onboarding</option><option value=support_tickets>support_tickets</option><option value=devops_deploy>devops_deploy</option><option value=legal_contracts>legal_contracts</option><option value=sales_crm>sales_crm</option><option value=data_engineering>data_engineering</option></select><select id=sel-sim-style><option value=regular>regular</option><option value=one-off>one-off</option><option value=vibe>vibe</option></select><button class=act id=b-sim-run>Run</button></div><div id=sim-runout class=mut></div></div>
 <div class=card><h3>Scenarios</h3><div class=mut>What each experiment leaks, step by step.</div><div id=sim-scenarios class=mut>loading&hellip;</div></div>
 <div class=card><div class=row><h3>Run dossier</h3><span class=mut id=sim-dosmsg></span></div><div class=row><span class=mut>run</span><select id=sel-sim-run></select><button class=act id=b-sim-dos>Open dossier</button><a class=mut id=sim-dos-md href="#">markdown</a></div><div id=sim-dos-find class=mut></div><div id=sim-dos-doc class=md></div><div id=sim-dos-tl class=mut></div></div></section>
 
 <section id=s-residuals>
-<div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14</span></h3><span class=mut id=res-sum></span><span style="flex:1"></span><button class=act id=b-res-reset>Reset residuals</button></div>
+<div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14</span></h3><span class=mut id=res-sum></span><span style="flex:1"></span><button class="act danger" id=b-res-reset>Reset residuals</button></div>
 <div class=mut>Eight residual surfaces of a provider that advertises <i>stateless inference</i> &mdash; observability logs, token meters, vectors, caches, training staging, infrastructure leftovers, human support tooling &mdash; plus the repeated-near-query amplifier that pools them across every turn. The client app is <code>recon_client/</code>; every number below is computed server-side, because the log holder is the party being measured.</div>
 <div class=row><span class=mut>scenario</span><select id=sel-res-sc></select><span class=mut>turns</span><input id=inp-res-n value=48 style="width:54px"><span class=mut>seed</span><input id=inp-res-seed value=42 style="width:64px"><button class=act id=b-res-run>Run session</button><span class=mut id=res-runmsg></span></div>
 <div class=mut id=res-blurb></div></div>

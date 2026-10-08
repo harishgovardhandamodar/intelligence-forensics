@@ -272,7 +272,7 @@ def run_report(rows: list[dict] | None = None, db_path: str | None = None,
 
 def render_markdown(bundle: dict) -> str:
     p = bundle.get("provenance", {})
-    L: list[str] = ["# Intelligence Forensics — unified report", ""]
+    L: list[str] = ["# Fox - Intelligence Stack - Forensics — unified report", ""]
     L += ["## Provenance", "",
           "| field | value |", "|---|---|",
           f"| generated | {p.get('generated_at_iso')} |",
@@ -410,9 +410,9 @@ pre{white-space:pre-wrap}.crit{color:#ff7b72}.high{color:#ffa657}.med{color:#d29
 def render_html(bundle: dict) -> str:
     p = bundle.get("provenance", {})
     parts = ["<!doctype html><html><head><meta charset=utf-8>",
-             "<title>Intelligence Forensics report</title>",
+             "<title>Fox - Intelligence Stack - Forensics report</title>",
              f"<style>{_CSS}</style></head><body>",
-             "<h1>Intelligence Forensics — unified report</h1>"]
+             "<h1>Fox - Intelligence Stack - Forensics — unified report</h1>"]
     parts.append('<div class=card><h2>Provenance</h2>' + _table(
         ["field", "value"],
         [["generated", p.get("generated_at_iso")],

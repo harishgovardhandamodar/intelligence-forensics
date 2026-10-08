@@ -433,11 +433,10 @@ test("renderRunClaims lists unproven services and brief issues", () => {
   assert.match(h, /reporter produced no text/);
 });
 
-test("switchLiveSub shows one live pane at a time", () => {
+test("switchLiveSub keeps all live widgets visible and jumps to target", () => {
   t.switchLiveSub("traffic");
-  assert.equal(el("lp-traffic").style.display, "");
-  for (const k of ["feed", "recon"])
-    assert.equal(el("lp-" + k).style.display, "none");
+  for (const k of ["feed", "traffic", "recon", "srecon"])
+    assert.equal(el("lp-" + k).style.display, "");
   t.switchLiveSub("feed");
   assert.equal(el("lp-feed").style.display, "");
 });
