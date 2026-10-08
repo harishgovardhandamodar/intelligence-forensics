@@ -55,6 +55,7 @@ POST_LIMITS = {
     "/api/recon/reconstruct": (120, 60),
     "/api/recon/consume": (60, 60),
     "/api/recon/harvest-live": (60, 60),
+    "/api/recon/coserve": (30, 60),
     "/api/recon/reset": (30, 60),
 }
 _POST_HITS: dict[str, deque] = {}
@@ -125,9 +126,9 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <table id=t-liveprog><thead><tr><th>step</th><th>score</th><th>queries</th><th>inferred build</th><th>Δ vs prev</th></tr></thead><tbody></tbody></table></div>
 </div>
  <div class=lpane id=lp-srecon style="display:none">
- <div class=card><div class=row><h3>Live traffic harvest</h3><span class=mut id=lres-harvmsg></span><span style="flex:1"></span><button class=act id=b-lres-harvest>Harvest live traffic</button></div>
- <div class=mut>Pulls the tap buffer (<code>/api/live/feed</code>) into the <code>recon_residuals</code> collection as <code>log_head</code> rows under user <code>live</code> — no ground truth needed. The collection card below then shows live rows, and Consume reads them back.</div>
- <div class=mut id=lres-harvout>tap not running — start the tap first, then harvest.</div></div>
+ <div class=card><div class=row><h3>Live traffic · co-serve Fox services</h3><span class=mut id=lres-harvmsg></span><span style="flex:1"></span><select id=lsel-live-user></select><button class=act id=b-lres-coserve>Co-serve live into surfaces</button><button class=act2 id=b-lres-harvest>Harvest only</button></div>
+ <div class=mut><b>Co-serve</b> runs each new tap OUT event through the same eight retention policies the simulations use, under a per-service user (<code>u-live-&lt;service&gt;</code>) — live services then appear in the inspector and per-surface counts below, and their rows also land in the collection. <b>Harvest only</b> skips the surfaces and writes the vector collection. Live traffic carries no ground truth, so no accuracy is claimed — only what each surface kept.</div>
+ <div class=mut id=lres-harvout>tap not running — start the tap first, then co-serve.</div></div>
  <div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14 · live traffic view</span></h3><span class=mut id=lres-sum></span><span style="flex:1"></span><button class=act id=b-lres-reset>Reset residuals</button></div>
 <div class=mut>Eight residual surfaces of a provider that advertises <i>stateless inference</i> &mdash; observability logs, token meters, vectors, caches, training staging, infrastructure leftovers, human support tooling &mdash; plus the repeated-near-query amplifier that pools them across every turn. The client app is <code>recon_client/</code>; every number below is computed server-side, because the log holder is the party being measured.</div>
 <div class=row><span class=mut>scenario</span><select id=lsel-res-sc></select><span class=mut>turns</span><input id=linp-res-n value=48 style="width:54px"><span class=mut>seed</span><input id=linp-res-seed value=42 style="width:64px"><button class=act id=b-lres-run>Run session</button><span class=mut id=lres-runmsg></span></div>
@@ -1022,6 +1023,48 @@ def recon_collection():
     """The harvest-now / consume-later vector collection, as it stands."""
     from iforensics.sim import reconstruction as recon
     return recon.collection().stats()
+
+
+class ReconCoserve(BaseModel):
+    limit: int = 500
+    dry_run: bool = False
+
+
+@app.post("/api/recon/coserve")
+def recon_coserve(req: ReconCoserve):
+    """Co-serve live Fox traffic through the residual surfaces.
+
+    Unlike harvest-live (vector collection only), this ingests each new tap
+    OUT event through every surface's retention policy under a per-service
+    user (`u-live-<service>`) — the same engine the P14 simulations run on,
+    so live services appear in the residual inspector and per-surface
+    retention counts. Repeats are safe (tap seqs dedup); Reset clears them.
+    Live traffic carries no ground truth, so no accuracy is claimed — only
+    what each surface kept.
+    """
+    from iforensics import live as live_mod
+    from iforensics.sim import reconstruction as recon
+    t = live_mod.tap()
+    if not t:
+        raise HTTPException(409, "tap not running (POST /api/live/start)")
+    evs = t.snapshot(max(1, min(500, req.limit)))
+    if req.dry_run:
+        n = sum(1 for e in evs
+                if (e.get("dir") or "") == "out"
+                and (e.get("prompt_head") or "").strip())
+        return {"ingested": 0, "skipped": 0, "events": len(evs),
+                "out": n, "dry_run": True,
+                "users": [u["user_id"] for u in recon.live_users(recon.STATE)]}
+    out = recon.coserve_events(evs)
+    out["events"] = len(evs)
+    return out
+
+
+@app.get("/api/recon/live-users")
+def recon_live_users():
+    """Co-served live services with retention counts (no truth needed)."""
+    from iforensics.sim import reconstruction as recon
+    return {"users": recon.live_users(recon.STATE)}
 
 
 @app.post("/api/recon/consume")

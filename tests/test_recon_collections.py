@@ -259,3 +259,100 @@ def test_harvest_live_needs_the_tap_running():
                     json={"limit": 50, "dry_run": True})
     assert r.status_code == 409
     assert "/api/recon/harvest-live" in dashboard.POST_LIMITS
+
+
+# --------------------------------------------------------------------------- #
+# co-serving: live Fox traffic through the residual surfaces
+# --------------------------------------------------------------------------- #
+
+def _fake_tap(*events):
+    class _FakeTap:
+        def snapshot(self, limit=500, since_seq=0):
+            return list(events)[:max(1, limit)]
+    return _FakeTap()
+
+
+def _live_events():
+    return [
+        {"seq": 101, "dir": "out", "service": "quai-radar",
+         "model": "qwen3.8:latest", "query_type": "chart/price",
+         "status": "complete",
+         "prompt_head": "Extract structured facts about quai network stats"},
+        {"seq": 102, "dir": "out", "service": "quai-radar",
+         "model": "qwen3.8:latest", "query_type": "chart/price",
+         "status": "complete",
+         "prompt_head": "Summarise mempool congestion for the last hour"},
+        {"seq": 103, "dir": "in", "service": "quai-radar",
+         "prompt_head": "in-flight query (not a completion)"},
+    ]
+
+
+def test_coserve_needs_the_tap_running():
+    r = client.post("/api/recon/coserve",
+                    json={"limit": 50, "dry_run": True})
+    assert r.status_code == 409
+    assert "/api/recon/coserve" in dashboard.POST_LIMITS
+
+
+def test_coserve_ingests_live_traffic_into_the_surfaces(monkeypatch):
+    from iforensics import live as live_mod
+    monkeypatch.setattr(live_mod, "tap",
+                        lambda: _fake_tap(*_live_events()))
+    d = client.post("/api/recon/coserve",
+                    json={"limit": 50}).json()
+    assert d["ingested"] == 2 and d["events"] == 3
+    assert d["services"] == {"quai-radar": 2}
+    assert d["users"] == ["u-live-quai-radar"]
+    assert d["retained"].get("logging", 0) >= 2
+    # the same engine the simulations use now holds the live rows
+    insp = client.get("/api/recon/residuals",
+                      params={"user_id": "u-live-quai-radar",
+                              "surface": "", "limit": 100}).json()
+    assert insp["total"] >= 2 and insp["with_text"] >= 2
+    # and the collection harvested them on the way through
+    col = client.get("/api/recon/collection").json()
+    assert col["by_user"].get("u-live-quai-radar", 0) >= 1
+    # live users are listed with retention counts, no truth required
+    users = client.get("/api/recon/live-users").json()["users"]
+    assert users and users[0]["user_id"] == "u-live-quai-radar"
+    assert users[0]["records"] == insp["total"]
+
+
+def test_coserve_dedups_repeated_polls(monkeypatch):
+    from iforensics import live as live_mod
+    monkeypatch.setattr(live_mod, "tap",
+                        lambda: _fake_tap(*_live_events()))
+    first = client.post("/api/recon/coserve",
+                        json={"limit": 50}).json()
+    second = client.post("/api/recon/coserve",
+                         json={"limit": 50}).json()
+    assert first["ingested"] == 2
+    assert second["ingested"] == 0 and second["skipped"] >= 2
+    insp = client.get("/api/recon/residuals",
+                      params={"user_id": "u-live-quai-radar",
+                              "limit": 1000}).json()
+    # KV snapshots linger: only the newest turn keeps one, so the store
+    # holds one fewer row than the gross retained count
+    assert insp["total"] == sum(first["retained"].values()) - 1 > 0
+    assert sum(1 for r in insp["records"]
+               if r["kind"] == "kv_linger") == 1
+
+
+def test_coserve_dry_run_scores_nothing_and_writes_nothing(monkeypatch):
+    from iforensics import live as live_mod
+    monkeypatch.setattr(live_mod, "tap",
+                        lambda: _fake_tap(*_live_events()))
+    d = client.post("/api/recon/coserve",
+                    json={"limit": 50, "dry_run": True}).json()
+    assert d["dry_run"] is True and d["ingested"] == 0 and d["out"] == 2
+    assert client.get("/api/recon/live-users").json() == {"users": []}
+
+
+def test_live_subtab_carries_coserve_controls():
+    sec = dashboard.PAGE.split('id=lp-srecon')[1].split("</div></section>")[0]
+    for eid in ("b-lres-coserve", "lsel-live-user", "lres-harvmsg",
+                "lres-harvout", "b-lres-harvest"):
+        assert f"id={eid}" in sec, eid
+    js = open("static/app.js", encoding="utf-8").read()
+    assert "coserveLive" in js and "loadLiveUsers" in js
+    assert "/api/recon/coserve" in js and "/api/recon/live-users" in js

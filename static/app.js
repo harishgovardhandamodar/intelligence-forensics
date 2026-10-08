@@ -591,7 +591,7 @@ const renderFeed=evs=>{
 const switchLiveSub=v=>{
   document.querySelectorAll('[data-ls]').forEach(b=>b.classList.toggle('on',b.dataset.ls===v));
   ['feed','traffic','recon','srecon'].forEach(k=>{const p=$('lp-'+k);if(p)p.style.display=k===v?'':'none';});
-  if(v==='srecon'){loadReconTab().then(()=>{mirrorReconToLive();harvestLiveTraffic(true);}).catch(()=>{});}
+  if(v==='srecon'){loadReconTab().then(()=>{mirrorReconToLive();loadLiveUsers();coserveLive(true);}).catch(()=>{});}
 };
 let liveES=null, liveLastSeq=0;
 const liveTbody=()=>$('t-feed').querySelector('tbody');
@@ -822,7 +822,6 @@ async function harvestLiveTraffic(auto){
   if(!st.running){if(m)m.textContent='tap not running';if(o)o.textContent='Start the tap (Live tap → Start tap), wait for traffic, then Harvest live traffic.';return;}
   try{
     const res=await pj('/api/recon/harvest-live',{limit:500,dry_run:false});
-    const u1=$('inp-res-user'),u2=$('linp-res-user');if(u1)u1.value='live';if(u2)u2.value='live';
     if(o)o.innerHTML=`harvested <b>${escH(res.harvested)}</b> live rows from <b>${escH(res.events)}</b> tap events (${escH(res.out)} OUT with text) · users now <b>${escH(res.users)}</b> · strategy <code>${escH(res.strategy)}</code>`;
     if(m)m.textContent=`harvested ${res.harvested} live rows`;
     await loadReconCollection();mirrorReconToLive();
@@ -836,6 +835,39 @@ const _lhinsp=$('b-lres-insp');if(_lhinsp)_lhinsp.onclick=()=>{const x=$('linp-r
 const _lhload=$('b-lres-load');if(_lhload)_lhload.onclick=()=>{const s=$('lsel-res-run'),r=$('sel-res-run');if(r&&s)r.value=s.value;loadReconRun(s&&s.value);};
 const _lhreset=$('b-lres-reset');if(_lhreset)_lhreset.onclick=()=>{const b=$('b-res-reset');if(b)b.click();};
 const _lhharv=$('b-lres-harvest');if(_lhharv)_lhharv.onclick=()=>harvestLiveTraffic(false);
+async function loadLiveUsers(preset){
+  const sel=$('lsel-live-user');if(!sel)return;
+  try{
+    const d=await j('/api/recon/live-users');
+    const users=d.users||[];
+    sel.innerHTML=users.map(u=>`<option value="${escA(u.user_id)}">${escH(u.service)} · ${escH(u.records)} rec</option>`).join('')||'<option value="">no live users yet</option>';
+    if(preset)sel.value=preset;
+    if(!sel.value&&users.length)sel.value=users[0].user_id;
+    const u=$('linp-res-user');if(u&&sel.value)u.value=sel.value;
+  }catch(e){sel.innerHTML='<option value="">live users failed</option>';}
+}
+async function coserveLive(auto){
+  const m=$('lres-harvmsg'),o=$('lres-harvout');
+  if(m)m.textContent=auto?'checking live traffic…':'co-serving…';
+  let st={running:false};
+  try{st=await j('/api/live/status');}catch(e){if(m)m.textContent='tap status failed: '+e;return;}
+  if(!st.running){if(m)m.textContent='tap not running';if(o)o.textContent='Start the tap (Live tap → Start tap), wait for traffic, then Co-serve live into surfaces.';return;}
+  try{
+    const res=await pj('/api/recon/coserve',{limit:500,dry_run:false});
+    const svc=Object.entries(res.services||{}).map(([s,n])=>`<code>${escH(s)}</code>=${escH(n)}`).join(', ')||'<span class=mut>no new events (already served)</span>';
+    const ret=Object.entries(res.retained||{}).map(([s,n])=>`${escH(s)}=${escH(n)}`).join(', ');
+    if(o)o.innerHTML=`co-served <b>${escH(res.ingested)}</b> new requests from <b>${escH(res.events)}</b> tap events (${escH(res.skipped)} skipped/dup) — ${svc}${ret?`<div class=mut>retained by surface: ${ret}</div>`:''}<div class=mut>live users: ${(res.users||[]).map(u=>`<code>${escH(u)}</code>`).join(' ')||'—'} · no accuracy claimed (live traffic has no ground truth)</div>`;
+    if(m)m.textContent=`co-served ${res.ingested} live requests`;
+    await loadLiveUsers((res.users||[])[0]);
+    const lu=$('linp-res-user'),ru=$('inp-res-user');if(lu&&ru&&lu.value)ru.value=lu.value;
+    await loadReconCollection();mirrorReconToLive();
+    if(lu&&lu.value)inspectResiduals();
+    mirrorReconToLive();
+    showNotif('live Fox traffic co-served into residual surfaces','ok');
+  }catch(e){if(m)m.textContent='co-serve failed: '+e;if(o&&!auto)o.innerHTML=`<span class=warn>co-serve failed: ${escH(String(e))}</span>`;}
+}
+const _lhcos=$('b-lres-coserve');if(_lhcos)_lhcos.onclick=()=>coserveLive(false);
+const _lhls=$('lsel-live-user');if(_lhls)_lhls.onchange=()=>{const u=$('linp-res-user'),r=$('inp-res-user');if(u&&r){u.value=_lhls.value;r.value=_lhls.value;}inspectResiduals();};
 const _lhgrid=$('lres-grid');
 if(_lhgrid){
   _lhgrid.addEventListener('click',e=>{const b=e.target.closest('[data-res-insp]');if(!b)return;inspectResiduals(b.getAttribute('data-res-insp'));const t=$('lres-insp');if(t&&t.scrollIntoView)t.scrollIntoView({block:'nearest',behavior:'smooth'});});

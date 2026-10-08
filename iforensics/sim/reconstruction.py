@@ -25,6 +25,7 @@ until some text-bearing surface is added alongside it.
 from __future__ import annotations
 
 import hashlib
+import re
 import threading
 
 from . import analysis
@@ -322,6 +323,8 @@ class UnknownUser(KeyError):
 
 
 _COLLECTION: "harvest_mod.ResidualCollection | None" = None
+_LIVE_SEEN: set = set()      # tap seqs already co-served (dedup across calls)
+_LIVE_SEEN_CAP = 20000
 
 
 def collection() -> "harvest_mod.ResidualCollection":
@@ -354,6 +357,7 @@ class ReconState:
             self.embedder = emb_mod.HashEmbedder(dim=self.dim)
         # lazy: the very first reset (from __init__) has nothing to clear
         dropped = _COLLECTION.clear() if _COLLECTION is not None else 0
+        _LIVE_SEEN.clear()  # co-served tap seqs die with the records
         return {"ok": True, "surfaces": len(SURFACES),
                 "collection_cleared": dropped}
 
@@ -961,3 +965,80 @@ def load_run(run_id: str) -> dict:
         with open(os.path.join(rdir, fn)) as f:
             out[os.path.splitext(fn)[0]] = json.load(f)
     return out
+
+
+# --------------------------------------------------------------------------- #
+# live co-serving: real Fox traffic through the same retention policies
+# --------------------------------------------------------------------------- #
+
+LIVE_PREFIX = "u-live-"
+
+
+def live_user_for(service: str) -> str:
+    """Stable per-service user id for co-served live traffic."""
+    slug = re.sub(r"[^a-z0-9]+", "-", (service or "unknown").lower())
+    return f"{LIVE_PREFIX}{slug.strip('-') or 'unknown'}"
+
+
+def live_users(state: "ReconState") -> list[dict]:
+    """Co-served live users with retention counts (no truth needed)."""
+    out = []
+    for uid in state.users():
+        if not uid.startswith(LIVE_PREFIX):
+            continue
+        recs = state.records_for(uid)
+        by_surface: dict[str, int] = {}
+        for r in recs:
+            by_surface[r["surface"]] = by_surface.get(r["surface"], 0) + 1
+        out.append({"user_id": uid,
+                    "service": uid[len(LIVE_PREFIX):],
+                    "turns": state.turn_count(uid),
+                    "records": len(recs),
+                    "with_text": sum(1 for r in recs if r["text"]),
+                    "by_surface": by_surface})
+    return sorted(out, key=lambda u: u["records"], reverse=True)
+
+
+def coserve_events(events: list[dict]) -> dict:
+    """Ingest live tap OUT events through every surface's retention policy.
+
+    Each service gets its own user (`u-live-<service>`); the tap's prompt
+    head is the prompt, so logging heads keep it whole while trace payloads
+    truncate — exactly what the policies say. `ingest()` also harvests into
+    the vector collection, so one call feeds both the surfaces and
+    harvest-now/consume-later. Repeats are safe: tap seqs already served
+    are skipped, so a re-poll never stacks records.
+    """
+    global _LIVE_SEEN
+    ingested = skipped = 0
+    services: dict[str, int] = {}
+    retained: dict[str, int] = {}
+    for e in (events or []):
+        if (e.get("dir") or "") != "out":
+            continue
+        text = (e.get("prompt_head") or "").strip()
+        if not text:
+            skipped += 1
+            continue
+        seq = e.get("seq")
+        if seq is not None:
+            if seq in _LIVE_SEEN:
+                skipped += 1
+                continue
+            _LIVE_SEEN.add(seq)
+            if len(_LIVE_SEEN) > _LIVE_SEEN_CAP:
+                _LIVE_SEEN = set(sorted(_LIVE_SEEN)[-_LIVE_SEEN_CAP:])
+        service = e.get("service") or "unknown"
+        uid = live_user_for(service)
+        out = STATE.ingest(text, {"user_id": uid, "field": "query",
+                                  "run_id": "live",
+                                  "service": service,
+                                  "model": e.get("model") or "",
+                                  "query_type": e.get("query_type") or ""})
+        ingested += 1
+        services[service] = services.get(service, 0) + 1
+        for sid, n in (out.get("retained") or {}).items():
+            retained[sid] = retained.get(sid, 0) + n
+    return {"ingested": ingested, "skipped": skipped, "services": services,
+            "retained": retained,
+            "users": [u["user_id"] for u in live_users(STATE)]}
