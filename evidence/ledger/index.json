@@ -602,5 +602,13 @@
  "sim-20261008_202138": {
   "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261008_202138.jsonl",
   "updated_at": 1791483698.485734
+ },
+ "recon-20261008_202537": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261008_202537.jsonl",
+  "updated_at": 1791483937.9344153
+ },
+ "recon-20261008_202538": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261008_202538.jsonl",
+  "updated_at": 1791483938.4999313
  }
 }
