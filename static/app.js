@@ -3,7 +3,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 const TABS=[...document.querySelectorAll('#tabs button')].map(b=>b.dataset.t);
 const trowState=(cols,msg,cls='mut')=>`<tr><td class="${cls}" colspan="${cols}">${escH(msg)}</td></tr>`;
-const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='design')renderDesignIfVisible();if(name==='overview')renderBriefMermaids();if(name==='sim'){loadSimUsers();loadSimScenarios();loadSimRuns();}document.title='Intelligence Forensics — '+name;};
+const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='design')renderDesignIfVisible();if(name==='overview')renderBriefMermaids();if(name==='sim'){loadSimUsers();loadSimScenarios();loadSimRuns();}if(name==='residuals'){loadReconTab();}document.title='Intelligence Forensics — '+name;};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 window.addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 window.addEventListener('popstate',()=>activateTab(location.hash.slice(1),false));
@@ -23,12 +23,14 @@ async function load(){
    svcCache=sv.services||[];
    $('t-svc').querySelector('tbody').innerHTML=sv.services.map(s=>`<tr data-svc="${escA(s.service)}"><td><code>${escH(s.service)}</code></td><td>${escH(s.requests)}</td><td>${escH(s.total_tokens)}</td><td class="mut">${Object.entries(s.models).map(([m,c])=>escH(m).split(':')[0]+'&times;'+escH(c)).join('<br>')}</td><td><b>${escH(s.project||'')}</b><br><span class="mut">${escH((s.pipeline_summary||'').slice(0,140))}</span></td><td>${scoreCell(s.score,s.grade)}<br><span class="mut" title="vibe index: thin prompt-wrapper vs engineered system">&#x26a1;${escH(s.vibe)} ${escH(s.vibe_label)}</span></td></tr>`).join('');wireTable('#t-svc','#filt-svc');});
  const rc=await j('/api/reconstructions');
- $('sel-recon').innerHTML=rc.map(r=>`<option value="${escA(r.service)}">${escH(r.service)}</option>`).join('');
+ $('sel-recon').innerHTML=rc.map(r=>`<option value="${escA(r.service)}">${escH(r.service)}${r.kind==='stateless-residual'?'  ·  residual':''}</option>`).join('');
  const showRecon=async()=>{const s=$('sel-recon').value;if(!s)return;const d=await j('/api/reconstructions/'+encodeURIComponent(s));const files=Object.keys(d.files);$('sel-file').innerHTML=files.map(f=>`<option value="${escA(f)}">${escH(f)}</option>`).join('');$('recon-view').textContent=d.files[files[0]]||'';};
  $('sel-recon').onchange=showRecon;$('sel-file').onchange=async()=>{const s=$('sel-recon').value,f=$('sel-file').value;const d=await j(`/api/reconstructions/${encodeURIComponent(s)}/file?path=${encodeURIComponent(f)}`);$('recon-view').textContent=d.content||JSON.stringify(d);};
  if(rc.length)showRecon();
  let progCache=null;
- const showProg=async()=>{const s=$('sel-recon').value;if(!s)return;const mode=$('sel-pmode').value,n=$('inp-pn').value||5;$('prog-msg').textContent='profiling…';
+ const showProg=async()=>{const s=$('sel-recon').value;if(!s)return;
+  if(s.startsWith('recon-')){$('prog-msg').textContent='stateless residual run — its source is the local engine, not a fox query stream, so there is nothing to re-profile';return;}
+  const mode=$('sel-pmode').value,n=$('inp-pn').value||5;$('prog-msg').textContent='profiling…';
   try{const d=await j(`/api/reconstructions/${s}/progression?n=${n}&mode=${mode}`);progCache=d;
   $('prog-msg').textContent=`${d.steps.length} steps, converged=${d.converged}`;
   $('t-prog').querySelector('tbody').innerHTML=d.steps.map((st,i)=>{const dl=st.delta||{};const ch=dl.project_changed?'<span class=warn>label flip</span>':'<span class=ok>stable</span>';
@@ -587,8 +589,9 @@ const renderFeed=evs=>{
  renderFeedRows();
 };
 const switchLiveSub=v=>{
- document.querySelectorAll('[data-ls]').forEach(b=>b.classList.toggle('on',b.dataset.ls===v));
- ['feed','traffic','recon'].forEach(k=>{const p=$('lp-'+k);if(p)p.style.display=k===v?'':'none';});
+  document.querySelectorAll('[data-ls]').forEach(b=>b.classList.toggle('on',b.dataset.ls===v));
+  ['feed','traffic','recon','srecon'].forEach(k=>{const p=$('lp-'+k);if(p)p.style.display=k===v?'':'none';});
+  if(v==='srecon'){loadReconTab();}
 };
 let liveES=null, liveLastSeq=0;
 const liveTbody=()=>$('t-feed').querySelector('tbody');
@@ -789,8 +792,33 @@ $('b-live-recon').onclick=async()=>{const s=$('sel-live').value;if(!s)return;con
    $('t-liveprog').querySelector('tbody').innerHTML=d.steps.map(st=>{const dl=st.delta||{};
     return `<tr data-f='${escA(JSON.stringify(st))}'><td>${escH(st.step)}</td><td>${scoreCell(st.score.score,st.score.grade)}</td><td>${escH(st.requests)}</td><td><b>${escH(st.project||'')}</b></td><td>${dl.project_changed?'<span class="warn">flip</span>':'<span class="ok">stable</span>'}</td></tr>`;}).join('');
   loadLive();
- }catch(e){$('live-recon-msg').textContent='failed: '+e;}};
-setInterval(()=>{const s=$('s-live');if(s&&s.classList.contains('on')){loadLive();const a=$('chk-tsauto');if(a&&a.checked)loadTs();}},4000);
+ }catch(e){$('live-recon-msg').textContent='failed: '+e;}
+};
+
+async function liveHarvestAll(){
+  const m=$('srecon-live-msg'),o=$('srecon-live-out');if(m)m.textContent='harvesting…';
+  try{const st=await j('/api/live/status');if(!st.running){if(m)m.textContent='tap not running';if(o)o.textContent='start tap first';return;}}
+  catch(e){}
+  try{
+    const res=await pj('/api/recon/harvest-live',{"limit":500,"dry_run":false});
+    if(o)o.innerHTML='<pre>'+escH(JSON.stringify(res,null,2))+'</pre>';
+    if(m)m.textContent=`harvested ${res.harvested} (users ${res.users})`;
+    loadLive();loadReconCollection();
+  }catch(e){if(m)m.textContent='failed: '+e;}
+}
+async function liveCollection(){
+  const m=$('srecon-live-msg'),o=$('srecon-live-out');
+  try{const c=await j('/api/recon/collection');if(o)o.innerHTML='<pre>'+escH(JSON.stringify(c,null,2))+'</pre>';if(m)m.textContent='collection refreshed';}
+  catch(e){if(m)m.textContent='failed: '+e;}
+}
+async function liveConsume(){
+  const m=$('srecon-live-msg'),o=$('srecon-live-out');
+  try{const d=await pj('/api/recon/consume',{});if(o)o.innerHTML='<pre>'+escH(JSON.stringify(d,null,2))+'</pre>';if(m)m.textContent=`consumed ${d.records||0}`;}
+  catch(e){if(m)m.textContent='failed: '+e;}
+}
+const _lh=$('b-live-srecon-harvest');if(_lh)_lh.onclick=liveHarvestAll;
+const _lw=$('b-live-srecon-what');if(_lw)_lw.onclick=liveCollection;
+const _lc=$('b-live-srecon-consume');if(_lc)_lc.onclick=liveConsume;
 const loadReports=async()=>{
  try{
   const d=await j('/api/reports'),rl=$('report-list');if(!rl)return;
@@ -857,6 +885,263 @@ async function loadSimScenarios(){
  }catch(e){el.textContent='scenarios failed: '+e;}
 }
 const _sd2=$('sel-sim-dlp');if(_sd2)_sd2.onchange=async()=>{try{await pj('/api/sim/dlp',{mode:_sd2.value});loadSimUsers();}catch(e){const s=$('sim-sum');if(s)s.textContent='dlp failed: '+e;}};
+/* ---- Stateless-inference residual reconstruction: its own tab (P14) ---- */
+let reconCat=null,resReport=null,resState=null,resRuns=[];
+const resStat=(k,v,cls)=>`<div class="stat"><div class="v ${cls||''}">${escH(v)}</div><div class=k>${escH(k)}</div></div>`;
+const resAccCls=a=>a>=0.9?'red':(a>=0.5?'amber':'');
+const r3=v=>Math.round((v||0)*1000)/1000;
+async function loadReconCatalogue(){
+ const sc=$('sel-res-sc'),sf=$('sel-res-surface');
+ if(!sc&&!sf)return;
+ try{
+  const d=await j('/api/recon/surfaces');reconCat=d;
+  if(sc){
+   sc.innerHTML=(d.scenarios||[]).map(s=>`<option value="${escA(s.id)}">${escH(s.title)}</option>`).join('');
+   const bl=$('res-blurb');
+   const upd=()=>{const s=(d.scenarios||[]).find(x=>x.id===sc.value);
+    if(bl)bl.textContent=s?`${s.id} — ${s.blurb} · fields: ${(s.fields||[]).join(', ')}`:'';};
+   sc.onchange=upd;upd();
+  }
+  if(sf)sf.innerHTML=`<option value="all">all surfaces</option>`+(d.all_ids||[]).map(id=>`<option value="${escA(id)}">${escH(id)}</option>`).join('');
+  const s=$('res-sum');
+  if(s)s.textContent=`${(d.surfaces||[]).length} surfaces · ${(d.scenarios||[]).length} scenarios · deterministic sample rates`;
+ }catch(e){const s=$('res-sum');if(s)s.textContent='catalogue failed: '+e;}
+}
+function drawResCum(cum){
+ const el=$('res-cum');if(!el)return;
+ if(!cum||!cum.length){el.className='mut';el.textContent='no cumulative data';return;}
+ el.className='';
+ const W=660,H=250,padL=42,padR=14,padT=36,padB=78;
+ const bh=H-padT-padB,innerW=W-padL-padR,n=cum.length;
+ const step=innerW/n,bw=Math.min(56,step-16);
+ let g='';
+ [0,0.25,0.5,0.75,1].forEach(v=>{const y=padT+bh*(1-v);
+  g+=`<line x1=${padL} y1=${y} x2=${W-padR} y2=${y} stroke="#21262d"/><text x=${padL-7} y=${y+3} text-anchor="end" fill="#8b949e" font-size=9>${v}</text>`;});
+ cum.forEach((c,i)=>{
+  const acc=c.accuracy||0,cx=padL+step*i+step/2,x=cx-bw/2;
+  const y=padT+bh*(1-acc),h=Math.max(3,padT+bh-y);
+  const dl=i?acc-(cum[i-1].accuracy||0):0,last=i===n-1;
+  const ly=(padT+bh+16).toFixed(1);
+  g+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx=4 fill="${last?'#39c5cf':'#1f6feb'}" opacity="${last?1:.8}"><title>${escH(c.added)} → ${escH(c.accuracy)} (${escH(c.records)} records)</title></rect>`;
+  g+=`<text x="${cx.toFixed(1)}" y="${(y-19).toFixed(1)}" text-anchor="middle" fill="#e6edf3" font-size=11 font-weight=700>${escH(c.accuracy)}</text>`;
+  g+=`<text x="${cx.toFixed(1)}" y="${(y-7).toFixed(1)}" text-anchor="middle" fill="${dl>0?'#3fb950':'#8b949e'}" font-size=9>${i?(dl>0?'+'+dl.toFixed(3):'±0'):'baseline'}</text>`;
+  g+=`<text x="${cx.toFixed(1)}" y="${ly}" text-anchor="end" fill="#8b949e" font-size=10 transform="rotate(-40 ${cx.toFixed(1)} ${ly})">${escH(c.added)}</text>`;
+ });
+ const pts=cum.map((c,i)=>{const cx=padL+step*i+step/2;return `${cx.toFixed(1)},${(padT+bh*(1-(c.accuracy||0))).toFixed(1)}`;}).join(' ');
+ g+=`<polyline points="${pts}" fill="none" stroke="#3fb950" stroke-width="1.4" stroke-dasharray="4 3" opacity=".7"/>`;
+ const last=cum[n-1];
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:660px">${g}</svg>`
+  +`<div class="mut">first &rarr; last: ${escH(cum[0].accuracy)} &rarr; ${escH(last.accuracy)} (Δ +${escH(r3((last.accuracy||0)-(cum[0].accuracy||0)))}) · ${escH(last.records)} records pooled · accuracy can only rise</div>`;
+}
+function drawResRepetition(curves){
+ const el=$('res-rep');if(!el)return;
+ const fields=Object.keys(curves||{});
+ if(!fields.length){el.className='mut';el.textContent='no repetition curve';return;}
+ el.className='';
+ const W=560,H=160,padL=34,padR=8,padT=10,padB=22;
+ const bh=H-padT-padB,iw=W-padL-padR;
+ const cols=['#58a6ff','#3fb950','#d29922','#a371f7','#f85149'];
+ let g='';
+ [0,0.5,1].forEach(v=>{const y=padT+bh*(1-v);
+  g+=`<line x1=${padL} y1=${y} x2=${W-padR} y2=${y} stroke="#30363d"/><text x=${padL-6} y=${y+3} text-anchor="end" fill="#8b949e" font-size=9>${v}</text>`;});
+ fields.forEach((f,fi)=>{
+  const ps=curves[f]||[];
+  const pts=ps.map((p,i)=>`${(padL+(ps.length>1?i*iw/(ps.length-1):0)).toFixed(1)},${(padT+bh*(1-(p.accuracy||0))).toFixed(1)}`).join(' ');
+  g+=`<polyline points="${pts}" fill="none" stroke="${cols[fi%cols.length]}" stroke-width="2"><title>${escH(f)}</title></polyline>`;
+  if(ps.length){const lastp=ps[ps.length-1];
+   g+=`<circle cx="${(padL+iw).toFixed(1)}" cy="${(padT+bh*(1-(lastp.accuracy||0))).toFixed(1)}" r=3 fill="${cols[fi%cols.length]}"><title>${escH(f)} → ${escH(lastp.accuracy)}</title></circle>`;}
+ });
+ g+=`<text x="${W-padR}" y="${H-6}" text-anchor="end" fill="#8b949e" font-size=9>requests →</text>`;
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:560px">${g}</svg>`
+  +`<div class="mut res-legend">`+fields.map((f,fi)=>`<span class=k><span class=sw style="background:${cols[fi%cols.length]}"></span>${escH(f)}</span>`).join('')+`</div>`;
+}
+function renderRecon(r,meta){
+ if(!r)return;
+ resReport=r;
+ const nf=r.n_fields||0,amp=r.amplification||{},pooled=r.mean_accuracy;
+ $('res-kpis').innerHTML=
+   resStat('pooled accuracy',pooled,resAccCls(pooled))
+  +resStat('fields recovered',`${r.recovered||0}/${nf}`,(r.recovered||0)===nf?'red':'amber')
+  +resStat('one request',amp.single_query_accuracy)
+  +resStat('best single',amp.single_query_best)
+  +resStat('amplification Δ',amp.delta>0?'+'+amp.delta:String(amp.delta),amp.delta>0?'amber':'')
+  +resStat('residual records',r.n_records)
+  +resStat('requests',r.n_turns);
+ const v=$('res-bottom');
+ if(v)v.innerHTML=`<b>result</b> ${escH(r.bottom_line||'')}`;
+ const ss=$('res-solo-sum');if(ss)ss.textContent=`${(r.surfaces||[]).length} stores, scored one at a time`;
+ const byId=Object.fromEntries(((reconCat&&reconCat.surfaces)||[]).map(s=>[s.id,s]));
+ const grid=$('res-grid');
+ if(grid)grid.innerHTML=(r.surfaces||[]).map(s=>{
+  const acc=s.accuracy||0,pct=Math.round(acc*100),cat=byId[s.id]||{};
+  const role=s.role||cat.role||'store';
+  const link=s.linkage?`<div class=res-s-link>linkage ${escH(s.linkage.linked_ratio)} of vectors in ${escH(s.linkage.n_families)} families · mean cohesion ${escH(s.linkage.mean_cohesion)}</div>`:'';
+  const note=s.note?`<div class=res-s-note>${escH(s.note)}</div>`:'';
+  return `<div class="res-surface${acc===0?' zero':''}">
+   <div class=res-s-head><span class=res-s-id>${escH(s.id)}</span><span class="res-badge ${escA(role)}">${escH(role)}</span></div>
+   <div class=res-s-title>${escH(s.title)}</div>
+   <div class=res-s-meter><i style="width:${pct}%"></i></div>
+   <div class=res-s-num><b>${escH(s.accuracy)}</b><span class=mut>accuracy</span></div>
+   <div class=res-s-meta>${escH(s.recovered_fields)}/${escH(nf)} fields · ${escH(s.text_records)} text records · ${escH(s.records)} records</div>
+   ${link}${note}
+   <div class=res-s-acts><button class=act2 data-res-insp="${escA(s.id)}">inspect</button></div>
+   ${cat.diagram?`<details class=res-s-diag><summary>retention diagram</summary><div class=diagram-wrap><pre class=mermaid>${escH(cat.diagram)}</pre></div></details>`:''}
+  </div>`;
+ }).join('')||'<div class="mut">no surfaces in this report</div>';
+ const cs=$('res-cum-sum');if(cs)cs.textContent=`${(r.cumulative||[]).length} steps`;
+ drawResCum(r.cumulative||[]);
+ const a=$('res-amp');
+ if(a)a.innerHTML=
+   `<div class=res-amp-row><span class=res-amp-lab>one request</span><span class=res-amp-bar><i style="width:${Math.round((amp.single_query_accuracy||0)*100)}%"></i></span><b>${escH(amp.single_query_accuracy)}</b></div>`
+  +`<div class=res-amp-row><span class=res-amp-lab>best single</span><span class=res-amp-bar><i style="width:${Math.round((amp.single_query_best||0)*100)}%"></i></span><b>${escH(amp.single_query_best)}</b></div>`
+  +`<div class=res-amp-row><span class=res-amp-lab>pooled ×${escH(amp.turns_pooled)}</span><span class=res-amp-bar><i class=full style="width:${Math.round((amp.pooled_accuracy||0)*100)}%"></i></span><b>${escH(amp.pooled_accuracy)}</b></div>`
+  +`<div class=res-amp-delta><b>Δ +${escH(amp.delta)}</b> <span class=mut>${escH(amp.verdict||'')}</span></div>`
+  +`<div class=res-h>accuracy vs number of requests</div><div id=res-rep></div>`;
+ drawResRepetition(r.curves||{});
+ const fs=$('res-fields-sum');if(fs)fs.textContent=`${Object.keys(r.fields||{}).length} fields`;
+ const fd=$('res-fields');
+ if(fd)fd.innerHTML=Object.entries(r.fields||{}).map(([f,val])=>{
+  const pct=Math.round((val.accuracy||0)*100);
+  return `<div class=res-field>
+   <div class=res-field-head><code>${escH(f)}</code><span class="res-tag ${val.recovered?'on':'off'}">${val.recovered?'recovered':'partial'}</span></div>
+   <div class=res-s-meter><i style="width:${pct}%"></i></div>
+   <div class=res-field-meta>${escH(val.accuracy)} accuracy${val.direct_exposure?' · <b class=warn>bare value present in a residual</b>':''}</div>
+   ${val.assembled?`<div class=res-field-asm>${escH(val.assembled)}</div>`:''}
+  </div>`;
+ }).join('')||'<div class="mut">no fields</div>';
+ if(meta&&meta.user_id){const u=$('inp-res-user');if(u&&!u.value)u.value=meta.user_id;}
+}
+async function runRecon(){
+ const m=$('res-runmsg'),btn=$('b-res-run');
+ if(m)m.textContent='running…';
+ if(btn)btn.disabled=true;
+ try{
+  const d=await pj('/api/recon/run',{
+   scenario:($('sel-res-sc')&&$('sel-res-sc').value)||'stateless_coding',
+   n:parseInt(($('inp-res-n')&&$('inp-res-n').value)||'48',10)||48,
+   seed:parseInt(($('inp-res-seed')&&$('inp-res-seed').value)||'42',10)||42});
+  resState={run_id:d.run_id,user_id:d.user_id,scenario:d.scenario,n_turns:d.n_turns};
+  renderRecon(d.report||{},resState);
+  const u=$('inp-res-user');if(u)u.value=d.user_id||'';
+  if(m)m.textContent=`${d.run_id} · ${d.scenario} · ${d.user_id} · ${d.n_turns} turns`;
+  await loadReconRuns();
+  const sel=$('sel-res-run');if(sel&&d.run_id)sel.value=d.run_id;
+  await loadReconCollection();
+  showNotif('stateless session complete','ok');
+ }catch(e){if(m)m.textContent='run failed: '+e;showNotif('stateless session failed','err');}
+ finally{if(btn)btn.disabled=false;}
+}
+async function loadReconRuns(){
+ const sel=$('sel-res-run');if(!sel)return;
+ try{
+  const d=await j('/api/recon/runs');resRuns=d.runs||[];
+  sel.innerHTML=resRuns.map(r=>`<option value="${escA(r)}">${escH(r)}</option>`).join('')||'<option value="">no runs yet</option>';
+  const s=$('res-runs-sum');if(s)s.textContent=`${resRuns.length} run${resRuns.length===1?'':'s'} in evidence/recon-reports`;
+  const h=$('res-hist');
+  if(h)h.innerHTML=resRuns.length
+   ?`<span class=mut>newest run is pre-selected; press <b>Load report</b> to re-render any stored report.</span>`
+   :`<span class=mut>no persisted runs yet &mdash; run a session above.</span>`;
+ }catch(e){const s=$('res-runs-sum');if(s)s.textContent='runs failed: '+e;}
+}
+async function loadReconRun(rid){
+ if(!rid)return false;
+ try{
+  const data=await j('/api/recon/run?run_id='+encodeURIComponent(rid));
+  const key=Object.keys(data||{})[0],p=key?data[key]:null;
+  if(!p||!p.report)throw new Error('empty run file');
+  resState={run_id:p.run_id,user_id:p.user_id,scenario:p.scenario,n_turns:p.n_turns};
+  renderRecon(p.report,resState);
+  const u=$('inp-res-user');if(u)u.value=p.user_id||'';
+  const sc=$('sel-res-sc');if(sc&&p.scenario)sc.value=p.scenario;
+  const m=$('res-runmsg');if(m)m.textContent=`${p.run_id} · ${p.scenario} · ${p.user_id} · ${p.n_turns} turns (loaded)`;
+  return true;
+ }catch(e){const m=$('res-runmsg');if(m)m.textContent='load failed: '+e;return false;}
+}
+async function loadReconTab(){
+ await loadReconCatalogue();
+ await loadReconRuns();
+ await loadReconCollection();
+ if(!resReport&&resRuns.length)await loadReconRun(resRuns[0]);
+}
+async function loadReconCollection(){
+ const m=$('res-col-meta'),s=$('res-col-sum');
+ if(!m)return;
+ try{
+  const d=await j('/api/recon/collection');
+  if(s)s.textContent=`${d.harvested} harvested`;
+  const by=d.by_user&&Object.keys(d.by_user).length
+   ?` · ${Object.entries(d.by_user).map(([k,v])=>`${escH(k)}=${escH(v)}`).join(', ')}`:'';
+  m.innerHTML=`collection <code>${escH(d.collection)}</code> · backend <b>${escH(d.backend)}</b> · strategy <code>${escH(d.strategy)}</code> · dim ${escH(d.dim)} · resident <b>${escH(d.resident)}</b> rows across <b>${escH(d.users)}</b> user(s) · consumed ${escH(d.consumed)}×${by}`;
+ }catch(e){m.textContent='collection unavailable: '+e;}
+}
+async function consumeCollection(){
+ const out=$('res-col-out');if(!out)return;
+ out.innerHTML='<span class=mut>consuming&hellip;</span>';
+ try{
+  const d=await pj('/api/recon/consume',{user_id:($('inp-res-user')&&$('inp-res-user').value)||'',attack:true});
+  if(d&&d.detail){out.innerHTML=`<span class=warn>${escH(d.detail)}</span>`;return;}
+  const a=(d&&d.attack)||{};
+  const fields=Object.entries(a.fields||{}).map(([f,v])=>`<span class="res-tag ${v.recovered?'on':'off'}">${escH(f)} ${escH(v.accuracy)}</span>`).join(' ');
+  out.innerHTML=`<div class="res-verdict"><b>phase two</b> ${escH(d.user_id)} &mdash; ${escH(d.records)} rows read back from <code>${escH(d.collection)}</code>, ${escH(d.texts)} of them carrying text</div>`
+   +`<div class=res-amp-row><span class=res-amp-lab>collection accuracy</span><span class=res-amp-bar><i class=full style="width:${Math.round((d.accuracy||0)*100)}%"></i></span><b>${escH(d.accuracy)}</b></div>`
+   +`<div class=mut>${escH(d.recovered)}/${escH(d.n_fields)} fields recovered from the collection alone${fields?' &middot; '+fields:''}</div>`;
+  showNotif('collection consumed — attack complete','ok');
+  await loadReconCollection();
+ }catch(e){out.innerHTML=`<span class=warn>consume failed: ${escH(e)}</span>`;showNotif('consume failed','err');}
+}
+async function inspectResiduals(override){
+ const sf=$('sel-res-surface'),ui=$('inp-res-user');
+ const sid=override||((sf&&sf.value)||'all');
+ if(override&&sf)sf.value=sid;
+ const msg=$('res-insp-sum'),out=$('res-insp');
+ try{
+  let uid=((ui&&ui.value)||'').trim();
+  if(!uid&&resState)uid=resState.user_id||'';
+  if(!uid&&resRuns.length){
+   const data=await j('/api/recon/run?run_id='+encodeURIComponent(resRuns[0]));
+   const p=data[Object.keys(data||{})[0]];uid=(p&&p.user_id)||'';
+  }
+  if(!uid){if(out)out.innerHTML='<div class="mut">run a session first&hellip;</div>';return;}
+  if(ui)ui.value=uid;
+  const d=await j(`/api/recon/residuals?user_id=${encodeURIComponent(uid)}&surface=${encodeURIComponent(sid)}&limit=120`);
+  if(msg)msg.textContent=`${d.total} records · ${d.with_text} carry text · ${d.surface}`;
+  const rows=(d.records||[]).map((r,i)=>`<tr><td class=mut>${escH(i+1)}</td><td class=mut>${escH(r.turn)}</td><td><code>${escH(r.surface)}</code></td><td class=mut>${escH(r.kind)}</td><td class=mut>${escH(r.field||'—')}</td><td>${r.text?escH(r.text):`<span class=mut>${escH(JSON.stringify(r.meta||{}))}</span>`}</td></tr>`).join('');
+  out.innerHTML=rows
+   ?`<table><thead><tr><th>#</th><th>turn</th><th>surface</th><th>kind</th><th>field</th><th>retained text / metadata</th></tr></thead><tbody>${rows}</tbody></table>`
+   :`<div class="mut">nothing retained on that surface</div>`;
+ }catch(e){if(out)out.innerHTML=`<div class=warn>inspect failed: ${escH(e)}</div>`;}
+}
+const _brn=$('b-res-run');if(_brn)_brn.onclick=runRecon;
+const _brcol=$('b-res-col');if(_brcol)_brcol.onclick=loadReconCollection;
+const _brcons=$('b-res-consume');if(_brcons)_brcons.onclick=consumeCollection;
+const _bri=$('b-res-insp');if(_bri)_bri.onclick=()=>inspectResiduals();
+const _brl=$('b-res-load');if(_brl)_brl.onclick=()=>{const s=$('sel-res-run');loadReconRun(s&&s.value);};
+const _brs=$('b-res-reset');if(_brs)_brs.onclick=async()=>{
+ try{
+  await pj('/api/recon/reset');
+  resReport=null;resState=null;
+  const k=$('res-kpis');if(k)k.innerHTML='<div class="stat mut">residual stores cleared</div>';
+  ['res-grid','res-cum','res-amp','res-fields','res-insp','res-hist','res-rep'].forEach(id=>{const e=$(id);if(e)e.innerHTML='';});
+  const v=$('res-bottom');if(v)v.textContent='Residual stores cleared — run a session to start over.';
+  const m=$('res-runmsg');if(m)m.textContent='residual stores cleared';
+  const u=$('inp-res-user');if(u)u.value='';
+  const i=$('res-insp-sum');if(i)i.textContent='';
+  await loadReconRuns();
+  await loadReconCollection();
+  const co=$('res-col-out');if(co)co.innerHTML='<div class="mut">collection cleared — run a session to harvest again.</div>';
+  showNotif('residual stores cleared','ok');
+ }catch(e){showNotif('reset failed','err');}
+};
+const _brg=$('res-grid');
+if(_brg){
+ _brg.addEventListener('click',e=>{
+  const b=e.target.closest('[data-res-insp]');
+  if(!b)return;
+  inspectResiduals(b.getAttribute('data-res-insp'));
+  const t=$('res-insp');if(t&&t.scrollIntoView)t.scrollIntoView({block:'nearest',behavior:'smooth'});
+ });
+ _brg.addEventListener('toggle',e=>{const d=e.target;if(d&&d.tagName==='DETAILS'&&d.open)renderMermaid(d);},true);
+}
 /* ---- AKM shell: toasts, service overlay (append-only; all data paths intact) ---- */
 let svcCache=[];
 let notifTimer=0;

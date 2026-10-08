@@ -45,6 +45,10 @@ _DOCS: list[dict[str, str]] = [
     {"id": "simulation", "file": "simulation.md", "title": "Simulation",
      "group": "Data & assurance", "kind": "experiment · attacks · mitigations",
      "answers": "What the reconstruction experiment shows and its limits"},
+    {"id": "reconstruction", "file": "08-reconstruction-simulation.md",
+     "title": "Reconstruction — stateless inference",
+     "group": "Data & assurance", "kind": "surfaces · residual stores · amplification",
+     "answers": "What a stateless provider still keeps, and what pooling it recovers"},
 ]
 
 _FENCE_RE = re.compile(r"^\s*```(\w*)\s*$")

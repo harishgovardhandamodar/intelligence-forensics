@@ -256,3 +256,39 @@ elsewhere) feeding an LLM advisor role for interpretation, artifacts under
 ### P13 — AKM-style agentic runs sub-tabs (gui-akm branch)
 - [x] P13.1 Collected intel / Agent logs / Findings / Scores / Security verdict
       sub-tabs over one investigation (manifest + graph + validation)
+
+### P14 — reconstruction simulation: stateless-inference residuals
+- [x] P14.1 Engine `iforensics/sim/reconstruction.py`: eight surfaces as
+      retention policies (6 stores + 1 linker + 1 analysis), three scenarios,
+      deterministic hash-based sample rates, secret always at the end of long
+      carriers, six reveal steps so per-surface accuracy spreads
+- [x] P14.2 Server `/api/recon/*` (own namespace, own state, own rate limits)
+      + Sim tab *Reconstruction* card with surface bars, cumulative curve,
+      amplification delta and a raw residual inspector
+- [x] P14.3 Client `recon_client/` (stdlib): terminal CLI + local web UI on
+      `:8311`, peer address in `settings.yaml` so no `.py` names a
+      non-loopback host (trust rule T2 stays green)
+- [x] P14.4 `design/08-reconstruction-simulation.md` (11 diagrams incl. every
+      surface's retention policy), registered in the fixed doc index;
+      README section; `tests/test_reconstruction.py` (17 tests)
+
+### P15 — reconstructions, harvest/attack collection, Fox-first Ollama
+- [x] P15.1 **Stateless recon** sidebar tab: the whole P14 panel moved out of
+      Sim into its own tab (scenario/seed controls, 7 KPIs, surface grid,
+      cumulative + repetition charts, residual inspector, persisted-run picker)
+- [x] P15.2 Reconstructions tab shows *both* halves of reconstruction — the
+      modelled `reconstructions/stateless-inference/` service dir beside the
+      six real ones, and every persisted `recon-*` run merged into
+      `GET /api/reconstructions` (`kind: stateless-residual`), with
+      `{svc}` / `{svc}/file` routed to `recon.load_run()`
+- [x] P15.3 `iforensics/sim/harvest.py` — `recon_residuals` collection,
+      strategy `harvest-now-consume-later`: every text-bearing residual is
+      embedded on **ingest** (no ground truth needed) and attacked only on
+      `POST /api/recon/consume`; `purge`/`reset` clear it, so a replayed
+      session never double-harvests. Default backend is numpy; `MILVUS_URL`
+      switches the same collection to Milvus
+- [x] P15.4 Fox-first Ollama: `fox_client.ollama_running()` asks Fox
+      `/api/ollama/running` first and falls back to a direct `:11434`
+      `/api/ps`; both `live.py` poll sites use it; `/api/ollama` reports
+      `via: fox|direct|none`
+- [x] P15.5 `tests/test_recon_collections.py` (13 tests) — suite at 226

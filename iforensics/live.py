@@ -468,7 +468,7 @@ class LiveTap(threading.Thread):
             self.errors.append(f"queue: {type(e).__name__}")
         # SYS: model load/unload diffs
         try:
-            ps = fox_client._get("/api/ollama/running")
+            ps = fox_client.ollama_running()
             models = {m.get("name") or m.get("model") for m in (ps.get("models") or [])}
             for m in models - self.loaded_models:
                 self._push({"t": time.time(), "dir": "sys", "service": "ollama",
@@ -524,7 +524,7 @@ class LiveTap(threading.Thread):
         except Exception:  # noqa: BLE001
             pass
         try:
-            ps = fox_client._get("/api/ollama/running")
+            ps = fox_client.ollama_running()
             self.loaded_models = {m.get("name") or m.get("model")
                                   for m in (ps.get("models") or [])}
         except Exception:  # noqa: BLE001

@@ -18,6 +18,28 @@ def health():
     return _get("/health")
 
 
+def ollama_running(timeout: float = 8.0) -> dict:
+    """Fox-services first, direct Ollama only as a fallback.
+
+    "Which models are in VRAM" is asked for by Live and by the dashboard.
+    Reaching :11434 works only where Ollama actually runs, so the default
+    path is Fox's `/api/ollama/running`; a direct `/api/ps` is the patch
+    around a Fox outage, and a total failure raises rather than pretending
+    the model server is empty.
+    """
+    try:
+        d = _get("/api/ollama/running", timeout=timeout)
+        if isinstance(d, dict) and "models" in d:
+            return {**d, "via": "fox"}
+    except Exception:  # noqa: BLE001 - fall through to the direct probe
+        pass
+    from . import ollama_client
+    d = ollama_client.ps(timeout=timeout)
+    if not isinstance(d, dict):
+        raise RuntimeError("ollama /api/ps returned a non-object payload")
+    return {**d, "via": "direct"}
+
+
 def stats_summary(hours: int = 168):
     return _get("/api/stats/summary", {"hours": hours})
 

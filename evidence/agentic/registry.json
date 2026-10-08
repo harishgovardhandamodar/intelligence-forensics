@@ -4401,5 +4401,32 @@
     }
    }
   }
+ },
+ "pending-x": {
+  "status": "done",
+  "started": 1.0,
+  "updated": 1791468951.4812944
+ },
+ "pending-20261008_161551": {
+  "status": "done",
+  "started": 1791468951.48139,
+  "model": "m",
+  "quick": true,
+  "only": null,
+  "swarm": false,
+  "updated": 1791468951.4816012,
+  "run_id": "r-mock",
+  "ok": true
+ },
+ "pending-20261008_161551-2": {
+  "status": "done",
+  "started": 1791468951.4817073,
+  "model": "m",
+  "quick": true,
+  "only": null,
+  "swarm": false,
+  "updated": 1791468951.4823747,
+  "run_id": "r-mock",
+  "ok": true
  }
 }

@@ -78,8 +78,9 @@ inbound — one fix: `sudo ufw allow 8211/tcp`. HTTPS alternative:
 ## Design & architecture tab
 
 Like fox-services' own design tab: `design/*.md` (context, UML, interaction,
-activity, data model, trust boundaries, privacy, ethics) rendered with live
-Mermaid diagrams — 8 documents, 15 diagrams. Served via fixed-index API
+activity, data model, trust boundaries, privacy, ethics, agent swarm,
+simulation, reconstruction) rendered with live
+Mermaid diagrams — 11 documents, 32 diagrams. Served via fixed-index API
 (`GET /api/design/docs`, `GET /api/design/docs/{id}`; traversal attempts 404).
 Mermaid v10 is vendored (`static/mermaid.min.js` → `/static/`, CDN fallback)
 with a dark theme, so diagrams render even on offline LAN/tailnet; Markdown
@@ -117,6 +118,70 @@ python cli.py progression --service hive-research-gpu --n 4 --mode window  # per
 - API: `GET /api/reconstructions/{svc}/progression?n=5&mode=cumulative|window`
   with per-step Δ vs previous (label flip, new pipeline stages, template growth)
   and a `converged` flag.
+
+## Reconstruction simulation — stateless inference (`recon_client/`)
+
+P14. The other half of "reconstruction": a provider that advertises
+**stateless inference** keeps no chat history, yet eight independent surfaces
+still hold pieces of every request — logging heads, token meters, vectors,
+caches, training staging, infrastructure leftovers, human support tooling,
+and the repeated-near-query amplifier that pools them. `iforensics/sim/
+reconstruction.py` models each as a *retention policy* applied to every
+ingested turn, then measures how much ground truth an insider holding a given
+set of surfaces can reassemble:
+
+- **solo** — each surface alone (the gradient: embeddings 0.0 because vectors
+  carry no text, billing ~0.33–0.68, human_ops ~0.70–1.00);
+- **cumulative** — add surfaces in order; accuracy can only rise;
+- **amplification** — mean accuracy judging *one* request vs pooled accuracy
+  over every request (≈0.21–0.25 → 1.0, Δ ≈ +0.75).
+
+Server routes (`/api/recon/*`, separate state from `/api/sim/*`):
+`surfaces · begin · ingest · residuals · reconstruct · report · run · runs ·
+reset`. The **Sim tab** gains a *Reconstruction* card plus a raw residual
+inspector. Docs: `design/08-reconstruction-simulation.md` (11 diagrams).
+
+The client app is `recon_client/` — standard library only, no pip install.
+It runs on the peer host and drives this dashboard over HTTP; every number is
+computed server-side, because the log holder is the party being measured.
+The peer address lives in `recon_client/settings.yaml`, not in code (trust
+rule T2 forbids non-loopback hosts in `.py`/`.js`).
+
+```bash
+python -m recon_client serve          # local web UI on :8311 (default)
+python -m recon_client run            # terminal session + report
+python -m recon_client report         # latest persisted report
+python -m recon_client inspect cache  # raw residual records for one store
+python -m recon_client surfaces       # the eight surfaces + three scenarios
+python -m recon_client --server http://100.101.3.115:8211 health
+```
+
+Honesty rules carried over from P8: values are synthetic and drawn from
+reserved documentation ranges (900-series SSN, `4242…` PAN, `example.com`,
+555 phone); no vector-only inversion is claimed — `embeddings` reports
+accuracy 0 on its own and only *linkage* (≈0.98 of traffic collapses into ≈4
+near-duplicate families), which is the reason fragments found in other stores
+can be lined up.
+
+### Harvest now · consume later
+
+P15 turns that measurement into a two-phase tool. `iforensics/sim/harvest.py`
+owns a `recon_residuals` collection (384-dim, numpy by default — set
+`MILVUS_URL` to move the *same* collection onto Milvus):
+
+- **harvest** happens on ingest: every text-bearing residual is embedded with
+  provenance (`user_id · surface · turn · run_id`) and **no ground truth is
+  required**, because an insider collecting a store never holds the answer key;
+- **consume** is the deferred attack: `POST /api/recon/consume` structures
+  whatever has accumulated, scores it against truth registered later, and
+  returns exactly the pooled accuracy the live report would. `purge`/`reset`
+  clear the collection, so replaying a session never double-harvests.
+
+The **Reconstructions** tab then lists both halves together — the six real
+services plus the modelled `reconstructions/stateless-inference/` one, and
+every persisted `recon-*` run. The Ollama probe is **Fox-first**: it asks
+Fox-services `/api/ollama/running` and only falls back to a direct `:11434`
+call, reporting which route answered as `via`.
 
 ## Scores & vibe index (`iforensics/score.py`)
 

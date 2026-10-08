@@ -62,6 +62,19 @@ class NumpyStore:
                     if self._match(it["metadata"], filtr)]
         return [r[0] for r in rows], [r[1] for r in rows]
 
+    def delete(self, filtr: dict | None = None) -> int:
+        """Drop rows matching `filtr` (none == every row). Returns the count."""
+        with self._lock:
+            if not filtr:
+                n = len(self._items)
+                self._items.clear()
+                return n
+            kept = [it for it in self._items
+                    if not self._match(it["metadata"], filtr)]
+            n = len(self._items) - len(kept)
+            self._items = kept
+            return n
+
     def clear(self) -> int:
         with self._lock:
             n = len(self._items)
@@ -75,6 +88,14 @@ class NumpyStore:
 
 class MilvusStore:
     """pymilvus wrapper (spec schema: id/vector/text/metadata/timestamp)."""
+
+    @staticmethod
+    def _expr(filtr: dict | None) -> str:
+        if not filtr:
+            return "id >= 0"
+        parts = [f'metadata["{k}"] == "{v}"' if isinstance(v, str)
+                 else f'metadata["{k}"] == {v}' for k, v in filtr.items()]
+        return " && ".join(["id >= 0"] + parts)
 
     def __init__(self, url: str, collection: str, dim: int):
         try:
@@ -112,29 +133,26 @@ class MilvusStore:
         return list(res.primary_keys)
 
     def search(self, vector, top_k=10, filtr=None) -> list[dict]:
-        expr = ""
-        if filtr:
-            expr = " && ".join(
-                f'metadata["{k}"] == "{v}"' if isinstance(v, str)
-                else f'metadata["{k}"] == {v}' for k, v in filtr.items())
+        expr = None if not filtr else self._expr(filtr)
         hits = self._collection.search(
             [list(map(float, vector))], "embedding",
             {"metric_type": "IP", "params": {"nprobe": 16}}, limit=top_k,
-            expr=expr or None, output_fields=["text", "metadata"])[0]
+            expr=expr, output_fields=["text", "metadata"])[0]
         return [{"id": h.id, "text": h.entity.get("text"),
                  "score": round(float(h.score), 4),
                  "metadata": dict(h.entity.get("metadata") or {})} for h in hits]
 
     def get_all(self, filtr=None) -> list[dict]:
-        expr = "id >= 0"
-        if filtr:
-            expr += " && " + " && ".join(
-                f'metadata["{k}"] == "{v}"' if isinstance(v, str)
-                else f'metadata["{k}"] == {v}' for k, v in filtr.items())
-        rows = self._collection.query(expr, output_fields=["text", "metadata"],
+        rows = self._collection.query(self._expr(filtr),
+                                      output_fields=["text", "metadata"],
                                       limit=16384)
         return [{"id": r["id"], "text": r["text"],
                  "metadata": dict(r.get("metadata") or {})} for r in rows]
+
+    def delete(self, filtr=None) -> int:
+        n = len(self.get_all(filtr))
+        self._collection.delete(self._expr(filtr))
+        return n
 
     def clear(self) -> int:
         n = len(self.get_all())

@@ -49,6 +49,13 @@ POST_LIMITS = {
     "/api/sim/begin": (60, 60),
     "/api/sim/reset": (30, 60),
     "/api/sim/demo": (10, 60),
+    "/api/recon/run": (10, 300),
+    "/api/recon/ingest": (1000, 300),
+    "/api/recon/begin": (60, 60),
+    "/api/recon/reconstruct": (120, 60),
+    "/api/recon/consume": (60, 60),
+    "/api/recon/harvest-live": (60, 60),
+    "/api/recon/reset": (30, 60),
 }
 _POST_HITS: dict[str, deque] = {}
 
@@ -79,7 +86,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=grp>Evidence</div>
 <button data-t=evidence>Evidence</button><button data-t=ledger>Ledger</button>
 <div class=grp>Assure</div>
-<button data-t=security>Security</button><button data-t=design>Design</button><button data-t=sim>Sim</button>
+<button data-t=security>Security</button><button data-t=design>Design</button><button data-t=sim>Sim</button><button data-t=residuals>Stateless recon</button>
 </nav></aside><main>
 <section id=s-overview class=on><div class=grid id=stats></div><div class=card><h3>Latest brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=brief class=md>loading&hellip;</div></div>
 <details class="card coll" open><summary><h3>Run investigation</h3><span class=chev>›</span></summary><div class=coll-body><div class=row>
@@ -96,7 +103,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <label class=mut>every <input id=inp-live-int type=number value=5 min=1 max=60 style="width:56px">s</label>
 <span class=mut>API-level sniff of fox :8210 — queue IN, completed OUT, model load SYS. Raw pcap needs the <code>pcap</code> compose profile (see README).</span></div><div class=mut id=live-extra></div></div>
 <div class=card><div class=subtabs>
-<button data-ls=feed class=on>Feed</button><button data-ls=traffic>Traffic</button><button data-ls=recon>Reconstruct</button>
+<button data-ls=feed class=on>Feed</button><button data-ls=traffic>Traffic</button><button data-ls=recon>Reconstruct</button><button data-ls=srecon>Stateless recon</button>
 </div>
 <div class=lpane id=lp-feed>
 <div class=row><span class=mut>show</span><select id=sel-feed-dir><option value="">IN + OUT + SYS</option><option value=in>IN only</option><option value=out>OUT only</option><option value=sys>SYS only</option></select><span class=mut id=feed-count></span></div>
@@ -116,6 +123,23 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=row><select id=sel-live></select><select id=sel-lmode><option value=cumulative>cumulative</option><option value=window>window</option></select>
 <button class=act id=b-live-recon>Reconstruct live</button><span class=mut id=live-recon-msg></span></div>
 <table id=t-liveprog><thead><tr><th>step</th><th>score</th><th>queries</th><th>inferred build</th><th>Δ vs prev</th></tr></thead><tbody></tbody></table></div>
+</div>
+<div class=lpane id=lp-srecon style="display:none">
+<div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14 · live traffic view</span></h3><span class=mut id=res-sum></span><span style="flex:1"></span><button class=act id=b-res-reset>Reset residuals</button></div>
+<div class=mut>Eight residual surfaces of a provider that advertises <i>stateless inference</i> &mdash; observability logs, token meters, vectors, caches, training staging, infrastructure leftovers, human support tooling &mdash; plus the repeated-near-query amplifier that pools them across every turn. The client app is <code>recon_client/</code>; every number below is computed server-side, because the log holder is the party being measured.</div>
+<div class=row><span class=mut>scenario</span><select id=sel-res-sc></select><span class=mut>turns</span><input id=inp-res-n value=48 style="width:54px"><span class=mut>seed</span><input id=inp-res-seed value=42 style="width:64px"><button class=act id=b-res-run>Run session</button><span class=mut id=res-runmsg></span></div>
+<div class=mut id=res-blurb></div></div>
+<div class=kpis id=res-kpis><div class="stat mut">run a session&hellip;</div></div>
+<div class=res-verdict id=res-bottom>Run a session to see which surfaces reassemble the ground truth.</div>
+<div class=card><div class=row><h3>Each surface alone</h3><span class=mut id=res-solo-sum></span><span style="flex:1"></span><span class=mut>click <b>inspect</b> on a card to dump that store's raw records</span></div><div id=res-grid class=res-grid><div class="mut">no report yet</div></div></div>
+<div class=res-cols>
+<div class=card><div class=row><h3>Cumulative reconstruction</h3><span class=mut id=res-cum-sum></span></div><div class=mut>Add surfaces in order of strength; accuracy can only rise, because the pooled text only ever grows.</div><div id=res-cum></div></div>
+<div><div class=card><h3>Repeated near-query amplification</h3><div class=mut>Judge one request at a time, then pool every request in the session.</div><div id=res-amp></div></div>
+<div class=card><div class=row><h3>Recovered fields</h3><span class=mut id=res-fields-sum></span></div><div id=res-fields></div></div></div>
+</div>
+<div class=card><div class=row><h3>Residual collection <span class=mut style="font-weight:normal">harvest now &middot; consume / attack later</span></h3><span style="flex:1"></span><span class=mut id=res-col-sum></span><button class=act id=b-res-consume>Consume / attack now</button><button class=act2 id=b-res-col>Refresh</button></div><div class=mut id=res-col-meta>loading&hellip;</div><div id=res-col-out class=mut>phase two has not run yet &mdash; the rows were already harvested on ingest.</div></div>
+<div class=card><div class=row><h3>Residual inspector</h3><span class=mut id=res-insp-sum></span><span style="flex:1"></span><span class=mut>surface</span><select id=sel-res-surface></select><span class=mut>user</span><input id=inp-res-user style="width:160px" placeholder="u-recon-…"><button class=act id=b-res-insp>Inspect</button></div><div class=mut>What one store literally still holds for that user &mdash; no scoring, no assembly, just the retained text and metadata.</div><div id=res-insp><div class="mut">run a session first&hellip;</div></div></div>
+<div class=card><div class=row><h3>Persisted runs</h3><span class=mut id=res-runs-sum></span><span style="flex:1"></span><select id=sel-res-run></select><button class=act id=b-res-load>Load report</button></div><div id=res-hist class=mut>loading&hellip;</div></div>
 </div>
 </div></section>
 <section id=s-timeline><div class=card><div class=row><h3>Chain of events</h3><span class=mut id=chain-sum></span></div><div class=row><span class=mut>service</span><select id=sel-chain><option value="">all</option></select><span class=mut>limit</span><select id=sel-chain-n><option>50</option><option selected>100</option><option>200</option></select><button class=act id=b-chain>Reload</button></div><div class=mut>IN arrivals linked to OUT completions by queue id — queue-wait visible inline.</div><div id=chain class=mut>loading&hellip;</div></div></section>
@@ -176,6 +200,24 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=card><div class=row><h3>Run scenarios</h3><span class=mut id=sim-runmsg></span></div><div class=row><select id=sel-sim-sc><option value=all>all scenarios</option><option value=chatbot_health>chatbot_health</option><option value=chatbot_financial>chatbot_financial</option><option value=coding_api_keys>coding_api_keys</option><option value=coding_secrets>coding_secrets</option><option value=hr_onboarding>hr_onboarding</option><option value=support_tickets>support_tickets</option><option value=devops_deploy>devops_deploy</option><option value=legal_contracts>legal_contracts</option><option value=sales_crm>sales_crm</option><option value=data_engineering>data_engineering</option></select><select id=sel-sim-style><option value=regular>regular</option><option value=one-off>one-off</option><option value=vibe>vibe</option></select><button class=act id=b-sim-run>Run</button></div><div id=sim-runout class=mut></div></div>
 <div class=card><h3>Scenarios</h3><div class=mut>What each experiment leaks, step by step.</div><div id=sim-scenarios class=mut>loading&hellip;</div></div>
 <div class=card><div class=row><h3>Run dossier</h3><span class=mut id=sim-dosmsg></span></div><div class=row><span class=mut>run</span><select id=sel-sim-run></select><button class=act id=b-sim-dos>Open dossier</button><a class=mut id=sim-dos-md href="#">markdown</a></div><div id=sim-dos-find class=mut></div><div id=sim-dos-doc class=md></div><div id=sim-dos-tl class=mut></div></div></section>
+
+<section id=s-residuals>
+<div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14</span></h3><span class=mut id=res-sum></span><span style="flex:1"></span><button class=act id=b-res-reset>Reset residuals</button></div>
+<div class=mut>Eight residual surfaces of a provider that advertises <i>stateless inference</i> &mdash; observability logs, token meters, vectors, caches, training staging, infrastructure leftovers, human support tooling &mdash; plus the repeated-near-query amplifier that pools them across every turn. The client app is <code>recon_client/</code>; every number below is computed server-side, because the log holder is the party being measured.</div>
+<div class=row><span class=mut>scenario</span><select id=sel-res-sc></select><span class=mut>turns</span><input id=inp-res-n value=48 style="width:54px"><span class=mut>seed</span><input id=inp-res-seed value=42 style="width:64px"><button class=act id=b-res-run>Run session</button><span class=mut id=res-runmsg></span></div>
+<div class=mut id=res-blurb></div></div>
+<div class=kpis id=res-kpis><div class="stat mut">run a session&hellip;</div></div>
+<div class=res-verdict id=res-bottom>Run a session to see which surfaces reassemble the ground truth.</div>
+<div class=card><div class=row><h3>Each surface alone</h3><span class=mut id=res-solo-sum></span><span style="flex:1"></span><span class=mut>click <b>inspect</b> on a card to dump that store's raw records</span></div><div id=res-grid class=res-grid><div class="mut">no report yet</div></div></div>
+<div class=res-cols>
+<div class=card><div class=row><h3>Cumulative reconstruction</h3><span class=mut id=res-cum-sum></span></div><div class=mut>Add surfaces in order of strength; accuracy can only rise, because the pooled text only ever grows.</div><div id=res-cum></div></div>
+<div><div class=card><h3>Repeated near-query amplification</h3><div class=mut>Judge one request at a time, then pool every request in the session.</div><div id=res-amp></div></div>
+<div class=card><div class=row><h3>Recovered fields</h3><span class=mut id=res-fields-sum></span></div><div id=res-fields></div></div></div>
+</div>
+<div class=card><div class=row><h3>Residual collection <span class=mut style="font-weight:normal">harvest now &middot; consume / attack later</span></h3><span style="flex:1"></span><span class=mut id=res-col-sum></span><button class=act id=b-res-consume>Consume / attack now</button><button class=act2 id=b-res-col>Refresh</button></div><div class=mut id=res-col-meta>loading&hellip;</div><div id=res-col-out class=mut>phase two has not run yet &mdash; the rows were already harvested on ingest.</div></div>
+<div class=card><div class=row><h3>Residual inspector</h3><span class=mut id=res-insp-sum></span><span style="flex:1"></span><span class=mut>surface</span><select id=sel-res-surface></select><span class=mut>user</span><input id=inp-res-user style="width:160px" placeholder="u-recon-…"><button class=act id=b-res-insp>Inspect</button></div><div class=mut>What one store literally still holds for that user &mdash; no scoring, no assembly, just the retained text and metadata.</div><div id=res-insp><div class="mut">run a session first&hellip;</div></div></div>
+<div class=card><div class=row><h3>Persisted runs</h3><span class=mut id=res-runs-sum></span><span style="flex:1"></span><select id=sel-res-run></select><button class=act id=b-res-load>Load report</button></div><div id=res-hist class=mut>loading&hellip;</div></div>
+</section>
 </main>
 </div>
 <div id=tip class=tip></div>
@@ -326,6 +368,22 @@ def reports_run():
             "html": entry["html"]}
 
 
+def _recon_run_ids() -> list[str]:
+    """Persisted stateless-residual runs (P14), newest first. Never raises."""
+    try:
+        from iforensics.sim import reconstruction as recon
+        return recon.list_runs()
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def _recon_run_files(run_id: str) -> dict[str, str]:
+    """Scenario payloads of one run, re-dumped as pretty JSON per scenario."""
+    from iforensics.sim import reconstruction as recon
+    payload = recon.load_run(run_id)
+    return {k: json.dumps(v, indent=1) for k, v in payload.items()}
+
+
 @app.get("/api/reconstructions")
 def reconstructions():
     out = []
@@ -343,11 +401,36 @@ def reconstructions():
         out.append({"service": os.path.basename(d),
                     "project": meta.get("inferred_project", ""),
                     "requests": (meta.get("reconstructed_from") or {}).get("requests", 0)})
+    # stateless-residual runs sit in the same list as reconstructed services:
+    # they are reconstructions too, just ones produced by the local engine
+    known = {r["service"] for r in out}
+    for rid in _recon_run_ids():
+        if rid in known:
+            continue
+        out.append(_recon_run_meta(rid))
     return out
+
+
+def _recon_run_meta(run_id: str) -> dict:
+    """List row for one persisted run — read only the newest scenario file."""
+    try:
+        from iforensics.sim import reconstruction as recon
+        payload = recon.load_run(run_id)
+    except Exception:  # noqa: BLE001 - a corrupt dir must not hide the rest
+        payload = {}
+    p = next(iter(payload.values()), {}) or {}
+    rep = p.get("report") or {}
+    scenario = p.get("scenario") or (next(iter(payload), "") or "")
+    return {"service": run_id, "kind": "stateless-residual",
+            "project": f"stateless-inference residuals · {scenario}",
+            "requests": rep.get("n_records") or 0}
 
 
 @app.get("/api/reconstructions/{svc}")
 def reconstruction(svc: str):
+    if svc in _recon_run_ids():
+        return {"service": svc, "kind": "stateless-residual",
+                "files": _recon_run_files(svc)}
     base = os.path.realpath(os.path.join(config.RECON_DIR, svc))
     if not _within(base, config.RECON_DIR) or not os.path.isdir(base):
         raise HTTPException(404, "unknown service")
@@ -366,6 +449,12 @@ def reconstruction(svc: str):
 
 @app.get("/api/reconstructions/{svc}/file")
 def reconstruction_file(svc: str, path: str):
+    if svc in _recon_run_ids():
+        files = _recon_run_files(svc)
+        key = path[:-5] if path.endswith(".json") else path
+        if key not in files:
+            raise HTTPException(404, "bad path")
+        return {"content": files[key]}
     base = os.path.realpath(os.path.join(config.RECON_DIR, svc))
     target = os.path.realpath(os.path.join(base, path))
     # containment must be against *this service's* dir, not the RECON_DIR
@@ -743,6 +832,213 @@ def sim_dossier_md(run_id: str):
                              media_type="text/markdown")
 
 
+# --------------------------------------------------------------------------- #
+# Reconstruction — stateless-inference residuals (P14)                        #
+# --------------------------------------------------------------------------- #
+
+class ReconBegin(BaseModel):
+    user_id: str
+    truth: dict = {}
+    scenario: str = ""
+
+
+class ReconIngest(BaseModel):
+    prompt: str
+    mask: str = ""
+    step: int = 0
+    metadata: dict = {}
+    response: str = ""
+
+
+class ReconReconstruct(BaseModel):
+    user_id: str
+    surfaces: list[str] = []
+    amplify: bool = True
+
+
+class ReconRun(BaseModel):
+    scenario: str = "stateless_coding"
+    n: int = 48
+    seed: int = 42
+
+
+class ReconConsume(BaseModel):
+    user_id: str = ""
+    attack: bool = True
+
+
+@app.get("/api/recon/surfaces")
+def recon_surfaces():
+    """The eight surfaces + the runnable scenarios (with mermaid, no secrets)."""
+    from iforensics.sim import reconstruction as recon
+    return {"surfaces": recon.SURFACES, "scenarios": recon.scenarios(),
+            "store_ids": recon.STORE_IDS, "all_ids": recon.ALL_IDS,
+            "rates": recon.RATE}
+
+
+@app.post("/api/recon/begin")
+def recon_begin(req: ReconBegin):
+    """Register a synthetic user's ground truth (reserved-space values only)."""
+    from iforensics.sim import reconstruction as recon
+    if not req.user_id:
+        raise HTTPException(400, "user_id required")
+    recon.STATE.register_truth(req.user_id, req.truth or {})
+    return {"ok": True, "user_id": req.user_id,
+            "fields": sorted((req.truth or {}).keys())}
+
+
+@app.post("/api/recon/ingest")
+def recon_ingest(req: ReconIngest):
+    """Run one request through every surface's retention policy."""
+    from iforensics.sim import reconstruction as recon
+    if not req.prompt:
+        raise HTTPException(400, "prompt required")
+    return recon.STATE.ingest(req.prompt, req.metadata or {},
+                              mask=req.mask, step=req.step,
+                              response=req.response)
+
+
+@app.get("/api/recon/residuals")
+def recon_residuals(user_id: str, surface: str = "", limit: int = 200):
+    """Raw residual view: what one store literally still holds."""
+    from iforensics.sim import reconstruction as recon
+    try:
+        return recon.residuals(recon.STATE, user_id,
+                               surface or None, limit=limit)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.post("/api/recon/reconstruct")
+def recon_reconstruct(req: ReconReconstruct):
+    """The insider's query over a chosen set of surfaces."""
+    from iforensics.sim import reconstruction as recon
+    try:
+        return recon.reconstruct(recon.STATE, req.user_id,
+                                 req.surfaces or None, amplify=req.amplify)
+    except recon.UnknownUser:
+        raise HTTPException(404, "no ground truth (POST /api/recon/begin)")
+
+
+@app.get("/api/recon/report")
+def recon_report(user_id: str):
+    """Full report: solo surfaces, cumulative curve, amplification, curves."""
+    from iforensics.sim import reconstruction as recon
+    try:
+        return recon.build_report(recon.STATE, user_id)
+    except recon.UnknownUser:
+        raise HTTPException(404, "no ground truth (POST /api/recon/begin)")
+
+
+@app.post("/api/recon/run")
+def recon_run(req: ReconRun):
+    """Execute a scenario server-side (ingest every turn, report, persist)."""
+    from iforensics.sim import reconstruction as recon
+    try:
+        return recon.run_session(req.scenario, seed=req.seed,
+                                 n=max(4, min(200, req.n)))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.get("/api/recon/runs")
+def recon_runs():
+    """Persisted reconstruction run ids, newest first."""
+    from iforensics.sim import reconstruction as recon
+    return {"runs": recon.list_runs()}
+
+
+@app.get("/api/recon/run")
+def recon_run_get(run_id: str):
+    """Load a persisted reconstruction run."""
+    from iforensics.sim import reconstruction as recon
+    try:
+        return recon.load_run(run_id)
+    except FileNotFoundError:
+        raise HTTPException(404, "unknown reconstruction run")
+
+
+@app.post("/api/recon/reset")
+def recon_reset():
+    """Clear every residual record, the collection, and all ground truth."""
+    from iforensics.sim import reconstruction as recon
+    return recon.STATE.reset()
+
+
+class ReconHarvestLive(BaseModel):
+    limit: int = 500
+    dry_run: bool = False
+
+
+@app.post("/api/recon/harvest-live")
+def recon_harvest_live(req: ReconHarvestLive):
+    """Harvest recent live Fox traffic (OUT events) into the recon collection.
+
+    The tap must be running (POST /api/live/start). Events are converted to
+    residual-like records (harvested records do not need ground truth).
+    """
+    from iforensics import live as live_mod
+    from iforensics.sim import reconstruction as recon
+    from iforensics.sim import harvest as hmod
+
+    t = live_mod.tap()
+    if not t:
+        raise HTTPException(409, "tap not running (POST /api/live/start)")
+    evs = t.snapshot(max(1, min(500, req.limit)))
+    # prefer OUT events that are completed requests
+    rows = []
+    for e in evs:
+        if e.get("dir") == "out" and e.get("prompt_head"):
+            rows.append({
+                "text": e.get("prompt_head"),
+                "surface": "log_head",
+                "turn": 0,
+                "metadata": {
+                    "service": e.get("service"),
+                    "model": e.get("model"),
+                    "query_type": e.get("query_type"),
+                    "status": e.get("status"),
+                    "dir": e.get("dir"),
+                    "user_id": e.get("service") or "live",
+                    "field": "query",
+                    "run_id": "live",
+                    "source": "fox_live",
+                },
+            })
+    if not req.dry_run:
+        recon.collection().harvest(rows, user_id="live", run_id="live")
+    return {"events": len(evs), "out": len(rows), "harvested": 0 if req.dry_run else len(rows),
+            "users": recon.collection().stats()["users"],
+            "strategy": hmod.STRATEGY}
+
+
+@app.get("/api/recon/collection")
+def recon_collection():
+    """The harvest-now / consume-later vector collection, as it stands."""
+    from iforensics.sim import reconstruction as recon
+    return recon.collection().stats()
+
+
+@app.post("/api/recon/consume")
+def recon_consume(req: ReconConsume):
+    """Phase two of the strategy: read the collection back and attack it.
+
+    Nothing here touches the residual store — the point is that the rows were
+    harvested earlier, possibly before ground truth existed, and the attack
+    is an independent, repeatable act.
+    """
+    from iforensics.sim import reconstruction as recon
+    col = recon.collection()
+    uid = (req.user_id or "").strip() or col.last_user
+    if not uid:
+        raise HTTPException(404, "collection is empty — run a session first")
+    truth = recon.STATE.get_truth(uid)
+    if req.attack and not truth:
+        raise HTTPException(404,
+                            f"no ground truth for {uid!r} — POST /api/recon/begin")
+    return col.consume(uid, truth=truth, attack=req.attack)
+
+
 @app.get("/api/findings")
 def findings_hub():
     """One severity-ranked list across security, risk, trust, claims,
@@ -1099,7 +1395,24 @@ def service_risk(limit: int = 5000):
 
 @app.get("/api/ollama")
 def ollama():
-    return ollama_client.ping()
+    """Ollama reachability — Fox-services first, direct :11434 as fallback.
+
+    The dashboard is not necessarily on the box that runs Ollama, so asking
+    Fox `/api/ollama/running` is the path that works; a direct `/api/ps` is
+    the patch around a Fox outage, and `via` says which one answered.
+    """
+    from iforensics import fox_client
+    try:
+        ps = fox_client.ollama_running()
+    except Exception as e:  # noqa: BLE001 - a health probe must not 500
+        return {"ok": False, "model": ollama_client.MODEL, "error": str(e),
+                "via": "none", "url": ollama_client.OLLAMA_URL}
+    via = ps.get("via") or "fox"
+    names = [m.get("name") or m.get("model") or ""
+             for m in (ps.get("models") or [])]
+    return {"ok": True, "model": ollama_client.MODEL, "models": names,
+            "loaded": len(names), "via": via,
+            "url": config.FOX_URL if via == "fox" else ollama_client.OLLAMA_URL}
 
 
 @app.get("/api/fox/live")

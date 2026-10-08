@@ -1,0 +1,32 @@
+{
+ "service": "stateless-inference",
+ "reconstructed_from": {
+  "requests": 330,
+  "models": {},
+  "query_types": {
+   "residual_ingest": 330
+  }
+ },
+ "inferred_project": "stateless-inference residual surfaces (P14 model)",
+ "pipeline_summary": "prompts -> 8 residual surfaces -> vector collection -> reconstruction (harvest now, consume/attack later)",
+ "pipeline_stages": [
+  "capture_prompt",
+  "residual_retention",
+  "vector_collection.harvest",
+  "reconstruction.consume"
+ ],
+ "io_schema": {
+  "inputs": [],
+  "prompt_slots": [
+   "template_1"
+  ]
+ },
+ "instructions_recovered": [],
+ "caveats": [
+  "This entry is a MODEL of a provider that advertises stateless inference, not a build inferred from fox LLM telemetry: no service in the mesh actually streams these prompts.",
+  "Counts come from the canonical session (stateless_coding, n=48, seed=42): 330 residual records across the eight surfaces, 2 ground-truth fields, pooled accuracy 1.0.",
+  "Values are synthetic by construction (900-series SSN, 4242 PANs, example.com, 555 phones) — nothing here is a real credential.",
+  "Completion text is NOT logged upstream — responses are re-derived by replaying the scaffold, never recovered.",
+  "Two-phase strategy: rows are harvested on ingest with no ground truth attached; the attack runs later against truth registered at any point after collection."
+ ]
+}

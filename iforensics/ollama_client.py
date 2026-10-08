@@ -113,6 +113,22 @@ def ask_json(system: str, user: str, untrusted=None, untrusted_label: str = "",
     return out
 
 
+def ps(timeout: float = 8.0) -> dict:
+    """GET /api/ps — models currently resident in VRAM (direct Ollama).
+
+    Prefer `fox_client.ollama_running()`: it asks Fox-services first and only
+    lands here when Fox itself cannot answer, which is the case this exists
+    for (the box running the dashboard is not the box running Ollama).
+    """
+    url = OLLAMA_URL + "/api/ps"
+    req = urllib.request.Request(url, method="GET")
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.loads(r.read().decode())
+    except Exception as e:  # noqa: BLE001
+        raise OllamaError(f"{url}: {type(e).__name__}: {e}") from e
+
+
 def ping(model: str = MODEL) -> dict:
     try:
         r = ask("You are a health check.", "Reply with exactly: OK",
