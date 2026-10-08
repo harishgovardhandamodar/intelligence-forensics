@@ -27,6 +27,82 @@ Env: `FOX_URL` (default `http://localhost:8210`), `FOX_SERVICES_DB` override,
 `OLLAMA_URL` (default `http://localhost:11434`), `IF_MODEL` (default `qwen3.8:27b`),
 `IF_PORT` (default `8211`).
 
+## Visual tour
+
+Screenshots captured live against the dashboard (`docs/screenshots/shoot.py`
+with Playwright + headless Chromium — re-run it any time the UI changes).
+
+### Overview — mesh at a glance
+
+![Overview tab](docs/screenshots/overview.png)
+
+KPI tiles (requests, services, reconstructions, agent runs, Fox reachability,
+model) above the latest agentic forensic brief, rendered as markdown. The
+sidebar carries every area with live badges — findings count, tap state —
+and the header shows version, Fox status, and model at all times.
+
+### Live tap — widgets, not sub-tabs
+
+![Live tap tab](docs/screenshots/live.png)
+
+API-level sniff of Fox `:8210`: queue IN arrivals, completed OUT rows, and
+model-load SYS events stream over SSE with auto-reconnect. The Feed widget
+(tall, filterable) sits beside Traffic (rates + per-bucket chart + model
+mix + heatmap); below are Live reconstruction (progressive re-profiling as
+queries accumulate) and the Stateless recon live view (harvest → co-serve →
+consume). Jump buttons scroll to any widget with a highlight flash.
+
+### Stateless recon — what "stateless" still keeps
+
+![Stateless recon tab](docs/screenshots/residuals.png)
+
+A provider that keeps no chat history still leaks through eight residual
+surfaces — logging heads, token meters, vectors, caches, training staging,
+infrastructure leftovers, support tooling — plus the repeated-near-query
+amplifier. Each surface card shows solo accuracy with an inspectable raw
+store; cumulative bars can only rise; amplification (Δ +0.79 above) pools
+every request. Vectors report accuracy 0 and contribute linkage only —
+pure vector-to-text inversion is never claimed. All values are synthetic
+(900-series SSNs, `4242…` PANs).
+
+### Security — dial, donut, verdicts
+
+![Security tab](docs/screenshots/security.png)
+
+Summary / Findings / SAST-DAST workflow panes: risk-rating dial, severity
+donut, spotlight KPIs, runtime-posture probe pills (8 deterministic DAST
+probes, refreshed on tab open), and per-finding tables. SAST (8 static
+checks) and DAST (8 loopback probes) are triaged by the local model into
+confirmed / dismissed / uncertain with adjusted severity and one-line fixes
+— deterministic results ship even when Ollama is down.
+
+### Timeline, Reconstructions, Evidence, Graph, Agents
+
+![Timeline tab](docs/screenshots/timeline.png)
+
+- **Timeline** — one chronological lane: IN arrivals linked to OUT
+  completions by queue id (Δ-after-IN inline), hollow dots for orphans,
+  pulsing dots for in-flight, link filter without refetch.
+
+![Timeline tab](docs/screenshots/timeline.png)
+
+- **Reconstructions** — every rebuilt service plus persisted `recon-*`
+  residual runs, file browser included.
+
+![Reconstructions tab](docs/screenshots/recon.png)
+
+- **Evidence** — locker with file counts, total MB, top folders, scrollable
+  list beside the preview.
+
+![Evidence tab](docs/screenshots/evidence.png)
+
+- **Graph / Agents** — knowledge-graph nodes, agentic runs with per-run
+  graphs and cost.
+
+![Graph tab](docs/screenshots/graph.png)
+
+![Agents tab](docs/screenshots/agents.png)
+
 ## Docker + remote access (Tailscale / LAN)
 
 > **No auth.** The dashboard implements no authentication, so its viewer
