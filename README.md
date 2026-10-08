@@ -162,6 +162,14 @@ Mermaid v10 is vendored (`static/mermaid.min.js` → `/static/`, CDN fallback)
 with a dark theme, so diagrams render even on offline LAN/tailnet; Markdown
 gets proper joined paragraphs, lists, tables and code blocks in styled frames.
 
+## Simulation scenarios — what each experiment leaks
+
+All 13 scenarios (10 embedding-reconstruction workloads + 3
+stateless-residual workloads) are explained with per-scenario mermaid
+diagrams, leakage profiles, and reproduction commands in
+[`docs/scenarios.md`](docs/scenarios.md) — start there to read any curve
+in the Sim or Stateless recon tabs.
+
 ## Live sniffing (tap + optional pcap)
 
 - **API-level tap** (no root): `iforensics/live.py` attaches to fox `:8210`
@@ -215,7 +223,8 @@ set of surfaces can reassemble:
 Server routes (`/api/recon/*`, separate state from `/api/sim/*`):
 `surfaces · begin · ingest · residuals · reconstruct · report · run · runs ·
 reset · collection · consume · harvest-live · coserve · coserve-auto ·
-live-users · live-report`. The **Sim tab** gains a *Reconstruction* card plus a raw residual
+live-users · live-report`. Workload details (fields, carriers, leakage
+profiles, diagrams) live in [`docs/scenarios.md`](docs/scenarios.md). The **Sim tab** gains a *Reconstruction* card plus a raw residual
 inspector. Docs: `design/08-reconstruction-simulation.md` (11 diagrams).
 
 The client app is `recon_client/` — standard library only, no pip install.
