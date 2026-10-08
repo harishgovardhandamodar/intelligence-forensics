@@ -14,7 +14,7 @@ body{background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,sans-serif;mar
 .layout{display:grid;grid-template-columns:300px 1fr;grid-template-rows:auto 1fr;min-height:100vh}
 header{grid-column:1/-1;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--bg2);display:flex;gap:12px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:20}
 header h1{font-size:16px;margin:0}header .sub{color:var(--mut);font-size:12px}
-.foxmark{width:23px;height:23px;vertical-align:-5px;margin-right:3px}
+.foxlogo{width:26px;height:26px;vertical-align:-6px;margin-right:5px;border-radius:6px;background:#fff}
 #sidebar{border-right:1px solid var(--line);background:var(--bg2);padding:12px 10px;position:sticky;top:53px;max-height:calc(100vh - 53px);overflow-y:auto}
 #sidebar .grp{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin:12px 8px 4px}
 #sidebar .grp:first-child{margin-top:2px}
@@ -118,6 +118,9 @@ details.card>.coll-body{padding:0 14px 12px}
 #diag-viewer-body .diag-canvas svg{max-width:none}
 #diag-viewer-body .mut{padding:4px 4px 0}
 .diagram-wrap g.node{cursor:help}
+/* sim-tab scenario diagrams read better centered in their panel */
+#sim-scenarios .diagram-wrap{display:flex;justify-content:center}
+#sim-scenarios .diagram-wrap svg{display:block;max-width:100%}
 .code-wrap{background:#00000040;border:1px solid var(--line);border-radius:8px;margin:10px 0}
 .code-lang{font-size:11px;color:var(--mut);padding:4px 10px;border-bottom:1px solid var(--line)}
 #design-rail a.on{font-weight:700}
@@ -137,6 +140,8 @@ tr[data-svc]:hover{background:#1f6feb18}
 #ts-chart .bar:hover{opacity:1}
 #ts-chart .ln{fill:none;stroke:#58a6ff;stroke-width:1.6}
 #ts-chart .ax{fill:var(--mut);font-size:10px}
+.k{display:inline-block;margin-right:12px}
+.sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
 #ts-legend{margin-top:4px;font-size:12px}
 #ts-legend .k{display:inline-block;margin-right:12px}
 #ts-legend .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
@@ -183,6 +188,10 @@ tr[data-svc]:hover{background:#1f6feb18}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 #58a6ff66}50%{box-shadow:0 0 0 5px transparent}}
 .ev.orph .dot{background:transparent;border:2px solid var(--mut);width:7px;height:7px;margin-top:6px}
 .ev .pill{margin-left:6px}
+/* evidence locker: files beside preview */
+.ev-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:10px;align-items:start}
+.ev-grid>.card{margin-bottom:10px}
+@media(max-width:1050px){.ev-grid{grid-template-columns:1fr}}
 /* stateless-inference residual reconstruction tab (P14) */
 .res-verdict{margin:0 0 10px;padding:9px 12px;border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:8px;background:var(--bg3);font-size:13px;line-height:1.5}
 .res-verdict b{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-right:8px}

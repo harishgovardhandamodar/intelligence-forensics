@@ -70,7 +70,13 @@ instructions:
   try{drawTopo(await j('/api/topology'));}catch(e){$('topo').textContent='topology failed: '+e;}
   try{
    const ev=await j('/api/evidence');
-   $('t-ev').querySelector('tbody').innerHTML=ev.files.map(f=>`<tr data-name="${escA(f.name)}" data-size="${escA(f.size_mb)}"><td><code>${escH(f.name)}</code></td><td class="mut">${escH(f.size_mb)} MB</td></tr>`).join('')||trowState(2,'no evidence files');
+   const files=ev.files||[];
+   const totMB=files.reduce((s,f)=>s+(parseFloat(f.size_mb)||0),0);
+   const dirs={};
+   files.forEach(f=>{const d=(f.name||'').split('/')[0]||'root';dirs[d]=(dirs[d]||0)+1;});
+   const top=Object.entries(dirs).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([d,n])=>`${escH(d)} ${n}`).join(' · ');
+   const es=$('ev-sum');if(es)es.textContent=`${files.length} files · ${totMB.toFixed(1)} MB${top?' · '+top:''}`;
+   $('t-ev').querySelector('tbody').innerHTML=files.map(f=>`<tr data-name="${escA(f.name)}" data-size="${escA(f.size_mb)}"><td><code>${escH(f.name)}</code></td><td class="mut">${escH(f.size_mb)} MB</td></tr>`).join('')||trowState(2,'no evidence files');
    $('t-ev').querySelectorAll('tbody tr[data-name]').forEach(r=>r.addEventListener('click',()=>showEvidence(r.dataset.name,r.dataset.size)));
    wireTable('#t-ev','#filt-ev');
   }catch(e){$('t-ev').querySelector('tbody').innerHTML=trowState(2,'evidence failed: '+e,'warn');}
@@ -699,9 +705,26 @@ function renderSecurity(resp){
  const pt=$('t-sec-proj')&&$('t-sec-proj').querySelector('tbody');
  if(pt)pt.innerHTML=(r.projects||[]).slice(0,30).map(p=>`<tr data-f='${escA(JSON.stringify(p))}'><td><code>${escH(p.project)}</code></td><td class="${SEC_CLS('critical')}">${escH(p.critical)}</td><td>${escH(p.high)}</td><td>${escH(p.medium)}</td><td class=mut>${escH(p.low)}</td><td><b>${escH(p.total)}</b></td></tr>`).join('')||trowState(6,'no project breakdown');
  secCache=r;
- renderSecView();
+ const an=$('sec-analytics');
+ if(an)an.innerHTML=secAnalyticsHTML(r);
 }
 const SEV_HEX={critical:'#f85149',high:'#d29922',medium:'#a371f7',low:'#8b949e'};
+function riskDial(rating){
+ const frac={low:.12,medium:.38,high:.65,critical:.92}[rating]||.12;
+ const col={low:'#3fb950',medium:'#a371f7',high:'#d29922',critical:'#f85149'}[rating]||'#3fb950';
+ const r=54,C=Math.PI*r,d=C*(1-frac);
+ return `<svg viewBox="0 0 130 78" width="170"><path d="M11 66 A54 54 0 0 1 119 66" fill="none" stroke="#30363d" stroke-width="12" stroke-linecap="round"/>`
+  +`<path d="M11 66 A54 54 0 0 1 119 66" fill="none" stroke="${col}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${d.toFixed(1)}" style="transition:stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1)"/>`
+  +`<text x="65" y="60" text-anchor="middle" fill="${col}" font-size="17" font-weight="800">${escH(rating||'low')}</text></svg>`;
+}
+function sevDonut(tot){
+ const keys=['critical','high','medium','low'];
+ const sum=Math.max(1,keys.reduce((s,k)=>s+(tot[k]||0),0));
+ const r=40,C=2*Math.PI*r;let off=0;
+ const segs=keys.map(k=>{const frac=(tot[k]||0)/sum,out=`<circle cx="60" cy="60" r="${r}" fill="none" stroke="${SEV_HEX[k]}" stroke-width="18" stroke-dasharray="${(frac*C).toFixed(1)} ${C.toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}" transform="rotate(-90 60 60)"><title>${k}: ${tot[k]||0}</title></circle>`;off+=frac*C;return out;}).join('');
+ const leg=keys.map(k=>`<span class=k><span class=sw style="background:${SEV_HEX[k]}"></span>${k} ${tot[k]||0}</span>`).join(' ');
+ return `<div class=row style="align-items:center"><svg viewBox="0 0 120 120" width="150">${segs}<text x="60" y="65" text-anchor="middle" fill="#e6edf3" font-size="20" font-weight="800">${sum}</text></svg><div>${leg}<div class=mut style="margin-top:6px">total findings</div></div></div>`;
+}
 function secAnalyticsHTML(r){
  r=r||{};
  const tot=r.totals||{};
@@ -724,17 +747,15 @@ function secAnalyticsHTML(r){
   +`<div class="card stat"><div class="v mut">${fix}</div><div class="k">likely fixtures</div></div>`
   +`<div class="card stat"><div class="v">${files}</div><div class="k">files with hits</div></div>`
   +`<div class="card stat"><div class="v">${(r.injections||[]).length}</div><div class="k">injection patterns</div></div>`
-  +`</div></div><div class=card><h3>By severity</h3>${sevRows}</div>`
+  +`</div></div><div class=card><div class=row style="align-items:flex-start"><div><h3>Risk rating</h3>${riskDial(r.risk_rating||'low')}</div><div style="flex:1;min-width:220px"><h3>Severity mix</h3>${sevDonut(tot)}</div></div></div><div class=card><h3>By severity</h3>${sevRows}</div>`
   +`<div class=card><h3>Top finding kinds</h3>${bars}</div>`
   +(projs.length?`<div class=card><h3>Top projects</h3>${projRows}</div>`:'');
 }
-let secView='table',secCache=null;
-function renderSecView(){
- const an=$('sec-analytics'),tb=$('sec-tables');
- const showAn=secView==='analytics';
- if(an){an.style.display=showAn?'':'none';if(showAn)an.innerHTML=secAnalyticsHTML(secCache);}
- if(tb)tb.style.display=showAn?'none':'';
-}
+let secCache=null;
+const switchSecSub=v=>{
+ document.querySelectorAll('[data-ss]').forEach(b=>b.classList.toggle('on',b.dataset.ss===v));
+ ['sum','find','flow'].forEach(k=>{const p=$('sp-'+k);if(p)p.style.display=k===v?'':'none';});
+};
 const TRUST_CLS=s=>(s==='fail'?'warn':(s==='warn'?'':'ok'));
 function renderTrust(resp){
  trustCache=resp;
@@ -762,6 +783,19 @@ function loadSecurity(){
  j('/api/security?scope='+encodeURIComponent(scope)).then(renderSecurity).catch(e=>{$('sec-msg').textContent='security failed: '+e;});
  j('/api/trust').then(renderTrust).catch(()=>{});
  j('/api/risk').then(renderRisk).catch(()=>{});
+ loadPosture();
+}
+async function loadPosture(){
+ const el=$('sec-posture');if(!el)return;
+ el.className='mut';el.textContent='probing…';
+ try{
+  const d=await j('/api/security/posture');
+  const items=(d.items||[]);
+  el.innerHTML=items.map(f=>f.result==='pass'
+   ?`<span class="pill ok" title="${escA(f.probe)}">${escH(f.probe)}</span>`
+   :`<span class="pill crit" title="${escA(f.detail)} — ${escA(f.evidence)}">${escH(f.probe)} ✕</span>`).join(' ')
+   +`<div class=mut style="margin-top:6px">${items.filter(f=>f.result==='pass').length}/${items.length} probes passing · mitigations in <code>iforensics/sast.py</code> + <code>iforensics/dast.py</code> P18</div>`;
+ }catch(e){el.className='warn';el.textContent='posture probe failed: '+e;}
 }
 function secScan(){
  $('sec-msg').textContent='scanning (deterministic + LLM)…';
@@ -956,9 +990,50 @@ $('b-inv').onclick=async()=>{$('runmsg').textContent='investigating…';try{cons
 $('b-report').onclick=async()=>{$('runmsg').textContent='generating unified report…';try{const r=await pj('/api/reports/run');const d=r.diff||{};$('runmsg').textContent=`report ${r.id} (db-changed=${d.db_changed??'?'}${(d.services_added||[]).length?' +'+d.services_added.join(','):''}) — see Reports below`;showNotif('unified report '+r.id,'ok');loadReports();}catch(e){$('runmsg').textContent='report failed: '+e;showNotif('report failed','err');}};
 $('b-agent').onclick=async()=>{$('runmsg').textContent='launching…';const q=$('opt-quick').checked;try{const r=await pj('/api/runs',{quick:q});if(r.detail){$('runmsg').textContent=r.detail+' — wait for a run to finish';showNotif(r.detail,'warn');}else{$('runmsg').textContent='run '+JSON.stringify(r)+' — refresh Agentic tab in a few min';showNotif('agentic run launched','ok');}}catch(e){$('runmsg').textContent='launch failed: '+e;showNotif('launch failed','err');}};
 const _sb=$('b-sec-scan');if(_sb)_sb.onclick=secScan;
+async function runAppSec(workflow){
+ const m=$('sec-eval-msg'),o=$('sec-eval');
+ if(m)m.textContent=`${workflow.toUpperCase()} running (deterministic + local LLM)…`;
+ if(o)o.innerHTML='<div class="mut loading">probing…</div>';
+ try{
+  const d=await pj('/api/security/evaluate',{workflow,scope:'app',use_llm:true});
+  if(m)m.textContent=`${workflow.toUpperCase()} complete`;
+  showNotif(workflow.toUpperCase()+' evaluation complete','ok');
+  if(o)o.innerHTML=['sast','dast'].filter(k=>d[k]).map(k=>secEvalCard(k,d[k])).join('');
+ }catch(e){if(m)m.textContent='evaluation failed: '+e;showNotif('evaluation failed','err');}
+}
+const verdictPill=v=>v==='confirmed'?'<span class="pill crit">confirmed</span>':v==='dismissed'?'<span class="pill ok">dismissed</span>':v==='unjudged'?'<span class="pill">unjudged</span>':`<span class="pill warn">${escH(v||'?')}</span>`;
+function secEvalCard(kind,r){
+ const items=(r.triage&&r.triage.verdicts)||r.items||[];
+ const llm=r.triage&&r.triage.llm;
+ const sub=kind==='sast'
+  ?`${r.findings} static findings · triaged ${r.triage?r.triage.judged:0}`
+  :`${r.probes} probes · ${r.failed} failed`;
+ const llmBit=!llm?'':llm.status==='ok'
+  ?` · LLM ${escH(llm.model||'')} in ${escH(llm.ms)}ms`
+  :` · <span class=warn>LLM unavailable — deterministic only</span>`;
+ const rows=items.map(f=>{
+  const where=f.file==='(runtime)'?escH(f.check||f.probe||''):`${escH(f.file||'?')}:${escH(f.line??'?')}`;
+  return `<tr><td><code>${escH(f.id)}</code></td><td>${pill(f.adj_severity||f.severity)}</td><td class=mut>${where}</td><td><code>${escH((f.match||f.evidence||'').slice(0,90))}</code></td><td>${verdictPill(f.verdict)}${f.rationale?`<div class=mut>${escH(f.rationale)}</div>`:''}${f.fix?`<div>fix: <code>${escH(f.fix)}</code></div>`:''}</td></tr>`;}).join('');
+ return `<div class=card><h3>${kind.toUpperCase()} evaluation <span class=mut style="font-weight:normal">${escH(sub)}${llmBit}</span></h3>`
+  +verdictBars(items)
+  +`<table><thead><tr><th>id</th><th>severity</th><th>where</th><th>match</th><th>LLM verdict</th></tr></thead><tbody>${rows||'<tr><td class=mut colspan=5>nothing to show</td></tr>'}</tbody></table></div>`;
+}
+const VERDICT_HEX={confirmed:'#f85149',dismissed:'#3fb950',uncertain:'#d29922',unjudged:'#8b949e'};
+function verdictBars(items){
+ const counts={};
+ (items||[]).forEach(f=>{const v=f.verdict||'unjudged';counts[v]=(counts[v]||0)+1;});
+ const tot=Math.max(1,Object.values(counts).reduce((s,v)=>s+v,0));
+ const order=['confirmed','dismissed','uncertain','unjudged'];
+ return `<div class=row style="margin:2px 0 8px">${order.filter(v=>counts[v]).map(v=>
+  `<span class=k><span class=sw style="background:${VERDICT_HEX[v]}"></span>${v} ${counts[v]}</span>`).join(' ')}`
+  +`<span style="flex:1"></span></div><div class=mixbar style="margin:0 0 8px">${order.filter(v=>counts[v]).map(v=>
+  `<span title="${v}: ${counts[v]}" style="width:${(100*counts[v]/tot).toFixed(1)}%;background:${VERDICT_HEX[v]}"></span>`).join('')}</div>`;
+}
+const _sast=$('b-sast');if(_sast)_sast.onclick=()=>runAppSec('sast');
+const _dast=$('b-dast');if(_dast)_dast.onclick=()=>runAppSec('dast');
 document.querySelectorAll('[data-rs]').forEach(b=>b.addEventListener('click',()=>switchRunSub(b.dataset.rs)));
 const _ss=$('sel-secscope');if(_ss)_ss.onchange=loadSecurity;
-const _sv=$('sel-secview');if(_sv)_sv.onchange=()=>{secView=_sv.value;renderSecView();};
+document.querySelectorAll('[data-ss]').forEach(b=>b.addEventListener('click',()=>switchSecSub(b.dataset.ss)));
 const _sf=$('sel-find');if(_sf)_sf.onchange=renderFindRows;
 const _bc=$('b-chain');if(_bc)_bc.onclick=loadChain;
 const _cl=$('sel-chain-link');if(_cl)_cl.onchange=()=>renderChain({events:chainCache,summary:chainSummary});

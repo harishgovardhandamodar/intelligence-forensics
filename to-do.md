@@ -325,3 +325,18 @@ Plan: `to-do-insider-recon-instructions.md` (all 8 phases + repo mapping).
 - [x] P17.3 Design & Architecture: new `design/09-live-reconstruction.md`
       (3 diagrams: flow, ethics gate, UI wiring) registered in the Design
       tab index; README routes + live/framework sections; this entry
+
+### P18 — local-LLM SAST + DAST evaluation workflows
+- [x] P18.1 `iforensics/sast.py`: 8 deterministic regex checks (exec/xss/
+      SQL/crypto/hosts/redirect/debug) + single-call local-LLM triage with
+      one schema-nudge retry; findings fenced as untrusted (D1); app-scope
+      only; outages degrade to deterministic-only, never 500
+- [x] P18.2 `iforensics/dast.py`: 8 loopback-only runtime probes (headers,
+      traversal, method, error-shape, CORS, no-auth, rate-limit coverage,
+      input validation) + LLM evaluation of failures; probe 7 found and
+      fixed a real gap (`/api/sim/dlp` had no rate limit)
+- [x] P18.3 `POST /api/security/evaluate` (sast|dast|both, rate-limited) +
+      Security tab SAST/DAST buttons with verdict tables; `tests/test_
+      appsec.py` (12 tests); live-model proof: qwen3.8:27b triaged both
+      workflows sensibly (fixtures dismissed, SHA-1 confirmed, LAN
+      exposure dismissed with control cited)

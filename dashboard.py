@@ -47,6 +47,7 @@ POST_LIMITS = {
     "/api/sim/ingest": (1000, 300),
     "/api/sim/attack": (60, 60),
     "/api/sim/begin": (60, 60),
+    "/api/sim/dlp": (60, 60),
     "/api/sim/reset": (30, 60),
     "/api/sim/demo": (10, 60),
     "/api/recon/run": (10, 300),
@@ -58,6 +59,7 @@ POST_LIMITS = {
     "/api/recon/coserve": (30, 60),
     "/api/recon/coserve-auto": (30, 60),
     "/api/recon/reset": (30, 60),
+    "/api/security/evaluate": (3, 300),
 }
 _POST_HITS: dict[str, deque] = {}
 
@@ -77,9 +79,10 @@ async def _post_rate_limit(request, call_next):
 
 PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>Fox - Intelligence Stack - Forensics</title>
+<link rel=icon href="/static/fox-logo.png">
 <meta name=color-scheme content="dark light">
 <link rel="stylesheet" href="/static/app.css?v=08bd3ce9"></head><body>
-<header><h1><svg class=foxmark viewBox="0 0 32 32" aria-hidden="true"><path d="M3 2 L11 9 L7 13 Z" fill="#e8832a"/><path d="M29 2 L21 9 L25 13 Z" fill="#e8832a"/><path d="M5.5 5 L10 9.5 L7.5 11.5 Z" fill="#7a3b12"/><path d="M26.5 5 L22 9.5 L24.5 11.5 Z" fill="#7a3b12"/><path d="M7 10 L25 10 L23 21 L16 29 L9 21 Z" fill="#e8832a"/><path d="M9 21 L16 29 L16 22 L10.5 18.5 Z" fill="#f5f0e8"/><path d="M23 21 L16 29 L16 22 L21.5 18.5 Z" fill="#f5f0e8"/><path d="M10.5 15 L15 16.6" stroke="#2b1408" stroke-width="2" stroke-linecap="round"/><path d="M21.5 15 L17 16.6" stroke="#2b1408" stroke-width="2" stroke-linecap="round"/><path d="M14 24.5 L18 24.5 L16 27 Z" fill="#2b1408"/></svg> Fox - Intelligence Stack - Forensics</h1><span class=sub id=hdr>loading&hellip;</span><span style="flex:1"></span><button id=b-theme title="toggle light/dark theme">◐</button></header>
+<header><h1><img class=foxlogo src="/static/fox-logo.png" alt="Fox logo"> Fox - Intelligence Stack - Forensics</h1><span class=sub id=hdr>loading&hellip;</span><span style="flex:1"></span><button id=b-theme title="toggle light/dark theme">◐</button></header>
 <div class=layout>
 <aside id=sidebar><nav id=tabs>
 <div class=grp>Investigate</div>
@@ -136,7 +139,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
  <div class=card><div class=row><h3>Live reconstruction <span class=mut style="font-weight:normal">retention + linkage + candidate shapes — never scored</span></h3><span style="flex:1"></span><span class=mut id=lres-auto-state></span><button class=act2 id=b-lres-auto>Auto co-serve</button><button class=act id=b-lres-lrec>Reconstruct live</button></div>
  <div class=mut>While the tap runs, every poll automatically co-serves new Fox completions into the residual surfaces, so this view stays warm. Truth registration is refused for live users — this shows what each surface kept, family linkage, and candidate secret shapes, with no accuracy claimed.</div>
  <div id=lres-live-out class=mut>no live reconstruction yet — start the tap, then Reconstruct live.</div></div>
- <div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14 · live traffic view</span></h3><span class=mut id=lres-sum></span><span style="flex:1"></span><button class="act danger" id=b-lres-reset>Reset residuals</button></div>
+ <div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">live traffic view</span></h3><span class=mut id=lres-sum></span><span style="flex:1"></span><button class="act danger" id=b-lres-reset>Reset residuals</button></div>
 <div class=mut>Eight residual surfaces of a provider that advertises <i>stateless inference</i> &mdash; observability logs, token meters, vectors, caches, training staging, infrastructure leftovers, human support tooling &mdash; plus the repeated-near-query amplifier that pools them across every turn. The client app is <code>recon_client/</code>; every number below is computed server-side, because the log holder is the party being measured.</div>
 <div class=row><span class=mut>scenario</span><select id=lsel-res-sc></select><span class=mut>turns</span><input id=linp-res-n value=48 style="width:54px"><span class=mut>seed</span><input id=linp-res-seed value=42 style="width:64px"><button class=act id=b-lres-run>Run session</button><span class=mut id=lres-runmsg></span></div>
 <div class=mut id=lres-blurb></div></div>
@@ -180,23 +183,37 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <section id=s-ledger><div class=card><div class=row><h3>Action ledger</h3><span class=mut id=ledger-verdict></span></div><div class=row><span class=mut>run</span><select id=sel-ledger></select><button class=act id=b-ledger>Reload</button><input id=filt-ledger placeholder="filter task/actor/action&hellip;"><span class=mut>every action, hash-chained — tampering breaks verification at the exact entry</span></div><table id=t-ledger><thead><tr><th>seq</th><th>actor</th><th>action</th><th>task</th><th>artifact sha</th></tr></thead><tbody></tbody></table></div><div class=card><div class=row><h3>Task queue</h3><span class=mut id=queue-sum></span></div><table id=t-queue><thead><tr><th>state</th><th>depth</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-mesh><div class=card><h3>Topology <span class=mut style="font-weight:normal">— service → container → peer → model</span></h3><div id=topo class=mut>loading&hellip;</div></div><div class=card><table id=t-mesh><thead><tr><th>node</th><th>online</th><th>hw</th><th>llm/1h</th><th>services</th></tr></thead><tbody></tbody></table></div></section>
 <section id=s-graph><div class=card><div class=row><h3>Knowledge graph</h3><span class=mut id=kg-sum></span></div><div class=mut>Services, prompt templates, models, findings and built evidence — a template node with edges into two services is cross-service leakage made visible.</div><div id=kg class=mut>loading&hellip;</div></div></section>
-<section id=s-evidence><div class=card><div class=row><input id=filt-ev placeholder="filter files&hellip;"><button class=act data-x=t-ev data-name=evidence-CSV>CSV</button><button class=act data-x=t-ev data-name=evidence-JSON>JSON</button><span class=mut id=ev-msg></span></div><table id=t-ev><thead><tr><th>file</th><th>size</th></tr></thead><tbody></tbody></table></div>
-<div class=card><h3>Preview <span class=mut id=ev-name style="font-weight:normal"></span></h3><div class=row><a id=ev-dl class=act download href="#">Download</a><span class=mut id=ev-info></span></div><pre id=ev-view>click a file&hellip;</pre></div></section>
-<section id=s-security><div class=card><div class=row>
-<button class=act id=b-sec-scan>Run security scan (deterministic + LLM)</button>
-<select id=sel-secscope><option value=app>this app</option><option value=workspace>parent workspace (all subfolders)</option></select>
-<span class=mut>view</span><select id=sel-secview><option value=table>Table</option><option value=analytics>Analytics</option></select>
-<span class=mut id=sec-msg></span></div>
-<div class=mut id=sec-stored></div><div class=mut id=sec-tracked></div>
-<div class="grid stats" id=sec-stats></div>
-<div id=sec-analytics class=mut>pick Analytics view&hellip;</div>
-<div id=sec-tables>
-<h3>Findings by project</h3><table class=tbl id=t-sec-proj><thead><tr><th>project</th><th>crit</th><th>high</th><th>med</th><th>low</th><th>total</th></tr></thead><tbody></tbody></table>
-<h3>Dashboard exposure</h3><div id=sec-exp class=mut>loading&hellip;</div>
-<h3>Secret / PII survivors</h3><table class=tbl id=t-sec-secrets><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th><th>flags</th></tr></thead><tbody></tbody></table>
-<h3>Prompt-injection attempts</h3><table class=tbl><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th></tr></thead><tbody id=sec-inject></tbody></table>
-<h3>Over-permissive files</h3><table class=tbl><thead><tr><th>file</th><th>mode</th><th>sev</th></tr></thead><tbody id=sec-perm></tbody></table>
+<section id=s-evidence><div class=card><div class=row><h3>Evidence locker</h3><span class=mut id=ev-sum></span><span style="flex:1"></span><input id=filt-ev placeholder="filter files&hellip;"><button class=act data-x=t-ev data-name=evidence-CSV>CSV</button><button class=act data-x=t-ev data-name=evidence-JSON>JSON</button><span class=mut id=ev-msg></span></div></div>
+<div class=ev-grid>
+<div class=card><h3>Files</h3><div style="overflow:auto;max-height:560px"><table id=t-ev><thead><tr><th>file</th><th>size</th></tr></thead><tbody></tbody></table></div></div>
+<div class=card><h3>Preview <span class=mut id=ev-name style="font-weight:normal"></span></h3><div class=row><a id=ev-dl class=act download href="#">Download</a><span class=mut id=ev-info></span></div><pre id=ev-view>click a file&hellip;</pre></div>
+</div></section>
+<section id=s-security><div class=card><div class=row><h3>Security posture</h3><span class=mut id=sec-msg></span><span style="flex:1"></span>
+<button class=act id=b-sec-scan>Run security scan</button>
+<select id=sel-secscope><option value=app>this app</option><option value=workspace>parent workspace (all subfolders)</option></select></div>
+<div class=subtabs>
+<button data-ss=sum class=on>Summary</button><button data-ss=find>Findings</button><button data-ss=flow>SAST / DAST workflows</button>
 </div></div>
+<div class=sec-pane id=sp-sum>
+<div class="grid stats" id=sec-stats></div>
+<div id=sec-analytics class=mut>run a scan to populate the analytics…</div>
+<div class=card><h3>Runtime posture <span class=mut style="font-weight:normal">— 8 DAST probes, deterministic, refreshed on tab open</span></h3><div id=sec-posture class=mut>loading&hellip;</div></div>
+<div class=mut id=sec-stored></div><div class=mut id=sec-tracked></div>
+</div>
+<div class=sec-pane id=sp-find style="display:none">
+<div class=card><h3>Findings by project</h3><table class=tbl id=t-sec-proj><thead><tr><th>project</th><th>crit</th><th>high</th><th>med</th><th>low</th><th>total</th></tr></thead><tbody></tbody></table></div>
+<div class=card><h3>Secret / PII survivors</h3><table class=tbl id=t-sec-secrets><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th><th>flags</th></tr></thead><tbody></tbody></table></div>
+<div class=card><h3>Prompt-injection attempts</h3><table class=tbl><thead><tr><th>kind</th><th>sev</th><th>where</th><th>match</th></tr></thead><tbody id=sec-inject></tbody></table></div>
+<div class=card><h3>Over-permissive files</h3><table class=tbl><thead><tr><th>file</th><th>mode</th><th>sev</th></tr></thead><tbody id=sec-perm></tbody></table></div>
+</div>
+<div class=sec-pane id=sp-flow style="display:none">
+<div class=card><div class=row><span class=mut>workflows</span>
+<button class=act id=b-sast>SAST + local LLM</button>
+<button class=act id=b-dast>DAST + local LLM</button>
+<span class=mut id=sec-eval-msg></span></div>
+<div class=mut>Static findings and runtime probes are triaged by the local model into confirmed / dismissed / uncertain, with adjusted severity and one-line fixes. Deterministic results ship even when Ollama is down.</div></div>
+<div id=sec-eval></div>
+</div>
 <details class="card coll" open><summary><div class=row><h3>Trust boundaries (D4)</h3><span class=mut id=sec-trust-sum></span><span class=chev>›</span></div></summary><div class=coll-body>
 <div class=mut>Assertions from design/trust-boundaries.md, re-checked against the code.</div>
 <table class=tbl id=t-sec-trust><thead><tr><th>rule</th><th>status</th><th>sev</th><th>detail</th></tr></thead><tbody></tbody></table>
@@ -213,7 +230,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=card><div class=row><h3>Run dossier</h3><span class=mut id=sim-dosmsg></span></div><div class=row><span class=mut>run</span><select id=sel-sim-run></select><button class=act id=b-sim-dos>Open dossier</button><a class=mut id=sim-dos-md href="#">markdown</a></div><div id=sim-dos-find class=mut></div><div id=sim-dos-doc class=md></div><div id=sim-dos-tl class=mut></div></div></section>
 
 <section id=s-residuals>
-<div class=card><div class=row><h3>Reconstruction &mdash; stateless insider <span class=mut style="font-weight:normal">P14</span></h3><span class=mut id=res-sum></span><span style="flex:1"></span><button class="act danger" id=b-res-reset>Reset residuals</button></div>
+<div class=card><div class=row><h3>Reconstruction &mdash; stateless insider</h3><span class=mut id=res-sum></span><span style="flex:1"></span><button class="act danger" id=b-res-reset>Reset residuals</button></div>
 <div class=mut>Eight residual surfaces of a provider that advertises <i>stateless inference</i> &mdash; observability logs, token meters, vectors, caches, training staging, infrastructure leftovers, human support tooling &mdash; plus the repeated-near-query amplifier that pools them across every turn. The client app is <code>recon_client/</code>; every number below is computed server-side, because the log holder is the party being measured.</div>
 <div class=row><span class=mut>scenario</span><select id=sel-res-sc></select><span class=mut>turns</span><input id=inp-res-n value=48 style="width:54px"><span class=mut>seed</span><input id=inp-res-seed value=42 style="width:64px"><button class=act id=b-res-run>Run session</button><span class=mut id=res-runmsg></span></div>
 <div class=mut id=res-blurb></div></div>
@@ -273,7 +290,9 @@ def health():
 
 @app.get("/", response_class=HTMLResponse)
 def index():
-    return PAGE
+    # No-cache on the shell: the JS/CSS bundles are content-hashed, but a
+    # heuristically-cached HTML page would pin the old bundle forever.
+    return HTMLResponse(PAGE, headers={"Cache-Control": "no-cache"})
 
 
 def _static_version() -> str:
@@ -1480,6 +1499,49 @@ def security_scan(req: ScanReq | None = None):
     model = req.model if req else None
     return security_agent.run_security(app=app, model=model, use_llm=True,
                                        scope=scope)
+
+
+class EvalReq(BaseModel):
+    workflow: str = "both"
+    scope: str = "app"
+    base_url: str = "http://127.0.0.1:8211"
+    max_findings: int = 20
+    model: str | None = None
+    use_llm: bool = True
+
+
+@app.get("/api/security/posture")
+def security_posture():
+    """Cheap deterministic DAST probes, no LLM — safe to poll on tab open."""
+    from iforensics import dast
+    return dast.evaluate(use_llm=False)
+
+
+@app.post("/api/security/evaluate")
+def security_evaluate(req: EvalReq | None = None):
+    """SAST and/or DAST workflows with local-LLM evaluation.
+
+    SAST triages static findings; DAST probes the running app (loopback
+    targets only) and evaluates the failures. Deterministic results ship
+    even when Ollama is down; the model only adds verdicts.
+    """
+    from iforensics import dast, sast
+    req = req or EvalReq()
+    if req.workflow not in ("sast", "dast", "both"):
+        raise HTTPException(400, "workflow must be sast|dast|both")
+    out: dict = {"workflow": req.workflow}
+    try:
+        if req.workflow in ("sast", "both"):
+            out["sast"] = sast.evaluate(
+                scope=req.scope, max_findings=req.max_findings,
+                model=req.model, use_llm=req.use_llm)
+        if req.workflow in ("dast", "both"):
+            out["dast"] = dast.evaluate(
+                base_url=req.base_url, max_findings=req.max_findings,
+                model=req.model, use_llm=req.use_llm)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return out
 
 
 @app.get("/api/trust")
