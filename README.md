@@ -13,8 +13,8 @@ runnable scaffold of each observed codebase.
 ```bash
 python cli.py investigate --hours 720 --limit 5000   # collect + profile + evidence/INVESTIGATION.md
 python cli.py build                                    # reconstructions/<service>/ scaffolds
-python cli.py build --only quai-radar
-python cli.py fingerprint --service quai-radar
+python cli.py build --only <App-Name-that-uses-LLM>
+python cli.py fingerprint --service <App-Name-that-uses-LLM>
 # LLM agentic deep-dive (local Qwen 3.8-27B via Ollama):
 python cli.py agent-run --quick                        # top-3 services, ~20s
 python cli.py agent-run                                # all services + critic stage, ~2-4 min
@@ -191,12 +191,12 @@ instead re-profile one service's Fox queries slice-by-slice (oldest-first,
 equal-count chunks) — no LLM needed, heuristic and instant:
 
 ```bash
-python cli.py progression --service quai-radar --n 5 --mode cumulative  # confidence growth
+python cli.py progression --service <App-Name-that-uses-LLM> --n 5 --mode cumulative  # confidence growth
 python cli.py progression --service hive-research-gpu --n 4 --mode window  # per-slice partials
 ```
 
 - `cumulative`: step k sees queries `0..k` — shows after how few queries the
-  inferred build stabilizes (quai-radar: stable from step 1/229 queries).
+  inferred build stabilizes (<App-Name-that-uses-LLM>: stable from step 1/229 queries).
 - `window`: step k sees only its own slice — surfaces drift/instability
   (hive-research-gpu slices flip labels: per-slice vocabulary varies).
 - API: `GET /api/reconstructions/{svc}/progression?n=5&mode=cumulative|window`
@@ -300,7 +300,7 @@ Every profile and every progression step carries two transparent 0–100 scores
   86.2 (A) as queries accumulate; noise (`probe`) sits at ~28 (D).
 - **Vibe index**: how much the app looks like a *pure vibe-coded* thin prompt
   wrapper (high query-per-template reuse, one model, few stages, prose-driven
-  spec) vs an engineered system. quai-radar scores 80.3 "pure vibe" — an
+  spec) vs an engineered system. <App-Name-that-uses-LLM> scores 80.3 "pure vibe" — an
   honest description of a single-prompt KG extractor — while thin/noisy
   services land "hybrid".
 
@@ -311,10 +311,10 @@ breakdowns. The Services tab shows score + vibe per service.
 ## What the current logs show (2026-09-11 → 2026-10-07, ~2.7k reqs)
 
 - `agentic-knowledge-mapper` → multi-agent debate risk scorer + research synthesizer
-- `quai-radar` → blockchain-news KG extractor + daily research-brief writer
+- `<App-Name-that-uses-LLM>` → knowledge-graph extractor + daily research-brief writer
 - `hive-research-gpu` → paper-surrogate / section-wise summarizer (subagent)
 - `kid-learning-lab` → tutor skill coach (embeddings)
-- Mesh peers: `axiom-dgx` (11 projects running: Quai-RADAR, Knowledgebase…),
+- Mesh peers: `axiom-dgx` (11 projects running: <App-Name-that-uses-LLM>, Knowledgebase…),
   `harishs-macbook-pro-1` (idle, mlx).
 
 ## Caveats
