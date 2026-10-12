@@ -884,6 +884,9 @@ def turn_progression(state: "ReconState", user_id: str) -> dict:
         pool = [r["text"] for r in records
                 if r["turn"] <= t and r["surface"] in all_stores and r["text"]]
         rep = score_texts(pool, truth)
+        fresh = [r for r in records
+                 if r["turn"] == t and r["text"]
+                 and r["surface"] in all_stores]
         steps.append({
             "turn": t, "texts": len(pool),
             "accuracy": rep["mean_accuracy"], "recovered": rep["recovered"],
@@ -893,15 +896,27 @@ def turn_progression(state: "ReconState", user_id: str) -> dict:
                     "matched": v.get("matched", 0),
                     "total": v.get("total", 0)}
                 for f, v in rep["fields"].items()},
-            "new_surfaces": sorted(
-                {r["surface"] for r in records
-                 if r["turn"] == t and r["text"]
-                 and r["surface"] in all_stores})})
+            "new_surfaces": sorted({r["surface"] for r in fresh}),
+            "new_texts": [
+                {"surface": r["surface"], "kind": r["kind"],
+                 "text": r["text"][:600]} for r in fresh]})
     seen: set[str] = set()
+    prev_asm: dict[str, str] = {}
     for s in steps:
         now = {f for f, v in s["fields"].items() if v["recovered"]}
         s["newly_recovered"] = sorted(now - seen)
         seen |= now
+        # per-field character forensics: positions that flipped from masked
+        # to known at exactly this turn (the "how it cracked" ledger)
+        deltas: dict[str, list] = {}
+        for f, v in s["fields"].items():
+            cur, old = v.get("assembled", ""), prev_asm.get(f, "")
+            flips = [[i, ch] for i, ch in enumerate(cur)
+                     if ch.isalnum() and (i >= len(old) or not old[i].isalnum())]
+            if flips:
+                deltas[f] = flips
+            prev_asm[f] = cur
+        s["field_deltas"] = deltas
     return {"user_id": user_id, "n_turns": len(turns), "steps": steps}
 
 

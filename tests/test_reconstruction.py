@@ -176,13 +176,28 @@ def test_turn_progression_scores_every_turn():
     assert last["recovered"] == res["report"]["recovered"]
     for s in prog["steps"]:
         assert set(s) >= {"turn", "texts", "accuracy", "recovered",
-                          "fields", "new_surfaces", "newly_recovered"}
+                          "fields", "new_surfaces", "newly_recovered",
+                          "new_texts", "field_deltas"}
     try:
         recon.turn_progression(recon.STATE, "u-nobody-here")
     except recon.UnknownUser:
         pass
     else:  # pragma: no cover
         raise AssertionError("progression scored a user with no truth")
+
+
+def test_progression_logs_sources_and_crack_deltas():
+    res = recon.run_session("stateless_aux_settlement", seed=42, n=24)
+    prog = recon.turn_progression(recon.STATE, res["user_id"])
+    assert any(s["new_texts"] for s in prog["steps"])
+    r0 = prog["steps"][0]["new_texts"][0]
+    assert set(r0) >= {"surface", "kind", "text"}
+    assert any(s["field_deltas"].get("credit_card") for s in prog["steps"])
+    # deltas point at real positions of the assembled value
+    last = prog["steps"][-1]
+    asm = last["fields"]["credit_card"]["assembled"]
+    for pos, ch in last["field_deltas"].get("credit_card", [])[:1]:
+        assert asm[pos] == ch
 
 
 def test_progression_endpoint_and_widget_ids():

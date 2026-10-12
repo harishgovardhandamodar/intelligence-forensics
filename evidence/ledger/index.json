@@ -1010,5 +1010,2313 @@
  "recon-20261008_212842": {
   "path": "/app/evidence/ledger/recon-20261008_212842.jsonl",
   "updated_at": 1791494922.2865725
+ },
+ "recon-20261009_071733": {
+  "path": "/app/evidence/ledger/recon-20261009_071733.jsonl",
+  "updated_at": 1791530254.294315
+ },
+ "recon-20261009_092157": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261009_092157.jsonl",
+  "updated_at": 1791530517.9988766
+ },
+ "recon-20261009_092158": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261009_092158.jsonl",
+  "updated_at": 1791530518.9402575
+ },
+ "recon-20261009_092211": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261009_092211.jsonl",
+  "updated_at": 1791530532.0117488
+ },
+ "recon-20261009_092212": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261009_092212.jsonl",
+  "updated_at": 1791530532.6204922
+ },
+ "recon-20261009_072225": {
+  "path": "/app/evidence/ledger/recon-20261009_072225.jsonl",
+  "updated_at": 1791530546.131345
+ },
+ "recon-20261009_092256": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261009_092256.jsonl",
+  "updated_at": 1791530576.961577
+ },
+ "recon-20261009_092257": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261009_092257.jsonl",
+  "updated_at": 1791530577.5273795
+ },
+ "sim-20261009_092257": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261009_092257.jsonl",
+  "updated_at": 1791530577.7272534
+ },
+ "recon-20261009_072519": {
+  "path": "/app/evidence/ledger/recon-20261009_072519.jsonl",
+  "updated_at": 1791530719.6420088
+ },
+ "recon-20261009_092939": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261009_092939.jsonl",
+  "updated_at": 1791530979.9803622
+ },
+ "recon-20261009_092940": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261009_092940.jsonl",
+  "updated_at": 1791530980.538524
+ },
+ "recon-20261009_072955": {
+  "path": "/app/evidence/ledger/recon-20261009_072955.jsonl",
+  "updated_at": 1791530995.206733
+ },
+ "recon-20261009_073020": {
+  "path": "/app/evidence/ledger/recon-20261009_073020.jsonl",
+  "updated_at": 1791531020.560043
+ },
+ "recon-20261009_073045": {
+  "path": "/app/evidence/ledger/recon-20261009_073045.jsonl",
+  "updated_at": 1791531045.7264128
+ },
+ "recon-20261009_073059": {
+  "path": "/app/evidence/ledger/recon-20261009_073059.jsonl",
+  "updated_at": 1791531059.713331
+ },
+ "recon-20261009_073117": {
+  "path": "/app/evidence/ledger/recon-20261009_073117.jsonl",
+  "updated_at": 1791531077.930566
+ },
+ "recon-20261009_073136": {
+  "path": "/app/evidence/ledger/recon-20261009_073136.jsonl",
+  "updated_at": 1791531096.3894744
+ },
+ "recon-20261009_073206": {
+  "path": "/app/evidence/ledger/recon-20261009_073206.jsonl",
+  "updated_at": 1791531126.513552
+ },
+ "recon-20261009_073424": {
+  "path": "/app/evidence/ledger/recon-20261009_073424.jsonl",
+  "updated_at": 1791531265.0407271
+ },
+ "recon-20261009_074952": {
+  "path": "/app/evidence/ledger/recon-20261009_074952.jsonl",
+  "updated_at": 1791532193.1291401
+ },
+ "recon-20261011_131959": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261011_131959.jsonl",
+  "updated_at": 1791717600.0038738
+ },
+ "recon-20261011_132000": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261011_132000.jsonl",
+  "updated_at": 1791717600.7032824
+ },
+ "sim-20261011_132004": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261011_132004.jsonl",
+  "updated_at": 1791717604.7237277
+ },
+ "recon-20261011_132034": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261011_132034.jsonl",
+  "updated_at": 1791717635.110456
+ },
+ "recon-20261011_132035": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261011_132035.jsonl",
+  "updated_at": 1791717635.7483938
+ },
+ "recon-20261011_132036": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261011_132036.jsonl",
+  "updated_at": 1791717636.3086457
+ },
+ "sim-20261011_132040": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261011_132040.jsonl",
+  "updated_at": 1791717640.3933935
+ },
+ "rogue-20261012_104228-collude_split_payload": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104228-collude_split_payload.jsonl",
+  "updated_at": 1791794548.4968934
+ },
+ "rogue-20261012_104228-detect_policy_only": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104228-detect_policy_only.jsonl",
+  "updated_at": 1791794548.516612
+ },
+ "rogue-20261012_104228-detect_missed_subtle": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104228-detect_missed_subtle.jsonl",
+  "updated_at": 1791794548.5270998
+ },
+ "rogue-20261012_104228-baseline_benign": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104228-baseline_benign.jsonl",
+  "updated_at": 1791794548.5375504
+ },
+ "rogue-20261012_104648-pollute_corpus": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104648-pollute_corpus.jsonl",
+  "updated_at": 1791794808.0625072
+ },
+ "rogue-20261012_104648-collude_split_payload": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104648-collude_split_payload.jsonl",
+  "updated_at": 1791794808.0554938
+ },
+ "rogue-20261012_104648-rogue_exfil_net": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104648-rogue_exfil_net.jsonl",
+  "updated_at": 1791794808.0346146
+ },
+ "rogue-20261012_104648-swarm_rogue_minority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104648-swarm_rogue_minority.jsonl",
+  "updated_at": 1791794808.0369663
+ },
+ "rogue-20261012_104648-detect_missed_subtle": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104648-detect_missed_subtle.jsonl",
+  "updated_at": 1791794808.0480301
+ },
+ "rogue-20261012_104723-rogue_exfil_net": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_exfil_net.jsonl",
+  "updated_at": 1791794843.804838
+ },
+ "rogue-20261012_104723-rogue_exfil_dns": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_exfil_dns.jsonl",
+  "updated_at": 1791794843.639958
+ },
+ "rogue-20261012_104723-rogue_exfil_allowlisted": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_exfil_allowlisted.jsonl",
+  "updated_at": 1791794843.6422174
+ },
+ "rogue-20261012_104723-rogue_priv_escalation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_priv_escalation.jsonl",
+  "updated_at": 1791794843.6445036
+ },
+ "rogue-20261012_104723-rogue_sandbox_escape": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_sandbox_escape.jsonl",
+  "updated_at": 1791794843.6465015
+ },
+ "rogue-20261012_104723-rogue_credential_theft": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_credential_theft.jsonl",
+  "updated_at": 1791794843.6483693
+ },
+ "rogue-20261012_104723-rogue_supervisor_tamper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_supervisor_tamper.jsonl",
+  "updated_at": 1791794843.650315
+ },
+ "rogue-20261012_104723-rogue_policy_evasion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_policy_evasion.jsonl",
+  "updated_at": 1791794843.652211
+ },
+ "rogue-20261012_104723-rogue_self_replication": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_self_replication.jsonl",
+  "updated_at": 1791794843.6540847
+ },
+ "rogue-20261012_104723-rogue_reward_hacking": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_reward_hacking.jsonl",
+  "updated_at": 1791794843.6559806
+ },
+ "rogue-20261012_104723-rogue_resource_abuse": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_resource_abuse.jsonl",
+  "updated_at": 1791794843.6581707
+ },
+ "rogue-20261012_104723-rogue_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_prompt_injection.jsonl",
+  "updated_at": 1791794843.6601338
+ },
+ "rogue-20261012_104723-rogue_data_destruction": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_data_destruction.jsonl",
+  "updated_at": 1791794843.6623452
+ },
+ "rogue-20261012_104723-rogue_backdoor": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_backdoor.jsonl",
+  "updated_at": 1791794843.664193
+ },
+ "rogue-20261012_104723-rogue_sleeper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-rogue_sleeper.jsonl",
+  "updated_at": 1791794843.6660554
+ },
+ "rogue-20261012_104723-swarm_rogue_minority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-swarm_rogue_minority.jsonl",
+  "updated_at": 1791794843.668279
+ },
+ "rogue-20261012_104723-swarm_rogue_majority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-swarm_rogue_majority.jsonl",
+  "updated_at": 1791794843.671495
+ },
+ "rogue-20261012_104723-swarm_handoff": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-swarm_handoff.jsonl",
+  "updated_at": 1791794843.674582
+ },
+ "rogue-20261012_104723-swarm_cover_traffic": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-swarm_cover_traffic.jsonl",
+  "updated_at": 1791794843.6772258
+ },
+ "rogue-20261012_104723-swarm_task_hijack": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-swarm_task_hijack.jsonl",
+  "updated_at": 1791794843.6810105
+ },
+ "rogue-20261012_104723-swarm_trust_bootstrap": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-swarm_trust_bootstrap.jsonl",
+  "updated_at": 1791794843.6836793
+ },
+ "rogue-20261012_104723-swarm_role_confusion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-swarm_role_confusion.jsonl",
+  "updated_at": 1791794843.686293
+ },
+ "rogue-20261012_104723-swarm_cascade": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-swarm_cascade.jsonl",
+  "updated_at": 1791794843.6889157
+ },
+ "rogue-20261012_104723-swarm_sleeper_cell": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-swarm_sleeper_cell.jsonl",
+  "updated_at": 1791794843.691807
+ },
+ "rogue-20261012_104723-swarm_vs_defenders": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-swarm_vs_defenders.jsonl",
+  "updated_at": 1791794843.6951914
+ },
+ "rogue-20261012_104723-collude_split_payload": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-collude_split_payload.jsonl",
+  "updated_at": 1791794843.8740652
+ },
+ "rogue-20261012_104723-collude_covert_channel": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-collude_covert_channel.jsonl",
+  "updated_at": 1791794843.7008417
+ },
+ "rogue-20261012_104723-collude_vote_rigging": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-collude_vote_rigging.jsonl",
+  "updated_at": 1791794843.7032967
+ },
+ "rogue-20261012_104723-collude_mutual_cover": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-collude_mutual_cover.jsonl",
+  "updated_at": 1791794843.7064533
+ },
+ "rogue-20261012_104723-collude_steganography": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-collude_steganography.jsonl",
+  "updated_at": 1791794843.7090049
+ },
+ "rogue-20261012_104723-collude_ring_leader": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-collude_ring_leader.jsonl",
+  "updated_at": 1791794843.711251
+ },
+ "rogue-20261012_104723-collude_sybil": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-collude_sybil.jsonl",
+  "updated_at": 1791794843.7145724
+ },
+ "rogue-20261012_104723-collude_timing": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-collude_timing.jsonl",
+  "updated_at": 1791794843.7179646
+ },
+ "rogue-20261012_104723-collude_fragment_reassembly": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-collude_fragment_reassembly.jsonl",
+  "updated_at": 1791794843.7205064
+ },
+ "rogue-20261012_104723-collude_cross_sandbox": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-collude_cross_sandbox.jsonl",
+  "updated_at": 1791794843.7231114
+ },
+ "rogue-20261012_104723-pollute_memory": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-pollute_memory.jsonl",
+  "updated_at": 1791794843.7254157
+ },
+ "rogue-20261012_104723-pollute_corpus": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-pollute_corpus.jsonl",
+  "updated_at": 1791794843.8950815
+ },
+ "rogue-20261012_104723-pollute_results": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-pollute_results.jsonl",
+  "updated_at": 1791794843.730065
+ },
+ "rogue-20261012_104723-pollute_context": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-pollute_context.jsonl",
+  "updated_at": 1791794843.7323797
+ },
+ "rogue-20261012_104723-pollute_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-pollute_prompt_injection.jsonl",
+  "updated_at": 1791794843.7350655
+ },
+ "rogue-20261012_104723-pollute_adversarial": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-pollute_adversarial.jsonl",
+  "updated_at": 1791794843.737377
+ },
+ "rogue-20261012_104723-pollute_label_flip": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-pollute_label_flip.jsonl",
+  "updated_at": 1791794843.7393255
+ },
+ "rogue-20261012_104723-pollute_dos": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-pollute_dos.jsonl",
+  "updated_at": 1791794843.7413394
+ },
+ "rogue-20261012_104723-pollute_reputation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-pollute_reputation.jsonl",
+  "updated_at": 1791794843.7441466
+ },
+ "rogue-20261012_104723-pollute_backdoor_data": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-pollute_backdoor_data.jsonl",
+  "updated_at": 1791794843.746482
+ },
+ "rogue-20261012_104723-detect_policy_only": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-detect_policy_only.jsonl",
+  "updated_at": 1791794843.7820222
+ },
+ "rogue-20261012_104723-detect_behavioral": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-detect_behavioral.jsonl",
+  "updated_at": 1791794843.7514029
+ },
+ "rogue-20261012_104723-detect_audit_correlation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-detect_audit_correlation.jsonl",
+  "updated_at": 1791794843.753965
+ },
+ "rogue-20261012_104723-detect_collusion_graph": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-detect_collusion_graph.jsonl",
+  "updated_at": 1791794843.7565646
+ },
+ "rogue-20261012_104723-detect_pollution_provenance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-detect_pollution_provenance.jsonl",
+  "updated_at": 1791794843.7596645
+ },
+ "rogue-20261012_104723-detect_missed_subtle": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-detect_missed_subtle.jsonl",
+  "updated_at": 1791794843.8555596
+ },
+ "rogue-20261012_104723-detect_false_positive": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-detect_false_positive.jsonl",
+  "updated_at": 1791794843.7651136
+ },
+ "rogue-20261012_104723-ground_every_finding": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-ground_every_finding.jsonl",
+  "updated_at": 1791794843.7681673
+ },
+ "rogue-20261012_104723-detect_live_governance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-detect_live_governance.jsonl",
+  "updated_at": 1791794843.7714417
+ },
+ "rogue-20261012_104723-baseline_benign": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-baseline_benign.jsonl",
+  "updated_at": 1791794843.787941
+ },
+ "rogue-20261012_104723-benign_noisy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-benign_noisy.jsonl",
+  "updated_at": 1791794843.7906554
+ },
+ "rogue-20261012_104723-benign_buggy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104723-benign_buggy.jsonl",
+  "updated_at": 1791794843.7935119
+ },
+ "rogue-20261012_104743-rogue_exfil_net": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_exfil_net.jsonl",
+  "updated_at": 1791794863.3316228
+ },
+ "rogue-20261012_104743-rogue_exfil_dns": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_exfil_dns.jsonl",
+  "updated_at": 1791794863.15116
+ },
+ "rogue-20261012_104743-rogue_exfil_allowlisted": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_exfil_allowlisted.jsonl",
+  "updated_at": 1791794863.1535873
+ },
+ "rogue-20261012_104743-rogue_priv_escalation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_priv_escalation.jsonl",
+  "updated_at": 1791794863.1560671
+ },
+ "rogue-20261012_104743-rogue_sandbox_escape": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_sandbox_escape.jsonl",
+  "updated_at": 1791794863.1582758
+ },
+ "rogue-20261012_104743-rogue_credential_theft": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_credential_theft.jsonl",
+  "updated_at": 1791794863.1608653
+ },
+ "rogue-20261012_104743-rogue_supervisor_tamper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_supervisor_tamper.jsonl",
+  "updated_at": 1791794863.1630049
+ },
+ "rogue-20261012_104743-rogue_policy_evasion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_policy_evasion.jsonl",
+  "updated_at": 1791794863.1650848
+ },
+ "rogue-20261012_104743-rogue_self_replication": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_self_replication.jsonl",
+  "updated_at": 1791794863.1671562
+ },
+ "rogue-20261012_104743-rogue_reward_hacking": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_reward_hacking.jsonl",
+  "updated_at": 1791794863.169242
+ },
+ "rogue-20261012_104743-rogue_resource_abuse": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_resource_abuse.jsonl",
+  "updated_at": 1791794863.17165
+ },
+ "rogue-20261012_104743-rogue_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_prompt_injection.jsonl",
+  "updated_at": 1791794863.1738622
+ },
+ "rogue-20261012_104743-rogue_data_destruction": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_data_destruction.jsonl",
+  "updated_at": 1791794863.1763053
+ },
+ "rogue-20261012_104743-rogue_backdoor": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_backdoor.jsonl",
+  "updated_at": 1791794863.1783628
+ },
+ "rogue-20261012_104743-rogue_sleeper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-rogue_sleeper.jsonl",
+  "updated_at": 1791794863.1804574
+ },
+ "rogue-20261012_104743-swarm_rogue_minority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-swarm_rogue_minority.jsonl",
+  "updated_at": 1791794863.1829998
+ },
+ "rogue-20261012_104743-swarm_rogue_majority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-swarm_rogue_majority.jsonl",
+  "updated_at": 1791794863.1864371
+ },
+ "rogue-20261012_104743-swarm_handoff": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-swarm_handoff.jsonl",
+  "updated_at": 1791794863.1898522
+ },
+ "rogue-20261012_104743-swarm_cover_traffic": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-swarm_cover_traffic.jsonl",
+  "updated_at": 1791794863.192922
+ },
+ "rogue-20261012_104743-swarm_task_hijack": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-swarm_task_hijack.jsonl",
+  "updated_at": 1791794863.1969395
+ },
+ "rogue-20261012_104743-swarm_trust_bootstrap": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-swarm_trust_bootstrap.jsonl",
+  "updated_at": 1791794863.1998005
+ },
+ "rogue-20261012_104743-swarm_role_confusion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-swarm_role_confusion.jsonl",
+  "updated_at": 1791794863.2026048
+ },
+ "rogue-20261012_104743-swarm_cascade": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-swarm_cascade.jsonl",
+  "updated_at": 1791794863.2054257
+ },
+ "rogue-20261012_104743-swarm_sleeper_cell": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-swarm_sleeper_cell.jsonl",
+  "updated_at": 1791794863.2085326
+ },
+ "rogue-20261012_104743-swarm_vs_defenders": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-swarm_vs_defenders.jsonl",
+  "updated_at": 1791794863.2117367
+ },
+ "rogue-20261012_104743-collude_split_payload": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-collude_split_payload.jsonl",
+  "updated_at": 1791794863.3883014
+ },
+ "rogue-20261012_104743-collude_covert_channel": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-collude_covert_channel.jsonl",
+  "updated_at": 1791794863.2177196
+ },
+ "rogue-20261012_104743-collude_vote_rigging": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-collude_vote_rigging.jsonl",
+  "updated_at": 1791794863.220415
+ },
+ "rogue-20261012_104743-collude_mutual_cover": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-collude_mutual_cover.jsonl",
+  "updated_at": 1791794863.2237933
+ },
+ "rogue-20261012_104743-collude_steganography": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-collude_steganography.jsonl",
+  "updated_at": 1791794863.226554
+ },
+ "rogue-20261012_104743-collude_ring_leader": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-collude_ring_leader.jsonl",
+  "updated_at": 1791794863.2289689
+ },
+ "rogue-20261012_104743-collude_sybil": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-collude_sybil.jsonl",
+  "updated_at": 1791794863.23265
+ },
+ "rogue-20261012_104743-collude_timing": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-collude_timing.jsonl",
+  "updated_at": 1791794863.2362626
+ },
+ "rogue-20261012_104743-collude_fragment_reassembly": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-collude_fragment_reassembly.jsonl",
+  "updated_at": 1791794863.2390237
+ },
+ "rogue-20261012_104743-collude_cross_sandbox": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-collude_cross_sandbox.jsonl",
+  "updated_at": 1791794863.2418294
+ },
+ "rogue-20261012_104743-pollute_memory": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-pollute_memory.jsonl",
+  "updated_at": 1791794863.2443202
+ },
+ "rogue-20261012_104743-pollute_corpus": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-pollute_corpus.jsonl",
+  "updated_at": 1791794863.4098463
+ },
+ "rogue-20261012_104743-pollute_results": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-pollute_results.jsonl",
+  "updated_at": 1791794863.2493598
+ },
+ "rogue-20261012_104743-pollute_context": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-pollute_context.jsonl",
+  "updated_at": 1791794863.2518663
+ },
+ "rogue-20261012_104743-pollute_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-pollute_prompt_injection.jsonl",
+  "updated_at": 1791794863.2547483
+ },
+ "rogue-20261012_104743-pollute_adversarial": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-pollute_adversarial.jsonl",
+  "updated_at": 1791794863.2573943
+ },
+ "rogue-20261012_104743-pollute_label_flip": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-pollute_label_flip.jsonl",
+  "updated_at": 1791794863.2596529
+ },
+ "rogue-20261012_104743-pollute_dos": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-pollute_dos.jsonl",
+  "updated_at": 1791794863.2618523
+ },
+ "rogue-20261012_104743-pollute_reputation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-pollute_reputation.jsonl",
+  "updated_at": 1791794863.2648711
+ },
+ "rogue-20261012_104743-pollute_backdoor_data": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-pollute_backdoor_data.jsonl",
+  "updated_at": 1791794863.2674577
+ },
+ "rogue-20261012_104743-detect_policy_only": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-detect_policy_only.jsonl",
+  "updated_at": 1791794863.306554
+ },
+ "rogue-20261012_104743-detect_behavioral": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-detect_behavioral.jsonl",
+  "updated_at": 1791794863.2730076
+ },
+ "rogue-20261012_104743-detect_audit_correlation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-detect_audit_correlation.jsonl",
+  "updated_at": 1791794863.2758849
+ },
+ "rogue-20261012_104743-detect_collusion_graph": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-detect_collusion_graph.jsonl",
+  "updated_at": 1791794863.278723
+ },
+ "rogue-20261012_104743-detect_pollution_provenance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-detect_pollution_provenance.jsonl",
+  "updated_at": 1791794863.2820258
+ },
+ "rogue-20261012_104743-detect_missed_subtle": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-detect_missed_subtle.jsonl",
+  "updated_at": 1791794863.367599
+ },
+ "rogue-20261012_104743-detect_false_positive": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-detect_false_positive.jsonl",
+  "updated_at": 1791794863.2879517
+ },
+ "rogue-20261012_104743-ground_every_finding": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-ground_every_finding.jsonl",
+  "updated_at": 1791794863.2912767
+ },
+ "rogue-20261012_104743-detect_live_governance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-detect_live_governance.jsonl",
+  "updated_at": 1791794863.2948842
+ },
+ "rogue-20261012_104743-baseline_benign": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-baseline_benign.jsonl",
+  "updated_at": 1791794863.3131013
+ },
+ "rogue-20261012_104743-benign_noisy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-benign_noisy.jsonl",
+  "updated_at": 1791794863.3160775
+ },
+ "rogue-20261012_104743-benign_buggy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104743-benign_buggy.jsonl",
+  "updated_at": 1791794863.3193302
+ },
+ "recon-20261012_104752": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261012_104752.jsonl",
+  "updated_at": 1791794872.7904017
+ },
+ "recon-20261012_104753": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261012_104753.jsonl",
+  "updated_at": 1791794873.708632
+ },
+ "sim-20261012_104753": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261012_104753.jsonl",
+  "updated_at": 1791794873.5136304
+ },
+ "rogue-20261012_104823-swarm_rogue_minority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_104823-swarm_rogue_minority.jsonl",
+  "updated_at": 1791794903.433553
+ },
+ "recon-20261012_105510": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261012_105510.jsonl",
+  "updated_at": 1791795311.0153224
+ },
+ "recon-20261012_105511": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261012_105511.jsonl",
+  "updated_at": 1791795311.575234
+ },
+ "rogue-20261012_105511-rogue_exfil_net": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_exfil_net.jsonl",
+  "updated_at": 1791795311.7595527
+ },
+ "rogue-20261012_105511-rogue_exfil_dns": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_exfil_dns.jsonl",
+  "updated_at": 1791795311.586119
+ },
+ "rogue-20261012_105511-rogue_exfil_allowlisted": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_exfil_allowlisted.jsonl",
+  "updated_at": 1791795311.5884602
+ },
+ "rogue-20261012_105511-rogue_priv_escalation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_priv_escalation.jsonl",
+  "updated_at": 1791795311.5908477
+ },
+ "rogue-20261012_105511-rogue_sandbox_escape": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_sandbox_escape.jsonl",
+  "updated_at": 1791795311.5930357
+ },
+ "rogue-20261012_105511-rogue_credential_theft": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_credential_theft.jsonl",
+  "updated_at": 1791795311.5950813
+ },
+ "rogue-20261012_105511-rogue_supervisor_tamper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_supervisor_tamper.jsonl",
+  "updated_at": 1791795311.5971916
+ },
+ "rogue-20261012_105511-rogue_policy_evasion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_policy_evasion.jsonl",
+  "updated_at": 1791795311.599396
+ },
+ "rogue-20261012_105511-rogue_self_replication": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_self_replication.jsonl",
+  "updated_at": 1791795311.6014328
+ },
+ "rogue-20261012_105511-rogue_reward_hacking": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_reward_hacking.jsonl",
+  "updated_at": 1791795311.6036265
+ },
+ "rogue-20261012_105511-rogue_resource_abuse": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_resource_abuse.jsonl",
+  "updated_at": 1791795311.6059866
+ },
+ "rogue-20261012_105511-rogue_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_prompt_injection.jsonl",
+  "updated_at": 1791795311.608112
+ },
+ "rogue-20261012_105511-rogue_data_destruction": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_data_destruction.jsonl",
+  "updated_at": 1791795311.6104362
+ },
+ "rogue-20261012_105511-rogue_backdoor": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_backdoor.jsonl",
+  "updated_at": 1791795311.612461
+ },
+ "rogue-20261012_105511-rogue_sleeper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-rogue_sleeper.jsonl",
+  "updated_at": 1791795311.6146579
+ },
+ "rogue-20261012_105511-swarm_rogue_minority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-swarm_rogue_minority.jsonl",
+  "updated_at": 1791795311.6170228
+ },
+ "rogue-20261012_105511-swarm_rogue_majority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-swarm_rogue_majority.jsonl",
+  "updated_at": 1791795311.6202514
+ },
+ "rogue-20261012_105511-swarm_handoff": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-swarm_handoff.jsonl",
+  "updated_at": 1791795311.6233625
+ },
+ "rogue-20261012_105511-swarm_cover_traffic": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-swarm_cover_traffic.jsonl",
+  "updated_at": 1791795311.6261013
+ },
+ "rogue-20261012_105511-swarm_task_hijack": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-swarm_task_hijack.jsonl",
+  "updated_at": 1791795311.6299756
+ },
+ "rogue-20261012_105511-swarm_trust_bootstrap": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-swarm_trust_bootstrap.jsonl",
+  "updated_at": 1791795311.6329198
+ },
+ "rogue-20261012_105511-swarm_role_confusion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-swarm_role_confusion.jsonl",
+  "updated_at": 1791795311.6356416
+ },
+ "rogue-20261012_105511-swarm_cascade": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-swarm_cascade.jsonl",
+  "updated_at": 1791795311.6383824
+ },
+ "rogue-20261012_105511-swarm_sleeper_cell": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-swarm_sleeper_cell.jsonl",
+  "updated_at": 1791795311.6413193
+ },
+ "rogue-20261012_105511-swarm_vs_defenders": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-swarm_vs_defenders.jsonl",
+  "updated_at": 1791795311.6443262
+ },
+ "rogue-20261012_105511-collude_split_payload": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-collude_split_payload.jsonl",
+  "updated_at": 1791795311.8125
+ },
+ "rogue-20261012_105511-collude_covert_channel": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-collude_covert_channel.jsonl",
+  "updated_at": 1791795311.6502714
+ },
+ "rogue-20261012_105511-collude_vote_rigging": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-collude_vote_rigging.jsonl",
+  "updated_at": 1791795311.6528704
+ },
+ "rogue-20261012_105511-collude_mutual_cover": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-collude_mutual_cover.jsonl",
+  "updated_at": 1791795311.656075
+ },
+ "rogue-20261012_105511-collude_steganography": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-collude_steganography.jsonl",
+  "updated_at": 1791795311.6587124
+ },
+ "rogue-20261012_105511-collude_ring_leader": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-collude_ring_leader.jsonl",
+  "updated_at": 1791795311.661065
+ },
+ "rogue-20261012_105511-collude_sybil": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-collude_sybil.jsonl",
+  "updated_at": 1791795311.6646156
+ },
+ "rogue-20261012_105511-collude_timing": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-collude_timing.jsonl",
+  "updated_at": 1791795311.6680455
+ },
+ "rogue-20261012_105511-collude_fragment_reassembly": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-collude_fragment_reassembly.jsonl",
+  "updated_at": 1791795311.6707447
+ },
+ "rogue-20261012_105511-collude_cross_sandbox": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-collude_cross_sandbox.jsonl",
+  "updated_at": 1791795311.6734488
+ },
+ "rogue-20261012_105511-pollute_memory": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-pollute_memory.jsonl",
+  "updated_at": 1791795311.6758795
+ },
+ "rogue-20261012_105511-pollute_corpus": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-pollute_corpus.jsonl",
+  "updated_at": 1791795311.8347018
+ },
+ "rogue-20261012_105511-pollute_results": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-pollute_results.jsonl",
+  "updated_at": 1791795311.6807516
+ },
+ "rogue-20261012_105511-pollute_context": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-pollute_context.jsonl",
+  "updated_at": 1791795311.6833484
+ },
+ "rogue-20261012_105511-pollute_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-pollute_prompt_injection.jsonl",
+  "updated_at": 1791795311.6861618
+ },
+ "rogue-20261012_105511-pollute_adversarial": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-pollute_adversarial.jsonl",
+  "updated_at": 1791795311.6886275
+ },
+ "rogue-20261012_105511-pollute_label_flip": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-pollute_label_flip.jsonl",
+  "updated_at": 1791795311.6907537
+ },
+ "rogue-20261012_105511-pollute_dos": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-pollute_dos.jsonl",
+  "updated_at": 1791795311.6930084
+ },
+ "rogue-20261012_105511-pollute_reputation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-pollute_reputation.jsonl",
+  "updated_at": 1791795311.6959012
+ },
+ "rogue-20261012_105511-pollute_backdoor_data": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-pollute_backdoor_data.jsonl",
+  "updated_at": 1791795311.6984859
+ },
+ "rogue-20261012_105511-detect_policy_only": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-detect_policy_only.jsonl",
+  "updated_at": 1791795311.735693
+ },
+ "rogue-20261012_105511-detect_behavioral": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-detect_behavioral.jsonl",
+  "updated_at": 1791795311.7036743
+ },
+ "rogue-20261012_105511-detect_audit_correlation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-detect_audit_correlation.jsonl",
+  "updated_at": 1791795311.706354
+ },
+ "rogue-20261012_105511-detect_collusion_graph": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-detect_collusion_graph.jsonl",
+  "updated_at": 1791795311.708987
+ },
+ "rogue-20261012_105511-detect_pollution_provenance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-detect_pollution_provenance.jsonl",
+  "updated_at": 1791795311.7121582
+ },
+ "rogue-20261012_105511-detect_missed_subtle": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-detect_missed_subtle.jsonl",
+  "updated_at": 1791795311.7944517
+ },
+ "rogue-20261012_105511-detect_false_positive": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-detect_false_positive.jsonl",
+  "updated_at": 1791795311.7180002
+ },
+ "rogue-20261012_105511-ground_every_finding": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-ground_every_finding.jsonl",
+  "updated_at": 1791795311.7211094
+ },
+ "rogue-20261012_105511-detect_live_governance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-detect_live_governance.jsonl",
+  "updated_at": 1791795311.724458
+ },
+ "rogue-20261012_105511-baseline_benign": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-baseline_benign.jsonl",
+  "updated_at": 1791795311.7418041
+ },
+ "rogue-20261012_105511-benign_noisy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-benign_noisy.jsonl",
+  "updated_at": 1791795311.7446256
+ },
+ "rogue-20261012_105511-benign_buggy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105511-benign_buggy.jsonl",
+  "updated_at": 1791795311.7475827
+ },
+ "sim-20261012_105516": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261012_105516.jsonl",
+  "updated_at": 1791795316.3014686
+ },
+ "rogue-20261012_105922-rogue_exfil_net": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_exfil_net.jsonl",
+  "updated_at": 1791795562.2565763
+ },
+ "rogue-20261012_105922-rogue_exfil_dns": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_exfil_dns.jsonl",
+  "updated_at": 1791795562.0553977
+ },
+ "rogue-20261012_105922-rogue_exfil_allowlisted": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_exfil_allowlisted.jsonl",
+  "updated_at": 1791795562.0582101
+ },
+ "rogue-20261012_105922-rogue_priv_escalation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_priv_escalation.jsonl",
+  "updated_at": 1791795562.061067
+ },
+ "rogue-20261012_105922-rogue_sandbox_escape": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_sandbox_escape.jsonl",
+  "updated_at": 1791795562.0636802
+ },
+ "rogue-20261012_105922-rogue_credential_theft": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_credential_theft.jsonl",
+  "updated_at": 1791795562.0661392
+ },
+ "rogue-20261012_105922-rogue_supervisor_tamper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_supervisor_tamper.jsonl",
+  "updated_at": 1791795562.0686324
+ },
+ "rogue-20261012_105922-rogue_policy_evasion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_policy_evasion.jsonl",
+  "updated_at": 1791795562.0710866
+ },
+ "rogue-20261012_105922-rogue_self_replication": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_self_replication.jsonl",
+  "updated_at": 1791795562.0735328
+ },
+ "rogue-20261012_105922-rogue_reward_hacking": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_reward_hacking.jsonl",
+  "updated_at": 1791795562.0759747
+ },
+ "rogue-20261012_105922-rogue_resource_abuse": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_resource_abuse.jsonl",
+  "updated_at": 1791795562.078735
+ },
+ "rogue-20261012_105922-rogue_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_prompt_injection.jsonl",
+  "updated_at": 1791795562.0812662
+ },
+ "rogue-20261012_105922-rogue_data_destruction": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_data_destruction.jsonl",
+  "updated_at": 1791795562.084026
+ },
+ "rogue-20261012_105922-rogue_backdoor": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_backdoor.jsonl",
+  "updated_at": 1791795562.0864477
+ },
+ "rogue-20261012_105922-rogue_sleeper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-rogue_sleeper.jsonl",
+  "updated_at": 1791795562.0889063
+ },
+ "rogue-20261012_105922-swarm_rogue_minority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-swarm_rogue_minority.jsonl",
+  "updated_at": 1791795562.0917327
+ },
+ "rogue-20261012_105922-swarm_rogue_majority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-swarm_rogue_majority.jsonl",
+  "updated_at": 1791795562.0955126
+ },
+ "rogue-20261012_105922-swarm_handoff": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-swarm_handoff.jsonl",
+  "updated_at": 1791795562.0991714
+ },
+ "rogue-20261012_105922-swarm_cover_traffic": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-swarm_cover_traffic.jsonl",
+  "updated_at": 1791795562.102412
+ },
+ "rogue-20261012_105922-swarm_task_hijack": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-swarm_task_hijack.jsonl",
+  "updated_at": 1791795562.106753
+ },
+ "rogue-20261012_105922-swarm_trust_bootstrap": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-swarm_trust_bootstrap.jsonl",
+  "updated_at": 1791795562.109957
+ },
+ "rogue-20261012_105922-swarm_role_confusion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-swarm_role_confusion.jsonl",
+  "updated_at": 1791795562.1131568
+ },
+ "rogue-20261012_105922-swarm_cascade": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-swarm_cascade.jsonl",
+  "updated_at": 1791795562.1163378
+ },
+ "rogue-20261012_105922-swarm_sleeper_cell": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-swarm_sleeper_cell.jsonl",
+  "updated_at": 1791795562.119812
+ },
+ "rogue-20261012_105922-swarm_vs_defenders": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-swarm_vs_defenders.jsonl",
+  "updated_at": 1791795562.1232915
+ },
+ "rogue-20261012_105922-collude_split_payload": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-collude_split_payload.jsonl",
+  "updated_at": 1791795562.3183918
+ },
+ "rogue-20261012_105922-collude_covert_channel": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-collude_covert_channel.jsonl",
+  "updated_at": 1791795562.1300132
+ },
+ "rogue-20261012_105922-collude_vote_rigging": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-collude_vote_rigging.jsonl",
+  "updated_at": 1791795562.1330125
+ },
+ "rogue-20261012_105922-collude_mutual_cover": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-collude_mutual_cover.jsonl",
+  "updated_at": 1791795562.1367342
+ },
+ "rogue-20261012_105922-collude_steganography": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-collude_steganography.jsonl",
+  "updated_at": 1791795562.1398196
+ },
+ "rogue-20261012_105922-collude_ring_leader": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-collude_ring_leader.jsonl",
+  "updated_at": 1791795562.1426096
+ },
+ "rogue-20261012_105922-collude_sybil": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-collude_sybil.jsonl",
+  "updated_at": 1791795562.1465175
+ },
+ "rogue-20261012_105922-collude_timing": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-collude_timing.jsonl",
+  "updated_at": 1791795562.1505158
+ },
+ "rogue-20261012_105922-collude_fragment_reassembly": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-collude_fragment_reassembly.jsonl",
+  "updated_at": 1791795562.1536345
+ },
+ "rogue-20261012_105922-collude_cross_sandbox": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-collude_cross_sandbox.jsonl",
+  "updated_at": 1791795562.156841
+ },
+ "rogue-20261012_105922-pollute_memory": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-pollute_memory.jsonl",
+  "updated_at": 1791795562.1596966
+ },
+ "rogue-20261012_105922-pollute_corpus": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-pollute_corpus.jsonl",
+  "updated_at": 1791795562.3398952
+ },
+ "rogue-20261012_105922-pollute_results": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-pollute_results.jsonl",
+  "updated_at": 1791795562.1654594
+ },
+ "rogue-20261012_105922-pollute_context": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-pollute_context.jsonl",
+  "updated_at": 1791795562.1683447
+ },
+ "rogue-20261012_105922-pollute_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-pollute_prompt_injection.jsonl",
+  "updated_at": 1791795562.1716163
+ },
+ "rogue-20261012_105922-pollute_adversarial": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-pollute_adversarial.jsonl",
+  "updated_at": 1791795562.1745234
+ },
+ "rogue-20261012_105922-pollute_label_flip": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-pollute_label_flip.jsonl",
+  "updated_at": 1791795562.177065
+ },
+ "rogue-20261012_105922-pollute_dos": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-pollute_dos.jsonl",
+  "updated_at": 1791795562.179619
+ },
+ "rogue-20261012_105922-pollute_reputation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-pollute_reputation.jsonl",
+  "updated_at": 1791795562.182987
+ },
+ "rogue-20261012_105922-pollute_backdoor_data": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-pollute_backdoor_data.jsonl",
+  "updated_at": 1791795562.185852
+ },
+ "rogue-20261012_105922-detect_policy_only": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-detect_policy_only.jsonl",
+  "updated_at": 1791795562.2289317
+ },
+ "rogue-20261012_105922-detect_behavioral": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-detect_behavioral.jsonl",
+  "updated_at": 1791795562.1919162
+ },
+ "rogue-20261012_105922-detect_audit_correlation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-detect_audit_correlation.jsonl",
+  "updated_at": 1791795562.1950376
+ },
+ "rogue-20261012_105922-detect_collusion_graph": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-detect_collusion_graph.jsonl",
+  "updated_at": 1791795562.1981359
+ },
+ "rogue-20261012_105922-detect_pollution_provenance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-detect_pollution_provenance.jsonl",
+  "updated_at": 1791795562.2017944
+ },
+ "rogue-20261012_105922-detect_missed_subtle": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-detect_missed_subtle.jsonl",
+  "updated_at": 1791795562.2971377
+ },
+ "rogue-20261012_105922-detect_false_positive": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-detect_false_positive.jsonl",
+  "updated_at": 1791795562.2084587
+ },
+ "rogue-20261012_105922-ground_every_finding": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-ground_every_finding.jsonl",
+  "updated_at": 1791795562.2120802
+ },
+ "rogue-20261012_105922-detect_live_governance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-detect_live_governance.jsonl",
+  "updated_at": 1791795562.2160542
+ },
+ "rogue-20261012_105922-baseline_benign": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-baseline_benign.jsonl",
+  "updated_at": 1791795562.23606
+ },
+ "rogue-20261012_105922-benign_noisy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-benign_noisy.jsonl",
+  "updated_at": 1791795562.239358
+ },
+ "rogue-20261012_105922-benign_buggy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_105922-benign_buggy.jsonl",
+  "updated_at": 1791795562.242815
+ },
+ "recon-20261012_110327": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261012_110327.jsonl",
+  "updated_at": 1791795808.1081328
+ },
+ "recon-20261012_110328": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261012_110328.jsonl",
+  "updated_at": 1791795808.763453
+ },
+ "recon-20261012_110329": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261012_110329.jsonl",
+  "updated_at": 1791795809.3254979
+ },
+ "rogue-20261012_110329-rogue_exfil_net": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_exfil_net.jsonl",
+  "updated_at": 1791795809.5378344
+ },
+ "rogue-20261012_110329-rogue_exfil_dns": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_exfil_dns.jsonl",
+  "updated_at": 1791795809.3374453
+ },
+ "rogue-20261012_110329-rogue_exfil_allowlisted": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_exfil_allowlisted.jsonl",
+  "updated_at": 1791795809.3402197
+ },
+ "rogue-20261012_110329-rogue_priv_escalation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_priv_escalation.jsonl",
+  "updated_at": 1791795809.342944
+ },
+ "rogue-20261012_110329-rogue_sandbox_escape": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_sandbox_escape.jsonl",
+  "updated_at": 1791795809.3454309
+ },
+ "rogue-20261012_110329-rogue_credential_theft": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_credential_theft.jsonl",
+  "updated_at": 1791795809.3478067
+ },
+ "rogue-20261012_110329-rogue_supervisor_tamper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_supervisor_tamper.jsonl",
+  "updated_at": 1791795809.3502128
+ },
+ "rogue-20261012_110329-rogue_policy_evasion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_policy_evasion.jsonl",
+  "updated_at": 1791795809.3526158
+ },
+ "rogue-20261012_110329-rogue_self_replication": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_self_replication.jsonl",
+  "updated_at": 1791795809.354982
+ },
+ "rogue-20261012_110329-rogue_reward_hacking": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_reward_hacking.jsonl",
+  "updated_at": 1791795809.3573487
+ },
+ "rogue-20261012_110329-rogue_resource_abuse": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_resource_abuse.jsonl",
+  "updated_at": 1791795809.3600276
+ },
+ "rogue-20261012_110329-rogue_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_prompt_injection.jsonl",
+  "updated_at": 1791795809.3624825
+ },
+ "rogue-20261012_110329-rogue_data_destruction": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_data_destruction.jsonl",
+  "updated_at": 1791795809.365162
+ },
+ "rogue-20261012_110329-rogue_backdoor": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_backdoor.jsonl",
+  "updated_at": 1791795809.3675225
+ },
+ "rogue-20261012_110329-rogue_sleeper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-rogue_sleeper.jsonl",
+  "updated_at": 1791795809.3699338
+ },
+ "rogue-20261012_110329-swarm_rogue_minority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-swarm_rogue_minority.jsonl",
+  "updated_at": 1791795809.372679
+ },
+ "rogue-20261012_110329-swarm_rogue_majority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-swarm_rogue_majority.jsonl",
+  "updated_at": 1791795809.3762226
+ },
+ "rogue-20261012_110329-swarm_handoff": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-swarm_handoff.jsonl",
+  "updated_at": 1791795809.3797204
+ },
+ "rogue-20261012_110329-swarm_cover_traffic": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-swarm_cover_traffic.jsonl",
+  "updated_at": 1791795809.3828115
+ },
+ "rogue-20261012_110329-swarm_task_hijack": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-swarm_task_hijack.jsonl",
+  "updated_at": 1791795809.3869176
+ },
+ "rogue-20261012_110329-swarm_trust_bootstrap": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-swarm_trust_bootstrap.jsonl",
+  "updated_at": 1791795809.3899684
+ },
+ "rogue-20261012_110329-swarm_role_confusion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-swarm_role_confusion.jsonl",
+  "updated_at": 1791795809.393036
+ },
+ "rogue-20261012_110329-swarm_cascade": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-swarm_cascade.jsonl",
+  "updated_at": 1791795809.3961043
+ },
+ "rogue-20261012_110329-swarm_sleeper_cell": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-swarm_sleeper_cell.jsonl",
+  "updated_at": 1791795809.3994496
+ },
+ "rogue-20261012_110329-swarm_vs_defenders": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-swarm_vs_defenders.jsonl",
+  "updated_at": 1791795809.4027855
+ },
+ "rogue-20261012_110329-collude_split_payload": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-collude_split_payload.jsonl",
+  "updated_at": 1791795809.5976264
+ },
+ "rogue-20261012_110329-collude_covert_channel": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-collude_covert_channel.jsonl",
+  "updated_at": 1791795809.4092157
+ },
+ "rogue-20261012_110329-collude_vote_rigging": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-collude_vote_rigging.jsonl",
+  "updated_at": 1791795809.4121351
+ },
+ "rogue-20261012_110329-collude_mutual_cover": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-collude_mutual_cover.jsonl",
+  "updated_at": 1791795809.415692
+ },
+ "rogue-20261012_110329-collude_steganography": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-collude_steganography.jsonl",
+  "updated_at": 1791795809.418686
+ },
+ "rogue-20261012_110329-collude_ring_leader": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-collude_ring_leader.jsonl",
+  "updated_at": 1791795809.421377
+ },
+ "rogue-20261012_110329-collude_sybil": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-collude_sybil.jsonl",
+  "updated_at": 1791795809.425099
+ },
+ "rogue-20261012_110329-collude_timing": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-collude_timing.jsonl",
+  "updated_at": 1791795809.4288342
+ },
+ "rogue-20261012_110329-collude_fragment_reassembly": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-collude_fragment_reassembly.jsonl",
+  "updated_at": 1791795809.4318764
+ },
+ "rogue-20261012_110329-collude_cross_sandbox": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-collude_cross_sandbox.jsonl",
+  "updated_at": 1791795809.4349196
+ },
+ "rogue-20261012_110329-pollute_memory": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-pollute_memory.jsonl",
+  "updated_at": 1791795809.437705
+ },
+ "rogue-20261012_110329-pollute_corpus": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-pollute_corpus.jsonl",
+  "updated_at": 1791795809.6197057
+ },
+ "rogue-20261012_110329-pollute_results": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-pollute_results.jsonl",
+  "updated_at": 1791795809.4434068
+ },
+ "rogue-20261012_110329-pollute_context": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-pollute_context.jsonl",
+  "updated_at": 1791795809.4462464
+ },
+ "rogue-20261012_110329-pollute_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-pollute_prompt_injection.jsonl",
+  "updated_at": 1791795809.4494505
+ },
+ "rogue-20261012_110329-pollute_adversarial": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-pollute_adversarial.jsonl",
+  "updated_at": 1791795809.452244
+ },
+ "rogue-20261012_110329-pollute_label_flip": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-pollute_label_flip.jsonl",
+  "updated_at": 1791795809.4547265
+ },
+ "rogue-20261012_110329-pollute_dos": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-pollute_dos.jsonl",
+  "updated_at": 1791795809.457256
+ },
+ "rogue-20261012_110329-pollute_reputation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-pollute_reputation.jsonl",
+  "updated_at": 1791795809.4605885
+ },
+ "rogue-20261012_110329-pollute_backdoor_data": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-pollute_backdoor_data.jsonl",
+  "updated_at": 1791795809.4633846
+ },
+ "rogue-20261012_110329-detect_policy_only": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-detect_policy_only.jsonl",
+  "updated_at": 1791795809.509256
+ },
+ "rogue-20261012_110329-detect_behavioral": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-detect_behavioral.jsonl",
+  "updated_at": 1791795809.4703448
+ },
+ "rogue-20261012_110329-detect_audit_correlation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-detect_audit_correlation.jsonl",
+  "updated_at": 1791795809.474278
+ },
+ "rogue-20261012_110329-detect_collusion_graph": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-detect_collusion_graph.jsonl",
+  "updated_at": 1791795809.4778023
+ },
+ "rogue-20261012_110329-detect_pollution_provenance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-detect_pollution_provenance.jsonl",
+  "updated_at": 1791795809.4813724
+ },
+ "rogue-20261012_110329-detect_missed_subtle": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-detect_missed_subtle.jsonl",
+  "updated_at": 1791795809.5792224
+ },
+ "rogue-20261012_110329-detect_false_positive": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-detect_false_positive.jsonl",
+  "updated_at": 1791795809.4883904
+ },
+ "rogue-20261012_110329-ground_every_finding": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-ground_every_finding.jsonl",
+  "updated_at": 1791795809.4918506
+ },
+ "rogue-20261012_110329-detect_live_governance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-detect_live_governance.jsonl",
+  "updated_at": 1791795809.495581
+ },
+ "rogue-20261012_110329-baseline_benign": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-baseline_benign.jsonl",
+  "updated_at": 1791795809.5161138
+ },
+ "rogue-20261012_110329-benign_noisy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-benign_noisy.jsonl",
+  "updated_at": 1791795809.5198045
+ },
+ "rogue-20261012_110329-benign_buggy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110329-benign_buggy.jsonl",
+  "updated_at": 1791795809.5240045
+ },
+ "sim-20261012_110334": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261012_110334.jsonl",
+  "updated_at": 1791795814.6772408
+ },
+ "rogue-20261012_110409-rogue_exfil_net": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_exfil_net.jsonl",
+  "updated_at": 1791795849.9120245
+ },
+ "rogue-20261012_110409-rogue_exfil_dns": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_exfil_dns.jsonl",
+  "updated_at": 1791795849.9155996
+ },
+ "rogue-20261012_110409-rogue_exfil_allowlisted": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_exfil_allowlisted.jsonl",
+  "updated_at": 1791795849.9188035
+ },
+ "rogue-20261012_110409-rogue_priv_escalation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_priv_escalation.jsonl",
+  "updated_at": 1791795849.9220457
+ },
+ "rogue-20261012_110409-rogue_sandbox_escape": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_sandbox_escape.jsonl",
+  "updated_at": 1791795849.9250774
+ },
+ "rogue-20261012_110409-rogue_credential_theft": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_credential_theft.jsonl",
+  "updated_at": 1791795849.927926
+ },
+ "rogue-20261012_110409-rogue_supervisor_tamper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_supervisor_tamper.jsonl",
+  "updated_at": 1791795849.9308636
+ },
+ "rogue-20261012_110409-rogue_policy_evasion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_policy_evasion.jsonl",
+  "updated_at": 1791795849.9337678
+ },
+ "rogue-20261012_110409-rogue_self_replication": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_self_replication.jsonl",
+  "updated_at": 1791795849.9366097
+ },
+ "rogue-20261012_110409-rogue_reward_hacking": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_reward_hacking.jsonl",
+  "updated_at": 1791795849.9394648
+ },
+ "rogue-20261012_110409-rogue_resource_abuse": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_resource_abuse.jsonl",
+  "updated_at": 1791795849.9426804
+ },
+ "rogue-20261012_110409-rogue_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_prompt_injection.jsonl",
+  "updated_at": 1791795849.945619
+ },
+ "rogue-20261012_110409-rogue_data_destruction": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_data_destruction.jsonl",
+  "updated_at": 1791795849.9488049
+ },
+ "rogue-20261012_110409-rogue_backdoor": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_backdoor.jsonl",
+  "updated_at": 1791795849.95161
+ },
+ "rogue-20261012_110409-rogue_sleeper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-rogue_sleeper.jsonl",
+  "updated_at": 1791795849.9546309
+ },
+ "rogue-20261012_110409-swarm_rogue_minority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-swarm_rogue_minority.jsonl",
+  "updated_at": 1791795849.9578454
+ },
+ "rogue-20261012_110409-swarm_rogue_majority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-swarm_rogue_majority.jsonl",
+  "updated_at": 1791795849.9620538
+ },
+ "rogue-20261012_110409-swarm_handoff": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-swarm_handoff.jsonl",
+  "updated_at": 1791795849.966163
+ },
+ "rogue-20261012_110409-swarm_cover_traffic": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-swarm_cover_traffic.jsonl",
+  "updated_at": 1791795849.9698243
+ },
+ "rogue-20261012_110409-swarm_task_hijack": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-swarm_task_hijack.jsonl",
+  "updated_at": 1791795849.9746337
+ },
+ "rogue-20261012_110409-swarm_trust_bootstrap": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-swarm_trust_bootstrap.jsonl",
+  "updated_at": 1791795849.9790046
+ },
+ "rogue-20261012_110409-swarm_role_confusion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-swarm_role_confusion.jsonl",
+  "updated_at": 1791795849.9826229
+ },
+ "rogue-20261012_110409-swarm_cascade": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-swarm_cascade.jsonl",
+  "updated_at": 1791795849.9862447
+ },
+ "rogue-20261012_110409-swarm_sleeper_cell": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-swarm_sleeper_cell.jsonl",
+  "updated_at": 1791795849.9901683
+ },
+ "rogue-20261012_110409-swarm_vs_defenders": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-swarm_vs_defenders.jsonl",
+  "updated_at": 1791795849.9940748
+ },
+ "rogue-20261012_110409-collude_split_payload": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-collude_split_payload.jsonl",
+  "updated_at": 1791795849.998065
+ },
+ "rogue-20261012_110409-collude_covert_channel": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110409-collude_covert_channel.jsonl",
+  "updated_at": 1791795850.001643
+ },
+ "rogue-20261012_110410-collude_vote_rigging": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-collude_vote_rigging.jsonl",
+  "updated_at": 1791795850.0050983
+ },
+ "rogue-20261012_110410-collude_mutual_cover": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-collude_mutual_cover.jsonl",
+  "updated_at": 1791795850.0092044
+ },
+ "rogue-20261012_110410-collude_steganography": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-collude_steganography.jsonl",
+  "updated_at": 1791795850.0127642
+ },
+ "rogue-20261012_110410-collude_ring_leader": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-collude_ring_leader.jsonl",
+  "updated_at": 1791795850.015956
+ },
+ "rogue-20261012_110410-collude_sybil": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-collude_sybil.jsonl",
+  "updated_at": 1791795850.0202808
+ },
+ "rogue-20261012_110410-collude_timing": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-collude_timing.jsonl",
+  "updated_at": 1791795850.0247285
+ },
+ "rogue-20261012_110410-collude_fragment_reassembly": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-collude_fragment_reassembly.jsonl",
+  "updated_at": 1791795850.0282447
+ },
+ "rogue-20261012_110410-collude_cross_sandbox": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-collude_cross_sandbox.jsonl",
+  "updated_at": 1791795850.0319328
+ },
+ "rogue-20261012_110410-pollute_memory": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-pollute_memory.jsonl",
+  "updated_at": 1791795850.0352194
+ },
+ "rogue-20261012_110410-pollute_corpus": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-pollute_corpus.jsonl",
+  "updated_at": 1791795850.0385053
+ },
+ "rogue-20261012_110410-pollute_results": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-pollute_results.jsonl",
+  "updated_at": 1791795850.0418143
+ },
+ "rogue-20261012_110410-pollute_context": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-pollute_context.jsonl",
+  "updated_at": 1791795850.0450888
+ },
+ "rogue-20261012_110410-pollute_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-pollute_prompt_injection.jsonl",
+  "updated_at": 1791795850.0487618
+ },
+ "rogue-20261012_110410-pollute_adversarial": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-pollute_adversarial.jsonl",
+  "updated_at": 1791795850.0520897
+ },
+ "rogue-20261012_110410-pollute_label_flip": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-pollute_label_flip.jsonl",
+  "updated_at": 1791795850.0550594
+ },
+ "rogue-20261012_110410-pollute_dos": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-pollute_dos.jsonl",
+  "updated_at": 1791795850.058045
+ },
+ "rogue-20261012_110410-pollute_reputation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-pollute_reputation.jsonl",
+  "updated_at": 1791795850.0618587
+ },
+ "rogue-20261012_110410-pollute_backdoor_data": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-pollute_backdoor_data.jsonl",
+  "updated_at": 1791795850.06515
+ },
+ "rogue-20261012_110410-detect_policy_only": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-detect_policy_only.jsonl",
+  "updated_at": 1791795850.0684783
+ },
+ "rogue-20261012_110410-detect_behavioral": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-detect_behavioral.jsonl",
+  "updated_at": 1791795850.0721073
+ },
+ "rogue-20261012_110410-detect_audit_correlation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-detect_audit_correlation.jsonl",
+  "updated_at": 1791795850.0756896
+ },
+ "rogue-20261012_110410-detect_collusion_graph": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-detect_collusion_graph.jsonl",
+  "updated_at": 1791795850.079236
+ },
+ "rogue-20261012_110410-detect_pollution_provenance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-detect_pollution_provenance.jsonl",
+  "updated_at": 1791795850.0833762
+ },
+ "rogue-20261012_110410-detect_missed_subtle": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-detect_missed_subtle.jsonl",
+  "updated_at": 1791795850.08702
+ },
+ "rogue-20261012_110410-detect_false_positive": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-detect_false_positive.jsonl",
+  "updated_at": 1791795850.0908337
+ },
+ "rogue-20261012_110410-ground_every_finding": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-ground_every_finding.jsonl",
+  "updated_at": 1791795850.0948777
+ },
+ "rogue-20261012_110410-detect_live_governance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-detect_live_governance.jsonl",
+  "updated_at": 1791795850.099183
+ },
+ "rogue-20261012_110410-baseline_benign": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-baseline_benign.jsonl",
+  "updated_at": 1791795850.102296
+ },
+ "rogue-20261012_110410-benign_noisy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-benign_noisy.jsonl",
+  "updated_at": 1791795850.1059937
+ },
+ "rogue-20261012_110410-benign_buggy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_110410-benign_buggy.jsonl",
+  "updated_at": 1791795850.109861
+ },
+ "rogue-20261012_090708-rogue_exfil_net": {
+  "path": "/app/evidence/ledger/rogue-20261012_090708-rogue_exfil_net.jsonl",
+  "updated_at": 1791796028.140765
+ },
+ "rogue-20261012_090712-rogue_exfil_net": {
+  "path": "/app/evidence/ledger/rogue-20261012_090712-rogue_exfil_net.jsonl",
+  "updated_at": 1791796032.9776182
+ },
+ "rogue-20261012_090719-rogue_exfil_net": {
+  "path": "/app/evidence/ledger/rogue-20261012_090719-rogue_exfil_net.jsonl",
+  "updated_at": 1791796039.9535873
+ },
+ "rogue-20261012_090726-rogue_exfil_net": {
+  "path": "/app/evidence/ledger/rogue-20261012_090726-rogue_exfil_net.jsonl",
+  "updated_at": 1791796046.0548294
+ },
+ "rogue-20261012_090738-rogue_exfil_net": {
+  "path": "/app/evidence/ledger/rogue-20261012_090738-rogue_exfil_net.jsonl",
+  "updated_at": 1791796058.2641873
+ },
+ "rogue-20261012_090909-pollute_corpus": {
+  "path": "/app/evidence/ledger/rogue-20261012_090909-pollute_corpus.jsonl",
+  "updated_at": 1791796149.3202732
+ },
+ "rogue-20261012_090957-rogue_data_destruction": {
+  "path": "/app/evidence/ledger/rogue-20261012_090957-rogue_data_destruction.jsonl",
+  "updated_at": 1791796197.9370255
+ },
+ "rogue-20261012_113110-rogue_exfil_net": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_exfil_net.jsonl",
+  "updated_at": 1791797470.6262066
+ },
+ "rogue-20261012_113110-rogue_exfil_dns": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_exfil_dns.jsonl",
+  "updated_at": 1791797470.3851607
+ },
+ "rogue-20261012_113110-rogue_exfil_allowlisted": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_exfil_allowlisted.jsonl",
+  "updated_at": 1791797470.388897
+ },
+ "rogue-20261012_113110-rogue_priv_escalation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_priv_escalation.jsonl",
+  "updated_at": 1791797470.3927646
+ },
+ "rogue-20261012_113110-rogue_sandbox_escape": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_sandbox_escape.jsonl",
+  "updated_at": 1791797470.3959208
+ },
+ "rogue-20261012_113110-rogue_credential_theft": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_credential_theft.jsonl",
+  "updated_at": 1791797470.3990107
+ },
+ "rogue-20261012_113110-rogue_supervisor_tamper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_supervisor_tamper.jsonl",
+  "updated_at": 1791797470.4021199
+ },
+ "rogue-20261012_113110-rogue_policy_evasion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_policy_evasion.jsonl",
+  "updated_at": 1791797470.4052665
+ },
+ "rogue-20261012_113110-rogue_self_replication": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_self_replication.jsonl",
+  "updated_at": 1791797470.4082034
+ },
+ "rogue-20261012_113110-rogue_reward_hacking": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_reward_hacking.jsonl",
+  "updated_at": 1791797470.411207
+ },
+ "rogue-20261012_113110-rogue_resource_abuse": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_resource_abuse.jsonl",
+  "updated_at": 1791797470.4145517
+ },
+ "rogue-20261012_113110-rogue_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_prompt_injection.jsonl",
+  "updated_at": 1791797470.4177768
+ },
+ "rogue-20261012_113110-rogue_data_destruction": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_data_destruction.jsonl",
+  "updated_at": 1791797470.421271
+ },
+ "rogue-20261012_113110-rogue_backdoor": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_backdoor.jsonl",
+  "updated_at": 1791797470.4242532
+ },
+ "rogue-20261012_113110-rogue_sleeper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-rogue_sleeper.jsonl",
+  "updated_at": 1791797470.4278572
+ },
+ "rogue-20261012_113110-swarm_rogue_minority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-swarm_rogue_minority.jsonl",
+  "updated_at": 1791797470.431353
+ },
+ "rogue-20261012_113110-swarm_rogue_majority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-swarm_rogue_majority.jsonl",
+  "updated_at": 1791797470.4357827
+ },
+ "rogue-20261012_113110-swarm_handoff": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-swarm_handoff.jsonl",
+  "updated_at": 1791797470.4402082
+ },
+ "rogue-20261012_113110-swarm_cover_traffic": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-swarm_cover_traffic.jsonl",
+  "updated_at": 1791797470.443959
+ },
+ "rogue-20261012_113110-swarm_task_hijack": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-swarm_task_hijack.jsonl",
+  "updated_at": 1791797470.448889
+ },
+ "rogue-20261012_113110-swarm_trust_bootstrap": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-swarm_trust_bootstrap.jsonl",
+  "updated_at": 1791797470.4526796
+ },
+ "rogue-20261012_113110-swarm_role_confusion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-swarm_role_confusion.jsonl",
+  "updated_at": 1791797470.4565632
+ },
+ "rogue-20261012_113110-swarm_cascade": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-swarm_cascade.jsonl",
+  "updated_at": 1791797470.460343
+ },
+ "rogue-20261012_113110-swarm_sleeper_cell": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-swarm_sleeper_cell.jsonl",
+  "updated_at": 1791797470.4643068
+ },
+ "rogue-20261012_113110-swarm_vs_defenders": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-swarm_vs_defenders.jsonl",
+  "updated_at": 1791797470.4683936
+ },
+ "rogue-20261012_113110-collude_split_payload": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-collude_split_payload.jsonl",
+  "updated_at": 1791797470.695022
+ },
+ "rogue-20261012_113110-collude_covert_channel": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-collude_covert_channel.jsonl",
+  "updated_at": 1791797470.4763954
+ },
+ "rogue-20261012_113110-collude_vote_rigging": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-collude_vote_rigging.jsonl",
+  "updated_at": 1791797470.479966
+ },
+ "rogue-20261012_113110-collude_mutual_cover": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-collude_mutual_cover.jsonl",
+  "updated_at": 1791797470.4842606
+ },
+ "rogue-20261012_113110-collude_steganography": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-collude_steganography.jsonl",
+  "updated_at": 1791797470.488065
+ },
+ "rogue-20261012_113110-collude_ring_leader": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-collude_ring_leader.jsonl",
+  "updated_at": 1791797470.4917283
+ },
+ "rogue-20261012_113110-collude_sybil": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-collude_sybil.jsonl",
+  "updated_at": 1791797470.4964585
+ },
+ "rogue-20261012_113110-collude_timing": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-collude_timing.jsonl",
+  "updated_at": 1791797470.5009804
+ },
+ "rogue-20261012_113110-collude_fragment_reassembly": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-collude_fragment_reassembly.jsonl",
+  "updated_at": 1791797470.5048113
+ },
+ "rogue-20261012_113110-collude_cross_sandbox": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-collude_cross_sandbox.jsonl",
+  "updated_at": 1791797470.508519
+ },
+ "rogue-20261012_113110-pollute_memory": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-pollute_memory.jsonl",
+  "updated_at": 1791797470.5119224
+ },
+ "rogue-20261012_113110-pollute_corpus": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-pollute_corpus.jsonl",
+  "updated_at": 1791797470.7182353
+ },
+ "rogue-20261012_113110-pollute_results": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-pollute_results.jsonl",
+  "updated_at": 1791797470.5188265
+ },
+ "rogue-20261012_113110-pollute_context": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-pollute_context.jsonl",
+  "updated_at": 1791797470.5224304
+ },
+ "rogue-20261012_113110-pollute_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-pollute_prompt_injection.jsonl",
+  "updated_at": 1791797470.5262136
+ },
+ "rogue-20261012_113110-pollute_adversarial": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-pollute_adversarial.jsonl",
+  "updated_at": 1791797470.5296695
+ },
+ "rogue-20261012_113110-pollute_label_flip": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-pollute_label_flip.jsonl",
+  "updated_at": 1791797470.5327919
+ },
+ "rogue-20261012_113110-pollute_dos": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-pollute_dos.jsonl",
+  "updated_at": 1791797470.535903
+ },
+ "rogue-20261012_113110-pollute_reputation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-pollute_reputation.jsonl",
+  "updated_at": 1791797470.5399868
+ },
+ "rogue-20261012_113110-pollute_backdoor_data": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-pollute_backdoor_data.jsonl",
+  "updated_at": 1791797470.5433805
+ },
+ "rogue-20261012_113110-detect_policy_only": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-detect_policy_only.jsonl",
+  "updated_at": 1791797470.5940096
+ },
+ "rogue-20261012_113110-detect_behavioral": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-detect_behavioral.jsonl",
+  "updated_at": 1791797470.5506697
+ },
+ "rogue-20261012_113110-detect_audit_correlation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-detect_audit_correlation.jsonl",
+  "updated_at": 1791797470.554568
+ },
+ "rogue-20261012_113110-detect_collusion_graph": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-detect_collusion_graph.jsonl",
+  "updated_at": 1791797470.5582223
+ },
+ "rogue-20261012_113110-detect_pollution_provenance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-detect_pollution_provenance.jsonl",
+  "updated_at": 1791797470.5624368
+ },
+ "rogue-20261012_113110-detect_missed_subtle": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-detect_missed_subtle.jsonl",
+  "updated_at": 1791797470.673096
+ },
+ "rogue-20261012_113110-detect_false_positive": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-detect_false_positive.jsonl",
+  "updated_at": 1791797470.570384
+ },
+ "rogue-20261012_113110-ground_every_finding": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-ground_every_finding.jsonl",
+  "updated_at": 1791797470.5745704
+ },
+ "rogue-20261012_113110-detect_live_governance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-detect_live_governance.jsonl",
+  "updated_at": 1791797470.5789955
+ },
+ "rogue-20261012_113110-baseline_benign": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-baseline_benign.jsonl",
+  "updated_at": 1791797470.602185
+ },
+ "rogue-20261012_113110-benign_noisy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-benign_noisy.jsonl",
+  "updated_at": 1791797470.6060293
+ },
+ "rogue-20261012_113110-benign_buggy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113110-benign_buggy.jsonl",
+  "updated_at": 1791797470.609975
+ },
+ "recon-20261012_113121": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261012_113121.jsonl",
+  "updated_at": 1791797481.501949
+ },
+ "recon-20261012_113144": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261012_113144.jsonl",
+  "updated_at": 1791797505.0369387
+ },
+ "recon-20261012_113145": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/recon-20261012_113145.jsonl",
+  "updated_at": 1791797505.9937403
+ },
+ "rogue-20261012_113146-rogue_exfil_net": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_exfil_net.jsonl",
+  "updated_at": 1791797506.2379727
+ },
+ "rogue-20261012_113146-rogue_exfil_dns": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_exfil_dns.jsonl",
+  "updated_at": 1791797506.0064628
+ },
+ "rogue-20261012_113146-rogue_exfil_allowlisted": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_exfil_allowlisted.jsonl",
+  "updated_at": 1791797506.009676
+ },
+ "rogue-20261012_113146-rogue_priv_escalation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_priv_escalation.jsonl",
+  "updated_at": 1791797506.013212
+ },
+ "rogue-20261012_113146-rogue_sandbox_escape": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_sandbox_escape.jsonl",
+  "updated_at": 1791797506.01622
+ },
+ "rogue-20261012_113146-rogue_credential_theft": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_credential_theft.jsonl",
+  "updated_at": 1791797506.0191948
+ },
+ "rogue-20261012_113146-rogue_supervisor_tamper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_supervisor_tamper.jsonl",
+  "updated_at": 1791797506.0221512
+ },
+ "rogue-20261012_113146-rogue_policy_evasion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_policy_evasion.jsonl",
+  "updated_at": 1791797506.0251336
+ },
+ "rogue-20261012_113146-rogue_self_replication": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_self_replication.jsonl",
+  "updated_at": 1791797506.028284
+ },
+ "rogue-20261012_113146-rogue_reward_hacking": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_reward_hacking.jsonl",
+  "updated_at": 1791797506.0317287
+ },
+ "rogue-20261012_113146-rogue_resource_abuse": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_resource_abuse.jsonl",
+  "updated_at": 1791797506.0349073
+ },
+ "rogue-20261012_113146-rogue_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_prompt_injection.jsonl",
+  "updated_at": 1791797506.037859
+ },
+ "rogue-20261012_113146-rogue_data_destruction": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_data_destruction.jsonl",
+  "updated_at": 1791797506.041044
+ },
+ "rogue-20261012_113146-rogue_backdoor": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_backdoor.jsonl",
+  "updated_at": 1791797506.0440018
+ },
+ "rogue-20261012_113146-rogue_sleeper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-rogue_sleeper.jsonl",
+  "updated_at": 1791797506.0470395
+ },
+ "rogue-20261012_113146-swarm_rogue_minority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-swarm_rogue_minority.jsonl",
+  "updated_at": 1791797506.0503275
+ },
+ "rogue-20261012_113146-swarm_rogue_majority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-swarm_rogue_majority.jsonl",
+  "updated_at": 1791797506.0544665
+ },
+ "rogue-20261012_113146-swarm_handoff": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-swarm_handoff.jsonl",
+  "updated_at": 1791797506.059139
+ },
+ "rogue-20261012_113146-swarm_cover_traffic": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-swarm_cover_traffic.jsonl",
+  "updated_at": 1791797506.0638998
+ },
+ "rogue-20261012_113146-swarm_task_hijack": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-swarm_task_hijack.jsonl",
+  "updated_at": 1791797506.0686421
+ },
+ "rogue-20261012_113146-swarm_trust_bootstrap": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-swarm_trust_bootstrap.jsonl",
+  "updated_at": 1791797506.0722797
+ },
+ "rogue-20261012_113146-swarm_role_confusion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-swarm_role_confusion.jsonl",
+  "updated_at": 1791797506.0759637
+ },
+ "rogue-20261012_113146-swarm_cascade": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-swarm_cascade.jsonl",
+  "updated_at": 1791797506.0799785
+ },
+ "rogue-20261012_113146-swarm_sleeper_cell": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-swarm_sleeper_cell.jsonl",
+  "updated_at": 1791797506.0839422
+ },
+ "rogue-20261012_113146-swarm_vs_defenders": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-swarm_vs_defenders.jsonl",
+  "updated_at": 1791797506.0877738
+ },
+ "rogue-20261012_113146-collude_split_payload": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-collude_split_payload.jsonl",
+  "updated_at": 1791797506.3017814
+ },
+ "rogue-20261012_113146-collude_covert_channel": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-collude_covert_channel.jsonl",
+  "updated_at": 1791797506.0952778
+ },
+ "rogue-20261012_113146-collude_vote_rigging": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-collude_vote_rigging.jsonl",
+  "updated_at": 1791797506.0994794
+ },
+ "rogue-20261012_113146-collude_mutual_cover": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-collude_mutual_cover.jsonl",
+  "updated_at": 1791797506.103645
+ },
+ "rogue-20261012_113146-collude_steganography": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-collude_steganography.jsonl",
+  "updated_at": 1791797506.1071208
+ },
+ "rogue-20261012_113146-collude_ring_leader": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-collude_ring_leader.jsonl",
+  "updated_at": 1791797506.1108904
+ },
+ "rogue-20261012_113146-collude_sybil": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-collude_sybil.jsonl",
+  "updated_at": 1791797506.1150994
+ },
+ "rogue-20261012_113146-collude_timing": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-collude_timing.jsonl",
+  "updated_at": 1791797506.1193037
+ },
+ "rogue-20261012_113146-collude_fragment_reassembly": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-collude_fragment_reassembly.jsonl",
+  "updated_at": 1791797506.1227894
+ },
+ "rogue-20261012_113146-collude_cross_sandbox": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-collude_cross_sandbox.jsonl",
+  "updated_at": 1791797506.126352
+ },
+ "rogue-20261012_113146-pollute_memory": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-pollute_memory.jsonl",
+  "updated_at": 1791797506.1296177
+ },
+ "rogue-20261012_113146-pollute_corpus": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-pollute_corpus.jsonl",
+  "updated_at": 1791797506.327174
+ },
+ "rogue-20261012_113146-pollute_results": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-pollute_results.jsonl",
+  "updated_at": 1791797506.1363497
+ },
+ "rogue-20261012_113146-pollute_context": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-pollute_context.jsonl",
+  "updated_at": 1791797506.1396668
+ },
+ "rogue-20261012_113146-pollute_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-pollute_prompt_injection.jsonl",
+  "updated_at": 1791797506.1433897
+ },
+ "rogue-20261012_113146-pollute_adversarial": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-pollute_adversarial.jsonl",
+  "updated_at": 1791797506.1467116
+ },
+ "rogue-20261012_113146-pollute_label_flip": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-pollute_label_flip.jsonl",
+  "updated_at": 1791797506.1496685
+ },
+ "rogue-20261012_113146-pollute_dos": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-pollute_dos.jsonl",
+  "updated_at": 1791797506.1527617
+ },
+ "rogue-20261012_113146-pollute_reputation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-pollute_reputation.jsonl",
+  "updated_at": 1791797506.1565754
+ },
+ "rogue-20261012_113146-pollute_backdoor_data": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-pollute_backdoor_data.jsonl",
+  "updated_at": 1791797506.1598372
+ },
+ "rogue-20261012_113146-detect_policy_only": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-detect_policy_only.jsonl",
+  "updated_at": 1791797506.2079144
+ },
+ "rogue-20261012_113146-detect_behavioral": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-detect_behavioral.jsonl",
+  "updated_at": 1791797506.1667306
+ },
+ "rogue-20261012_113146-detect_audit_correlation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-detect_audit_correlation.jsonl",
+  "updated_at": 1791797506.1702597
+ },
+ "rogue-20261012_113146-detect_collusion_graph": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-detect_collusion_graph.jsonl",
+  "updated_at": 1791797506.1737537
+ },
+ "rogue-20261012_113146-detect_pollution_provenance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-detect_pollution_provenance.jsonl",
+  "updated_at": 1791797506.1781645
+ },
+ "rogue-20261012_113146-detect_missed_subtle": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-detect_missed_subtle.jsonl",
+  "updated_at": 1791797506.2823339
+ },
+ "rogue-20261012_113146-detect_false_positive": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-detect_false_positive.jsonl",
+  "updated_at": 1791797506.1854923
+ },
+ "rogue-20261012_113146-ground_every_finding": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-ground_every_finding.jsonl",
+  "updated_at": 1791797506.189411
+ },
+ "rogue-20261012_113146-detect_live_governance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-detect_live_governance.jsonl",
+  "updated_at": 1791797506.1935773
+ },
+ "rogue-20261012_113146-baseline_benign": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-baseline_benign.jsonl",
+  "updated_at": 1791797506.2156258
+ },
+ "rogue-20261012_113146-benign_noisy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-benign_noisy.jsonl",
+  "updated_at": 1791797506.2192597
+ },
+ "rogue-20261012_113146-benign_buggy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113146-benign_buggy.jsonl",
+  "updated_at": 1791797506.2230337
+ },
+ "sim-20261012_113151": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/sim-20261012_113151.jsonl",
+  "updated_at": 1791797511.2182565
+ },
+ "rogue-20261012_093545-collude_split_payload": {
+  "path": "/app/evidence/ledger/rogue-20261012_093545-collude_split_payload.jsonl",
+  "updated_at": 1791797745.6942334
+ },
+ "rogue-20261012_113801-rogue_exfil_net": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113801-rogue_exfil_net.jsonl",
+  "updated_at": 1791797881.2465134
+ },
+ "rogue-20261012_113832-rogue_priv_escalation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_113832-rogue_priv_escalation.jsonl",
+  "updated_at": 1791797912.8012547
+ },
+ "rogue-20261012_114003-rogue_exfil_net": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_exfil_net.jsonl",
+  "updated_at": 1791798003.7088344
+ },
+ "rogue-20261012_114003-rogue_exfil_dns": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_exfil_dns.jsonl",
+  "updated_at": 1791798003.4372277
+ },
+ "rogue-20261012_114003-rogue_exfil_allowlisted": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_exfil_allowlisted.jsonl",
+  "updated_at": 1791798003.4409971
+ },
+ "rogue-20261012_114003-rogue_priv_escalation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_priv_escalation.jsonl",
+  "updated_at": 1791798003.4448295
+ },
+ "rogue-20261012_114003-rogue_sandbox_escape": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_sandbox_escape.jsonl",
+  "updated_at": 1791798003.448336
+ },
+ "rogue-20261012_114003-rogue_credential_theft": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_credential_theft.jsonl",
+  "updated_at": 1791798003.45173
+ },
+ "rogue-20261012_114003-rogue_supervisor_tamper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_supervisor_tamper.jsonl",
+  "updated_at": 1791798003.4551632
+ },
+ "rogue-20261012_114003-rogue_policy_evasion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_policy_evasion.jsonl",
+  "updated_at": 1791798003.4586048
+ },
+ "rogue-20261012_114003-rogue_self_replication": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_self_replication.jsonl",
+  "updated_at": 1791798003.4619668
+ },
+ "rogue-20261012_114003-rogue_reward_hacking": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_reward_hacking.jsonl",
+  "updated_at": 1791798003.4653552
+ },
+ "rogue-20261012_114003-rogue_resource_abuse": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_resource_abuse.jsonl",
+  "updated_at": 1791798003.469038
+ },
+ "rogue-20261012_114003-rogue_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_prompt_injection.jsonl",
+  "updated_at": 1791798003.47256
+ },
+ "rogue-20261012_114003-rogue_data_destruction": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_data_destruction.jsonl",
+  "updated_at": 1791798003.4763641
+ },
+ "rogue-20261012_114003-rogue_backdoor": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_backdoor.jsonl",
+  "updated_at": 1791798003.4797268
+ },
+ "rogue-20261012_114003-rogue_sleeper": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-rogue_sleeper.jsonl",
+  "updated_at": 1791798003.4830728
+ },
+ "rogue-20261012_114003-swarm_rogue_minority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-swarm_rogue_minority.jsonl",
+  "updated_at": 1791798003.4868171
+ },
+ "rogue-20261012_114003-swarm_rogue_majority": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-swarm_rogue_majority.jsonl",
+  "updated_at": 1791798003.4915757
+ },
+ "rogue-20261012_114003-swarm_handoff": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-swarm_handoff.jsonl",
+  "updated_at": 1791798003.4961839
+ },
+ "rogue-20261012_114003-swarm_cover_traffic": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-swarm_cover_traffic.jsonl",
+  "updated_at": 1791798003.5002916
+ },
+ "rogue-20261012_114003-swarm_task_hijack": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-swarm_task_hijack.jsonl",
+  "updated_at": 1791798003.5056815
+ },
+ "rogue-20261012_114003-swarm_trust_bootstrap": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-swarm_trust_bootstrap.jsonl",
+  "updated_at": 1791798003.5098145
+ },
+ "rogue-20261012_114003-swarm_role_confusion": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-swarm_role_confusion.jsonl",
+  "updated_at": 1791798003.5139554
+ },
+ "rogue-20261012_114003-swarm_cascade": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-swarm_cascade.jsonl",
+  "updated_at": 1791798003.5180707
+ },
+ "rogue-20261012_114003-swarm_sleeper_cell": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-swarm_sleeper_cell.jsonl",
+  "updated_at": 1791798003.5225005
+ },
+ "rogue-20261012_114003-swarm_vs_defenders": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-swarm_vs_defenders.jsonl",
+  "updated_at": 1791798003.5269442
+ },
+ "rogue-20261012_114003-collude_split_payload": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-collude_split_payload.jsonl",
+  "updated_at": 1791798003.7779014
+ },
+ "rogue-20261012_114003-collude_covert_channel": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-collude_covert_channel.jsonl",
+  "updated_at": 1791798003.5356395
+ },
+ "rogue-20261012_114003-collude_vote_rigging": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-collude_vote_rigging.jsonl",
+  "updated_at": 1791798003.5396092
+ },
+ "rogue-20261012_114003-collude_mutual_cover": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-collude_mutual_cover.jsonl",
+  "updated_at": 1791798003.5442982
+ },
+ "rogue-20261012_114003-collude_steganography": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-collude_steganography.jsonl",
+  "updated_at": 1791798003.5483332
+ },
+ "rogue-20261012_114003-collude_ring_leader": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-collude_ring_leader.jsonl",
+  "updated_at": 1791798003.55208
+ },
+ "rogue-20261012_114003-collude_sybil": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-collude_sybil.jsonl",
+  "updated_at": 1791798003.5569289
+ },
+ "rogue-20261012_114003-collude_timing": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-collude_timing.jsonl",
+  "updated_at": 1791798003.5618384
+ },
+ "rogue-20261012_114003-collude_fragment_reassembly": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-collude_fragment_reassembly.jsonl",
+  "updated_at": 1791798003.5659082
+ },
+ "rogue-20261012_114003-collude_cross_sandbox": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-collude_cross_sandbox.jsonl",
+  "updated_at": 1791798003.5699997
+ },
+ "rogue-20261012_114003-pollute_memory": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-pollute_memory.jsonl",
+  "updated_at": 1791798003.573816
+ },
+ "rogue-20261012_114003-pollute_corpus": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-pollute_corpus.jsonl",
+  "updated_at": 1791798003.8017454
+ },
+ "rogue-20261012_114003-pollute_results": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-pollute_results.jsonl",
+  "updated_at": 1791798003.581835
+ },
+ "rogue-20261012_114003-pollute_context": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-pollute_context.jsonl",
+  "updated_at": 1791798003.5856857
+ },
+ "rogue-20261012_114003-pollute_prompt_injection": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-pollute_prompt_injection.jsonl",
+  "updated_at": 1791798003.5898783
+ },
+ "rogue-20261012_114003-pollute_adversarial": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-pollute_adversarial.jsonl",
+  "updated_at": 1791798003.5936942
+ },
+ "rogue-20261012_114003-pollute_label_flip": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-pollute_label_flip.jsonl",
+  "updated_at": 1791798003.5971594
+ },
+ "rogue-20261012_114003-pollute_dos": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-pollute_dos.jsonl",
+  "updated_at": 1791798003.6006424
+ },
+ "rogue-20261012_114003-pollute_reputation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-pollute_reputation.jsonl",
+  "updated_at": 1791798003.6049962
+ },
+ "rogue-20261012_114003-pollute_backdoor_data": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-pollute_backdoor_data.jsonl",
+  "updated_at": 1791798003.6088014
+ },
+ "rogue-20261012_114003-detect_policy_only": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-detect_policy_only.jsonl",
+  "updated_at": 1791798003.6642675
+ },
+ "rogue-20261012_114003-detect_behavioral": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-detect_behavioral.jsonl",
+  "updated_at": 1791798003.6168983
+ },
+ "rogue-20261012_114003-detect_audit_correlation": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-detect_audit_correlation.jsonl",
+  "updated_at": 1791798003.6209733
+ },
+ "rogue-20261012_114003-detect_collusion_graph": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-detect_collusion_graph.jsonl",
+  "updated_at": 1791798003.6250336
+ },
+ "rogue-20261012_114003-detect_pollution_provenance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-detect_pollution_provenance.jsonl",
+  "updated_at": 1791798003.6296258
+ },
+ "rogue-20261012_114003-detect_missed_subtle": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-detect_missed_subtle.jsonl",
+  "updated_at": 1791798003.7555249
+ },
+ "rogue-20261012_114003-detect_false_positive": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-detect_false_positive.jsonl",
+  "updated_at": 1791798003.6381984
+ },
+ "rogue-20261012_114003-ground_every_finding": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-ground_every_finding.jsonl",
+  "updated_at": 1791798003.642741
+ },
+ "rogue-20261012_114003-detect_live_governance": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-detect_live_governance.jsonl",
+  "updated_at": 1791798003.6475859
+ },
+ "rogue-20261012_114003-baseline_benign": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-baseline_benign.jsonl",
+  "updated_at": 1791798003.6732302
+ },
+ "rogue-20261012_114003-benign_noisy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-benign_noisy.jsonl",
+  "updated_at": 1791798003.6774483
+ },
+ "rogue-20261012_114003-benign_buggy": {
+  "path": "/home/fox/codebase/intelligence-forensics/evidence/ledger/rogue-20261012_114003-benign_buggy.jsonl",
+  "updated_at": 1791798003.6923735
+ },
+ "rogue-20261012_095042-pollute_corpus": {
+  "path": "/app/evidence/ledger/rogue-20261012_095042-pollute_corpus.jsonl",
+  "updated_at": 1791798642.9527678
+ },
+ "rogue-20261012_095057-rogue_credential_theft": {
+  "path": "/app/evidence/ledger/rogue-20261012_095057-rogue_credential_theft.jsonl",
+  "updated_at": 1791798657.986913
  }
 }

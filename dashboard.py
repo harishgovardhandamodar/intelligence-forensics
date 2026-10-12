@@ -59,7 +59,10 @@ POST_LIMITS = {
     "/api/recon/coserve": (30, 60),
     "/api/recon/coserve-auto": (30, 60),
     "/api/recon/reset": (30, 60),
+    "/api/rogue/run": (10, 300),
+    "/api/rogue/reset": (30, 60),
     "/api/security/evaluate": (3, 300),
+    "/api/security/council": (2, 600),
 }
 _POST_HITS: dict[str, deque] = {}
 
@@ -92,7 +95,7 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=grp>Evidence</div>
 <button data-t=evidence>Evidence</button><button data-t=ledger>Ledger</button>
 <div class=grp>Assure</div>
-<button data-t=security>Security</button><button data-t=design>Design</button><button data-t=sim>Sim</button><button data-t=residuals>Stateless recon</button>
+<button data-t=security>Security</button><button data-t=design>Design</button><button data-t=sim>Sim</button><button data-t=residuals>Stateless recon</button><button data-t=rogue>Rogue agents</button>
 </nav></aside><main>
 <section id=s-overview class=on><div class=grid id=stats></div><div class=card><h3>Latest brief <span class=mut style="font-weight:normal">— rendered markdown</span></h3><div id=brief class=md>loading&hellip;</div></div>
 <details class="card coll" open><summary><h3>Run investigation</h3><span class=chev>›</span></summary><div class=coll-body><div class=row>
@@ -215,8 +218,9 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=card><div class=row><span class=mut>workflows</span>
 <button class=act id=b-sast>SAST + local LLM</button>
 <button class=act id=b-dast>DAST + local LLM</button>
+<button class=act id=b-council>Scholar council</button>
 <span class=mut id=sec-eval-msg></span></div>
-<div class=mut>Static findings and runtime probes are triaged by the local model into confirmed / dismissed / uncertain, with adjusted severity and one-line fixes. Deterministic results ship even when Ollama is down.</div></div>
+<div class=mut>Static findings and runtime probes are triaged by the local model into confirmed / dismissed / uncertain, with adjusted severity and one-line fixes. The <b>scholar council</b> convenes 4 PhD personas (adversarial ML, privacy theory, systems security, governance) to hypothesise independently, then a chair merges them — agreement vs dissent preserved, every hypothesis falsifiable. Slow (up to 5 local calls); deterministic results ship even when Ollama is down.</div></div>
 <div id=sec-eval></div>
 </div>
 <details class="card coll" open><summary><div class=row><h3>Trust boundaries (D4)</h3><span class=mut id=sec-trust-sum></span><span class=chev>›</span></div></summary><div class=coll-body>
@@ -254,6 +258,29 @@ PAGE = """<!doctype html><html><head><meta charset=utf-8><meta name=viewport con
 <div class=card><div class=row><h3>Residual inspector</h3><span class=mut id=res-insp-sum></span><span style="flex:1"></span><span class=mut>surface</span><select id=sel-res-surface></select><span class=mut>user</span><input id=inp-res-user style="width:160px" placeholder="u-recon-…"><button class=act id=b-res-insp>Inspect</button></div><div class=mut>What one store literally still holds for that user &mdash; no scoring, no assembly, just the retained text and metadata.</div><div id=res-insp><div class="mut">run a session first&hellip;</div></div></div>
 <div class=card><div class=row><h3>Persisted runs</h3><span class=mut id=res-runs-sum></span><span style="flex:1"></span><select id=sel-res-run></select><button class=act id=b-res-load>Load report</button></div><div id=res-hist class=mut>loading&hellip;</div></div>
 </section>
+
+<section id=s-rogue>
+<div class=card><div class=row><h3>Rogue agents in a swarm</h3><span class=mut id=rog-sum></span><span style="flex:1"></span><button class="act danger" id=b-rog-reset>Reset</button></div>
+<div class=mut>Deterministic model of a governed autonomous fleet &mdash; OpenShell <i>modeled</i>, never called: sandbox &middot; policy engine &middot; supervisor &middot; privacy router, a hash-chained audit trail and a four-layer detector (policy &middot; behaviour &middot; graph &middot; provenance). <b>Nothing is executed</b> &mdash; every <code>net.egress</code>, <code>proc.spawn</code> and <code>cred.use</code> is <i>decided</i>, never performed. Every finding cites the exact <code>audit_id</code> + <code>rule_id</code> that produced it.</div>
+<div class=row><span class=mut>scenario</span><select id=sel-rog-sc></select><span class=mut>seed</span><input id=inp-rog-seed value=42 style="width:64px"><span class=mut>steps</span><input id=inp-rog-n value=6 style="width:54px"><span class=mut>detector</span><select id=sel-rog-mode><option value=full>full</option><option value=policy_only>policy only</option><option value=behavior_only>behaviour only</option><option value=graph_only>graph only</option><option value=provenance_only>provenance only</option></select><button class=act id=b-rog-run>Run</button><span class=mut id=rog-runmsg></span></div>
+<div class=mut id=rog-blurb></div>
+<div id=rog-story class="rog-story mut">Run a scenario above &mdash; this card tells the story: who turned, what OpenShell refused, which detector caught them, and how every finding is grounded.</div></div>
+<div class=rog-grid>
+<div class=card><div class=row><h3>Decisions by layer</h3><span class=mut>every OpenShell verdict</span></div><div class=mut id=rog-chart-layers>run a scenario&hellip;</div></div>
+<div class=card><div class=row><h3>Suspicion meter</h3><span class=mut>score per agent &middot; suspect &ge;2 &middot; rogue &ge;4</span></div><div class=mut id=rog-chart-scores>run a scenario&hellip;</div></div>
+<div class=card><div class=row><h3>Detection outcome</h3><span class=mut id=rog-conf-sum></span></div><div class=mut id=rog-chart-conf>run a scenario&hellip;</div></div>
+</div>
+<div class=card><div class=row><h3>Swarm timeline</h3><span class=mut>one lane per agent, one column per step &mdash; every decision OpenShell recorded that tick</span></div><div id=rog-tl-legend class=mut></div><div id=rog-tl class=mut>run a scenario&hellip;</div></div>
+<div class=card><div class=row><h3>Grounded verdicts</h3><span class=mut id=rog-verdicts-sum></span></div><table class=tbl id=t-rog-verdict><thead><tr><th>agent</th><th>label</th><th>score</th><th>signals</th><th>grounding</th></tr></thead><tbody><tr><td class=mut colspan=5>no report yet</td></tr></tbody></table></div>
+<div class=res-cols>
+<div class=card><div class=row><h3>Collusion clusters</h3><span class=mut id=rog-clusters-sum></span></div><div id=rog-clusters class=mut>run a scenario&hellip;</div></div>
+<div><div class=card><div class=row><h3>Pollution provenance</h3><span class=mut id=rog-prov-sum></span></div><div id=rog-prov class=mut>run a scenario&hellip;</div></div>
+<div class=card><div class=row><h3>Hash-chained audit</h3><span class=mut id=rog-chain-sum></span></div><div id=rog-chain class=mut>run a scenario&hellip;</div><div class=mut>denied / covert / polluting decisions, each pinned to its audit entry.</div><table class=tbl id=t-rog-audit><thead><tr><th>step</th><th>agent</th><th>action</th><th>layer</th><th>effect</th><th>rule</th><th>reason</th><th>audit</th></tr></thead><tbody><tr><td class=mut colspan=8>run a scenario&hellip;</td></tr></tbody></table></div></div>
+</div>
+<div class=card><div class=row><h3>Scenario catalogue</h3><span class=mut id=rog-cat-sum></span></div><div class=mut>Every scenario in the exhaustive catalogue. Filter by category, or search; expand a card to render its OpenShell decision-path diagram.</div><div class=row style="margin:8px 0"><span class=mut>category</span><span class="rog-chips" id=rog-cat-chips></span><span class=mut>search</span><input id=inp-rog-search placeholder="exfil &middot; collude &middot; poison&hellip;" style="width:190px"></div><div id=rog-cat class=mut>loading&hellip;</div></div>
+<div class=card><div class=row><h3>Persisted runs</h3><span class=mut id=rog-runs-sum></span><span style="flex:1"></span><select id=sel-rog-run></select><button class=act id=b-rog-load>Load report</button></div><div id=rog-hist class=mut>loading&hellip;</div></div>
+</section>
+
 </main>
 </div>
 <div id=tip class=tip></div>
@@ -1178,6 +1205,71 @@ def recon_consume(req: ReconConsume):
     return col.consume(uid, truth=truth, attack=req.attack)
 
 
+class RogueRun(BaseModel):
+    scenario: str = ""
+    seed: int = 42
+    n: int | None = None
+    mode: str | None = None
+
+
+@app.get("/api/rogue/catalogue")
+def rogue_catalogue():
+    """The exhaustive scenario catalogue + categories (mermaid inline)."""
+    from iforensics.sim import rogue
+    return {"scenarios": rogue.scenarios(), "categories": rogue.categories()}
+
+
+@app.get("/api/rogue/categories")
+def rogue_categories():
+    """Category counts + ids, for the tab summary line."""
+    from iforensics.sim import rogue
+    return {"categories": rogue.categories()}
+
+
+@app.get("/api/rogue/policy")
+def rogue_policy():
+    """The modeled OpenShell default policy (illustrative, deny-by-default)."""
+    from iforensics.sim import rogue
+    return {"policy": rogue.PolicyEngine().rules_snapshot()}
+
+
+@app.post("/api/rogue/run")
+def rogue_run(req: RogueRun):
+    """Execute one catalogue scenario server-side (audit log, detect, persist)."""
+    from iforensics.sim import rogue
+    if not req.scenario:
+        raise HTTPException(400, "scenario required")
+    try:
+        return rogue.run_scenario(req.scenario, seed=req.seed, n=req.n,
+                                  mode=req.mode)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.get("/api/rogue/runs")
+def rogue_runs():
+    """Persisted rogue run ids, newest first."""
+    from iforensics.sim import rogue
+    return {"runs": rogue.list_runs()}
+
+
+@app.get("/api/rogue/run")
+def rogue_run_get(run_id: str):
+    """Load a persisted rogue run report."""
+    from iforensics.sim import rogue
+    try:
+        return rogue.load_run(run_id)
+    except FileNotFoundError:
+        raise HTTPException(404, "unknown rogue run")
+
+
+@app.post("/api/rogue/reset")
+def rogue_reset():
+    """Runs are persisted evidence; there is no in-memory state to clear."""
+    from iforensics.sim import rogue
+    return rogue.reset()
+
+
 @app.get("/api/findings")
 def findings_hub():
     """One severity-ranked list across security, risk, trust, claims,
@@ -1526,6 +1618,28 @@ class EvalReq(BaseModel):
     max_findings: int = 20
     model: str | None = None
     use_llm: bool = True
+
+
+class CouncilReq(BaseModel):
+    scope: str = "app"
+    model: str | None = None
+
+
+@app.post("/api/security/council")
+def security_council(req: CouncilReq | None = None):
+    """Convene the scholar council: 4 scholars hypothesise, chair merges.
+
+    Slow by design (up to 5 local-model calls) — the UI warns before
+    firing. Degrades to deterministic-only when Ollama is down.
+    """
+    from iforensics import scholars
+    req = req or CouncilReq()
+    if req.scope not in ("app", "workspace"):
+        raise HTTPException(400, "scope must be app|workspace")
+    pack = scholars.evidence_pack(scope=req.scope)
+    out = scholars.convene(pack, model=req.model)
+    out["scope"] = req.scope
+    return out
 
 
 @app.get("/api/security/posture")

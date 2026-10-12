@@ -3,7 +3,7 @@ const escH=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 const escA=escH;
 const TABS=[...document.querySelectorAll('#tabs button')].map(b=>b.dataset.t);
 const trowState=(cols,msg,cls='mut')=>`<tr><td class="${cls}" colspan="${cols}">${escH(msg)}</td></tr>`;
-const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='design')renderDesignIfVisible();if(name==='overview')renderBriefMermaids();if(name==='sim'){loadSimUsers();loadSimScenarios();loadSimRuns();}if(name==='residuals'){loadReconTab();}document.title='Fox - Intelligence Stack - Forensics — '+name;};
+const activateTab=(name,push)=>{if(!TABS.includes(name))name='overview';TABS.forEach(t=>{const on=t===name,btn=document.querySelector(`#tabs button[data-t="${t}"]`),sec=$('s-'+t);if(btn)btn.classList.toggle('on',on);if(sec)sec.classList.toggle('on',on);});if(push!==false){const h='#'+name;if(location.hash!==h)history.pushState(null,'',h);}if(name==='live'){startLiveStream();loadTs();}else{stopLiveStream();}if(name==='security')loadSecurity();if(name==='findings')loadFindings();if(name==='timeline')loadChain();if(name==='graph')loadKnowledge();if(name==='ledger')loadLedger();if(name==='design')renderDesignIfVisible();if(name==='overview')renderBriefMermaids();if(name==='sim'){loadSimUsers();loadSimScenarios();loadSimRuns();}if(name==='residuals'){loadReconTab();}if(name==='rogue'){loadRogueTab();}document.title='Fox - Intelligence Stack - Forensics — '+name;};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 window.addEventListener('hashchange',()=>activateTab(location.hash.slice(1),false));
 window.addEventListener('popstate',()=>activateTab(location.hash.slice(1),false));
@@ -1031,6 +1031,37 @@ function verdictBars(items){
 }
 const _sast=$('b-sast');if(_sast)_sast.onclick=()=>runAppSec('sast');
 const _dast=$('b-dast');if(_dast)_dast.onclick=()=>runAppSec('dast');
+async function runCouncil(){
+ const m=$('sec-eval-msg'),o=$('sec-eval');
+ if(m)m.textContent='convening scholar council (up to 5 local calls — minutes)…';
+ if(o)o.innerHTML='<div class="mut loading">scholars deliberating…</div>';
+ try{
+  const d=await pj('/api/security/council',{scope:'app'});
+  if(m)m.textContent=`council complete — ${d.scholars_heard||0}/4 scholars heard${d.llm&&d.llm.status==='ok'?'':' · LLM unavailable'}`;
+  showNotif('scholar council complete','ok');
+  if(o)o.innerHTML=councilCard(d);
+ }catch(e){if(m)m.textContent='council failed: '+e;showNotif('council failed','err');}
+}
+const SEV_BAR={critical:100,high:75,medium:50,low:25,info:10};
+function councilCard(d){
+ const hyps=d.hypotheses||[];
+ const cards=hyps.map((h,i)=>{
+  const agree=(h.agreed_by||[]).map(s=>`<span class="pill">${escH(s)}</span>`).join(' ');
+  const sevPct=SEV_BAR[h.severity]||25;
+  return `<div class=card style="margin:8px 0"><div class=row><b>#${i+1} ${escH(h.claim||'')}</b><span style="flex:1"></span>${pill(h.severity)}</div>`
+   +`<div class=res-s-meter style="margin:6px 0"><i style="width:${Math.round((h.confidence||0)*100)}%"></i></div>`
+   +`<div class=mut>confidence ${escH(h.confidence??'?')} · severity weight ${sevPct}</div>`
+   +`<div style="margin:6px 0">${escH(h.mechanism||'')}</div>`
+   +`<div class=mut>agreed: ${agree||'—'}</div>`
+   +(h.dissent?`<div class=warn>◈ dissent: ${escH(h.dissent)}</div>`:'')
+   +(h.falsifiable_test?`<div>✗ kill test: <code>${escH(h.falsifiable_test)}</code></div>`:'')
+   +(h.evidence?`<div class=mut>evidence: ${escH(h.evidence)}</div>`:'')
+   +`</div>`;}).join('')||'<div class="mut">no hypotheses — the council heard nothing (LLM down?)</div>';
+ const panels=(d.panels||[]).map(p=>`<span class=k>${escH(p.scholar)}: ${escH((p.hypotheses||[]).length)} hypotheses · ${escH(p.ms||0)}ms</span>`).join(' ');
+ return `<div class=card><h3>Scholar council <span class=mut style="font-weight:normal">${d.scholars_heard||0}/4 scholars · merge: ${escH(d.merge||'chair')}</span></h3>`
+  +`<div class=mut style="margin-bottom:6px">${panels}</div>${cards}</div>`;
+}
+const _coun=$('b-council');if(_coun)_coun.onclick=runCouncil;
 document.querySelectorAll('[data-rs]').forEach(b=>b.addEventListener('click',()=>switchRunSub(b.dataset.rs)));
 const _ss=$('sel-secscope');if(_ss)_ss.onchange=loadSecurity;
 document.querySelectorAll('[data-ss]').forEach(b=>b.addEventListener('click',()=>switchSecSub(b.dataset.ss)));
@@ -1088,6 +1119,278 @@ async function loadSimScenarios(){
  }catch(e){el.textContent='scenarios failed: '+e;}
 }
 const _sd2=$('sel-sim-dlp');if(_sd2)_sd2.onchange=async()=>{try{await pj('/api/sim/dlp',{mode:_sd2.value});loadSimUsers();}catch(e){const s=$('sim-sum');if(s)s.textContent='dlp failed: '+e;}};
+/* ---- Rogue agents in a swarm: its own tab (Assure) ---- */
+let rogueCat=null,rogueReport=null,rogueRuns=[];
+let rogCatFilter='all',rogCatQuery='',rogueDiagrams={};
+let rogAuditRows=[],rogAuditLimit=14;
+const rogPill=l=>l==='benign'?'ok':l==='suspect'?'warn':'crit';
+const rogModeNote=mode=>mode&&mode!=='full'?` — <span class=warn>detector limited to <b>${escH(mode)}</b>; the other layers are blind by design</span>`:'';
+const ROG_COL={benign:'var(--ok)',suspect:'var(--amber)',rogue:'var(--red)',colluder:'var(--purple)',polluter:'var(--teal)'};
+async function loadRogueTab(){
+ await loadRogueCatalogue();
+ await loadRogueRuns();
+ if(!rogueReport&&rogueRuns.length)await loadRogueRun(rogueRuns[0]);
+}
+async function loadRogueCatalogue(){
+ const sc=$('sel-rog-sc');if(!sc)return;
+ try{
+  const d=await j('/api/rogue/catalogue');rogueCat=d;
+  sc.innerHTML=(d.scenarios||[]).map(s=>`<option value="${escA(s.id)}">${escH(s.title)}</option>`).join('');
+  const bl=$('rog-blurb');
+  const upd=()=>{const s=(d.scenarios||[]).find(x=>x.id===sc.value);
+   if(bl)bl.innerHTML=s?`<b>${escH(s.id)}</b> — ${escH(s.blurb)}<br><span class=mut>stresses: ${escH(s.stresses)}${s.remediation?' · remediation: '+escH(s.remediation):''}</span>`:'';};
+  sc.onchange=upd;upd();
+  const sum=$('rog-sum');
+  if(sum)sum.textContent=`${(d.scenarios||[]).length} scenarios · ${(d.categories||[]).map(c=>`${escH(c.title)}=${c.count}`).join(', ')} · hash-chained audit · every finding grounded`;
+  const cs=$('rog-cat-sum');if(cs)cs.textContent=(d.categories||[]).map(c=>`${escH(c.title)}: ${c.count}`).join(' · ');
+  const q=$('inp-rog-search');
+  if(q)q.oninput=()=>{rogCatQuery=q.value.trim();renderRogueCatalogue();};
+  renderRogueCatalogue();
+ }catch(e){const s=$('rog-sum');if(s)s.textContent='catalogue failed: '+e;}
+}
+function renderRogueCatalogue(){
+ const out=$('rog-cat'),chips=$('rog-cat-chips');
+ if(!out||!rogueCat)return;
+ const all=rogueCat.scenarios||[],cats=rogueCat.categories||[];
+ if(chips){
+  chips.innerHTML=['all',...cats.map(c=>c.title)].map((lab,i)=>{
+   const id=i===0?'all':cats[i-1].id;
+   const n=i===0?all.length:cats[i-1].count;
+   return `<span class="chip ${rogCatFilter===id?'on':''}" data-c="${escA(id)}">${escH(lab)} ${n}</span>`;
+  }).join('');
+  chips.querySelectorAll('.chip').forEach(ch=>{ch.onclick=()=>{rogCatFilter=ch.dataset.c;renderRogueCatalogue();};});
+ }
+ const query=(rogCatQuery||'').toLowerCase();
+ const list=all.filter(s=>{
+  if(rogCatFilter!=='all'&&s.category!==rogCatFilter)return false;
+  if(!query)return true;
+  return (s.id+' '+s.title+' '+s.blurb+' '+(s.stresses||'')).toLowerCase().indexOf(query)>-1;
+ });
+ if(!list.length){out.innerHTML='<span class=mut>no scenarios match</span>';return;}
+ out.innerHTML=`<div class="rog-grid">`+list.map(s=>{
+  rogueDiagrams[s.id]=s.diagram;
+  const ex=s.expect||{};
+  const miss=(ex.missed&&ex.missed.length)?` · <span class=warn>expected missed: ${escH(ex.missed.join(', '))}</span>`:'';
+  const chips=[[ex.rogue,'crit','rogue'],[ex.colluders,'warn','collude'],[ex.polluters,'','poison']]
+   .map(p=>`<span class="pill ${(p[0]&&p[0].length)?p[1]:''}">${escH(p[2])} ${escH((p[0]||[]).join(',')||'—')}</span>`).join(' ');
+  return `<div class=card><h3>${escH(s.title)} <span class="mut" style="font-weight:normal">${escH(s.id)}</span></h3>`
+   +`<div class="mut" style="font-size:12px">${escH(s.blurb)}</div>`
+   +`<div class=mut>${escH(s.category_title)} · ${escH(s.n_agents)} agents · ${escH(s.steps)} steps · mode <code>${escH(s.detector)}</code></div>`
+   +`<div class=mut style="margin-top:4px">${chips}${miss}</div>`
+   +`<details class="card coll" data-s="${escA(s.id)}"><summary class=mut>OpenShell decision-path diagram</summary><div class=diagram-wrap></div></details></div>`;
+ }).join('')+`</div>`;
+}
+async function runRogue(){
+ const m=$('rog-runmsg'),btn=$('b-rog-run');
+ if(m)m.textContent='running…';
+ if(btn)btn.disabled=true;
+ try{
+  const d=await pj('/api/rogue/run',{
+   scenario:($('sel-rog-sc')&&$('sel-rog-sc').value)||'',
+   seed:parseInt(($('inp-rog-seed')&&$('inp-rog-seed').value)||'42',10)||42,
+   n:parseInt(($('inp-rog-n')&&$('inp-rog-n').value)||'6',10)||6,
+   mode:($('sel-rog-mode')&&$('sel-rog-mode').value)||'full'});
+  renderRogueReport(d);
+  if(m)m.textContent=`${d.run_id} · ${d.scenario} · mode ${d.mode} · ${d.events} events`;
+  await loadRogueRuns();
+  const sel=$('sel-rog-run');if(sel&&d.run_id)sel.value=d.run_id;
+  showNotif('rogue scenario complete','ok');
+ }catch(e){if(m)m.textContent='run failed: '+e;showNotif('rogue scenario failed','err');}
+ finally{if(btn)btn.disabled=false;}
+}
+async function loadRogueRuns(){
+ const sel=$('sel-rog-run');if(!sel)return;
+ try{
+  const d=await j('/api/rogue/runs');rogueRuns=d.runs||[];
+  sel.innerHTML=rogueRuns.map(r=>`<option value="${escA(r)}">${escH(r)}</option>`).join('')||'<option value="">no runs yet</option>';
+  const s=$('rog-runs-sum');if(s)s.textContent=`${rogueRuns.length} run${rogueRuns.length===1?'':'s'} in evidence/rogue-reports`;
+  const h=$('rog-hist');
+  if(h)h.innerHTML=rogueRuns.length
+   ?`<span class=mut>newest run is pre-selected; press <b>Load report</b> to re-render any stored report.</span>`
+   :`<span class=mut>no persisted runs yet &mdash; run a scenario above.</span>`;
+ }catch(e){const s=$('rog-runs-sum');if(s)s.textContent='runs failed: '+e;}
+}
+async function loadRogueRun(rid){
+ if(!rid)return false;
+ try{
+  const data=await j('/api/rogue/run?run_id='+encodeURIComponent(rid));
+  const key=Object.keys(data||{})[0],p=key?data[key]:null;
+  if(!p||!p.detection)throw new Error('empty run file');
+  renderRogueReport(p);
+  const sc=$('sel-rog-sc');if(sc&&p.scenario)sc.value=p.scenario;
+  const mo=$('sel-rog-mode');if(mo&&p.mode)mo.value=p.mode;
+  const m=$('rog-runmsg');if(m)m.textContent=`${p.run_id} · ${p.scenario} · mode ${p.mode} (loaded)`;
+  return true;
+ }catch(e){const m=$('rog-runmsg');if(m)m.textContent='load failed: '+e;return false;}
+}
+function renderRogueReport(r){
+ rogueReport=r;
+ const det=r.detection||{},m=det.metrics||{},av=r.audit_verify||{},sum=r.summary||{};
+ const st=$('rog-story');
+ if(st)st.innerHTML=rogStory(r)||'<span class=mut>no report data</span>';
+ const bl=$('rog-blurb');
+ if(bl)bl.innerHTML=`<b>${escH(r.scenario)}</b> — ${escH(r.blurb||'')}<br><span class=mut>stresses: ${escH(r.stresses||'')}${r.remediation?' · remediation: '+escH(r.remediation):''}</span>${rogModeNote(r.mode)}`;
+ const lc=$('rog-chart-layers');if(lc)lc.innerHTML=rogLayerChart(sum);
+ const sc=$('rog-chart-scores');if(sc)sc.innerHTML=rogScoreChart(det.verdicts||[]);
+ const cf=$('rog-chart-conf');if(cf)cf.innerHTML=rogConfChart(m);
+ const csum=$('rog-conf-sum');if(csum)csum.textContent=`expected ${escH((m.expected||[]).join(', ')||'—')} · detected ${escH((m.detected||[]).join(', ')||'—')}`;
+ const tl=$('rog-tl');if(tl)tl.innerHTML=rogTimeline(r);
+ const lg=$('rog-tl-legend');
+ if(lg)lg.innerHTML='<span class=mut>one cell = the decision(s) OpenShell made for that agent in that step:</span> <span class="res-tag on">· allow</span> <span class=res-tag>✕ deny → policy signal</span> <span class="res-tag on">◈ covert / secret-leak / poisoned</span>';
+ const tb=$('t-rog-verdict')&&$('t-rog-verdict').querySelector('tbody');
+ if(tb)tb.innerHTML=(det.verdicts||[]).map(v=>{
+  const sigs=(v.signals||[]).map(s=>`<span class=res-tag title="weight ${escH(s.weight)} · ${escH(s.rule_id||'no rule')}">${escH(s.kind)} · ${escH(s.layer)}</span>`).join(' ');
+  return `<tr><td><code>${escH(v.agent)}</code></td><td><span class="pill ${rogPill(v.label)}">${escH(v.label)}</span></td><td class=num><b>${escH(v.score)}</b></td><td class=mut>${sigs||'—'}</td><td class=mut>${v.grounded?`<span class=ok>grounded · ${(v.evidence||[]).length} audit links</span>`:'<span class=warn>ungrounded (no audit link)</span>'}</td></tr>`;
+ }).join('')||trowState(5,'no verdicts');
+ const vss=$('rog-verdicts-sum');if(vss)vss.textContent=`${(det.verdicts||[]).length} agents · ${escH(m.grounded)} grounded to audit`;
+ const cl=$('rog-clusters');
+ if(cl)cl.innerHTML=(det.clusters||[]).length
+  ? det.clusters.map(c=>`<div class=res-verdict><b>cluster</b> ${(c.members||[]).map(a=>`<code>${escH(a)}</code>`).join(' ')} · channel <code>${escH(c.channel)}</code><div class=mut>${escH(c.reason)} · ${(c.evidence||[]).length} audit-linked actions</div></div>`).join('')
+  :'<span class=mut>no covert-channel clusters — no agents shared a channel.</span>';
+ const cos=$('rog-clusters-sum');if(cos)cos.textContent=(det.clusters||[]).length?`${det.clusters.length} cluster(s) via the graph layer`:'';
+ const prov=det.provenance||{};
+ const arts=(prov.artifacts||[]).filter(a=>a.tainted);
+ const pr=$('rog-prov');
+ if(pr)pr.innerHTML=arts.length
+  ? arts.map(a=>`<div class=res-verdict><b>poisoned</b> <code>${escH(a.artifact)}</code> by ${(a.writers||[]).map(w=>`<code>${escH(w)}</code>`).join(', ')}<div class=mut>read downstream by ${escH((a.consumers||[]).map(x=>x.agent).join(', '))||'—'} · ${(a.writer_audit||[]).length} writer audits</div></div>`).join('')
+  :'<span class=mut>no poisoned shared state read downstream.</span>';
+ const ps=$('rog-prov-sum');if(ps)ps.textContent=arts.length?`${arts.length} poisoned artifact(s) traced via provenance`:'';
+ const ch=$('rog-chain');if(ch)ch.innerHTML=rogChain(r);
+ const csum2=$('rog-chain-sum');
+ if(csum2)csum2.innerHTML=`${escH(sum.audit_entries||0)} audit entries · ${av.ok?`<span class=ok>chain verified (${escH(av.checked||0)} links)</span>`:'<span class=crit>CHAIN BROKEN</span>'}`;
+ rogAuditRows=r.timeline||[];rogAuditLimit=14;renderRogueAudit();
+}
+function renderRogueAudit(){
+ const atb=$('t-rog-audit')&&$('t-rog-audit').querySelector('tbody');
+ if(!atb)return;
+ const show=rogAuditRows.slice(0,rogAuditLimit);
+ atb.innerHTML=show.map(e=>`<tr><td class=num>${escH(e.step)}</td><td><code>${escH(e.agent)}</code></td><td><code>${escH(e.action)}</code>${e.target?' → '+escH(e.target):''}</td><td class=mut>${escH(e.layer)}</td><td><span class="pill ${e.effect==='allow'?'ok':'crit'}">${escH(e.effect)}</span></td><td class=mut><code>${escH(e.rule_id||'—')}</code></td><td class=mut>${escH(e.reason)}</td><td class=mut><code title="${escH(e.audit_id)}">${escH((e.audit_id||'').slice(0,12))}</code></td></tr>`).join('')
+  +(rogAuditRows.length>rogAuditLimit?`<tr><td colspan=8 class=mut><button class=act id=b-rog-audit-more>show all ${rogAuditRows.length}</button></td></tr>`:'')
+  ||trowState(8,'no notable decisions (nothing denied, no covert or polluting signal)');
+ const b=$('b-rog-audit-more');if(b)b.onclick=()=>{rogAuditLimit=rogAuditRows.length;renderRogueAudit();};
+}
+function rogLayerChart(sum){
+ const by=sum.by_layer||{},den=sum.denied_by_layer||{};
+ const rows=Object.keys(by).sort();
+ if(!rows.length)return '<span class=mut>no decisions recorded</span>';
+ const total=Math.max(1,sum.events||1);
+ return rows.map(l=>{
+  const a=Math.max(0,(by[l]||0)-(den[l]||0)),d=den[l]||0;
+  const pa=(a/total*100).toFixed(1),pd=(d/total*100).toFixed(1);
+  return `<div class=layrow><span class=laylab>${escH(l)}</span>`
+   +`<div class=laybar title="${escH(l)} — ${escH(a)} allowed · ${escH(d)} denied">`
+   +`<div class="seg allow" style="width:${pa}%"></div><div class="seg deny" style="width:${pd}%"></div></div>`
+   +`<span class=layn><span class=ok>${escH(a)}</span> / <span class=deny>${escH(d)}</span></span></div>`;
+ }).join('')+`<div class=mut style="font-size:11px;margin-top:6px">bar segments are proportional to the whole run: green allowed, red denied by policy.</div>`;
+}
+function rogScoreChart(verdicts){
+ if(!verdicts.length)return '<span class=mut>no verdicts</span>';
+ const max=Math.max(6,...verdicts.map(v=>v.score||0));
+ return verdicts.map(v=>{
+  const pct=Math.max(3,Math.round((v.score||0)/max*100));
+  const t2=(2/max*100).toFixed(0),t4=(4/max*100).toFixed(0);
+  const col=ROG_COL[v.label]||'var(--mut)';
+  const sigs=(v.signals||[]).map(s=>`<span class=res-tag>${escH(s.kind)}</span>`).join(' ');
+  return `<div class=meter><div class=mrow><span class=mname><code>${escH(v.agent)}</code></span>`
+   +`<div class=mtrack><div class=mfill style="width:${pct}%;background:${col}"></div>`
+   +`<div class=mticks><div class=tick style="left:${t2}%"><span>suspect 2</span></div><div class=tick style="left:${t4}%"><span>rogue 4</span></div></div></div>`
+   +`<span class=mval>${escH(v.score||0)}</span><span class="pill ${rogPill(v.label)}">${escH(v.label)}</span></div>`
+   +(sigs?`<div class=sigs>${sigs}</div>`:'')+`</div>`;
+ }).join('')+`<div class=mut style="font-size:11px;margin-top:6px">score = summed signal weights · suspect ≥ 2 · rogue ≥ 4 · graph / provenance labels dominate.</div>`;
+}
+function rogConfChart(m){
+ const tp=(m.true_positive||[]).length,fp=(m.false_positive||[]).length,fn=(m.false_negative||[]).length;
+ const exp=(m.expected||[]).length;
+ const tot=tp+fp+fn||1;
+ const rec=m.recall??1,pre=m.precision??1;
+ const tpP=(tp/tot*100).toFixed(1),fpP=(fp/tot*100).toFixed(1);
+ const donut=!exp
+  ?'<div class="donut clean" title="no malicious agents expected in this scenario"><b>✓</b></div>'
+  :`<div class=donut style="--tp:${tpP}%;--fp:${fpP}%" title="caught ${escH(tp)} · over-flagged ${escH(fp)} · missed ${escH(fn)}"><b>${escH(tp)}</b></div>`;
+ return `<div class=donutwrap>${donut}<div class=conf-legend>`
+  +`<div><span class="pill ok">caught ${escH(tp)}</span> of <b>${escH(exp)}</b> expected malicious</div>`
+  +`<div><span class="pill crit">over-flagged ${escH(fp)}</span> benign agent(s) mislabelled</div>`
+  +`<div><span class="pill warn">missed ${escH(fn)}</span>${(m.expected_missed&&m.expected_missed.length)?' — acknowledged by the catalogue':''}</div>`
+  +`<div class=mut>recall <b>${escH(rec)}</b> · precision <b>${escH(pre)}</b> · <b>${escH(m.grounded??0)}</b>/${(m.detected||[]).length} verdicts grounded</div></div></div>`;
+}
+function rogTimeline(r){
+ const agents=r.agents||[],steps=(r.steps||0)||0,audit=r.audit||[];
+ if(!agents.length||!steps)return '<span class=mut>no timeline</span>';
+ const cells={};
+ agents.forEach(a=>{cells[a.id]=Array.from({length:steps},()=>({eff:'',kinds:[]}));});
+ const COVERT=/POISON-|IGNORE PREVIOUS|ADVERSARIAL|i-am:|vouch-for|endorse:|accuse:/;
+ audit.forEach(e=>{
+  const c=cells[e.agent];if(!c)return;
+  const s=e.step;if(s==null||s<0||s>=steps)return;
+  const cell=c[s];
+  const covert=!!e.channel||(e.data_class==='secret'&&e.effect==='allow')||COVERT.test(e.payload_head||'');
+  if(e.effect==='deny')cell.eff='deny';
+  else if(covert&&cell.eff!=='deny')cell.eff='covert';
+  else if(!cell.eff)cell.eff='allow';
+  if(cell.eff!=='allow'||covert)cell.kinds.push(e.action+(e.effect==='deny'?'✕':''));
+ });
+ const head='<tr><th class=agent>agent</th>'+Array.from({length:steps},(_,s)=>`<th class=step>s${escH(s)}</th>`).join('')+'</tr>';
+ const body=agents.map(a=>{
+  const row=cells[a.id].map((c,i)=>{
+   const cls=c.eff==='deny'?'c-deny':c.eff==='covert'?'c-covert':c.eff==='allow'?'c-allow':'c-x';
+   const sym=c.eff==='deny'?'✕':c.eff==='covert'?'◈':c.eff==='allow'?'·':'';
+   const tip=(c.kinds.length?c.kinds.join(' · '):'no decision')+' — '+a.id+' step '+i;
+   return `<td class="step ${cls}" title="${escH(tip)}">${sym?`<b>${sym}</b>`:''}</td>`;
+  }).join('');
+  return `<tr><td class=agent>${escH(a.id)} <span class=mut>${escH(a.disposition)}</span></td>${row}</tr>`;
+ }).join('');
+ return `<div class=rog-tl><table><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+function rogStory(r){
+ const det=r.detection||{},m=det.metrics||{},sum=r.summary||{};
+ const beats=[];
+ const cast=(r.agents||[]).map(a=>`<span class=res-tag title="${escH(a.objective)}">${escH(a.id)} · ${escH(a.disposition)}</span>`).join(' ');
+ beats.push({cls:'clean',head:'The board',body:`${escH(r.title)} — ${escH(r.blurb||'')}<br><span class=s>swarm: ${cast}</span>`});
+ const dbl=Object.entries(sum.denied_by_layer||{}).map(([l,n])=>`${escH(n)} × ${escH(l)}`).join(', ');
+ if(sum.denied>0)beats.push({cls:'deny',head:`Policy refused ${escH(sum.denied)} decision${sum.denied===1?'':'s'}`,body:`Deny-by-default held at: ${dbl||'—'} (against ${escH(sum.allowed||0)} allowed). Each denial is the loudest signal — policy records the exact rule and reason that fired.`});
+ else beats.push({cls:'clean',head:'Policy held quietly',body:'OpenShell refused nothing — policy alone cannot see this threat. Only the behaviour, graph and provenance layers can.'});
+ const tl=r.timeline||[];
+ if(tl.length){
+  const show=tl.slice(0,6);
+  beats.push({cls:'flag',head:`The play — ${tl.length} notable decision${tl.length===1?'':'s'}`,body:show.map(e=>`step ${escH(e.step)} · <code>${escH(e.agent)}</code> ${escH(e.action)} → <b class="${e.effect==='deny'?'crit':'ok'}">${escH(e.effect)}</b> <span class=s>(${escH(e.rule_id||'no rule')} — ${escH(e.reason)})</span>`).join('<br>')+(tl.length>show.length?`<br><span class=s>+ ${tl.length-show.length} more in the audit trail below.</span>`:'')});
+ }
+ const flagged=(det.verdicts||[]).filter(v=>v.label!=='benign');
+ if(flagged.length)beats.push({cls:'deny',head:`The catch — ${flagged.length} agent${flagged.length===1?'':'s'} flagged`,body:flagged.map(v=>{
+  const layers=[...new Set((v.signals||[]).map(s=>s.layer).filter(Boolean))].join(' + ')||'?';
+  const kinds=(v.signals||[]).map(s=>s.kind).join(', ')||'no signal';
+  return `<b style="color:${ROG_COL[v.label]||'var(--amber)'}">${escH(v.agent)}</b> → <span class="pill ${rogPill(v.label)}">${escH(v.label)}</span> score ${escH(v.score||0)} · ${escH(layers)} layer(s): ${escH(kinds)} · grounded to ${escH((v.evidence||[]).length)} audit link${(v.evidence||[]).length===1?'':'s'}`;
+ }).join('<br>')});
+ else beats.push({cls:'clean',head:'All clear',body:'No agent crossed the suspect threshold — this swarm behaved. (In the benign-control scenarios that is exactly the wanted outcome.)'});
+ if((m.false_positive||[]).length)beats.push({cls:'flag',head:`Over-flagged — ${escH(m.false_positive.join(', '))}`,body:'Benign agent(s) crossed the threshold; the detector was too eager — the price of sensitivity.'});
+ if((m.false_negative||[]).length)beats.push({cls:'deny',head:`Missed — ${escH(m.false_negative.join(', '))}`,body:r.mode!=='full'
+  ?`Detector mode <b>${escH(r.mode)}</b> is blind by design to the other layers, so this slip is an honest coverage gap, not a bug.`
+  :`Even at full detection this slipped through${(m.expected_missed&&m.expected_missed.length)?' — the catalogue acknowledges it.':' — unexpected: review the policy or the behaviours.'}`});
+ if(r.remediation)beats.push({cls:'clean',head:'Remediation',body:escH(r.remediation)});
+ return beats.map((b,i)=>`<div class="rog-beat ${b.cls}"><span class=num>${i+1}</span><div><b>${b.head}</b><div class=s>${b.body}</div></div></div>`).join('');
+}
+function rogChain(r){
+ const audit=r.audit||[];
+ if(!audit.length)return '<span class=mut>no audit entries</span>';
+ const tail=audit.slice(-7);
+ return `<div class=chain>${tail.map(e=>`<div class="chainblk ${e.effect==='deny'?'deny':'allow'}"><div class=cseq>#${escH(e.seq)}</div><div class=ceff>${escH(e.effect)}</div><div class=mut>${escH(e.agent)} ${escH(e.action)}</div><div class=mut title="${escH(e.audit_id)}">${escH((e.audit_id||'').slice(0,8))}</div></div>`).join('<span class=chainlink>⇢</span>')}</div>`;
+}
+const _rg1=$('b-rog-run');if(_rg1)_rg1.onclick=runRogue;
+const _rg2=$('b-rog-load');if(_rg2)_rg2.onclick=async()=>{if(await loadRogueRun($('sel-rog-run')&&$('sel-rog-run').value))showNotif('rogue report loaded','ok');};
+const _rg3=$('b-rog-reset');if(_rg3)_rg3.onclick=async()=>{try{const d=await pj('/api/rogue/reset',{});const m=$('rog-runmsg');if(m)m.textContent=d.note||'reset';await loadRogueRuns();}catch(e){const m=$('rog-runmsg');if(m)m.textContent='reset failed: '+e;}};
+const _rgcat=$('rog-cat');
+if(_rgcat){
+ _rgcat.addEventListener('toggle',e=>{
+  const d=e.target;
+  if(d&&d.tagName==='DETAILS'&&d.open){
+   const wrap=d.querySelector('.diagram-wrap');
+   if(wrap&&!wrap.querySelector('pre.mermaid')){
+    const dg=rogueDiagrams[d.dataset.s]||'';
+    if(dg)wrap.innerHTML=`<pre class=mermaid>${escH(dg)}</pre>`;
+    renderMermaid(d);
+   }
+  }
+ },true);
+}
 /* ---- Stateless-inference residual reconstruction: its own tab (P14) ---- */
 let reconCat=null,resReport=null,resState=null,resRuns=[];
 const resStat=(k,v,cls)=>`<div class="stat"><div class="v ${cls||''}">${escH(v)}</div><div class=k>${escH(k)}</div></div>`;
@@ -1392,17 +1695,50 @@ function renderProgStep(t){
  const s=[...steps].reverse().find(x=>x.turn<=t)||steps[0];
  if(!s)return;
  const tn=$('res-turn-n');if(tn)tn.textContent=s.turn;
- out.innerHTML=progStepHTML(s);
+ out.innerHTML=progStepHTML(s,resProg?resProg.steps:null);
  try{mirrorReconToLive();}catch(_){}
 }
-function progStepHTML(s){
+function progStepHTML(s,allSteps){
  const newbies=(s.newly_recovered||[]).map(f=>` <span class="res-tag on">new: ${escH(f)}</span>`).join('');
  return `<div class=res-amp-row><span class=res-amp-lab>pooled @ turn ${escH(s.turn)}</span><span class=res-amp-bar><i class=full style="width:${Math.round((s.accuracy||0)*100)}%"></i></span><b>${escH(s.accuracy)}</b></div>`
   +`<div class=mut>${escH(s.recovered)} fields recovered · ${escH(s.texts)} texts pooled${newbies}</div>`
   +Object.entries(s.fields||{}).map(([f,v])=>{
    const pct=Math.round(((v.matched||0)/Math.max(1,v.total||1))*100);
    return `<div class=res-field><div class=res-field-head><code>${escH(f)}</code><span class="res-tag ${v.recovered?'on':''}">${v.recovered?'recovered':'partial'}</span>${(s.newly_recovered||[]).includes(f)?'<span class="res-tag on">new</span>':''}</div><div class=res-s-meter><i style="width:${pct}%"></i></div><div class=res-field-meta>${escH(v.accuracy)} accuracy · ${escH(v.matched)}/${escH(v.total)} chars</div>${v.assembled?`<div class=res-field-asm>${escH(v.assembled)}</div>`:''}</div>`;}).join('')
-  +`<div class=mut>new text this turn from: ${(s.new_surfaces||[]).map(escH).join(', ')||'—'}</div>`;
+  +`<div class=mut>new text this turn from: ${(s.new_surfaces||[]).map(escH).join(', ')||'—'}</div>`
+  +progTurnLogHTML(s)+progCrackHTML(allSteps);
+}
+/* per-turn forensic log: every fresh fragment, its source, and what chars it cracked */
+function progTurnLogHTML(s){
+ const rows=(s.new_texts||[]).map(r=>{
+  const frag=escH((r.text||'').slice(0,120));
+  const f=escA(JSON.stringify({t:'frag',turn:s.turn,surface:r.surface,kind:r.kind,text:r.text||''}));
+  return `<tr data-f='${f}'><td><code>${escH(r.surface||'?')}</code></td><td class=mut>${escH(r.kind||'')}</td><td>${frag}</td></tr>`;}).join('');
+ if(!rows)return '';
+ return `<details class=res-s-diag open><summary>Turn ${escH(s.turn)} log — ${(s.new_texts||[]).length} fresh fragments (click a row for the full text)</summary>`
+  +`<table><thead><tr><th>source</th><th>kind</th><th>fragment</th></tr></thead><tbody>${rows}</tbody></table></details>`;
+}
+/* crack story: for each field, the turns where new characters fell, with sources */
+function progCrackHTML(allSteps){
+ if(!allSteps||!allSteps.length)return '';
+ const fields={};
+ for(const st of allSteps){
+  for(const [f,flips] of Object.entries(st.field_deltas||{})){
+   (fields[f]=fields[f]||[]).push({turn:st.turn,flips,
+    asm:((st.fields||{})[f]||{}).assembled||'',
+    src:st.new_surfaces||[]});
+  }
+ }
+ const names=Object.keys(fields);
+ if(!names.length)return '';
+ return `<details class=res-s-diag open><summary>How each value cracked — character by character</summary>`
+  +names.map(f=>{
+   const evs=fields[f].map(e=>{
+    const chars=e.flips.map(([p,c])=>`@${p} '${escH(c)}'`).join(', ');
+    const df=escA(JSON.stringify({t:'crack',field:f,turn:e.turn,asm:e.asm,flips:e.flips,src:e.src||[]}));
+    return `<div class="ev" data-f='${df}'><span class="dot ok"></span><div><div><span class=mut>turn ${escH(e.turn)}</span> <code>${escH(e.asm)}</code></div><div class=mut>cracked ${chars} — via ${(e.src||[]).map(escH).join(', ')||'earlier pool'}</div></div></div>`;}).join('');
+   return `<div style="margin-top:6px"><code>${escH(f)}</code>${evs}</div>`;}).join('')
+  +`</details>`;
 }
 function toggleProgPlay(){
  const b=$('b-res-play');
@@ -1444,7 +1780,7 @@ function renderRxProgStep(t){
  const s=[...steps].reverse().find(x=>x.turn<=t)||steps[0];
  if(!s)return;
  const tn=$('rx-turn-n');if(tn)tn.textContent=s.turn;
- out.innerHTML=progStepHTML(s);
+ out.innerHTML=progStepHTML(s,rxProg?rxProg.steps:null);
 }
 function toggleRxPlay(){
  const b=$('b-rx-play');
@@ -1609,6 +1945,24 @@ function rowClickHandler(build){
   const d=build(f);if(d)showDetail(d.title,d.sub,d.rows,d.notes);
  };
 }
+const detailTurnFrag=f=>{
+ if(f.t==='crack'){
+  const flips=(f.flips||[]).map(([p,c])=>`@${p} '${escH(c)}'`).join(', ');
+  return {title:(f.field||'field')+' cracked @ turn '+(f.turn??'?'),
+   sub:'character-level provenance',
+   rows:[['assembled',`<code>${escH(f.asm||'')}</code>`],
+    ['cracked',escH(flips||'—')],
+    ['via surfaces',escH((f.src||[]).join(', ')||'earlier pool')]],
+   notes:['Each character is attributed to the turn whose fresh fragments first made it known.']};
+ }
+ return {title:(f.surface||'?')+' · '+(f.kind||''),
+  sub:'turn '+(f.turn??'?')+' retained text (full fragment)',
+  rows:[['surface',`<code>${escH(f.surface||'')}</code>`],
+   ['kind',escH(f.kind||'')],['turn',escH(f.turn??'?')],
+   ['chars',escH((f.text||'').length)],
+   ['fragment',`<div style="white-space:pre-wrap;word-break:break-word"><code>${escH(f.text||'')}</code></div>`]],
+  notes:['Truncated to 600 chars in transit; the byte-identical original lives in the residual store — see the inspector.']};
+};
 function wireOverlay(tableSel,build){
  const host=document.querySelector(tableSel);if(!host)return;
  host.addEventListener('click',rowClickHandler(build));
@@ -1625,6 +1979,8 @@ wireOverlay('#t-conf',f=>detailConf(f));
 wireOverlay('#t-trend',f=>detailTrend(f));
 wireOverlay('#t-feed',f=>detailFeed(f));
 wireOverlay('#t-liveprog',f=>detailProgStep(f));
+wireOverlay('#res-prog-out',f=>detailTurnFrag(f));
+wireOverlay('#rx-prog-out',f=>detailTurnFrag(f));
 const _chainHost=$('chain');if(_chainHost)_chainHost.addEventListener('click',rowClickHandler(detailChain));
 const _inj=$('sec-inject'),_prm=$('sec-perm');
 const _injT=_inj&&_inj.closest?_inj.closest('table'):null;

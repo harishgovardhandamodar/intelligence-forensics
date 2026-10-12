@@ -53,6 +53,10 @@ _DOCS: list[dict[str, str]] = [
      "title": "Live reconstruction — tap-driven co-serving",
      "group": "Data & assurance", "kind": "tap · co-serve · unscored live report",
      "answers": "How live Fox traffic feeds the residual surfaces, and why it is never scored"},
+    {"id": "rogue-agents", "file": "10-rogue-agents.md",
+     "title": "Rogue agents — OpenShell-grounded governance",
+     "group": "Data & assurance", "kind": "UML · sequences · activities · 57 scenarios",
+     "answers": "How rogue, colluding and polluting agents are detected and grounded, and where detection is blind"},
 ]
 
 _FENCE_RE = re.compile(r"^\s*```(\w*)\s*$")

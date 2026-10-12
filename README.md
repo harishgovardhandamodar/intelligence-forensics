@@ -65,6 +65,43 @@ every request. Vectors report accuracy 0 and contribute linkage only —
 pure vector-to-text inversion is never claimed. All values are synthetic
 (900-series SSNs, `4242…` PANs).
 
+### Rogue agents — OpenShell-grounded governance
+
+![Rogue agents tab](docs/screenshots/rogue.png)
+
+A deterministic model of a governed autonomous fleet in which some agents turn
+rogue, some collude in covert cells, and some pollute shared state. The modeled
+NVIDIA OpenShell runtime (sandbox · policy engine · supervisor · privacy
+router) decides every action against a deny-by-default policy and records a
+hash-chained audit; a four-layer detector (policy · behaviour · graph ·
+provenance) then labels each agent, and every finding is grounded to the exact
+`audit_id` + rule id + layer that produced it.
+
+The **Assure tab** narrates every run instead of dumping numbers:
+
+- **Story panel** — a numbered, colour-coded narrative: who was on the board →
+  what policy refused (deny-by-default held where) → the play (notable
+  decisions with rule + reason) → the catch (flagged agents, which detector
+  layer, how many audit links) → over-flagged / missed coverage gaps →
+  remediation.
+- **Three dependency-free charts** — decisions by OpenShell layer (allow/deny
+  stacked bars), a per-agent suspicion meter with *suspect ≥ 2 / rogue ≥ 4*
+  threshold ticks, and a detection-outcome donut (caught / over-flagged /
+  missed + recall · precision · grounded verdicts).
+- **Swarm timeline** — a swimlane per agent × step, cells tinted allow / deny
+  ✕ / covert (secret-leak or poisoned) ◈ with hover detail, sticky agent
+  column, and a legend.
+- **Hash-chained audit** — the chain tail renders as linked blocks, the
+  grounded audit table caps at 14 rows with a show-all expander, and the
+  57-scenario catalogue collapses to category chips + search with diagrams
+  rendered lazily on expand (no more wall of 57 upfront).
+
+The detector's `mode` select honestly exposes coverage gaps (`policy_only`
+misses allowlisted colluders and polluters; `detect_missed_subtle` is expected
+to miss). 57 scenarios across 6 categories; full UML, interaction and activity
+diagrams in `design/10-rogue-agents.md`. **Nothing is executed** —
+`net.egress`, `proc.spawn` and `cred.use` are decided, never performed.
+
 ### Security — dial, donut, verdicts
 
 ![Security tab](docs/screenshots/security.png)
@@ -155,12 +192,14 @@ inbound — one fix: `sudo ufw allow 8211/tcp`. HTTPS alternative:
 
 Like fox-services' own design tab: `design/*.md` (context, UML, interaction,
 activity, data model, trust boundaries, privacy, ethics, agent swarm,
-simulation, reconstruction) rendered with live
-Mermaid diagrams — 11 documents, 32 diagrams. Served via fixed-index API
+simulation, reconstruction, rogue agents) rendered with live
+Mermaid diagrams — 13 documents, 47 diagrams. Served via fixed-index API
 (`GET /api/design/docs`, `GET /api/design/docs/{id}`; traversal attempts 404).
 Mermaid v10 is vendored (`static/mermaid.min.js` → `/static/`, CDN fallback)
 with a dark theme, so diagrams render even on offline LAN/tailnet; Markdown
 gets proper joined paragraphs, lists, tables and code blocks in styled frames.
+Mermaid panels are centred in their cards (matching the Sim tab), with a
+full-screen zoom expander for wide diagrams.
 
 ## Simulation scenarios — what each experiment leaks
 
@@ -201,7 +240,10 @@ python cli.py progression --service hive-research-gpu --n 4 --mode window  # per
   (hive-research-gpu slices flip labels: per-slice vocabulary varies).
 - API: `GET /api/reconstructions/{svc}/progression?n=5&mode=cumulative|window`
   with per-step Δ vs previous (label flip, new pipeline stages, template growth)
-  and a `converged` flag.
+  and a `converged` flag. Each step also returns `new_texts` (what the pool
+  freshly absorbed that turn) and `field_deltas` — a per-field character
+  forensics ledger of exactly which positions flipped from masked to known at
+  that turn (the "how it cracked" trace).
 
 ## Reconstruction simulation — stateless inference (`recon_client/`)
 
